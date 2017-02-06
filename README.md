@@ -70,12 +70,20 @@ The CLI provides multiple subcommands to initiate image testing:
   ```
 
   The default location for results files is ~/ipa/results/ and the files
-  are encoded with the day/time of execution and found in their respective
-  CSP folder. E.g. for ec2 the results would be found at ~/ipa/results/ec2/.
-  And the files would look like SLES-12-SP2-{datetime}.results. Junit style
+  are encoded with the instance id and day/time of execution. For example, the
+  results for an image test in ec2 would be found at
+  ~/ipa/results/ec2/{imageId}/{instanceId}-{datetime}.results. Junit style
   results would be the same with an extension of .junit. If multiple tests are
-  run with a comma separated list the tests results will all be appended to the
+  run on the same instance the tests results will be appended to the
   same results file.
+  
+  Example results directory:
+  ```
+  ec2/:
+    suse-sles-12-sp2-v20161214-hvm-ssd-x86_64/:
+      i-3432r4324y3t2-{datetime}.results
+      i-432423j3j2432-{datetime}.results
+  ```
 
 * `ipa list`
 
@@ -132,16 +140,19 @@ The CLI provides multiple subcommands to initiate image testing:
 
 **Config**
 
-The framework config is ini format ~/ipa/.config. Anything specific to
-the test framework can be found in this config.
+The framework config is ini format ~/.config/ipa/config. Anything specific to
+the test framework can be found in this file. Thus anything that is cloud
+framework independant such as the test dir, results dir and config file.
 
-Any settings relating to a CSP can be found in it's respective config. For
-example any ec2 information can be found in ~/.ec2utils.conf.
+Any settings relating to a specific cloud provider can be found in that
+cloud's config file. For example ssh key and user for EC2 can be found in
+~/.ec2utils.conf.
 
 ```
 [default]
 tests=~/ipa/tests/
 results=~/ipa/results/
+config=~/.config/other.config
 ```
 
 **API**
