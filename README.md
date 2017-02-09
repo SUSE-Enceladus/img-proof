@@ -21,7 +21,7 @@ The CLI provides multiple subcommands to initiate image testing:
  See below for options:
 
   ```
-  ipa test [OPTIONS] IMAGE_ID PROVIDER TESTS
+  ipa test [OPTIONS] IMAGEID PROVIDER TESTS
 
   --host                  Use existing instance for tests (--host=10.10.0.1)
   -c, --cleanup           Whether to leave instance running after tests (y/n)
@@ -47,7 +47,7 @@ The CLI provides multiple subcommands to initiate image testing:
   -h, --help              Show this message and exit.
 
   Example:
-  ipa test -v -x --junitxml=results.xml ami1234 aws test_aws_leap.py
+  ipa test -v -x --junitxml=results.xml ami1234 aws test-aws-leap.py
   ```
 
   The SSH user, SSH private key file, region and type are all optional
@@ -80,7 +80,7 @@ The CLI provides multiple subcommands to initiate image testing:
   Example results directory:
   ```
   ec2/:
-    suse-sles-12-sp2-v20161214-hvm-ssd-x86_64/:
+    suse-sles-12-sp2-v20161214-hvm-ssd-x86-64/:
       i-3432r4324y3t2-{datetime}.results
       i-432423j3j2432-{datetime}.results
   ```
@@ -100,7 +100,7 @@ The CLI provides multiple subcommands to initiate image testing:
   Examples:
   ipa list
   ipa list ~/ipa/tests/SLES12SP1/
-  ipa list ~/ipa/tests/SLES12SP1/test_sles_12_sp1_hpc.py
+  ipa list ~/ipa/tests/SLES12SP1/test-sles-12-sp1-hpc.py
   ```
 
   The list subcommand will return a list of test files if a directory is
@@ -113,29 +113,36 @@ The CLI provides multiple subcommands to initiate image testing:
   ```
   $ ipa list -v
 
-  test_image.py
-    test_packages[local-python-virtualenv-13]
-    test_echo[local]
-    test_packages[local-python-2.7]
-  leap/test_leap.py
-    test_repos[local-repo-oss-openSUSE-Leap-42.1-Oss]
-    test_packages[local-python-virtualenv-13]
-    test_echo[local]
-    test_repos[local-repo-non-oss-openSUSE-Leap-42.1-Non-Oss]
-    test_packages[local-python-2.7]
-  leap/test_leap_aws.py
-    test_repos[local-repo-oss-openSUSE-Leap-42.1-Oss]
-    test_services_running_enabled[local-cloud-init]
-    test_packages[local-python-virtualenv-13]
-    test_echo[local]
-    test_repos[local-repo-non-oss-openSUSE-Leap-42.1-Non-Oss]
-    test_services_running_enabled[local-amazon-ssm-agent]
-    test_packages[local-python-2.7]
+  test-image.py
+    test-packages[local-python-virtualenv-13]
+    test-echo[local]
+    test-packages[local-python-2.7]
+  leap/test-leap.py
+    test-repos[local-repo-oss-openSUSE-Leap-42.1-Oss]
+    test-packages[local-python-virtualenv-13]
+    test-echo[local]
+    test-repos[local-repo-non-oss-openSUSE-Leap-42.1-Non-Oss]
+    test-packages[local-python-2.7]
+  leap/test-leap-aws.py
+    test-repos[local-repo-oss-openSUSE-Leap-42.1-Oss]
+    test-services-running-enabled[local-cloud-init]
+    test-packages[local-python-virtualenv-13]
+    test-echo[local]
+    test-repos[local-repo-non-oss-openSUSE-Leap-42.1-Non-Oss]
+    test-services-running-enabled[local-amazon-ssm-agent]
+    test-packages[local-python-2.7]
   ```
 
-* Using click an invalid argument yields a message as such:
+* Given an invalid/unexpected option/arg ipa will display a useful message:
   ```
-  Error: No such command "invalidcmd".
+  # Invalid command
+  Error: No such command "invalidcmd"
+
+  # Invalid option
+  Error: no such option: -z
+
+  # Unexpected argument
+  Error: Got unexpected extra argument (test)
   ```
 
 **Config**
@@ -158,20 +165,101 @@ config=~/.config/other.config
 **API**
 
 The API used by CLI or used independently, is structured with a base class
-ipa.py:TestProvider. This contains the functionality required to run tests
-and collect the test results. These methods are implemented the same for
-any cloud provider while the specific tests and test configuration may change.
+in ipa.py. This contains the functionality required to run tests and collect
+the test results.
 
-This base class is extended for each provider to implement specific methods
-for manipulating the test instance. This includes launch, start, stop, and
-terminate.
+ipa.py
+```python
+class ipa(object):
+    def __init__(self):
+        self.instanceId = None
+        self.instanceIp = None
+        self.testsFile = None
+        self.resultsDir = None
+
+    def testImage(self):
+        """The entry point for testing an image.
+
+        This method will perform the following steps:
+          - launchInstance() # If a host is passed in this is skipped
+          - systemReboot()
+          - systemUpdate()
+          - rebootInstance()
+          - runTests()
+          - saveResults()
+          - terminateInstance() # Optional depends on test results and -c flag
+        """
+
+    def runTests(self):
+        """Runs the test suite on the image."""
+
+    def saveResults(self)
+        """Saves the results of the tests."""
+
+    def systemReboot(self):
+        """Performs a system reboot."""
+
+    def systemUpdate(self):
+        """Updates the instace based on OS type.
+
+        E.g. for SUSE `zypper up`
+        """
+```
+
+The base class is extended for each provider to implement specific
+methods for manipulating the test instance.
+
+{cloudProvider}.py
+```python
+class {cloudprovider}(ipa):
+
+    def __init__(self):
+        super(AwsProvider, self).__init__()
+
+    def launch_instance(self):
+        """Launch an instance of the given image."""
+
+    def start_instance(self):
+        """Start the instance."""
+
+    def stop_instance(self):
+        """Stop the instance."""
+
+    def reboot_instance(self):
+        """Framework reboot instance."""
+
+    def terminate_instance(self):
+        """Terminate the instance."""
+```
+
+The controller (tap.py) provides methods for testing an image, displaying
+available tests and/or test files and displaying results of a previous test
+run. These methods provide a layer between the CLI and the API. They also
+provide an entry point for using ipa directly from code.
+
+tap.py
+```python
+class Tap:
+
+    def __init__(self):
+        super(Tap, self).__init__()
+
+    def testImage(self):
+        """Creates a cloud provider instance and initiates testing."""
+
+    def listTests(self):
+        """Returns a list of test files and/or tests."""
+
+    def collectResults(self):
+        """Returns the result (pass/fail) or verbose results."""
+```
 
 **Tests**
 
 Tests are developed using the testinfra package. The package extends
 pytest and provides a framework for writing Python tests to verify the actual
-state of systems. <sup>[[1]](#1)</sup> The default location for test files is
-~/ipa/tests/.
+state of systems. <sup>[[1]](#1)</sup> The default locations for test files
+are locally in ~/ipa/tests/ and centralized in /usr/share/ipa/tests.
 
 **Writing Tests**
 
@@ -180,103 +268,103 @@ Tests can be organized in a directory structure:
 ```
 ~/ipa/tests/:
   conftest.py           # Pytest custom modules and config goes here
-  test_image.py         # Generic tests for all images
-  leap_leap_422:
-    test_leap_422.py        # Generic leap tests
+  test-image.py         # Generic tests for all images
+  leap-leap-422:
+    test-leap-422.py        # Generic leap tests
     EC2:
-      test_leap_422_ec2.py  # Specific EC2 tests for leap images 
+      test-leap-422-ec2.py  # Specific EC2 tests for leap images 
     GCE:
     ...
   SLES12SP1:
-    test_sles_12_sp1.py
-    test_sles_12_sp1_sap.py    # Can import SLES12SP1 tests
+    test-sles-12-sp1.py
+    test-sles-12-sp1-sap.py    # Can import SLES12SP1 tests
     EC2:
-      test_sles_12_sp1_sap_ec2.py
+      test-sles-12-sp1-sap-ec2.py
     ...
   SUMA3:
     ...
 ```
 
 A test file can inherit tests by importing another file. For example the
-test_leap_422.py file would import test_image.py to include all generic
+test-leap-422.py file would import test-image.py to include all generic
 image tests. An example for this structure would be similar to the
 files below:
 
 ```python
-# test_leap_422_ec2.py #
+# test-leap-422-ec2.py #
 import pytest
-from test_leap_422 import *           # Import all generic leap tests
+from test-leap-422 import *           # Import all generic leap tests
 
 @pytest.mark.parametrize("name", [
     ("cloud-init"),
     ("amazon-ssm-agent"),
 ])
-def test_services_running_enabled(Service, name):
+def test-services-running-enabled(Service, name):
     service = Service(name)
-    assert service.is_running
-    assert service.is_enabled
+    assert service.is-running
+    assert service.is-enabled
 ```
 
 The file which contains specific leap 42.2 tests for EC2 images inherits
 all tests specific to the leap 42.2 image.
 
 ```python
-# test_leap_422.py #
+# test-leap-422.py #
 import pytest
-from test_image import *          # Import all generic image tests
+from test-image import *          # Import all generic image tests
 
 @pytest.mark.parametrize("repo,name", [
     ("repo-oss", "openSUSE-Leap-42.1-Oss"),
     ("repo-non-oss", "openSUSE-Leap-42.1-Non-Oss"),
 ])
-def test_repos(CheckRepo, repo, name):
+def test-repos(CheckRepo, repo, name):
     assert CheckRepo(repo, name)
 ```
 
 The leap 42.2 test file inherits all generic image tests.
 
 ```python
-# test_image.py #
+# test-image.py #
 import pytest
 
 @pytest.mark.parametrize("name,version", [
     ("python-virtualenv", "13"),
     ("python", "2.7"),
 ])
-def test_packages(Package, name, version):
-    assert Package(name).is_installed
+def test-packages(Package, name, version):
+    assert Package(name).is-installed
     assert Package(name).version.startswith(version)
 
 
-def test_echo(Echo):
+def test-echo(Echo):
     assert Echo("Hello") == 'Hello'
 ```
 
-Thus when invoking the test_leap_422_ec2.py file the following tests are
+Thus when invoking the test-leap-422-ec2.py file the following tests are
 run:
 
 ```
-$ ipa test -v test_leap_422_ec2.py -p key_file -u ec2-user
+$ ipa test -v test-leap-422-ec2.py -p key-file -u ec2-user
 
-..test_packages[paramiko://0.0.0.0-python-virtualenv-13] PASSED
-..test_echo[paramiko://0.0.0.0] PASSED
-..test_repos[paramiko://0.0.0.0-repo-oss-openSUSE-Leap-42.1-Oss] PASSED
-..test_services_running_enabled[paramiko://0.0.0.0-cloud-init] PASSED
-..test_packages[paramiko://0.0.0.0-python-2.7] PASSED
-..test_repos[paramiko://0.0.0.0-repo-non-oss-openSUSE-Leap-42.1-Non-Oss] PASSED
-..test_services_running_enabled[paramiko://0.0.0.0-amazon-ssm-agent] PASSED
+..test-packages[paramiko://0.0.0.0-python-virtualenv-13] PASSED
+..test-echo[paramiko://0.0.0.0] PASSED
+..test-repos[paramiko://0.0.0.0-repo-oss-openSUSE-Leap-42.1-Oss] PASSED
+..test-services-running-enabled[paramiko://0.0.0.0-cloud-init] PASSED
+..test-packages[paramiko://0.0.0.0-python-2.7] PASSED
+..test-repos[paramiko://0.0.0.0-repo-non-oss-openSUSE-Leap-42.1-Non-Oss] PASSED
+..test-services-running-enabled[paramiko://0.0.0.0-amazon-ssm-agent] PASSED
 ```
 
 All 7 tests from the three test files are ran when testing the 42.2 EC2 image.
 
 **Test invocation**
 
-To invoke the entire test suite for a Leap image in EC2 the test_leap_42.2_ec2.py
+To invoke the entire test suite for a Leap image in EC2 the test-leap-42.2-ec2.py
 target would be used.
 
 To invoke a specific test the Pytest conventions can be used:
 ```
-test_leap_422_ec2.py::test_services_running_enabled.
+test-leap-422-ec2.py::test-services-running-enabled.
 ```
 
 To run only one parameterized test append ids and use [local-ID]:
@@ -287,13 +375,13 @@ To run only one parameterized test append ids and use [local-ID]:
 ], ids=['ci', 'ssm'])
 
 
-test_leap_422_ec2.py::test_services_running_enabled[local-ssm]
+test-leap-422-ec2.py::test-services-running-enabled[local-ssm]
 ```
 
 Tests and classes of tests can be marked and run independent of other tests:
 ```
 @pytest.mark.hpc
-def test_something():
+def test-something():
   ...
 
 -m hpc option will run only tests marked as hpc.
@@ -306,14 +394,14 @@ will only run tests marked as hpc.
 
 **Failures**
 
-By default all tests will run even with failure. Using the -x option will
+By default all tests will run even with failure. Using the `-x` option will
 halt test invocation at first failure.
 
 Incremental test classes can be used to cause all subsequent tests to fail
 if the prev fails. To prevent expected failures. <sup>[[3]](#3)</sup>
 
 And a set number of failures can be chosen prior to halting. Using
---maxfail=2 will halt after two failures.
+`--maxfail=2` will halt after two failures.
 
 **Custom Test Modules**
 
@@ -330,7 +418,7 @@ import pytest
 @pytest.fixture()
 def Echo(Command):
     def f(arg):
-        return Command.check_output("echo %s", arg)
+        return Command.check-output("echo %s", arg)
     return f
 
 
