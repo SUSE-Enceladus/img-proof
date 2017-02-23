@@ -23,7 +23,7 @@ The CLI provides multiple subcommands to initiate image testing:
   ```
   ipa test [OPTIONS] IMAGEID PROVIDER TESTS
 
-  --host                  Use existing instance for tests (--host=10.10.0.1)
+  -i, --instance          Use existing instance for tests (-i i-54354354534)
   -c, --cleanup           Whether to leave instance running after tests (y/n)
                           By default an instance will be deleted on success
                           and left running if there is a test failure.
@@ -156,10 +156,12 @@ cloud's config file. For example ssh key and user for EC2 can be found in
 ~/.ec2utils.conf.
 
 ```
-[default]
+[ipa]
 tests=~/ipa/tests/
 results=~/ipa/results/
-config=~/.config/other.config
+
+[ec2]
+region=us-west-1
 ```
 
 **API**
@@ -170,7 +172,7 @@ the test results.
 
 ipa.py
 ```python
-class ipa(object):
+class IpaProvider(object):
     def __init__(self):
         self.instanceId = None
         self.instanceIp = None
@@ -209,26 +211,26 @@ class ipa(object):
 The base class is extended for each provider to implement specific
 methods for manipulating the test instance.
 
-{cloudProvider}.py
+{cloud}.py
 ```python
-class {cloudprovider}(ipa):
+class {CloudProvider}(ipa):
 
     def __init__(self):
         super(AwsProvider, self).__init__()
 
-    def launch_instance(self):
+    def launchInstance(self):
         """Launch an instance of the given image."""
 
-    def start_instance(self):
+    def startInstance(self):
         """Start the instance."""
 
-    def stop_instance(self):
+    def stopInstance(self):
         """Stop the instance."""
 
-    def reboot_instance(self):
+    def rebootInstance(self):
         """Framework reboot instance."""
 
-    def terminate_instance(self):
+    def terminateInstance(self):
         """Terminate the instance."""
 ```
 
@@ -239,7 +241,7 @@ provide an entry point for using ipa directly from code.
 
 tap.py
 ```python
-class Tap:
+class Tap(object):
 
     def __init__(self):
         super(Tap, self).__init__()
