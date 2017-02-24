@@ -174,34 +174,34 @@ ipa.py
 ```python
 class IpaProvider(object):
     def __init__(self):
-        self.instanceId = None
-        self.instanceIp = None
-        self.testsFile = None
-        self.resultsDir = None
+        self.instance_id = None
+        self.instance_ip = None
+        self.tests_file = None
+        self.results_dir = None
 
     def testImage(self):
         """The entry point for testing an image.
 
         This method will perform the following steps:
-          - launchInstance() # If a host is passed in this is skipped
-          - systemReboot()
-          - systemUpdate()
-          - rebootInstance()
-          - runTests()
-          - saveResults()
-          - terminateInstance() # Optional depends on test results and -c flag
+          - launch_instance() # If a host is passed in this is skipped
+          - system_reboot()
+          - system_update()
+          - reboot_instance()
+          - run_tests()
+          - save_results()
+          - terminate_instance() # Optional depends on test results and -c flag
         """
 
-    def runTests(self):
+    def run_tests(self):
         """Runs the test suite on the image."""
 
-    def saveResults(self)
+    def save_results(self)
         """Saves the results of the tests."""
 
-    def systemReboot(self):
+    def system_reboot(self):
         """Performs a system reboot."""
 
-    def systemUpdate(self):
+    def system_update(self):
         """Updates the instace based on OS type.
 
         E.g. for SUSE `zypper up`
@@ -218,19 +218,19 @@ class {CloudProvider}(ipa):
     def __init__(self):
         super(AwsProvider, self).__init__()
 
-    def launchInstance(self):
+    def launch_instance(self):
         """Launch an instance of the given image."""
 
-    def startInstance(self):
+    def start_instance(self):
         """Start the instance."""
 
-    def stopInstance(self):
+    def stop_instance(self):
         """Stop the instance."""
 
-    def rebootInstance(self):
+    def reboot_instance(self):
         """Framework reboot instance."""
 
-    def terminateInstance(self):
+    def terminate_instance(self):
         """Terminate the instance."""
 ```
 
@@ -246,13 +246,13 @@ class Tap(object):
     def __init__(self):
         super(Tap, self).__init__()
 
-    def testImage(self):
+    def test_image(self):
         """Creates a cloud provider instance and initiates testing."""
 
-    def listTests(self):
+    def list_tests(self):
         """Returns a list of test files and/or tests."""
 
-    def collectResults(self):
+    def collect_results(self):
         """Returns the result (pass/fail) or verbose results."""
 ```
 
