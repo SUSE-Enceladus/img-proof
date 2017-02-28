@@ -1,0 +1,49 @@
+### Python ###
+*.py[cod]
+__pycache__/
+
+# Distribution / packaging
+bin/
+build/
+develop-eggs/
+dist/
+include/
+eggs/
+lib/
+lib64
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Unit test / coverage reports
+.tox/
+.coverage
+.cache
+htmlcov/
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+*.pot
+
+### Vim ###
+# swap
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+# session
+Session.vim
+# temporary
+.netrwhist
+*i~
+
+### PyCharm ###
+.idea/
+
+### pip ###
+pip-selfcheck.json
+
