@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (c) 2017 SUSE LLC, Sean marlow
+#
+# This file is part of ipa.
+#
+# See LICENSE for license information.
 
 
 class IpaProviderException(Exception):
