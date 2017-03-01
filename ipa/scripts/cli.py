@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2017 SUSE LLC, Sean marlow
+# Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
 #
@@ -35,6 +35,7 @@ def results():
         click.echo(click.style("Broken: %s" % e, fg='red'))
         sys.exit(1)
 
+
 @click.command()
 def list_tests():
     try:
@@ -42,6 +43,7 @@ def list_tests():
     except Exception as e:
         click.echo(click.style("Broken: %s" % e, fg='red'))
         sys.exit(1)
+
 
 ipa.add_command(test)
 ipa.add_command(results)

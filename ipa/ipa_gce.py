@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2017 SUSE LLC, Sean marlow
+# Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
 #
@@ -9,7 +9,7 @@
 from ipa import IpaProvider
 
 
-class GceProvider(IpaProvider):
+class GCEProvider(IpaProvider):
     def __init__(self):
         super(GceProvider, self).__init__()
 

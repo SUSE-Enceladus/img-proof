@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2017 SUSE LLC, Sean marlow
+# Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
 #
@@ -9,7 +9,7 @@
 from ipa import IpaProvider
 
 
-class Ec2Provider(IpaProvider):
+class AzureProvider(IpaProvider):
     def __init__(self):
         super(AzureProvider, self).__init__()
 
@@ -17,7 +17,7 @@ class Ec2Provider(IpaProvider):
         """Setup configuration."""
 
     def _connect(self):
-        """Connect to ec2 resource."""
+        """Connect to azure resource."""
 
     def get_instance(self):
         """Retrieve instance matching instance_id."""

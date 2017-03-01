@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2017 SUSE LLC, Sean marlow
+# Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
 #
@@ -11,8 +11,16 @@ class IpaProviderException(Exception):
     """Generic exception for the ipa package."""
 
 
-class Ec2ProviderException(IpaException):
-    """Generic AWS exception."""
+class AzureProviderException(IpaException):
+    """Generic Azure exception."""
+
+
+class EC2ProviderException(IpaException):
+    """Generic EC2 exception."""
+
+
+class GCEProviderException(IpaException):
+    """Generic GCE exception."""
 
 
 class ImageNotFoundException(IpaException):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2017 SUSE LLC, Sean marlow
+# Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
 #

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2017 SUSE LLC, Sean marlow
+# Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
 #
@@ -15,10 +15,10 @@ class IpaProvider(object):
         """Setup configuration."""
 
     def _create_ssh_config(self):
-        """Create ssh config as named temporary file."""
+        """Create temporary ssh config file."""
 
-    def _close_ssh_config(self):
-        """Unlink temporary file."""
+    def _remove_ssh_config(self):
+        """Remove temporary ssh config file."""
 
     def get_instance(self):
         raise NotImplementedError('Implement method in child classes.')
