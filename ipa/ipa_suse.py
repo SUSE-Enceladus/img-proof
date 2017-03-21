@@ -15,4 +15,4 @@ class SUSE(Distro):
 
     def get_stop_ssh_service_cmd(self):
         """Return command to stop SSH service for SUSE."""
-        return 'sudo systemctl stop sshd'
+        return 'systemctl stop sshd'

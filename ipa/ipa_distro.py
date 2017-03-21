@@ -22,14 +22,17 @@ class Distro(object):
 
     def get_reboot_cmd(self):
         """Return reboot command for given distribution."""
-        return 'sudo shutdown -r now'
+        return 'shutdown -r now'
 
-    def reboot(self, instance_ip, ssh_private_key, ssh_user):
+    def reboot(self, instance_ip, ssh_private_key, ssh_user, sudo=True):
         """Execute reboot command on instance."""
         reboot_cmd = '{};{}'.format(
             self.get_shutdown_ssh_service_cmd(),
             self.get_reboot_cmd()
         )
+        if sudo:
+            reboot_cmd = "sudo sh -c '%s'" % reboot_cmd
+
         print('Rebooting instance: %s\n' % reboot_cmd)
         out, err = ipa_utils.execute_ssh_command(reboot_cmd,
                                                  instance_ip,

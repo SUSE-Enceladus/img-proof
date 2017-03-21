@@ -84,22 +84,30 @@ def wait_on_ssh_connection(ip,
                            ssh_user='root',
                            port=22,
                            timeout=30):
-    """Attempt to establish an ssh connection."""
-    client = None
-    try:
-        client = ssh_connect(ip, ssh_private_key, ssh_user, port, timeout)
-    except IpaProviderException:
-        raise
-    finally:
-        if client:
-            client.close()
+    """Attempt to establish and test ssh connection."""
+    out, err = execute_ssh_command('ls',
+                                   ip,
+                                   ssh_private_key,
+                                   ssh_user,
+                                   port,
+                                   timeout)
+
+    if err:
+        raise IpaProviderException(
+            'Attempt to establish SSH connection failed.'
+        )
 
 
-def execute_ssh_command(cmd, ip, ssh_private_key, ssh_user='root', port=22):
+def execute_ssh_command(cmd,
+                        ip,
+                        ssh_private_key,
+                        ssh_user='root',
+                        port=22,
+                        timeout=30):
     """Execute given command using paramiko and return stdout, stderr."""
     client = None
     try:
-        client = ssh_connect(ip, ssh_private_key, ssh_user, port)
+        client = ssh_connect(ip, ssh_private_key, ssh_user, port, timeout)
         stdin, stdout, stderr = client.exec_command(cmd)
         out = stdout.read()
         err = stderr.read()
