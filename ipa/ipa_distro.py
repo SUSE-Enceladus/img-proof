@@ -27,8 +27,8 @@ class Distro(object):
     def reboot(self, instance_ip, ssh_private_key, ssh_user):
         """Execute reboot command on instance."""
         reboot_cmd = '{};{}'.format(
-            self.get_shutdown_ssh_service_cmd,
-            self.get_reboot_cmd
+            self.get_shutdown_ssh_service_cmd(),
+            self.get_reboot_cmd()
         )
         print('Rebooting instance: %s\n' % reboot_cmd)
         out, err = ipa_utils.execute_ssh_command(reboot_cmd,
