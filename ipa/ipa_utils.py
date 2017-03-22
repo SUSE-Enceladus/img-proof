@@ -85,17 +85,23 @@ def wait_on_ssh_connection(ip,
                            port=22,
                            timeout=30):
     """Attempt to establish and test ssh connection."""
-    out, err = execute_ssh_command('ls',
-                                   ip,
-                                   ssh_private_key,
-                                   ssh_user,
-                                   port,
-                                   timeout)
+    attempts = 0
+    while attempts < 3:
+        out, err = execute_ssh_command('ls',
+                                       ip,
+                                       ssh_private_key,
+                                       ssh_user,
+                                       port,
+                                       timeout)
 
-    if err:
-        raise IpaProviderException(
-            'Attempt to establish SSH connection failed.'
-        )
+        if err:
+            attempts += 1
+        else:
+            return 0
+
+    raise IpaProviderException(
+        'Attempt to establish SSH connection failed.'
+    )
 
 
 def execute_ssh_command(cmd,
