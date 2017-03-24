@@ -43,32 +43,37 @@ def redirect_output(fileobj):
         sys.stdout = old
 
 
-def ssh_connect(ip, ssh_private_key, ssh_user, port, timeout=30):
+def ssh_connect(ip,
+                ssh_private_key,
+                ssh_user,
+                port,
+                attempts=30,
+                timeout=None):
     """Establish ssh connection and return paramiko client.
 
-    If connection cannot be established prior to timeout raise
-    IpaProviderException.
+    If connection cannot be established in given number of attempts
+    raise IpaProviderException.
     """
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.load_system_host_keys()
 
-    attempts = 0
     sys.stdout.write('Establishing ssh connection.')
     sys.stdout.flush()
-    while attempts < timeout:
+    while attempts:
         try:
             client.connect(
                 ip,
                 port=port,
                 username=ssh_user,
-                key_filename=ssh_private_key
+                key_filename=ssh_private_key,
+                timeout=timeout
             )
         except:
             # Print without new lines
             sys.stdout.write('.')
             sys.stdout.flush()
-            attempts += 1
+            attempts -= 1
             time.sleep(10)
         else:
             print('\nConnection established.\n')
@@ -83,19 +88,21 @@ def wait_on_ssh_connection(ip,
                            ssh_private_key,
                            ssh_user='root',
                            port=22,
-                           timeout=30):
+                           attempts=3,
+                           timeout=10):
     """Attempt to establish and test ssh connection."""
-    attempts = 0
-    while attempts < 3:
-        out, err = execute_ssh_command('ls',
-                                       ip,
-                                       ssh_private_key,
-                                       ssh_user,
-                                       port,
-                                       timeout)
+    while attempts:
+        try:
+            execute_ssh_command('ls',
+                                ip,
+                                ssh_private_key,
+                                ssh_user,
+                                port,
+                                timeout=timeout)
 
-        if err:
-            attempts += 1
+        except:
+            attempts -= 1
+            timeout += timeout
         else:
             return 0
 
@@ -109,11 +116,19 @@ def execute_ssh_command(cmd,
                         ssh_private_key,
                         ssh_user='root',
                         port=22,
-                        timeout=30):
+                        attempts=30,
+                        timeout=None):
     """Execute given command using paramiko and return stdout, stderr."""
     client = None
     try:
-        client = ssh_connect(ip, ssh_private_key, ssh_user, port, timeout)
+        client = ssh_connect(
+            ip,
+            ssh_private_key,
+            ssh_user,
+            port,
+            attempts,
+            timeout
+        )
         stdin, stdout, stderr = client.exec_command(cmd)
         out = stdout.read()
         err = stderr.read()
