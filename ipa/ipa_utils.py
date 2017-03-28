@@ -20,6 +20,17 @@ from contextlib import contextmanager
 from ipa_exceptions import IpaProviderException
 
 
+def execute_ssh_command(cmd, client):
+    """Execute given command using paramiko and return stdout, stderr."""
+    try:
+        stdin, stdout, stderr = client.exec_command(cmd)
+        out = stdout.read()
+        err = stderr.read()
+    except:
+        raise
+    return out, err
+
+
 def get_config(config_path):
     """Parse ipa ini config file."""
     if not os.path.isfile(config_path):
@@ -30,6 +41,14 @@ def get_config(config_path):
     config = ConfigParser()
     config.read(config_path)
     return config
+
+
+def get_ssh_client():
+    """Return an instance of paramiko SSHClient."""
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.load_system_host_keys()
+    return client
 
 
 @contextmanager
@@ -43,7 +62,8 @@ def redirect_output(fileobj):
         sys.stdout = old
 
 
-def ssh_connect(ip,
+def ssh_connect(client,
+                ip,
                 ssh_private_key,
                 ssh_user,
                 port,
@@ -54,10 +74,6 @@ def ssh_connect(ip,
     If connection cannot be established in given number of attempts
     raise IpaProviderException.
     """
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.load_system_host_keys()
-
     sys.stdout.write('Establishing ssh connection.')
     sys.stdout.flush()
     while attempts:
@@ -77,14 +93,39 @@ def ssh_connect(ip,
             time.sleep(10)
         else:
             print('\nConnection established.\n')
-            return client
+            return 0
 
     raise IpaProviderException(
         'Failed to establish SSH connection to instance.'
     )
 
 
-def wait_on_ssh_connection(ip,
+@contextmanager
+def ssh_connection(client,
+                   ip,
+                   ssh_private_key,
+                   ssh_user='root',
+                   port=22):
+    """Redirect standard out to file."""
+    try:
+        wait_on_ssh_connection(
+            client,
+            ip,
+            ssh_private_key,
+            ssh_user,
+            port
+        )
+        yield client
+    except:
+        print('Error!')
+        raise
+    finally:
+        if client:
+            client.close()
+
+
+def wait_on_ssh_connection(client,
+                           ip,
                            ssh_private_key,
                            ssh_user='root',
                            port=22,
@@ -93,14 +134,17 @@ def wait_on_ssh_connection(ip,
     """Attempt to establish and test ssh connection."""
     while attempts:
         try:
-            execute_ssh_command('ls',
-                                ip,
-                                ssh_private_key,
-                                ssh_user,
-                                port,
-                                timeout=timeout)
-
+            ssh_connect(
+                client,
+                ip,
+                ssh_private_key,
+                ssh_user,
+                port,
+                timeout=timeout
+            )
+            execute_ssh_command('ls', client)
         except:
+            client.close()
             attempts -= 1
             timeout += timeout
         else:
@@ -109,32 +153,3 @@ def wait_on_ssh_connection(ip,
     raise IpaProviderException(
         'Attempt to establish SSH connection failed.'
     )
-
-
-def execute_ssh_command(cmd,
-                        ip,
-                        ssh_private_key,
-                        ssh_user='root',
-                        port=22,
-                        attempts=30,
-                        timeout=None):
-    """Execute given command using paramiko and return stdout, stderr."""
-    client = None
-    try:
-        client = ssh_connect(
-            ip,
-            ssh_private_key,
-            ssh_user,
-            port,
-            attempts,
-            timeout
-        )
-        stdin, stdout, stderr = client.exec_command(cmd)
-        out = stdout.read()
-        err = stderr.read()
-    except:
-        raise
-    finally:
-        if client:
-            client.close()
-    return out, err
