@@ -12,18 +12,14 @@ from ipa_exceptions import IpaDistroException
 
 
 class SUSE(Distro):
-    def __init__(self, instance_ip, ssh_private_key, ssh_user):
-        super(SUSE, self).__init__(instance_ip,
-                                   ssh_private_key,
-                                   ssh_user)
+    def __init__(self, client):
+        super(SUSE, self).__init__(client)
 
-    def _set_init_system(self, instance_ip, ssh_private_key, ssh_user):
+    def _set_init_system(self, client):
         """Determine the init system of distribution."""
         out, err = ipa_utils.execute_ssh_command(
             'ps -p 1 -o comm=',
-            instance_ip,
-            ssh_private_key,
-            ssh_user
+            client
         )
         self.init_system = out.strip()
 

@@ -13,12 +13,12 @@ from ipa_exceptions import IpaDistroException
 
 class Distro(object):
     """Generic module for performing instance level tests."""
-    def __init__(self, instance_ip, ssh_private_key, ssh_user):
+    def __init__(self, client):
         super(Distro, self).__init__()
         self.init_system = None
-        self._set_init_system(instance_ip, ssh_private_key, ssh_user)
+        self._set_init_system(client)
 
-    def _set_init_system(self, instance_ip, ssh_private_key, ssh_user):
+    def _set_init_system(self, client):
         """Determine the init system of distribution."""
         raise NotImplementedError('Implement method in child classes.')
 
@@ -34,7 +34,7 @@ class Distro(object):
         """Return sudo command to wrap one or more commands."""
         return 'sudo sh -c'
 
-    def reboot(self, instance_ip, ssh_private_key, ssh_user):
+    def reboot(self, client):
         """Execute reboot command on instance."""
         reboot_cmd = "{sudo} '{stop_ssh};{reboot}'".format(
             sudo=self.get_sudo_exec_wrapper(),
@@ -45,9 +45,7 @@ class Distro(object):
         print('Rebooting instance: %s\n' % reboot_cmd)
         out, err = ipa_utils.execute_ssh_command(
             reboot_cmd,
-            instance_ip,
-            ssh_private_key,
-            ssh_user
+            client
         )
 
         if err:
