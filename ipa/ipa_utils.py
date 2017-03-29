@@ -100,30 +100,6 @@ def ssh_connect(client,
     )
 
 
-@contextmanager
-def ssh_connection(client,
-                   ip,
-                   ssh_private_key,
-                   ssh_user='root',
-                   port=22):
-    """Redirect standard out to file."""
-    try:
-        wait_on_ssh_connection(
-            client,
-            ip,
-            ssh_private_key,
-            ssh_user,
-            port
-        )
-        yield client
-    except:
-        print('Error!')
-        raise
-    finally:
-        if client:
-            client.close()
-
-
 def wait_on_ssh_connection(client,
                            ip,
                            ssh_private_key,
