@@ -18,8 +18,8 @@ class SUSE(Distro):
     def _set_init_system(self, client):
         """Determine the init system of distribution."""
         out, err = ipa_utils.execute_ssh_command(
-            'ps -p 1 -o comm=',
-            client
+            client,
+            'ps -p 1 -o comm='
         )
         self.init_system = out.strip()
 

@@ -44,8 +44,8 @@ class Distro(object):
 
         print('Rebooting instance: %s\n' % reboot_cmd)
         out, err = ipa_utils.execute_ssh_command(
-            reboot_cmd,
-            client
+            client,
+            reboot_cmd
         )
 
         if err:

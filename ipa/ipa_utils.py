@@ -7,9 +7,9 @@
 # See LICENSE for license information.
 
 try:
-    from configparser import ConfigParser
+    import configparser as ConfigParser
 except ImportError:
-    from ConfigParser import ConfigParser
+    import ConfigParser
 
 import paramiko
 import os
@@ -19,56 +19,23 @@ import time
 from contextlib import contextmanager
 from ipa_exceptions import IpaProviderException
 
-
-def execute_ssh_command(cmd, client):
-    """Execute given command using paramiko and return stdout, stderr."""
-    try:
-        stdin, stdout, stderr = client.exec_command(cmd)
-        out = stdout.read()
-        err = stderr.read()
-    except:
-        raise
-    return out, err
+CLIENT_CACHE = {}
 
 
-def get_config(config_path):
-    """Parse ipa ini config file."""
-    if not os.path.isfile(config_path):
-        raise IpaProviderException(
-            'ipa config file not found: %s' % config_path
-        )
-
-    config = ConfigParser()
-    config.read(config_path)
-    return config
+def clear_cache(ip=None):
+    if ip:
+        with ignored(KeyError):
+            del CLIENT_CACHE[ip]
+    else:
+        CLIENT_CACHE.clear()
 
 
-def get_ssh_client():
-    """Return an instance of paramiko SSHClient."""
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.load_system_host_keys()
-    return client
-
-
-@contextmanager
-def redirect_output(fileobj):
-    """Redirect standard out to file."""
-    old = sys.stdout
-    sys.stdout = fileobj
-    try:
-        yield fileobj
-    finally:
-        sys.stdout = old
-
-
-def ssh_connect(client,
-                ip,
-                ssh_private_key,
-                ssh_user,
-                port,
-                attempts=30,
-                timeout=None):
+def establish_ssh_connection(ip,
+                             ssh_private_key,
+                             ssh_user,
+                             port,
+                             attempts=30,
+                             timeout=None):
     """Establish ssh connection and return paramiko client.
 
     If connection cannot be established in given number of attempts
@@ -78,6 +45,9 @@ def ssh_connect(client,
     sys.stdout.flush()
     while attempts:
         try:
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            client.load_system_host_keys()
             client.connect(
                 ip,
                 port=port,
@@ -93,39 +63,94 @@ def ssh_connect(client,
             time.sleep(10)
         else:
             print('\nConnection established.\n')
-            return 0
+            return client
 
     raise IpaProviderException(
         'Failed to establish SSH connection to instance.'
     )
 
 
-def wait_on_ssh_connection(client,
-                           ip,
-                           ssh_private_key,
-                           ssh_user='root',
-                           port=22,
-                           attempts=3,
-                           timeout=10):
+def execute_ssh_command(client, cmd):
+    """Execute given command using paramiko and return stdout, stderr."""
+    try:
+        stdin, stdout, stderr = client.exec_command(cmd)
+        err = stderr.read()
+        if err:
+            raise IpaProviderException(err)
+        out = stdout.read()
+    except:
+        raise
+    return out
+
+
+def get_config(config_path):
+    """Parse ini config file."""
+    if not os.path.isfile(config_path):
+        raise IpaProviderException(
+            'Config file not found: %s' % config_path
+        )
+
+    try:
+        config = ConfigParser.ConfigParser()
+        result = config.read(config_path)
+        if not result:
+            raise
+    except:
+        raise IpaProviderException(
+            'Error parsing config file: %s' % config_path
+        )
+
+    return config
+
+
+def get_ssh_client(ip,
+                   ssh_private_key,
+                   ssh_user='root',
+                   port=22,
+                   attempts=3,
+                   timeout=10):
     """Attempt to establish and test ssh connection."""
+    if ip in CLIENT_CACHE:
+        return CLIENT_CACHE[ip]
+
     while attempts:
         try:
-            ssh_connect(
-                client,
+            client = establish_ssh_connection(
                 ip,
                 ssh_private_key,
                 ssh_user,
                 port,
                 timeout=timeout
             )
-            execute_ssh_command('ls', client)
+            execute_ssh_command(client, 'ls')
         except:
-            client.close()
+            if client:
+                client.close()
             attempts -= 1
             timeout += timeout
         else:
-            return 0
+            CLIENT_CACHE[ip] = client
+            return client
 
     raise IpaProviderException(
         'Attempt to establish SSH connection failed.'
     )
+
+
+@contextmanager
+def ignored(*exceptions):
+    try:
+        yield
+    except exceptions:
+        pass
+
+
+@contextmanager
+def redirect_output(fileobj):
+    """Redirect standard out to file."""
+    old = sys.stdout
+    sys.stdout = fileobj
+    try:
+        yield fileobj
+    finally:
+        sys.stdout = old
