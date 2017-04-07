@@ -34,20 +34,21 @@ def establish_ssh_connection(ip,
                              ssh_private_key,
                              ssh_user,
                              port,
-                             attempts=30,
+                             attempts=5,
                              timeout=None):
     """Establish ssh connection and return paramiko client.
 
     If connection cannot be established in given number of attempts
     raise IpaProviderException.
     """
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.load_system_host_keys()
+
     sys.stdout.write('Establishing ssh connection.')
     sys.stdout.flush()
     while attempts:
         try:
-            client = paramiko.SSHClient()
-            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            client.load_system_host_keys()
             client.connect(
                 ip,
                 port=port,
@@ -90,8 +91,8 @@ def get_config(config_path):
             'Config file not found: %s' % config_path
         )
 
+    config = ConfigParser.ConfigParser()
     try:
-        config = ConfigParser.ConfigParser()
         result = config.read(config_path)
         if not result:
             raise

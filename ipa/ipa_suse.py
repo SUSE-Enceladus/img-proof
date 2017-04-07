@@ -17,11 +17,18 @@ class SUSE(Distro):
 
     def _set_init_system(self, client):
         """Determine the init system of distribution."""
-        out, err = ipa_utils.execute_ssh_command(
-            client,
-            'ps -p 1 -o comm='
-        )
-        self.init_system = out.strip()
+        try:
+            out = ipa_utils.execute_ssh_command(
+                client,
+                'ps -p 1 -o comm='
+            )
+        except Exception as e:
+            raise IpaDistroException(
+                'An error occurred while retrieving'
+                ' the distro init system: %s' % e
+            )
+        if out:
+            self.init_system = out.strip()
 
     def get_stop_ssh_service_cmd(self):
         """Return command to stop SSH service for SUSE."""

@@ -15,7 +15,7 @@ class Distro(object):
     """Generic module for performing instance level tests."""
     def __init__(self, client):
         super(Distro, self).__init__()
-        self.init_system = None
+        self.init_system = ''
         self._set_init_system(client)
 
     def _set_init_system(self, client):
@@ -43,12 +43,13 @@ class Distro(object):
         )
 
         print('Rebooting instance: %s\n' % reboot_cmd)
-        out, err = ipa_utils.execute_ssh_command(
-            client,
-            reboot_cmd
-        )
-
-        if err:
-            raise IpaDistroException(
-                'An error occurred rebooting instance: %s\n' % err
+        try:
+            ipa_utils.execute_ssh_command(
+                client,
+                reboot_cmd
             )
+        except Exception as e:
+            raise IpaDistroException(
+                'An error occurred rebooting instance: %s' % e
+            )
+        ipa_utils.clear_cache()
