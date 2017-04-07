@@ -11,34 +11,33 @@ class IpaProviderException(Exception):
     """Generic exception for the ipa package."""
 
 
-class AzureProviderException(IpaException):
+class AzureProviderException(IpaProviderException):
     """Generic Azure exception."""
 
 
-class EC2ProviderException(IpaException):
+class EC2ProviderException(IpaProviderException):
     """Generic EC2 exception."""
 
 
-class GCEProviderException(IpaException):
+class GCEProviderException(IpaProviderException):
     """Generic GCE exception."""
 
 
-class ImageNotFoundException(IpaException):
+class IpaDistroException(IpaProviderException):
+    """Generic Exception for distro modules."""
+
+
+class IpaImageNotFoundException(IpaProviderException):
     """Exception for image not found on cloud provider."""
 
 
-class InstanceException(IpaException):
-    """Generic exception for the framework instance methods."""
-
-
-class ListTestsException(IpaException):
+class IpaListTestsException(IpaProviderException):
     """List subcommand exception."""
 
 
-class ResultsException(IpaExcception):
+class IpaResultsException(IpaProviderException):
     """Results subcommand exception."""
 
 
-class TestException(IpaException):
+class IpaTestException(IpaProviderException):
     """Test subcommand exception."""
-
