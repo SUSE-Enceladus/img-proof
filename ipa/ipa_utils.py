@@ -200,7 +200,7 @@ def get_yaml_config(config_path):
     """Load yaml config file and return dictionary."""
     config_path = os.path.expanduser(config_path)
     if not os.path.isfile(config_path):
-        raise IpaSSHException(
+        raise IpaUtilsException(
             'Config file not found: %s' % config_path
         )
 
