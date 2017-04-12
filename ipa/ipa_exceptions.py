@@ -7,8 +7,12 @@
 # See LICENSE for license information.
 
 
-class IpaProviderException(Exception):
+class IpaException(Exception):
     """Generic exception for the ipa package."""
+
+
+class IpaProviderException(IpaException):
+    """Generic exception for the ipa provider."""
 
 
 class AzureProviderException(IpaProviderException):
@@ -23,21 +27,37 @@ class GCEProviderException(IpaProviderException):
     """Generic GCE exception."""
 
 
-class IpaDistroException(IpaProviderException):
+class IpaControllerException(IpaException):
+    """Generic exception for ipa controller module."""
+
+
+class IpaDistroException(IpaException):
     """Generic Exception for distro modules."""
 
 
-class IpaImageNotFoundException(IpaProviderException):
+class IpaImageNotFoundException(IpaException):
     """Exception for image not found on cloud provider."""
 
 
-class IpaListTestsException(IpaProviderException):
+class IpaListTestsException(IpaException):
     """List subcommand exception."""
 
 
-class IpaResultsException(IpaProviderException):
+class IpaResultsException(IpaException):
     """Results subcommand exception."""
 
 
-class IpaTestException(IpaProviderException):
+class IpaSUSEException(IpaDistroException):
+    """Generic Exception for distro modules."""
+
+
+class IpaTestException(IpaException):
     """Test subcommand exception."""
+
+
+class IpaUtilsException(IpaException):
+    """Generic exception for ipa utility methods."""
+
+
+class IpaSSHException(IpaUtilsException):
+    """Generic exception for ipa SSH methods."""
