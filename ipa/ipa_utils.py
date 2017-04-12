@@ -28,7 +28,7 @@ CLIENT_CACHE = {}
 
 
 def clear_cache(ip=None):
-    """Cache the client connection with ip as key."""
+    """Clear the client cache or remove key matching the given ip."""
     if ip:
         with ignored(KeyError):
             del CLIENT_CACHE[ip]
@@ -90,31 +90,41 @@ def execute_ssh_command(client, cmd):
     return out
 
 
-def find_test_files(roots, names):
-    """Walk all dirs and find path of given test file names."""
+def find_test_files(test_dirs, names):
+    """Walk all dirs and find path of given test file names.
+
+    If there a multiple test files with the same name raise
+    IpaUtilsException.
+
+    If a test file cannot be found raise IpaUtilsException.
+    """
     tests = {}
-    for root_dir in roots:
-        for root, dirs, files in os.walk(root_dir):
-            matches = fnmatch.filter(files, 'test_*.py')
-            for match in matches:
-                if match not in tests:
-                    tests[match] = (os.path.join(root, match))
+    for test_dir in test_dirs:
+        for root, dirs, files in os.walk(test_dir):
+            test_files = fnmatch.filter(files, 'test_*.py')
+            for test_file in test_files:
+                if test_file not in tests:
+                    tests[test_file] = (os.path.join(root, test_file))
                 else:
                     raise IpaUtilsException(
-                        'Duplicate test file found: %s' % match
+                        'Duplicate test file found: %s' % test_file
                     )
 
     test_files = []
     for name in names:
-        test_name = name.split('::', 1)
-        if test_name[0] in tests:
-            path = tests.get(test_name[0])
-            if len(test_name) == 2:
-                path = ''.join([path, '::', test_name[1]])
+        try:
+            test_name, test_case = name.split('::', 1)
+        except:
+            test_name, test_case = name, None
+
+        if test_name in tests:
+            path = tests.get(test_name)
+            if test_case:
+                path = ''.join([path, '::', test_case])
             test_files.append(path)
         else:
             raise IpaUtilsException(
-                'Test file with name: %s cannot be found.' % test_name[0]
+                'Test file with name: %s cannot be found.' % test_name
             )
 
     return list(set(test_files))
