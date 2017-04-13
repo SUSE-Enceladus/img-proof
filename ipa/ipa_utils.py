@@ -207,7 +207,10 @@ def get_ssh_client(ip,
 
 
 def get_yaml_config(config_path):
-    """Load yaml config file and return dictionary."""
+    """Load yaml config file and return dictionary.
+
+    TODO: This will need refactoring similar to the test search.
+    """
     config_path = os.path.expanduser(config_path)
     if not os.path.isfile(config_path):
         raise IpaUtilsException(
