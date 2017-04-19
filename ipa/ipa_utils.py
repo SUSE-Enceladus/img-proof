@@ -25,6 +25,7 @@ from tempfile import NamedTemporaryFile
 
 CHARS = 'abcdefghijklmnopqrstuvwxyz'
 CLIENT_CACHE = {}
+REBOOT_TESTS = ('test_soft_reboot', 'test_hard_reboot')
 
 
 def clear_cache(ip=None):
@@ -138,7 +139,7 @@ def find_test_files(test_dirs, names=None):
                     )
 
     if not names:
-        return tests.values()
+        return tests.values() + list(REBOOT_TESTS)
 
     for name in list(names):
         if name in configs:
@@ -147,22 +148,25 @@ def find_test_files(test_dirs, names=None):
 
     test_files = []
     for name in names:
-        try:
-            test_name, test_case = name.split('::', 1)
-        except:
-            test_name, test_case = name, None
-
-        if test_name in tests:
-            path = tests.get(test_name)
-            if test_case:
-                path = ''.join([path, '::', test_case])
-            test_files.append(path)
+        if name in REBOOT_TESTS:
+            test_files.append(name)
         else:
-            raise IpaUtilsException(
-                'Test file with name: %s cannot be found.' % test_name
-            )
+            try:
+                test_name, test_case = name.split('::', 1)
+            except:
+                test_name, test_case = name, None
 
-    return list(set(test_files))
+            if test_name in tests:
+                path = tests.get(test_name)
+                if test_case:
+                    path = ''.join([path, '::', test_case])
+                test_files.append(path)
+            else:
+                raise IpaUtilsException(
+                    'Test file with name: %s cannot be found.' % test_name
+                )
+
+    return test_files
 
 
 def get_config(config_path):
