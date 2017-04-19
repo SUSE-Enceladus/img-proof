@@ -90,25 +90,60 @@ def execute_ssh_command(client, cmd):
     return out
 
 
-def find_test_files(test_dirs, names):
+def find_test_files(test_dirs, names=None):
     """Walk all dirs and find path of given test file names.
 
-    If there a multiple test files with the same name raise
-    IpaUtilsException.
+    If names is None find all test files in the given test
+    directories and return the list.
 
-    If a test file cannot be found raise IpaUtilsException.
+    Raise IpaUtilsException:
+    - If there a multiple test files or test configs with the
+      same name.
+    - If a test file or test config cannot be found.
+    - If there is a name overlap with a test file and test
+      config
     """
     tests = {}
+    configs = {}
     for test_dir in test_dirs:
         for root, dirs, files in os.walk(test_dir):
             test_files = fnmatch.filter(files, 'test_*.py')
+            config_files = fnmatch.filter(files, '*.yaml')
+
             for test_file in test_files:
-                if test_file not in tests:
-                    tests[test_file] = (os.path.join(root, test_file))
+                path = os.path.join(root, test_file)
+                name, ext = test_file.split('.')
+                if name not in tests:
+                    tests[name] = path
                 else:
                     raise IpaUtilsException(
-                        'Duplicate test file found: %s' % test_file
+                        'Duplicate test file name found: %s, %s'
+                        % (path, tests.get(name))
                     )
+
+            for config_file in config_files:
+                path = os.path.join(root, config_file)
+                name, ext = config_file.split('.')
+                if name in tests:
+                    raise IpaUtilsException(
+                        'Test config name matches test file: %s, %s'
+                        % (path, tests.get(name))
+                    )
+                elif name not in configs:
+                    configs[name] = path
+                else:
+                    raise IpaUtilsException(
+                        'Duplicate test config file name found: %s, %s'
+                        % (path, configs.get(name))
+                    )
+
+    if not names:
+        return tests.values()
+
+    for name in list(names):
+        if name in configs:
+            names.remove(name)
+            names += get_names_from_config(configs.get(name), configs)
 
     test_files = []
     for name in names:
@@ -164,6 +199,29 @@ def get_from_config(config, section, default_section, entry):
                 'Unable to get %s value from config' % entry
             )
     return value
+
+
+def get_names_from_config(config, test_files):
+    tests = []
+    test_data = get_yaml_config(config)
+
+    if 'tests' in test_data:
+        tests += test_data.get('tests')
+
+    if 'include' in test_data:
+        for config_name in test_data.get('include'):
+            if config_name in test_files:
+                tests += get_names_from_config(
+                    test_files.get(config_name),
+                    test_files
+                )
+            else:
+                raise IpaUtilsException(
+                    'Test config file with name: %s cannot be located.'
+                    % config_name
+                )
+
+    return tests
 
 
 def get_random_string(length=12, allowed_chars=CHARS):
