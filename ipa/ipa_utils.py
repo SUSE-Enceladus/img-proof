@@ -98,18 +98,18 @@ def find_test_files(test_dirs, names=None):
     directories and return the list.
 
     Raise IpaUtilsException:
-    - If there a multiple test files or test configs with the
+    - If there are multiple test files or test descriptions with the
       same name.
-    - If a test file or test config cannot be found.
+    - If a test file or test description cannot be found.
     - If there is a name overlap with a test file and test
-      config
+      description.
     """
     tests = {}
-    configs = {}
+    descriptions = {}
     for test_dir in test_dirs:
         for root, dirs, files in os.walk(test_dir):
             test_files = fnmatch.filter(files, 'test_*.py')
-            config_files = fnmatch.filter(files, '*.yaml')
+            description_files = fnmatch.filter(files, '*.yaml')
 
             for test_file in test_files:
                 path = os.path.join(root, test_file)
@@ -122,32 +122,35 @@ def find_test_files(test_dirs, names=None):
                         % (path, tests.get(name))
                     )
 
-            for config_file in config_files:
-                path = os.path.join(root, config_file)
-                name, ext = config_file.split('.')
+            for description_file in description_files:
+                path = os.path.join(root, description_file)
+                name, ext = description_file.split('.')
                 if name in tests:
                     raise IpaUtilsException(
-                        'Test config name matches test file: %s, %s'
+                        'Test description name matches test file: %s, %s'
                         % (path, tests.get(name))
                     )
-                elif name not in configs:
-                    configs[name] = path
+                elif name not in descriptions:
+                    descriptions[name] = path
                 else:
                     raise IpaUtilsException(
-                        'Duplicate test config file name found: %s, %s'
-                        % (path, configs.get(name))
+                        'Duplicate test description file name found: %s, %s'
+                        % (path, descriptions.get(name))
                     )
 
     if not names:
-        return tests.values() + list(REBOOT_TESTS)
+        return tests.keys() + descriptions.keys() + list(REBOOT_TESTS)
 
     for name in list(names):
-        if name in configs:
+        if name in descriptions:
             names.remove(name)
-            names += get_names_from_config(configs.get(name), configs)
+            names += get_tests_from_description(
+                descriptions.get(name),
+                descriptions
+            )
 
     test_files = []
-    for name in names:
+    for name in list(set(names)):
         if name in REBOOT_TESTS:
             test_files.append(name)
         else:
@@ -205,24 +208,24 @@ def get_from_config(config, section, default_section, entry):
     return value
 
 
-def get_names_from_config(config, test_files):
+def get_tests_from_description(description, descriptions):
     tests = []
-    test_data = get_yaml_config(config)
+    test_data = get_yaml_config(description)
 
     if 'tests' in test_data:
         tests += test_data.get('tests')
 
     if 'include' in test_data:
-        for config_name in test_data.get('include'):
-            if config_name in test_files:
-                tests += get_names_from_config(
-                    test_files.get(config_name),
-                    test_files
+        for description_name in test_data.get('include'):
+            if description_name in descriptions:
+                tests += get_tests_from_description(
+                    descriptions.get(description_name),
+                    descriptions
                 )
             else:
                 raise IpaUtilsException(
-                    'Test config file with name: %s cannot be located.'
-                    % config_name
+                    'Test description file with name: %s cannot be located.'
+                    % description_name
                 )
 
     return tests
