@@ -25,7 +25,6 @@ from tempfile import NamedTemporaryFile
 
 CHARS = 'abcdefghijklmnopqrstuvwxyz'
 CLIENT_CACHE = {}
-REBOOT_TESTS = ('test_soft_reboot', 'test_hard_reboot')
 
 
 def clear_cache(ip=None):
@@ -104,6 +103,12 @@ def find_test_files(test_dirs, names=None):
     - If there is a name overlap with a test file and test
       description.
     """
+    if names and not isinstance(names, list):
+        raise IpaUtilsException(
+            'Names must be a list containing test names'
+            ' and/or test descriptions.'
+        )
+
     tests = {}
     descriptions = {}
     for test_dir in test_dirs:
@@ -139,7 +144,9 @@ def find_test_files(test_dirs, names=None):
                     )
 
     if not names:
-        return tests.keys() + descriptions.keys() + list(REBOOT_TESTS)
+        test_files = tests.copy()
+        test_files.update(descriptions)
+        return test_files
 
     for name in list(names):
         if name in descriptions:
@@ -149,25 +156,22 @@ def find_test_files(test_dirs, names=None):
                 descriptions
             )
 
-    test_files = []
-    for name in list(set(names)):
-        if name in REBOOT_TESTS:
-            test_files.append(name)
-        else:
-            try:
-                test_name, test_case = name.split('::', 1)
-            except:
-                test_name, test_case = name, None
+    test_files = {}
+    for name in set(names):
+        try:
+            test_name, test_case = name.split('::', 1)
+        except:
+            test_name, test_case = name, None
 
-            if test_name in tests:
-                path = tests.get(test_name)
-                if test_case:
-                    path = ''.join([path, '::', test_case])
-                test_files.append(path)
-            else:
-                raise IpaUtilsException(
-                    'Test file with name: %s cannot be found.' % test_name
-                )
+        if test_name in tests:
+            path = tests.get(test_name)
+            if test_case:
+                path = ''.join([path, '::', test_case])
+            test_files[name] = path
+        else:
+            raise IpaUtilsException(
+                'Test file with name: %s cannot be found.' % test_name
+            )
 
     return test_files
 
@@ -208,8 +212,26 @@ def get_from_config(config, section, default_section, entry):
     return value
 
 
-def get_tests_from_description(description, descriptions):
+def get_tests_from_description(description,
+                               descriptions,
+                               parsed=None):
+    """Recursively collect all tests in test description.
+
+    Args:
+        description (str): Absolute path to yaml test
+                           description file.
+        descriptions (dict): Dict of test description name
+                             (key) and absolute file paths
+                             (value).
+        parsed (list): List of description paths which have
+                       already been parsed to prevent infinte
+                       recursion.
+    """
+    if not parsed:
+        parsed = []
+
     tests = []
+    parsed.append(description)
     test_data = get_yaml_config(description)
 
     if 'tests' in test_data:
@@ -218,10 +240,13 @@ def get_tests_from_description(description, descriptions):
     if 'include' in test_data:
         for description_name in test_data.get('include'):
             if description_name in descriptions:
-                tests += get_tests_from_description(
-                    descriptions.get(description_name),
-                    descriptions
-                )
+                description_path = descriptions.get(description_name)
+                if description_path not in parsed:
+                    tests += get_tests_from_description(
+                        description_path,
+                        descriptions,
+                        parsed
+                    )
             else:
                 raise IpaUtilsException(
                     'Test description file with name: %s cannot be located.'
