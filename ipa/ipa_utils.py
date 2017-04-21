@@ -163,15 +163,15 @@ def find_test_files(test_dirs, names=None):
         except:
             test_name, test_case = name, None
 
-        if test_name in tests:
-            path = tests.get(test_name)
-            if test_case:
-                path = ''.join([path, '::', test_case])
-            test_files[name] = path
-        else:
+        path = tests.get(test_name, None)
+        if not path:
             raise IpaUtilsException(
                 'Test file with name: %s cannot be found.' % test_name
             )
+
+        if test_case:
+            path = ''.join([path, '::', test_case])
+        test_files[name] = path
 
     return test_files
 
@@ -239,18 +239,18 @@ def get_tests_from_description(description,
 
     if 'include' in test_data:
         for description_name in test_data.get('include'):
-            if description_name in descriptions:
-                description_path = descriptions.get(description_name)
-                if description_path not in parsed:
-                    tests += get_tests_from_description(
-                        description_path,
-                        descriptions,
-                        parsed
-                    )
-            else:
+            description_path = descriptions.get(description_name, None)
+            if not description_path:
                 raise IpaUtilsException(
                     'Test description file with name: %s cannot be located.'
                     % description_name
+                )
+
+            if description_path not in parsed:
+                tests += get_tests_from_description(
+                    description_path,
+                    descriptions,
+                    parsed
                 )
 
     return tests
