@@ -148,16 +148,23 @@ def find_test_files(test_dirs, names=None):
         test_files.update(descriptions)
         return test_files
 
-    for name in list(names):
+    desc_names = set()
+    additions = set()
+    for name in names:
         if name in descriptions:
-            names.remove(name)
-            names += get_tests_from_description(
-                descriptions.get(name),
-                descriptions
+            desc_names.add(name)
+            additions.update(
+                get_tests_from_description(
+                    descriptions.get(name),
+                    descriptions
+                )
             )
+    names = set(names)
+    names.difference_update(desc_names)
+    names.update(additions)
 
     test_files = {}
-    for name in set(names):
+    for name in names:
         try:
             test_name, test_case = name.split('::', 1)
         except:
