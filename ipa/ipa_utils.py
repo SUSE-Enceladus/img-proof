@@ -114,7 +114,7 @@ def find_test_files(test_dirs, names=None):
     for test_dir in test_dirs:
         for root, dirs, files in os.walk(test_dir):
             test_files = fnmatch.filter(files, 'test_*.py')
-            description_files = fnmatch.filter(files, '*.yaml')
+            description_files = fnmatch.filter(files, 'test_*.yaml')
 
             for test_file in test_files:
                 path = os.path.join(root, test_file)
