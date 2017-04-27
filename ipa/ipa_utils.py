@@ -144,24 +144,19 @@ def find_test_files(test_dirs, names=None):
                     )
 
     if not names:
-        test_files = tests.copy()
-        test_files.update(descriptions)
-        return test_files
+        tests.update(descriptions)
+        return tests
 
-    desc_names = set()
-    additions = set()
-    for name in names:
-        if name in descriptions:
-            desc_names.add(name)
-            additions.update(
-                get_tests_from_description(
-                    descriptions.get(name),
-                    descriptions
-                )
-            )
     names = set(names)
-    names.difference_update(desc_names)
-    names.update(additions)
+    description_names = names & set(descriptions)
+    names = names - description_names
+    for name in description_names:
+        names.update(
+            get_tests_from_description(
+                    name,
+                    descriptions
+            )
+        )
 
     test_files = {}
     for name in names:
@@ -219,14 +214,12 @@ def get_from_config(config, section, default_section, entry):
     return value
 
 
-def get_tests_from_description(description,
+def get_tests_from_description(name,
                                descriptions,
                                parsed=None):
     """Recursively collect all tests in test description.
-
     Args:
-        description (str): Absolute path to yaml test
-                           description file.
+        name (str): Yaml test description file name.
         descriptions (dict): Dict of test description name
                              (key) and absolute file paths
                              (value).
@@ -234,10 +227,20 @@ def get_tests_from_description(description,
                        already been parsed to prevent infinte
                        recursion.
     """
+    tests = []
     if not parsed:
         parsed = []
 
-    tests = []
+    description = descriptions.get(name, None)
+    if not description:
+        raise IpaUtilsException(
+            'Test description file with name: %s cannot be located.'
+            % name
+        )
+
+    if description in parsed:
+        return tests
+
     parsed.append(description)
     test_data = get_yaml_config(description)
 
@@ -246,19 +249,11 @@ def get_tests_from_description(description,
 
     if 'include' in test_data:
         for description_name in test_data.get('include'):
-            description_path = descriptions.get(description_name, None)
-            if not description_path:
-                raise IpaUtilsException(
-                    'Test description file with name: %s cannot be located.'
-                    % description_name
-                )
-
-            if description_path not in parsed:
-                tests += get_tests_from_description(
-                    description_path,
-                    descriptions,
-                    parsed
-                )
+            tests += get_tests_from_description(
+                description_name,
+                descriptions,
+                parsed
+            )
 
     return tests
 
