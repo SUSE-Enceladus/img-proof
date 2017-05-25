@@ -22,6 +22,9 @@ class AzureProvider(IpaProvider):
     def get_instance(self):
         """Retrieve instance matching instance_id."""
 
+    def initiate_instance(self):
+        """Start instance if stopped and get IP."""
+
     def launch_instance(self):
         """Launch an instance of the given image."""
 

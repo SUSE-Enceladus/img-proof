@@ -11,7 +11,7 @@ from ipa import IpaProvider
 
 class EC2Provider(IpaProvider):
     def __init__(self):
-        super(AzureProvider, self).__init__()
+        super(EC2Provider, self).__init__()
 
     def _config(self):
         """Setup configuration."""
@@ -21,6 +21,9 @@ class EC2Provider(IpaProvider):
 
     def get_instance(self):
         """Retrieve instance matching instance_id."""
+
+    def initiate_instance(self):
+        """Start instance if stopped and get IP."""
 
     def launch_instance(self):
         """Launch an instance of the given image."""
@@ -36,4 +39,3 @@ class EC2Provider(IpaProvider):
 
     def terminate_instance(self):
         """Terminate the instance."""
-

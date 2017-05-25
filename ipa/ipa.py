@@ -8,7 +8,7 @@
 
 
 class IpaProvider(object):
-    def __init__():
+    def __init__(self):
         super(IpaProvider, self).__init__()
 
     def _config(self):
@@ -21,6 +21,9 @@ class IpaProvider(object):
         """Remove temporary ssh config file."""
 
     def get_instance(self):
+        raise NotImplementedError('Implement method in child classes.')
+
+    def initiate_instance(self):
         raise NotImplementedError('Implement method in child classes.')
 
     def launch_instance(self):
@@ -61,4 +64,3 @@ class IpaProvider(object):
 
         E.g. for SUSE `zypper up`
         """
-
