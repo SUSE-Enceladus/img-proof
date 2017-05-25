@@ -28,9 +28,6 @@ class GCEProvider(IpaProvider):
     def launch_instance(self):
         """Launch an instance of the given image."""
 
-    def reboot_instance(self):
-        """Framework reboot instance."""
-
     def start_instance(self):
         """Start the instance."""
 

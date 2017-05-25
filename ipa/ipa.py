@@ -6,6 +6,8 @@
 #
 # See LICENSE for license information.
 
+import ipa_utils
+
 from ipa_constants import NOT_IMPLEMENTED
 
 
@@ -25,13 +27,17 @@ class IpaProvider(object):
     def get_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
+    def hard_reboot_instance(self):
+        """Stop then start the instance."""
+        self.stop_instance()
+        self.start_instance()
+        ipa_utils.clear_cache()
+        print('Instance rebooted')
+
     def initiate_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
     def launch_instance(self):
-        raise NotImplementedError(NOT_IMPLEMENTED)
-
-    def reboot_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
     def start_instance(self):
