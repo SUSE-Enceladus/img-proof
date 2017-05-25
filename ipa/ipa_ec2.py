@@ -10,8 +10,18 @@ from ipa import IpaProvider
 
 
 class EC2Provider(IpaProvider):
-    def __init__(self):
-        super(EC2Provider, self).__init__()
+    def __init__(self,
+                 distro_name,
+                 running_instance=None,
+                 ssh_private_key=None,
+                 ssh_user=None):
+        super(EC2Provider, self).__init__(
+            distro_name,
+            'ec2',
+            running_instance
+        )
+        self.ssh_private_key = ssh_private_key
+        self.ssh_user = ssh_user or 'ec2-user'
 
     def _config(self):
         """Setup configuration."""

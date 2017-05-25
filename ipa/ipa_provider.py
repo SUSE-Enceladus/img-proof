@@ -6,13 +6,23 @@
 #
 # See LICENSE for license information.
 
+import importlib
+
 from ipa import ipa_utils
-from ipa.ipa_constants import NOT_IMPLEMENTED
+from ipa_constants import (
+    NOT_IMPLEMENTED,
+    SUPPORTED_DISTROS
+)
+from ipa_exceptions import IpaProviderException
 
 
 class IpaProvider(object):
-    def __init__(self):
+    def __init__(self,
+                 distro_name,
+                 running_instance=None):
         super(IpaProvider, self).__init__()
+        self.distro_name = distro_name
+        self.running_instance = running_instance
 
     def _config(self):
         """Setup configuration."""
@@ -35,6 +45,18 @@ class IpaProvider(object):
     def _run_tests(self):
         """Runs the test suite on the image."""
 
+    def _set_distro(self):
+        """Determine distro for image and create instance of class."""
+        if self.distro_name not in SUPPORTED_DISTROS:
+            raise IpaProviderException(
+                'Distribution: %s, not supported.' % self.distro_name
+            )
+
+        distro_module = importlib.import_module(
+            'ipa.ipa_%s' % self.distro_name.lower()
+        )
+        self.distro = getattr(distro_module, self.distro_name)()
+
     def hard_reboot_instance(self):
         """Stop then start the instance."""
         self.stop_instance()
@@ -54,11 +76,24 @@ class IpaProvider(object):
     def test_image(self):
         """The entry point for testing an image.
 
-        This method will perform the following steps:
-          - launch_instance() # If a host is passed in this is skipped
-          - system_reboot()
-          - system_update()
-          - reboot_instance()
-          - run_tests()
-          - terminate_instance() # Optional depends on test results and -c flag
+        Steps:
+        - Creates new or initiates existing instance
+        - Optionally tests hard reboot
+        - Runs test suite on instance
+        - Optionally tests soft reboot
+        - Collects and returns results in json format
         """
+        if self.running_instance:
+            # Use existing instance
+            self.initiate_instance()
+        else:
+            # Launch new instance
+            self.launch_instance()
+
+        client = ipa_utils.get_ssh_client(
+            self.instance_ip,
+            self.ssh_private_key,
+            self.ssh_user
+        )
+
+        self._set_distro()
