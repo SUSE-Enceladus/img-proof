@@ -19,13 +19,13 @@ class GCEProvider(IpaProvider):
     def _connect(self):
         """Connect to gce resource."""
 
-    def get_instance(self):
+    def _get_instance(self):
         """Retrieve instance matching instance_id."""
 
-    def initiate_instance(self):
+    def _initiate_instance(self):
         """Start instance if stopped and get IP."""
 
-    def launch_instance(self):
+    def _launch_instance(self):
         """Launch an instance of the given image."""
 
     def start_instance(self):

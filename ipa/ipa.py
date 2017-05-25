@@ -24,8 +24,17 @@ class IpaProvider(object):
     def _remove_ssh_config(self):
         """Remove temporary ssh config file."""
 
-    def get_instance(self):
+    def _get_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def _initiate_instance(self):
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def _launch_instance(self):
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def _run_tests(self):
+        """Runs the test suite on the image."""
 
     def hard_reboot_instance(self):
         """Stop then start the instance."""
@@ -33,12 +42,6 @@ class IpaProvider(object):
         self.start_instance()
         ipa_utils.clear_cache()
         print('Instance rebooted')
-
-    def initiate_instance(self):
-        raise NotImplementedError(NOT_IMPLEMENTED)
-
-    def launch_instance(self):
-        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def start_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
@@ -59,16 +62,4 @@ class IpaProvider(object):
           - reboot_instance()
           - run_tests()
           - terminate_instance() # Optional depends on test results and -c flag
-        """
-
-    def run_tests(self):
-        """Runs the test suite on the image."""
-
-    def system_reboot(self):
-        """Performs a system reboot."""
-
-    def system_update(self):
-        """Updates the instace based on OS type.
-
-        E.g. for SUSE `zypper up`
         """
