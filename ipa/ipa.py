@@ -6,6 +6,8 @@
 #
 # See LICENSE for license information.
 
+from ipa_constants import NOT_IMPLEMENTED
+
 
 class IpaProvider(object):
     def __init__(self):
@@ -21,25 +23,25 @@ class IpaProvider(object):
         """Remove temporary ssh config file."""
 
     def get_instance(self):
-        raise NotImplementedError('Implement method in child classes.')
+        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def initiate_instance(self):
-        raise NotImplementedError('Implement method in child classes.')
+        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def launch_instance(self):
-        raise NotImplementedError('Implement method in child classes.')
+        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def reboot_instance(self):
-        raise NotImplementedError('Implement method in child classes.')
+        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def start_instance(self):
-        raise NotImplementedError('Implement method in child classes.')
+        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def stop_instance(self):
-        raise NotImplementedError('Implement method in child classes.')
+        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def terminate_instance(self):
-        raise NotImplementedError('Implement method in child classes.')
+        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def test_image(self):
         """The entry point for testing an image.

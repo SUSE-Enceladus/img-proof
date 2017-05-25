@@ -8,6 +8,7 @@
 
 import ipa_utils
 
+from ipa_constants import NOT_IMPLEMENTED
 from ipa_exceptions import IpaDistroException
 
 
@@ -19,7 +20,7 @@ class Distro(object):
 
     def _set_init_system(self, client):
         """Determine the init system of distribution."""
-        raise NotImplementedError('Implement method in child classes.')
+        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def get_reboot_cmd(self):
         """Return reboot command for given distribution."""
@@ -27,7 +28,7 @@ class Distro(object):
 
     def get_stop_ssh_service_cmd(self):
         """Return command to stop SSH service on given distribution."""
-        raise NotImplementedError('Implement method in child classes.')
+        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def get_sudo_exec_wrapper(self):
         """Return sudo command to wrap one or more commands."""
