@@ -13,10 +13,9 @@ from ipa_exceptions import IpaDistroException
 
 class Distro(object):
     """Generic module for performing instance level tests."""
-    def __init__(self, client):
+    def __init__(self):
         super(Distro, self).__init__()
         self.init_system = ''
-        self._set_init_system(client)
 
     def _set_init_system(self, client):
         """Determine the init system of distribution."""
@@ -36,9 +35,10 @@ class Distro(object):
 
     def reboot(self, client):
         """Execute reboot command on instance."""
+        self._set_init_system(client)
         reboot_cmd = "{sudo} '{stop_ssh};{reboot}'".format(
             sudo=self.get_sudo_exec_wrapper(),
-            stop_ssh=self.get_shutdown_ssh_service_cmd(),
+            stop_ssh=self.get_stop_ssh_service_cmd(),
             reboot=self.get_reboot_cmd()
         )
 
