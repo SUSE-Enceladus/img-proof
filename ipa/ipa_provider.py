@@ -6,9 +6,8 @@
 #
 # See LICENSE for license information.
 
-import ipa_utils
-
-from ipa_constants import NOT_IMPLEMENTED
+from ipa import ipa_utils
+from ipa.ipa_constants import NOT_IMPLEMENTED
 
 
 class IpaProvider(object):

@@ -6,10 +6,9 @@
 #
 # See LICENSE for license information.
 
-import ipa_utils
-
-from ipa_constants import NOT_IMPLEMENTED
-from ipa_exceptions import IpaDistroException
+from ipa import ipa_utils
+from ipa.ipa_constants import NOT_IMPLEMENTED
+from ipa.ipa_exceptions import IpaDistroException
 
 
 class Distro(object):
