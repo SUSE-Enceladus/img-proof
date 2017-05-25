@@ -6,15 +6,12 @@
 #
 # See LICENSE for license information.
 
-import ipa_utils
-from ipa_distro import Distro
-from ipa_exceptions import IpaDistroException
+from ipa import ipa_utils
+from ipa.ipa_distro import Distro
+from ipa.ipa_exceptions import IpaSLESException
 
 
-class SUSE(Distro):
-    def __init__(self, client):
-        super(SUSE, self).__init__(client)
-
+class SLES(Distro):
     def _set_init_system(self, client):
         """Determine the init system of distribution."""
         try:
@@ -23,7 +20,7 @@ class SUSE(Distro):
                 'ps -p 1 -o comm='
             )
         except Exception as e:
-            raise IpaDistroException(
+            raise IpaSLESException(
                 'An error occurred while retrieving'
                 ' the distro init system: %s' % e
             )
@@ -37,6 +34,6 @@ class SUSE(Distro):
         elif self.init_system == 'init':
             return 'rcsshd stop'
         else:
-            raise IpaDistroException(
+            raise IpaSLESException(
                 'The init system for SUSE distribution cannot be determined.'
             )

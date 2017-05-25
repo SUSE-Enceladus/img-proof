@@ -47,7 +47,7 @@ class IpaResultsException(IpaException):
     """Results subcommand exception."""
 
 
-class IpaSUSEException(IpaDistroException):
+class IpaSLESException(IpaDistroException):
     """Generic Exception for distro modules."""
 
 
