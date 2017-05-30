@@ -38,8 +38,8 @@ def test_image(self,
 
     return provider.test_image()
 
-    def list_tests(self):
-        """Returns a list of test files and/or tests."""
+def list_tests(self):
+    """Returns a list of test files and/or tests."""
 
-    def collect_results(self):
-        """Returns the result (pass/fail) or verbose results."""
+def collect_results(self):
+    """Returns the result (pass/fail) or verbose results."""
