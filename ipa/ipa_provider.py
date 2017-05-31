@@ -36,9 +36,6 @@ class IpaProvider(object):
     def _get_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
-    def _initiate_instance(self):
-        raise NotImplementedError(NOT_IMPLEMENTED)
-
     def _launch_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
@@ -57,21 +54,27 @@ class IpaProvider(object):
         )
         self.distro = getattr(distro_module, self.distro_name)()
 
+    def _set_instance_ip(self):
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def _start_instance(self):
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def _start_instance_if_stopped(self):
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def _stop_instance(self):
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def _terminate_instance(self):
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
     def hard_reboot_instance(self):
         """Stop then start the instance."""
         self.stop_instance()
         self.start_instance()
+        self._set_instance_ip()
         ipa_utils.clear_cache()
-        print('Instance rebooted')
-
-    def start_instance(self):
-        raise NotImplementedError(NOT_IMPLEMENTED)
-
-    def stop_instance(self):
-        raise NotImplementedError(NOT_IMPLEMENTED)
-
-    def terminate_instance(self):
-        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def test_image(self):
         """The entry point for testing an image.
@@ -85,10 +88,11 @@ class IpaProvider(object):
         """
         if self.running_instance:
             # Use existing instance
-            self.initiate_instance()
+            self._start_instance_if_stopped()
         else:
             # Launch new instance
-            self.launch_instance()
+            self._launch_instance()
+        self._set_instance_ip()
 
         client = ipa_utils.get_ssh_client(
             self.instance_ip,

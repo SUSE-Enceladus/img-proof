@@ -22,18 +22,20 @@ class AzureProvider(IpaProvider):
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
 
-    def _initiate_instance(self):
-        """Start instance if stopped and get IP."""
-
     def _launch_instance(self):
         """Launch an instance of the given image."""
 
-    def start_instance(self):
+    def _set_instance_ip(self):
+        """Retrieve and set the instance ip address."""
+
+    def _start_instance(self):
         """Start the instance."""
 
-    def stop_instance(self):
+    def _start_instance_if_stopped(self):
+        """Start instance if stopped."""
+
+    def _stop_instance(self):
         """Stop the instance."""
 
-    def terminate_instance(self):
+    def _terminate_instance(self):
         """Terminate the instance."""
-
