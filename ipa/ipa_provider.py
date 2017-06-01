@@ -36,6 +36,12 @@ class IpaProvider(object):
     def _get_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
+    def _get_instance_state(self):
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def _is_instance_running(self):
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
     def _launch_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
@@ -61,7 +67,9 @@ class IpaProvider(object):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
     def _start_instance_if_stopped(self):
-        raise NotImplementedError(NOT_IMPLEMENTED)
+        """Start instance if stopped."""
+        if not self._is_instance_running():
+            self._start_instance()
 
     def _stop_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)

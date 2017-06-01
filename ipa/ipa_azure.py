@@ -22,6 +22,12 @@ class AzureProvider(IpaProvider):
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
 
+    def _get_instance_state(self):
+        """Attempt to retrieve the state of the instance."""
+
+    def _is_instance_running(self):
+        """Return True if instance is in running state."""
+
     def _launch_instance(self):
         """Launch an instance of the given image."""
 
@@ -30,9 +36,6 @@ class AzureProvider(IpaProvider):
 
     def _start_instance(self):
         """Start the instance."""
-
-    def _start_instance_if_stopped(self):
-        """Start instance if stopped."""
 
     def _stop_instance(self):
         """Stop the instance."""
