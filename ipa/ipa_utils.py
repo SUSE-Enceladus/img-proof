@@ -44,17 +44,18 @@ def establish_ssh_connection(ip,
                              port,
                              attempts=5,
                              timeout=None):
-    """Establish ssh connection and return paramiko client.
+    """
+    Establish ssh connection and return paramiko client.
 
-    If connection cannot be established in given number of attempts
-    raise IpaProviderException.
+    Raises:
+        IpaProviderException: If connection cannot be established
+            in given number of attempts.
+
     """
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.load_system_host_keys()
 
-    sys.stdout.write('Establishing ssh connection.')
-    sys.stdout.flush()
     while attempts:
         try:
             client.connect(
@@ -65,13 +66,9 @@ def establish_ssh_connection(ip,
                 timeout=timeout
             )
         except:
-            # Print without new lines
-            sys.stdout.write('.')
-            sys.stdout.flush()
             attempts -= 1
             time.sleep(10)
         else:
-            print('\nConnection established.\n')
             return client
 
     raise IpaSSHException(
