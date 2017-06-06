@@ -1,3 +1,4 @@
+"""Distro module provides distrobution specific synch points."""
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2017 SUSE LLC
@@ -13,7 +14,9 @@ from ipa.ipa_exceptions import IpaDistroException
 
 class Distro(object):
     """Generic module for performing instance level tests."""
+
     def __init__(self):
+        """Initialize distro class."""
         super(Distro, self).__init__()
         self.init_system = ''
 
@@ -35,7 +38,9 @@ class Distro(object):
 
     def reboot(self, client):
         """Execute reboot command on instance."""
-        self._set_init_system(client)
+        if not self.init_system:
+            self._set_init_system(client)
+
         reboot_cmd = "{sudo} '{stop_ssh};{reboot}'".format(
             sudo=self.get_sudo_exec_wrapper(),
             stop_ssh=self.get_stop_ssh_service_cmd(),

@@ -1,3 +1,4 @@
+"""SLES distro module and sync points."""
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2017 SUSE LLC
@@ -12,6 +13,8 @@ from ipa.ipa_exceptions import IpaSLESException
 
 
 class SLES(Distro):
+    """SLES distro class."""
+
     def _set_init_system(self, client):
         """Determine the init system of distribution."""
         try:
@@ -28,7 +31,11 @@ class SLES(Distro):
             self.init_system = out.strip()
 
     def get_stop_ssh_service_cmd(self):
-        """Return command to stop SSH service for SUSE."""
+        """
+        Return command to stop SSH service for SUSE.
+
+        SSH stop command determined by init system.
+        """
         if self.init_system == 'systemd':
             return 'systemctl stop sshd'
         elif self.init_system == 'init':
