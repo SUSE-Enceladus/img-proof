@@ -17,6 +17,7 @@ import random
 import sys
 import time
 from contextlib import contextmanager
+from string import ascii_lowercase
 from tempfile import NamedTemporaryFile
 
 from ipa.ipa_exceptions import IpaSSHException, IpaUtilsException
@@ -25,7 +26,6 @@ import paramiko
 
 import yaml
 
-CHARS = 'abcdefghijklmnopqrstuvwxyz'
 CLIENT_CACHE = {}
 
 
@@ -260,9 +260,9 @@ def get_tests_from_description(name,
     return tests
 
 
-def get_random_string(length=12, allowed_chars=CHARS):
-    """Create random string of length with allowed characters."""
-    return ''.join(random.choice(allowed_chars) for _ in range(length))
+def get_random_string(length=12):
+    """Create random string of length with ascii lowercase chars."""
+    return ''.join(random.choice(ascii_lowercase) for index in range(length))
 
 
 def get_ssh_client(ip,
