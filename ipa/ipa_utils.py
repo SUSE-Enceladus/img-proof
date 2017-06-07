@@ -370,7 +370,11 @@ def parse_sync_points(names, tests):
 
     Returns:
         A list of test file sets and sync point strings.
-        e.g. [set('test1', 'test2'), 'test_soft_reboot']
+    Examples:
+        ['test_hard_reboot']
+        [set('test1', 'test2')]
+        [set('test1', 'test2'), 'test_soft_reboot']
+        [set('test1', 'test2'), 'test_soft_reboot', set('test3')]
 
     """
     test_files = []
@@ -380,8 +384,9 @@ def parse_sync_points(names, tests):
         if name in SYNC_POINTS:
             if section:
                 test_files.append(section)
-                section = set()
+
             test_files.append(name)
+            section = set()
         else:
             section.add(find_test_file(name, tests))
 
