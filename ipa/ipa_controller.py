@@ -1,3 +1,4 @@
+"""Controller class for ipa endpoints."""
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2017 SUSE LLC
@@ -12,8 +13,7 @@ from ipa.ipa_constants import SUPPORTED_PROVIDERS
 from ipa.ipa_exceptions import IpaControllerException
 
 
-def test_image(self,
-               provider_name,
+def test_image(provider_name,
                distro=None,
                running_instance=None,
                ssh_private_key=None,
@@ -38,8 +38,8 @@ def test_image(self,
 
     return provider.test_image()
 
-def list_tests(self):
+def list_tests():
     """Returns a list of test files and/or tests."""
 
-def collect_results(self):
+def collect_results():
     """Returns the result (pass/fail) or verbose results."""

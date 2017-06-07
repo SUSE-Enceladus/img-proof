@@ -6,7 +6,7 @@
 #
 # See LICENSE for license information.
 
-from ipa import IpaProvider
+from ipa.ipa_provider import IpaProvider
 
 
 class AzureProvider(IpaProvider):

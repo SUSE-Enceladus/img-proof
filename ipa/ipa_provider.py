@@ -18,6 +18,7 @@ from ipa_exceptions import IpaProviderException
 
 class IpaProvider(object):
     def __init__(self,
+                 provider,
                  distro_name,
                  running_instance=None):
         super(IpaProvider, self).__init__()
