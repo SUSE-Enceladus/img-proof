@@ -37,7 +37,7 @@ class SLES(Distro):
         SSH stop command determined by init system.
         """
         if self.init_system == 'systemd':
-            return 'systemctl stop sshd'
+            return 'systemctl stop sshd.service'
         elif self.init_system == 'init':
             return 'rcsshd stop'
         else:
