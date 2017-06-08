@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
+
+"""Setup script."""
 # Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
@@ -15,14 +16,23 @@ with open('README.asciidoc') as readme_file:
 requirements = [
     'boto3',
     'Click',
-    'ec2utilsbase',
+    'paramiko',
+    'pytest',
+    'PyYAML',
+    'testinfra',
+]
+
+test_requirements = [
+    'coverage',
+    'flake8',
+    'pytest-cov'
 ]
 
 dev_requirements = [
     'bumpversion',
-    'flake8',
     'pip>=7.0.0',
-]
+] + test_requirements
+
 
 setup(
     name='ipa',
@@ -43,7 +53,8 @@ setup(
     include_package_data=True,
     install_requires=requirements,
     extras_require={
-        'dev': dev_requirements
+        'dev': dev_requirements,
+        'test': test_requirements
     },
     license="MIT license",
     zip_safe=False,
