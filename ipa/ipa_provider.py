@@ -23,9 +23,9 @@ from ipa.ipa_constants import (
     TEST_PATHS
 )
 from ipa.ipa_exceptions import (
-    IpaException,
     IpaProviderException,
-    IpaSSHException
+    IpaSSHException,
+    IpaUtilsException
 )
 from ipa.results_plugin import JSONReport
 
@@ -56,45 +56,45 @@ class IpaProvider(object):
                  test_files=None):
         """Initialize base provider class."""
         super(IpaProvider, self).__init__()
+        # Get ipa ini config file
         self.config = config or IPA_CONFIG_FILE
         self.ipa_config = ipa_utils.get_config(self.config)
+
+        self.instance_ip = None
         self.provider = provider
         self.results = None
 
-        self.cleanup = self._get_val('cleanup', cleanup)
-        self.distro_name = self._get_val('distro_name', distro_name)
+        self.cleanup = self._get_value(cleanup)
+        self.distro_name = self._get_value(distro_name)
+        self.image_id = self._get_value(image_id)
+        self.instance_type = self._get_value(instance_type)
+        self.running_instance = self._get_value(running_instance)
+        self.terminate = self._get_value(terminate)
+        self.test_files = list(self._get_value(test_files, default=[]))
+
+        self.region = self._get_value(
+            region,
+            config_key='region'
+        )
+
+        self.results_dir = os.path.expanduser(
+            self._get_value(
+                results_dir,
+                config_key='results_dir',
+                default=IPA_RESULTS_PATH
+            )
+        )
+
         if not self.distro_name:
             raise IpaProviderException(
                 'Distro name is required.'
             )
 
-        self.image_id = self._get_val('image_id', image_id)
         if not self.image_id:
             raise IpaProviderException(
                 'Image ID is required.'
             )
 
-        self.instance_ip = None
-        self.instance_type = self._get_val('instance_type', instance_type)
-        self.region = self._get_val('region', region, check_config=True)
-        self.results_dir = os.path.expanduser(
-            self._get_val(
-                'results_dir',
-                results_dir,
-                check_config=True,
-                default=IPA_RESULTS_PATH
-            )
-        )
-
-        self.running_instance = self._get_val(
-            'running_instance',
-            running_instance
-        )
-
-        self.terminate = self._get_val('terminate', terminate)
-        self.test_files = list(
-            self._get_val('test_files', test_files, default=[])
-        )
         if not self.test_files:
             raise IpaProviderException('No test files found.')
 
@@ -113,20 +113,23 @@ class IpaProvider(object):
             self.ssh_user
         )
 
-    def _get_val(self, key, arg, check_config=False, default=None):
-        """Return the correct value for the given key."""
-        val = default
+    def _get_value(self, arg, config_key=None, default=None):
+        """Return the correct value for the given arg."""
+        value = default
+
         if arg or arg is False:
-            val = arg
-        elif check_config:
-            with ipa_utils.ignored(IpaException):
-                val = ipa_utils.get_from_config(
+            value = arg
+
+        elif config_key:
+            with ipa_utils.ignored(IpaUtilsException):
+                value = ipa_utils.get_from_config(
                     self.ipa_config,
                     self.provider,
                     'ipa',
-                    key
+                    config_key
                 )
-        return val
+
+        return value
 
     def _is_instance_running(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
@@ -159,7 +162,7 @@ class IpaProvider(object):
             # Command line arg
             self.test_dirs.update(test_dirs)
 
-        with ipa_utils.ignored(IpaException):
+        with ipa_utils.ignored(IpaUtilsException):
             # ipa config arg
             config_dirs = ipa_utils.get_from_config(
                 self.ipa_config,
