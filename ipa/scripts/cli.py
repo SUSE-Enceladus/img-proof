@@ -15,22 +15,6 @@ import click
 
 from ipa.ipa_constants import SUPPORTED_DISTROS, SUPPORTED_PROVIDERS
 from ipa.ipa_controller import test_image
-from ipa.scripts.cli_constants import (
-    HELP_ACCESS_KEY_ID,
-    HELP_ACCOUNT,
-    HELP_CLEANUP,
-    HELP_CONFIG,
-    HELP_DISTRO,
-    HELP_IMAGE_ID,
-    HELP_REGION,
-    HELP_RUNNING_INSTANCE,
-    HELP_SECRET_ACCESS_KEY,
-    HELP_SSH_PRIVATE_KEY,
-    HELP_SSH_USER,
-    HELP_STORAGE_CONTAINER,
-    HELP_TERMINATE,
-    HELP_TYPE,
-)
 
 
 @click.group()
@@ -51,73 +35,74 @@ def main():
 )
 @click.option(
     '--access-key-id',
-    help=HELP_ACCESS_KEY_ID
+    help='EC2 access key ID for login credentials.'
 )
 @click.option(
     '-a',
     '--account',
-    help=HELP_ACCOUNT
+    help='Settings account to provide connection information.'
 )
 @click.option(
     '--cleanup/--no-cleanup',
     default=None,
-    help=HELP_CLEANUP
+    help='Terminate instance after tests. By default an instance will be '
+         'deleted on success and left running if there is a test failure.'
 )
 @click.option(
     '-C',
     '--config',
     type=click.Path(exists=True),
-    help=HELP_CONFIG
+    help='ipa config file location.'
 )
 @click.option(
     '-d',
     '--distro',
     type=click.Choice(SUPPORTED_DISTROS),
-    help=HELP_DISTRO
+    help='The distribution of the image.'
 )
 @click.option(
     '-i',
     '--image-id',
-    help=HELP_IMAGE_ID
+    help='The ID of the image used for instance.'
 )
 @click.option(
     '-t',
     '--instance-type',
-    help=HELP_TYPE
+    help='Instance type to use for launching machine.'
 )
 @click.option(
     '-r',
     '--region',
-    help=HELP_REGION
+    help='Cloud provider region to test image.'
 )
 @click.option(
     '-R',
     '--running-instance',
-    help=HELP_RUNNING_INSTANCE
+    help='Running instance ID/Name.'
 )
 @click.option(
     '--secret-access-key',
-    help=HELP_SECRET_ACCESS_KEY
+    help='EC2 secret access key for login credentials.'
 )
 @click.option(
     '--ssh-private-key',
     type=click.Path(exists=True),
-    help=HELP_SSH_PRIVATE_KEY
+    help='SSH private key file for accessing instance.'
 )
 @click.option(
     '-u',
     '--ssh-user',
-    help=HELP_SSH_USER
+    help='SSH user for accessing instance.'
 )
 @click.option(
     '-S',
     '--storage-container',
-    help=HELP_STORAGE_CONTAINER
+    help='Azure storage container to use.'
 )
 @click.option(
     '--terminate',
     is_flag=True,
-    help=HELP_TERMINATE
+    help='Terminate test suite on first failure.'
 )
 @click.argument('tests', nargs=-1)
 def test(provider,
