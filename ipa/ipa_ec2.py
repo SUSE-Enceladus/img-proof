@@ -173,6 +173,10 @@ class EC2Provider(IpaProvider):
         instances[0].wait_until_running()
         self.running_instance = instances[0].instance_id
 
+    def _set_image_id(self):
+        instance = self._get_instance()
+        self.image_id = instance.image_id
+
     def _set_instance_ip(self):
         instance = self._get_instance()
         if instance.public_ip_address:

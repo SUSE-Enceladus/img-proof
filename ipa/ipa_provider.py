@@ -90,9 +90,9 @@ class IpaProvider(object):
                 'Distro name is required.'
             )
 
-        if not self.image_id:
+        if not self.image_id and not self.running_instance:
             raise IpaProviderException(
-                'Image ID is required.'
+                'Image ID or running instance is required.'
             )
 
         if not self.test_files:
@@ -226,6 +226,9 @@ class IpaProvider(object):
         )
         self.distro = getattr(distro_module, self.distro_name)()
 
+    def _set_image_id(self):
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
     def _set_instance_ip(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
@@ -289,6 +292,7 @@ class IpaProvider(object):
         if self.running_instance:
             # Use existing instance
             self._start_instance_if_stopped()
+            self._set_image_id()
         else:
             # Launch new instance
             self._launch_instance()
