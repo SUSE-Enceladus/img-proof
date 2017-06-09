@@ -174,9 +174,12 @@ class IpaProvider(object):
             if test_dirs:
                 self.test_dirs.update(test_dirs.split(','))
 
-        # Confirm all test dir paths are absolute
+        # Confirm all test dir paths are absolute and normalized
+        # (remove redundant slashes .../ ...// etc.)
         self.test_dirs = set(
-            os.path.expanduser(test_dir) for test_dir in self.test_dirs
+            os.path.normpath(
+                os.path.expanduser(test_dir)
+            ) for test_dir in self.test_dirs
         )
 
         self.test_files = ipa_utils.expand_test_files(
