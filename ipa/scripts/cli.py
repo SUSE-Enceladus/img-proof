@@ -50,7 +50,6 @@ def main():
     type=click.Choice(SUPPORTED_PROVIDERS)
 )
 @click.option(
-    '-A',
     '--access-key-id',
     help=HELP_ACCESS_KEY_ID
 )
@@ -97,12 +96,10 @@ def main():
     help=HELP_RUNNING_INSTANCE
 )
 @click.option(
-    '-s',
     '--secret-access-key',
     help=HELP_SECRET_ACCESS_KEY
 )
 @click.option(
-    '-p',
     '--ssh-private-key',
     type=click.Path(exists=True),
     help=HELP_SSH_PRIVATE_KEY
