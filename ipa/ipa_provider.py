@@ -164,14 +164,15 @@ class IpaProvider(object):
 
         with ipa_utils.ignored(IpaUtilsException):
             # ipa config arg
-            config_dirs = ipa_utils.get_from_config(
+            test_dirs = ipa_utils.get_from_config(
                 self.ipa_config,
                 self.provider,
                 'ipa',
                 'test_dirs'
             )
-            if config_dirs:
-                self.test_dirs.update(config_dirs.split(','))
+
+            if test_dirs:
+                self.test_dirs.update(test_dirs.split(','))
 
         # Confirm all test dir paths are absolute
         self.test_dirs = set(
