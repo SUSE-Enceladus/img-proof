@@ -1,44 +1,224 @@
 # -*- coding: utf-8 -*-
-#
+
+"""Module for testing instances in Azure."""
+
 # Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
 #
 # See LICENSE for license information.
 
+import time
+
+import azurectl.logger
+
+from azurectl.account.service import AzureAccount
+from azurectl.config.parser import Config as AzurectlConfig
+from azurectl.instance.cloud_service import CloudService
+from azurectl.instance.virtual_machine import VirtualMachine
+from azurectl.management.request_result import RequestResult
+
+from ipa.ipa_constants import AZURE_DEFAULT_TYPE, AZURE_DEFAULT_USER
+from ipa.ipa_exceptions import AzureProviderException
 from ipa.ipa_provider import IpaProvider
+from ipa import ipa_utils
 
 
 class AzureProvider(IpaProvider):
-    def __init__(self):
-        super(AzureProvider, self).__init__()
+    """Class for testing instances in Azure."""
 
-    def _config(self):
-        """Setup configuration."""
+    def __init__(self,
+                 access_key_id=None,  # Not used in Azure
+                 account_name=None,
+                 cleanup=None,
+                 config=None,
+                 distro_name=None,
+                 image_id=None,
+                 instance_type=None,
+                 region=None,
+                 results_dir=None,
+                 running_instance=None,
+                 secret_access_key=None,  # Not used in Azure
+                 ssh_private_key=None,
+                 ssh_user=None,
+                 storage_container=None,
+                 terminate=None,
+                 test_dirs=None,
+                 test_files=None):
+        """Initialize Azure Provider class."""
+        super(AzureProvider, self).__init__('Azure',
+                                            cleanup,
+                                            config,
+                                            distro_name,
+                                            image_id,
+                                            instance_type,
+                                            region,
+                                            results_dir,
+                                            running_instance,
+                                            terminate,
+                                            test_dirs,
+                                            test_files)
 
-    def _connect(self):
-        """Connect to azure resource."""
+        azurectl.logger.init()
+        self.account_name = account_name
+        self.azure_config = None
 
-    def _get_instance(self):
-        """Retrieve instance matching instance_id."""
+        if not ssh_private_key:
+            raise AzureProviderException(
+                'SSH private key file is required to connect to instance.'
+            )
+        else:
+            self.ssh_private_key = ssh_private_key
+
+        self.ssh_user = ssh_user or AZURE_DEFAULT_USER
+        self.storage_container = storage_container
+        self._get_account()
+        self.vm = VirtualMachine(self.account)
+
+    def _create_cloud_service(self):
+        """Create cloud service if not exists."""
+        cloud_service = CloudService(self.account)
+        request_id = cloud_service.create(
+            self.running_instance,
+            self.region
+        )
+
+        if request_id > 0:
+            # Cloud service created
+            self._wait_on_request(request_id)
+
+        return cloud_service
+
+    def _generate_instance_name(self):
+        """Generate a new random name for instance."""
+        self.running_instance = 'azure-ipa-test-{}'.format(
+            ipa_utils.get_random_string(length=5)
+        )
+
+    def _get_account(self):
+        """Create an account object."""
+        config = AzurectlConfig(
+            account_name=self.account_name,
+            region_name=self.region,
+            storage_container_name=self.storage_container
+        )
+
+        self.account = AzureAccount(config)
 
     def _get_instance_state(self):
-        """Attempt to retrieve the state of the instance."""
+        """
+        Retrieve state of instance.
+
+        Raises:
+            AzureProviderException: If state is Undefined.
+
+        """
+        state = self.vm.instance_status(self.running_instance)
+        if state == 'Undefined':
+            raise AzureProviderException(
+                'Instance with id: {instance_id}, '
+                'cannot be found.'.format(
+                    instance_id=self.running_instance
+                )
+            )
+
+        return state
+
+    def _launch_instance(self):
+        """Create new test instance in cloud service with same name."""
+        self._generate_instance_name()
+        cloud_service = self._create_cloud_service()
+        fingerprint = cloud_service.add_certificate(
+            self.running_instance,
+            self.ssh_private_key
+        )
+
+        linux_configuration = self.vm.create_linux_configuration(
+            instance_name=self.running_instance,
+            fingerprint=fingerprint
+        )
+
+        ssh_endpoint = self.vm.create_network_endpoint(
+            name='SSH',
+            public_port=22,
+            local_port=22,
+            protocol='TCP'
+        )
+
+        network_configuration = self.vm.create_network_configuration(
+            [ssh_endpoint]
+        )
+
+        self.vm.create_instance(
+            self.running_instance,
+            self.image_id,
+            linux_configuration,
+            network_config=network_configuration,
+            machine_size=self.instance_type or AZURE_DEFAULT_TYPE
+        )
+
+        self._wait_on_instance('ReadyRole')
 
     def _is_instance_running(self):
         """Return True if instance is in running state."""
+        return self._get_instance_state() == 'ReadyRole'
 
-    def _launch_instance(self):
-        """Launch an instance of the given image."""
+    def _set_image_id(self):
+        try:
+            properties = self.vm.service.get_hosted_service_properties(
+                service_name=self.running_instance,
+                embed_detail=True
+            )
+            self.image_id = properties.deployments[0].role_list[0]\
+                .os_virtual_hard_disk.source_image_name
+        except IndexError:
+            raise AzureProviderException(
+                'Image name for instance cannot be found.'
+            )
 
     def _set_instance_ip(self):
-        """Retrieve and set the instance ip address."""
+        cloud_service = CloudService(self.account)
+        service_info = cloud_service.get_properties(self.running_instance)
+
+        try:
+            self.instance_ip = \
+                    service_info['deployments'][0]['virtual_ips'][0]['address']
+        except IndexError:
+            raise AzureProviderException(
+                'IP address for instance cannot be found.'
+            )
 
     def _start_instance(self):
         """Start the instance."""
+        self.vm.start_instance(
+           cloud_service_name=self.running_instance,
+           instance_name=self.running_instance
+        )
+        self._wait_on_instance('ReadyRole')
 
     def _stop_instance(self):
         """Stop the instance."""
+        self.vm.shutdown_instance(
+            cloud_service_name=self.running_instance,
+            instance_name=self.running_instance,
+            deallocate_resources=True
+        )
+        self._wait_on_instance('StoppedDeallocated')
 
     def _terminate_instance(self):
-        """Terminate the instance."""
+        """Terminate the cloud service and instance."""
+        cloud_service = CloudService(self.account)
+        cloud_service.delete(self.running_instance, complete=True)
+
+    def _wait_on_instance(self, state):
+        """Retrieve state for running instance."""
+        current_state = 'Undefined'
+        while state != current_state:
+            current_state = self._get_instance_state()
+            time.sleep(10)
+
+    def _wait_on_request(self, request_id):
+        """Wait for request to complete."""
+        service = self.account.get_management_service()
+        request_result = RequestResult(request_id)
+        request_result.wait_for_request_completion(service)
