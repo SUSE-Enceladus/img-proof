@@ -62,7 +62,6 @@ class IpaProvider(object):
 
         self.instance_ip = None
         self.provider = provider
-        self.results = None
 
         self.cleanup = self._get_value(cleanup)
         self.distro_name = self._get_value(distro_name)
@@ -76,6 +75,11 @@ class IpaProvider(object):
             region,
             config_key='region'
         )
+
+        self.results = {
+            "tests": [],
+            "summary": {"duration": 0, "passed": 0, "num_tests": 0}
+        }
 
         self.results_dir = os.path.expanduser(
             self._get_value(
@@ -138,16 +142,13 @@ class IpaProvider(object):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
     def _merge_results(self, results):
-        if self.results:
-            self.results['tests'] += results['tests']
+        self.results['tests'] += results['tests']
 
-            for key, value in results['summary'].items():
-                if key in self.results['summary']:
-                    self.results['summary'][key] += results['summary'][key]
-                else:
-                    self.results['summary'][key] = results['summary'][key]
-        else:
-            self.results = results
+        for key, value in results['summary'].items():
+            if key in self.results['summary']:
+                self.results['summary'][key] += results['summary'][key]
+            else:
+                self.results['summary'][key] = results['summary'][key]
 
     def _parse_test_files(self, test_dirs):
         """
