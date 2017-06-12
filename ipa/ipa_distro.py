@@ -47,7 +47,6 @@ class Distro(object):
             reboot=self.get_reboot_cmd()
         )
 
-        print('Rebooting instance: %s\n' % reboot_cmd)
         try:
             ipa_utils.execute_ssh_command(
                 client,
