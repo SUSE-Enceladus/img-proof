@@ -29,10 +29,6 @@ def main():
 
 
 @click.command()
-@click.argument(
-    'provider',
-    type=click.Choice(SUPPORTED_PROVIDERS)
-)
 @click.option(
     '--access-key-id',
     help='EC2 access key ID for login credentials.'
@@ -104,9 +100,12 @@ def main():
     is_flag=True,
     help='Terminate test suite on first failure.'
 )
+@click.argument(
+    'provider',
+    type=click.Choice(SUPPORTED_PROVIDERS)
+)
 @click.argument('tests', nargs=-1)
-def test(provider,
-         access_key_id,
+def test(access_key_id,
          account,
          cleanup,
          config,
@@ -120,6 +119,7 @@ def test(provider,
          ssh_user,
          storage_container,
          terminate,
+         provider,
          tests):
     """Test image in the given cloud framework using the supplied test file."""
     click.secho('Testing image...', fg='green')
