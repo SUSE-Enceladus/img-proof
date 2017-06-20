@@ -75,11 +75,11 @@ class AzureProvider(IpaProvider):
         self._get_account()
         self.vm = VirtualMachine(self.account)
 
-    def _create_cloud_service(self):
+    def _create_cloud_service(self, instance_name):
         """Create cloud service if not exists."""
         cloud_service = CloudService(self.account)
         request_id = cloud_service.create(
-            self.running_instance,
+            instance_name,
             self.region
         )
 
@@ -91,7 +91,7 @@ class AzureProvider(IpaProvider):
 
     def _generate_instance_name(self):
         """Generate a new random name for instance."""
-        self.running_instance = 'azure-ipa-test-{}'.format(
+        return 'azure-ipa-test-{}'.format(
             ipa_utils.get_random_string(length=5)
         )
 
@@ -126,15 +126,15 @@ class AzureProvider(IpaProvider):
 
     def _launch_instance(self):
         """Create new test instance in cloud service with same name."""
-        self._generate_instance_name()
-        cloud_service = self._create_cloud_service()
+        instance_name = self._generate_instance_name()
+        cloud_service = self._create_cloud_service(instance_name)
         fingerprint = cloud_service.add_certificate(
-            self.running_instance,
+            instance_name,
             self.ssh_private_key
         )
 
         linux_configuration = self.vm.create_linux_configuration(
-            instance_name=self.running_instance,
+            instance_name=instance_name,
             fingerprint=fingerprint
         )
 
@@ -150,13 +150,14 @@ class AzureProvider(IpaProvider):
         )
 
         self.vm.create_instance(
-            self.running_instance,
+            instance_name,
             self.image_id,
             linux_configuration,
             network_config=network_configuration,
             machine_size=self.instance_type or AZURE_DEFAULT_TYPE
         )
 
+        self.running_instance = instance_name
         self._wait_on_instance('ReadyRole')
 
     def _is_instance_running(self):
