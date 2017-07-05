@@ -76,7 +76,7 @@ class AzureProvider(IpaProvider):
         self.vm = self._get_virtual_machine()
 
     def _create_cloud_service(self, instance_name):
-        """Create cloud service if not exists."""
+        """Create cloud service if it does not exist."""
         cloud_service = self._get_cloud_service()
         request_id = cloud_service.create(
             instance_name,
@@ -169,10 +169,11 @@ class AzureProvider(IpaProvider):
         self._wait_on_instance('ReadyRole')
 
     def _is_instance_running(self):
-        """Return True if instance is in running state."""
+        """Return True if the instance is in running state."""
         return self._get_instance_state() == 'ReadyRole'
 
     def _set_image_id(self):
+        """If an existing instance is used get image id from deployment."""
         try:
             properties = self.vm.service.get_hosted_service_properties(
                 service_name=self.running_instance,
@@ -186,6 +187,10 @@ class AzureProvider(IpaProvider):
             )
 
     def _set_instance_ip(self):
+        """Get the first ip from first deployment.
+
+        There is only one vm in current cloud service.
+        """
         cloud_service = self._get_cloud_service()
         service_info = cloud_service.get_properties(self.running_instance)
 
