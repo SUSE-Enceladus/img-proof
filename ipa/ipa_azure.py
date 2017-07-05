@@ -72,12 +72,12 @@ class AzureProvider(IpaProvider):
 
         self.ssh_user = ssh_user or AZURE_DEFAULT_USER
         self.storage_container = storage_container
-        self._get_account()
-        self.vm = VirtualMachine(self.account)
+        self.account = self._get_account()
+        self.vm = self._get_virtual_machine()
 
     def _create_cloud_service(self, instance_name):
         """Create cloud service if not exists."""
-        cloud_service = CloudService(self.account)
+        cloud_service = self._get_cloud_service()
         request_id = cloud_service.create(
             instance_name,
             self.region
@@ -103,7 +103,11 @@ class AzureProvider(IpaProvider):
             storage_container_name=self.storage_container
         )
 
-        self.account = AzureAccount(config)
+        return AzureAccount(config)
+
+    def _get_cloud_service(self):
+        """Return instance of CloudService class."""
+        return CloudService(self.account)
 
     def _get_instance_state(self):
         """
@@ -123,6 +127,10 @@ class AzureProvider(IpaProvider):
             )
 
         return state
+
+    def _get_virtual_machine(self):
+        """Return instance of VirtualMachine class."""
+        return VirtualMachine(self.account)
 
     def _launch_instance(self):
         """Create new test instance in cloud service with same name."""
@@ -178,7 +186,7 @@ class AzureProvider(IpaProvider):
             )
 
     def _set_instance_ip(self):
-        cloud_service = CloudService(self.account)
+        cloud_service = self._get_cloud_service()
         service_info = cloud_service.get_properties(self.running_instance)
 
         try:
@@ -208,7 +216,7 @@ class AzureProvider(IpaProvider):
 
     def _terminate_instance(self):
         """Terminate the cloud service and instance."""
-        cloud_service = CloudService(self.account)
+        cloud_service = self._get_cloud_service()
         cloud_service.delete(self.running_instance, complete=True)
 
     def _wait_on_instance(self, state):
