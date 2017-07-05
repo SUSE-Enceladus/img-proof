@@ -110,23 +110,8 @@ class AzureProvider(IpaProvider):
         return CloudService(self.account)
 
     def _get_instance_state(self):
-        """
-        Retrieve state of instance.
-
-        Raises:
-            AzureProviderException: If state is Undefined.
-
-        """
-        state = self.vm.instance_status(self.running_instance)
-        if state == 'Undefined':
-            raise AzureProviderException(
-                'Instance with id: {instance_id}, '
-                'cannot be found.'.format(
-                    instance_id=self.running_instance
-                )
-            )
-
-        return state
+        """Retrieve state of instance."""
+        return self.vm.instance_status(self.running_instance)
 
     def _get_virtual_machine(self):
         """Return instance of VirtualMachine class."""
@@ -169,8 +154,21 @@ class AzureProvider(IpaProvider):
         self._wait_on_instance('ReadyRole')
 
     def _is_instance_running(self):
-        """Return True if the instance is in running state."""
-        return self._get_instance_state() == 'ReadyRole'
+        """Return True if instance is in running state.
+
+        Raises:
+            AzureProviderException: If state is Undefined.
+
+        """
+        state = self._get_instance_state()
+
+        if state == 'Undefined':
+            raise AzureProviderException(
+                'Instance with name: %s, '
+                'cannot be found.' % self.running_instance
+            )
+
+        return state == 'ReadyRole'
 
     def _set_image_id(self):
         """If an existing instance is used get image id from deployment."""
@@ -228,8 +226,8 @@ class AzureProvider(IpaProvider):
         """Retrieve state for running instance."""
         current_state = 'Undefined'
         while state != current_state:
-            current_state = self._get_instance_state()
             time.sleep(10)
+            current_state = self._get_instance_state()
 
     def _wait_on_request(self, request_id):
         """Wait for request to complete."""
