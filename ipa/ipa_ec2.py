@@ -35,7 +35,7 @@ class EC2Provider(IpaProvider):
                  instance_type=None,
                  region=None,
                  results_dir=None,
-                 running_instance=None,
+                 running_instance_id=None,
                  secret_access_key=None,
                  ssh_key_name=None,
                  ssh_private_key=None,
@@ -53,7 +53,7 @@ class EC2Provider(IpaProvider):
                                           instance_type,
                                           region,
                                           results_dir,
-                                          running_instance,
+                                          running_instance_id,
                                           terminate,
                                           test_dirs,
                                           test_files)
@@ -126,7 +126,7 @@ class EC2Provider(IpaProvider):
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
         resource = self._connect()
-        return resource.Instance(self.running_instance)
+        return resource.Instance(self.running_instance_id)
 
     def _get_instance_state(self):
         """
@@ -145,7 +145,7 @@ class EC2Provider(IpaProvider):
             raise EC2ProviderException(
                 'Instance with id: {instance_id}, '
                 'cannot be found.'.format(
-                    instance_id=self.running_instance
+                    instance_id=self.running_instance_id
                 )
             )
         return state
@@ -171,7 +171,7 @@ class EC2Provider(IpaProvider):
         )
 
         instances[0].wait_until_running()
-        self.running_instance = instances[0].instance_id
+        self.running_instance_id = instances[0].instance_id
 
     def _set_image_id(self):
         instance = self._get_instance()

@@ -73,8 +73,8 @@ def main():
 )
 @click.option(
     '-R',
-    '--running-instance',
-    help='Running instance ID/Name.'
+    '--running-instance-id',
+    help='The ID or Name of running instance to test.'
 )
 @click.option(
     '--secret-access-key',
@@ -113,7 +113,7 @@ def test(access_key_id,
          image_id,
          instance_type,
          region,
-         running_instance,
+         running_instance_id,
          secret_access_key,
          ssh_private_key,
          ssh_user,
@@ -134,7 +134,7 @@ def test(access_key_id,
             image_id,
             instance_type,
             region,
-            running_instance,
+            running_instance_id,
             secret_access_key,
             ssh_private_key,
             ssh_user,

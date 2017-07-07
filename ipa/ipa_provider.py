@@ -50,7 +50,7 @@ class IpaProvider(object):
                  instance_type=None,
                  region=None,
                  results_dir=None,
-                 running_instance=None,
+                 running_instance_id=None,
                  terminate=None,
                  test_dirs=None,
                  test_files=None):
@@ -67,7 +67,7 @@ class IpaProvider(object):
         self.distro_name = self._get_value(distro_name)
         self.image_id = self._get_value(image_id)
         self.instance_type = self._get_value(instance_type)
-        self.running_instance = self._get_value(running_instance)
+        self.running_instance_id = self._get_value(running_instance_id)
         self.terminate = self._get_value(terminate)
         self.test_files = list(self._get_value(test_files, default=[]))
 
@@ -94,7 +94,7 @@ class IpaProvider(object):
                 'Distro name is required.'
             )
 
-        if not self.image_id and not self.running_instance:
+        if not self.image_id and not self.running_instance_id:
             raise IpaProviderException(
                 'Image ID or running instance is required.'
             )
@@ -243,7 +243,7 @@ class IpaProvider(object):
             self.results_dir,
             self.provider,
             self.image_id,
-            self.running_instance
+            self.running_instance_id
         )
 
         if not os.path.exists(self.results_dir):
@@ -294,7 +294,7 @@ class IpaProvider(object):
             A tuple with the exit code and results json.
 
         """
-        if self.running_instance:
+        if self.running_instance_id:
             # Use existing instance
             self._start_instance_if_stopped()
             self._set_image_id()

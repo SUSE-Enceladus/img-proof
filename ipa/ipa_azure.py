@@ -37,7 +37,7 @@ class AzureProvider(IpaProvider):
                  instance_type=None,
                  region=None,
                  results_dir=None,
-                 running_instance=None,
+                 running_instance_id=None,
                  secret_access_key=None,  # Not used in Azure
                  ssh_private_key=None,
                  ssh_user=None,
@@ -54,7 +54,7 @@ class AzureProvider(IpaProvider):
                                             instance_type,
                                             region,
                                             results_dir,
-                                            running_instance,
+                                            running_instance_id,
                                             terminate,
                                             test_dirs,
                                             test_files)
@@ -111,7 +111,7 @@ class AzureProvider(IpaProvider):
 
     def _get_instance_state(self):
         """Retrieve state of instance."""
-        return self.vm.instance_status(self.running_instance)
+        return self.vm.instance_status(self.running_instance_id)
 
     def _get_virtual_machine(self):
         """Return instance of VirtualMachine class."""
@@ -150,7 +150,7 @@ class AzureProvider(IpaProvider):
             machine_size=self.instance_type or AZURE_DEFAULT_TYPE
         )
 
-        self.running_instance = instance_name
+        self.running_instance_id = instance_name
         self._wait_on_instance('ReadyRole')
 
     def _is_instance_running(self):
@@ -165,7 +165,7 @@ class AzureProvider(IpaProvider):
         if state == 'Undefined':
             raise AzureProviderException(
                 'Instance with name: %s, '
-                'cannot be found.' % self.running_instance
+                'cannot be found.' % self.running_instance_id
             )
 
         return state == 'ReadyRole'
@@ -174,7 +174,7 @@ class AzureProvider(IpaProvider):
         """If an existing instance is used get image id from deployment."""
         try:
             properties = self.vm.service.get_hosted_service_properties(
-                service_name=self.running_instance,
+                service_name=self.running_instance_id,
                 embed_detail=True
             )
             self.image_id = properties.deployments[0].role_list[0]\
@@ -190,7 +190,7 @@ class AzureProvider(IpaProvider):
         There is only one vm in current cloud service.
         """
         cloud_service = self._get_cloud_service()
-        service_info = cloud_service.get_properties(self.running_instance)
+        service_info = cloud_service.get_properties(self.running_instance_id)
 
         try:
             self.instance_ip = \
@@ -203,16 +203,16 @@ class AzureProvider(IpaProvider):
     def _start_instance(self):
         """Start the instance."""
         self.vm.start_instance(
-           cloud_service_name=self.running_instance,
-           instance_name=self.running_instance
+           cloud_service_name=self.running_instance_id,
+           instance_name=self.running_instance_id
         )
         self._wait_on_instance('ReadyRole')
 
     def _stop_instance(self):
         """Stop the instance."""
         self.vm.shutdown_instance(
-            cloud_service_name=self.running_instance,
-            instance_name=self.running_instance,
+            cloud_service_name=self.running_instance_id,
+            instance_name=self.running_instance_id,
             deallocate_resources=True
         )
         self._wait_on_instance('StoppedDeallocated')
@@ -220,7 +220,7 @@ class AzureProvider(IpaProvider):
     def _terminate_instance(self):
         """Terminate the cloud service and instance."""
         cloud_service = self._get_cloud_service()
-        cloud_service.delete(self.running_instance, complete=True)
+        cloud_service.delete(self.running_instance_id, complete=True)
 
     def _wait_on_instance(self, state):
         """Retrieve state for running instance."""
