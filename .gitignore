@@ -47,3 +47,5 @@ Session.vim
 ### pip ###
 pip-selfcheck.json
 
+### ipa ###
+results/
