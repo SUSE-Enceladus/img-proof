@@ -10,6 +10,7 @@
 
 import importlib
 import json
+import logging
 import os
 import shlex
 from datetime import datetime
@@ -49,6 +50,7 @@ class IpaProvider(object):
                  early_exit=None,
                  image_id=None,
                  instance_type=None,
+                 log_level=None,
                  region=None,
                  results_dir=None,
                  running_instance_id=None,
@@ -56,9 +58,20 @@ class IpaProvider(object):
                  test_files=None):
         """Initialize base provider class."""
         super(IpaProvider, self).__init__()
+        log_level = log_level or logging.INFO
+        self.logger = logging.getLogger('ipa')
+        self.logger.setLevel(log_level)
+
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(log_level)
+        console_handler.setFormatter(logging.Formatter('%(message)s'))
+
+        self.logger.addHandler(console_handler)
+
         # Get ipa ini config file
         self.config = config or IPA_CONFIG_FILE
         self.ipa_config = ipa_utils.get_config(self.config)
+        self.logger.debug('Using ipa config file: %s' % self.config)
 
         self.instance_ip = None
         self.provider = provider
@@ -253,10 +266,12 @@ class IpaProvider(object):
         self.out_file = ''.join(
             [self.results_dir, os.sep, time_stamp, '.log']
         )
+        self.logger.debug('Created log file %s' % self.out_file)
 
         self.results_file = ''.join(
             [self.results_dir, os.sep, time_stamp, '.results']
         )
+        self.logger.debug('Created results file %s' % self.results_file)
 
     def _start_instance(self):
         """Start the instance."""
@@ -265,6 +280,7 @@ class IpaProvider(object):
     def _start_instance_if_stopped(self):
         """Start instance if stopped."""
         if not self._is_instance_running():
+            self.logger.info('Starting instance')
             self._start_instance()
 
     def _stop_instance(self):
@@ -300,8 +316,10 @@ class IpaProvider(object):
             self._set_image_id()
         else:
             # Launch new instance
+            self.logger.info('Launching new instance')
             self._launch_instance()
         self._set_instance_ip()
+        self.logger.debug('IP of instance: %s' % self.instance_ip)
 
         try:
             # Ensure instance running and SSH connection
@@ -320,6 +338,7 @@ class IpaProvider(object):
                 as ssh_config:
             for item in self.test_files:
                 if item == 'test_hard_reboot':
+                    self.logger.info('Testing hard reboot')
                     try:
                         self.hard_reboot_instance()
                         self._get_ssh_client()
@@ -333,6 +352,7 @@ class IpaProvider(object):
                             'Instance failed hard reboot: %s' % error
                         )
                 elif item == 'test_soft_reboot':
+                    self.logger.info('Testing soft reboot')
                     try:
                         self.distro.reboot(self._get_ssh_client())
                         self._get_ssh_client()
@@ -346,6 +366,7 @@ class IpaProvider(object):
                             'Instance failed soft reboot: %s' % error
                         )
                 elif isinstance(item, set):
+                    self.logger.info('Running tests %s' % ' '.join(item))
                     with open(self.out_file, 'a') as out_file:
                         with ipa_utils.redirect_output(out_file):
                             # Run tests
@@ -361,6 +382,9 @@ class IpaProvider(object):
         # If tests pass and cleanup flag is none, or
         # cleanup flag is true, terminate instance.
         if status == 0 and self.cleanup is None or self.cleanup:
+            self.logger.info(
+                'Terminating instance %s' % self.running_instance_id
+            )
             self._terminate_instance()
 
         self._save_results()

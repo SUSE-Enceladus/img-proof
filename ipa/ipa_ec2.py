@@ -34,6 +34,7 @@ class EC2Provider(IpaProvider):
                  early_exit=None,
                  image_id=None,
                  instance_type=None,
+                 log_level=30,
                  region=None,
                  results_dir=None,
                  running_instance_id=None,
@@ -52,6 +53,7 @@ class EC2Provider(IpaProvider):
                                           early_exit,
                                           image_id,
                                           instance_type,
+                                          log_level,
                                           region,
                                           results_dir,
                                           running_instance_id,
@@ -69,6 +71,9 @@ class EC2Provider(IpaProvider):
 
         self.account_name = account_name
         self.ec2_config = ipa_utils.get_config(EC2_CONFIG_FILE)
+        self.logger.debug(
+            'Using EC2 config file: %s' % EC2_CONFIG_FILE
+        )
 
         self.access_key_id = (
             access_key_id or

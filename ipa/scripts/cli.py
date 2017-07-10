@@ -9,6 +9,7 @@
 #
 # See LICENSE for license information.
 
+import logging
 import sys
 
 import click
@@ -72,6 +73,25 @@ def main():
     help='Instance type to use for launching machine.'
 )
 @click.option(
+    '--debug',
+    'log_level',
+    flag_value=logging.DEBUG,
+    help='Display debug level logging to console.'
+)
+@click.option(
+    '--verbose',
+    'log_level',
+    flag_value=logging.INFO,
+    default=True,
+    help='(Default) Display logging info to console.'
+)
+@click.option(
+    '--quiet',
+    'log_level',
+    flag_value=logging.WARNING,
+    help='Silence logging information on test run.'
+)
+@click.option(
     '-r',
     '--region',
     help='Cloud provider region to test image.'
@@ -113,6 +133,7 @@ def test(access_key_id,
          early_exit,
          image_id,
          instance_type,
+         log_level,
          region,
          running_instance_id,
          secret_access_key,
@@ -122,7 +143,6 @@ def test(access_key_id,
          provider,
          tests):
     """Test image in the given cloud framework using the supplied test file."""
-    click.secho('Testing image...', fg='green')
     try:
         status, results = test_image(
             provider,
@@ -134,6 +154,7 @@ def test(access_key_id,
             early_exit,
             image_id,
             instance_type,
+            log_level,
             region,
             running_instance_id,
             secret_access_key,
@@ -144,9 +165,12 @@ def test(access_key_id,
         )
         # TODO: Print results
         sys.exit(status)
-    except Exception as e:
+    except Exception as error:
+        if log_level == logging.DEBUG:
+            raise
+
         click.secho(
-            "{}: {}".format(type(e).__name__, e),
+            "{}: {}".format(type(error).__name__, error),
             fg='red'
         )
         sys.exit(1)
