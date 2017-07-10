@@ -10,8 +10,6 @@
 
 import boto3
 
-from botocore.exceptions import ClientError
-
 from ipa import ipa_utils
 from ipa.ipa_constants import (
     EC2_CONFIG_FILE,
@@ -116,6 +114,8 @@ class EC2Provider(IpaProvider):
                 aws_secret_access_key=self.secret_access_key,
                 region_name=self.region
             )
+            # boto3 resource is lazy so attempt method to test connection
+            resource.meta.client.describe_account_attributes()
         except:
             raise EC2ProviderException(
                 'Could not connect to region: %s' % self.region
@@ -150,7 +150,7 @@ class EC2Provider(IpaProvider):
         state = None
         try:
             state = instance.state['Name']
-        except ClientError:
+        except:
             raise EC2ProviderException(
                 'Instance with id: {instance_id}, '
                 'cannot be found.'.format(
