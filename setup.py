@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """Setup script."""
+
 # Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
@@ -14,7 +15,7 @@ with open('README.asciidoc') as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    # 'azurectl',
+    'azurectl',
     'boto3',
     'Click',
     'paramiko',
@@ -52,6 +53,9 @@ setup(
         ]
     },
     include_package_data=True,
+    dependency_links=[
+        'git+https://github.com/SUSE/azurectl.git@master#egg=azurectl-2.3.2',
+    ],
     install_requires=requirements,
     extras_require={
         'dev': dev_requirements,
@@ -61,7 +65,8 @@ setup(
     zip_safe=False,
     keywords='ipa',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
+        'Environment :: Console',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Testing',
         'License :: OSI Approved :: MIT License',
