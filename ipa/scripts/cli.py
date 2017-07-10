@@ -92,6 +92,10 @@ def main():
     help='Silence logging information on test run.'
 )
 @click.option(
+    '--provider-config',
+    help='The provider specific config file location.'
+)
+@click.option(
     '-r',
     '--region',
     help='Cloud provider region to test image.'
@@ -142,6 +146,7 @@ def test(access_key_id,
          image_id,
          instance_type,
          log_level,
+         provider_config,
          region,
          results_dir,
          running_instance_id,
@@ -165,6 +170,7 @@ def test(access_key_id,
             image_id,
             instance_type,
             log_level,
+            provider_config,
             region,
             results_dir,
             running_instance_id,

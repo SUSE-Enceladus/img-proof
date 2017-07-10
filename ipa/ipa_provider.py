@@ -51,6 +51,7 @@ class IpaProvider(object):
                  image_id=None,
                  instance_type=None,
                  log_level=None,
+                 provider_config=None,
                  region=None,
                  results_dir=None,
                  running_instance_id=None,
@@ -83,6 +84,11 @@ class IpaProvider(object):
         self.instance_type = self._get_value(instance_type)
         self.running_instance_id = self._get_value(running_instance_id)
         self.test_files = list(self._get_value(test_files, default=[]))
+
+        self.provider_config = self._get_value(
+            provider_config,
+            config_key='provider_config'
+        )
 
         self.region = self._get_value(
             region,
@@ -124,6 +130,7 @@ class IpaProvider(object):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
     def _get_ssh_client(self):
+        """Return a new or existing SSH client for given ip."""
         return ipa_utils.get_ssh_client(
             self.instance_ip,
             self.ssh_private_key,

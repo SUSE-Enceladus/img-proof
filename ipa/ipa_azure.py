@@ -37,6 +37,7 @@ class AzureProvider(IpaProvider):
                  image_id=None,
                  instance_type=None,
                  log_level=30,
+                 provider_config=None,
                  region=None,
                  results_dir=None,
                  running_instance_id=None,
@@ -56,6 +57,7 @@ class AzureProvider(IpaProvider):
                                             image_id,
                                             instance_type,
                                             log_level,
+                                            provider_config,
                                             region,
                                             results_dir,
                                             running_instance_id,
@@ -64,7 +66,6 @@ class AzureProvider(IpaProvider):
 
         azurectl.logger.init()
         self.account_name = account_name
-        self.azure_config = None
 
         if not ssh_private_key:
             raise AzureProviderException(
@@ -100,8 +101,16 @@ class AzureProvider(IpaProvider):
 
     def _get_account(self):
         """Create an account object."""
+        if self.provider_config:
+            self.logger.debug(
+                'Using Azure config file: %s' % self.provider_config
+            )
+        else:
+            self.logger.debug('Using default Azure config file')
+
         config = AzurectlConfig(
             account_name=self.account_name,
+            filename=self.provider_config,
             region_name=self.region,
             storage_container_name=self.storage_container
         )
@@ -119,6 +128,23 @@ class AzureProvider(IpaProvider):
     def _get_virtual_machine(self):
         """Return instance of VirtualMachine class."""
         return VirtualMachine(self.account)
+
+    def _is_instance_running(self):
+        """Return True if instance is in running state.
+
+        Raises:
+            AzureProviderException: If state is Undefined.
+
+        """
+        state = self._get_instance_state()
+
+        if state == 'Undefined':
+            raise AzureProviderException(
+                'Instance with name: %s, '
+                'cannot be found.' % self.running_instance_id
+            )
+
+        return state == 'ReadyRole'
 
     def _launch_instance(self):
         """Create new test instance in cloud service with same name."""
@@ -155,23 +181,6 @@ class AzureProvider(IpaProvider):
 
         self.running_instance_id = instance_name
         self._wait_on_instance('ReadyRole')
-
-    def _is_instance_running(self):
-        """Return True if instance is in running state.
-
-        Raises:
-            AzureProviderException: If state is Undefined.
-
-        """
-        state = self._get_instance_state()
-
-        if state == 'Undefined':
-            raise AzureProviderException(
-                'Instance with name: %s, '
-                'cannot be found.' % self.running_instance_id
-            )
-
-        return state == 'ReadyRole'
 
     def _set_image_id(self):
         """If an existing instance is used get image id from deployment."""

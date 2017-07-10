@@ -35,6 +35,7 @@ class EC2Provider(IpaProvider):
                  image_id=None,
                  instance_type=None,
                  log_level=30,
+                 provider_config=None,
                  region=None,
                  results_dir=None,
                  running_instance_id=None,
@@ -54,14 +55,17 @@ class EC2Provider(IpaProvider):
                                           image_id,
                                           instance_type,
                                           log_level,
+                                          provider_config,
                                           region,
                                           results_dir,
                                           running_instance_id,
                                           test_dirs,
                                           test_files)
+        config_file = self.provider_config or EC2_CONFIG_FILE
+
         if not account_name:
             raise EC2ProviderException(
-                'Account required for config file: %s' % EC2_CONFIG_FILE
+                'Account required for config file: %s' % config_file
             )
 
         if not self.region:
@@ -70,9 +74,9 @@ class EC2Provider(IpaProvider):
             )
 
         self.account_name = account_name
-        self.ec2_config = ipa_utils.get_config(EC2_CONFIG_FILE)
+        self.ec2_config = ipa_utils.get_config(config_file)
         self.logger.debug(
-            'Using EC2 config file: %s' % EC2_CONFIG_FILE
+            'Using EC2 config file: %s' % config_file
         )
 
         self.access_key_id = (
