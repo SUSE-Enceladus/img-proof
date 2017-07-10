@@ -18,10 +18,10 @@ from azurectl.instance.cloud_service import CloudService
 from azurectl.instance.virtual_machine import VirtualMachine
 from azurectl.management.request_result import RequestResult
 
+from ipa import ipa_utils
 from ipa.ipa_constants import AZURE_DEFAULT_TYPE, AZURE_DEFAULT_USER
 from ipa.ipa_exceptions import AzureProviderException
 from ipa.ipa_provider import IpaProvider
-from ipa import ipa_utils
 
 
 class AzureProvider(IpaProvider):
