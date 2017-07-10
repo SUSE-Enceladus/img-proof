@@ -183,10 +183,15 @@ class EC2Provider(IpaProvider):
         self.running_instance_id = instances[0].instance_id
 
     def _set_image_id(self):
+        """If existing image used get image id from boto3."""
         instance = self._get_instance()
         self.image_id = instance.image_id
 
     def _set_instance_ip(self):
+        """Get instance ip of instance.
+
+        Current prefrence is for ipv4.
+        """
         instance = self._get_instance()
         if instance.public_ip_address:
             self.instance_ip = instance.public_ip_address
