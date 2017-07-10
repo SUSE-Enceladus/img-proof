@@ -198,9 +198,13 @@ class IpaProvider(object):
         The test files are expanded to absolute paths given
         test names and a list of availble test dirs to use.
         """
-        # TEST_PATHS is a tuple to be immutable.
-        self.test_dirs = set(TEST_PATHS)
+        self.test_dirs = set()
         if test_dirs:
+            if not isinstance(test_dirs, (list, set, tuple)):
+                raise IpaProviderException(
+                    'Test dirs must be a list containing test directories.'
+                )
+
             # Command line arg
             self.test_dirs.update(test_dirs)
 
@@ -215,6 +219,10 @@ class IpaProvider(object):
 
             if test_dirs:
                 self.test_dirs.update(test_dirs.split(','))
+
+        if not self.test_dirs:
+            # If no directories provided by config or args use defaults
+            self.test_dirs.update(TEST_PATHS)
 
         # Confirm all test dir paths are absolute and normalized
         # (remove redundant slashes .../ ...// etc.)
