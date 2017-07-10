@@ -1,6 +1,7 @@
-"""Distro module provides distrobution specific synch points."""
 # -*- coding: utf-8 -*-
-#
+
+"""Distro module provides distrobution specific synch points."""
+
 # Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.

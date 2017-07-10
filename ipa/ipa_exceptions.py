@@ -1,6 +1,7 @@
-"""Ipa exceptions module."""
 # -*- coding: utf-8 -*-
-#
+
+"""Ipa exceptions module."""
+
 # Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.

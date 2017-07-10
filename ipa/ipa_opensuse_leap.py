@@ -1,6 +1,7 @@
-"""openSUSE Leap distro module and sync points."""
 # -*- coding: utf-8 -*-
-#
+
+"""openSUSE Leap distro module and sync points."""
+
 # Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.

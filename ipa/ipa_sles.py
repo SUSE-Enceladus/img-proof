@@ -1,6 +1,7 @@
-"""SLES distro module and sync points."""
 # -*- coding: utf-8 -*-
-#
+
+"""SLES distro module and sync points."""
+
 # Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
@@ -32,7 +33,7 @@ class SLES(Distro):
 
     def get_stop_ssh_service_cmd(self):
         """
-        Return command to stop SSH service for SUSE.
+        Return command to stop SSH service for SLES.
 
         SSH stop command determined by init system.
         """

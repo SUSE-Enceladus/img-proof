@@ -1,6 +1,7 @@
-"""Utility methods."""
 # -*- coding: utf-8 -*-
-#
+
+"""Utility methods."""
+
 # Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
@@ -17,16 +18,16 @@ import os
 import random
 import sys
 import time
+
+import paramiko
+import yaml
+
 from contextlib import contextmanager
 from string import ascii_lowercase
 from tempfile import NamedTemporaryFile
 
 from ipa.ipa_constants import SYNC_POINTS
 from ipa.ipa_exceptions import IpaSSHException, IpaUtilsException
-
-import paramiko
-
-import yaml
 
 CLIENT_CACHE = {}
 
@@ -191,7 +192,7 @@ def get_from_config(config, section, default_section, entry):
             value = config.get(default_section, entry)
         except ConfigParser.Error:
             raise IpaUtilsException(
-                'Unable to get %s value from config' % entry
+                'Unable to get %s value from config.' % entry
             )
     return value
 

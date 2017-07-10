@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-#
-# Copyright (c) 2017 SUSE LLC, Sean marlow
+
+"""ipa (Image Proofing App) testing framework package."""
+
+# Copyright (c) 2017 SUSE LLC
 #
 # This file is part of ipa.
 #
