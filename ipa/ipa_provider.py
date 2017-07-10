@@ -13,6 +13,9 @@ import json
 import logging
 import os
 import shlex
+
+import pytest
+
 from datetime import datetime
 
 from ipa import ipa_utils
@@ -29,8 +32,6 @@ from ipa.ipa_exceptions import (
     IpaUtilsException
 )
 from ipa.results_plugin import JSONReport
-
-import pytest
 
 
 class IpaProvider(object):
@@ -162,6 +163,7 @@ class IpaProvider(object):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
     def _merge_results(self, results):
+        """Combine results of test run with exisiting dict."""
         self.results['tests'] += results['tests']
 
         for key, value in results['summary'].items():
@@ -220,8 +222,10 @@ class IpaProvider(object):
             self.instance_ip,
             ' '.join(tests)
         )
+
+        # Print output captured to log file for test run
         print(
-            'Test directories: \n{}\n'.format(
+            '\nTest directories:\n{}\n'.format(
                 '\n'.join(self.test_dirs)
             )
         )
