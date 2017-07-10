@@ -57,6 +57,11 @@ def main():
     help='The distribution of the image.'
 )
 @click.option(
+    '--early-exit',
+    is_flag=True,
+    help='Terminate test suite on first failure.'
+)
+@click.option(
     '-i',
     '--image-id',
     help='The ID of the image used for instance.'
@@ -95,11 +100,6 @@ def main():
     '--storage-container',
     help='Azure storage container to use.'
 )
-@click.option(
-    '--terminate',
-    is_flag=True,
-    help='Terminate test suite on first failure.'
-)
 @click.argument(
     'provider',
     type=click.Choice(SUPPORTED_PROVIDERS)
@@ -110,6 +110,7 @@ def test(access_key_id,
          cleanup,
          config,
          distro,
+         early_exit,
          image_id,
          instance_type,
          region,
@@ -118,7 +119,6 @@ def test(access_key_id,
          ssh_private_key,
          ssh_user,
          storage_container,
-         terminate,
          provider,
          tests):
     """Test image in the given cloud framework using the supplied test file."""
@@ -131,6 +131,7 @@ def test(access_key_id,
             cleanup,
             config,
             distro,
+            early_exit,
             image_id,
             instance_type,
             region,
@@ -139,7 +140,6 @@ def test(access_key_id,
             ssh_private_key,
             ssh_user,
             storage_container,
-            terminate,
             tests
         )
         # TODO: Print results

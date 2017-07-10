@@ -20,6 +20,7 @@ def test_image(provider_name,
                cleanup=None,
                config=None,
                distro=None,
+               early_exit=None,
                image_id=None,
                instance_type=None,
                region=None,
@@ -28,7 +29,6 @@ def test_image(provider_name,
                ssh_private_key=None,
                ssh_user=None,
                storage_container=None,
-               terminate=None,
                tests=None):
     """Creates a cloud provider instance and initiates testing."""
     if provider_name in SUPPORTED_PROVIDERS:
@@ -43,6 +43,7 @@ def test_image(provider_name,
             cleanup=cleanup,
             config=config,
             distro_name=distro,
+            early_exit=early_exit,
             image_id=image_id,
             instance_type=instance_type,
             region=region,
@@ -51,7 +52,6 @@ def test_image(provider_name,
             ssh_private_key=ssh_private_key,
             ssh_user=ssh_user,
             storage_container=storage_container,
-            terminate=terminate,
             test_files=tests
         )
     else:

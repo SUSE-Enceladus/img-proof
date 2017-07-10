@@ -46,12 +46,12 @@ class IpaProvider(object):
                  cleanup=None,
                  config=None,
                  distro_name=None,
+                 early_exit=None,
                  image_id=None,
                  instance_type=None,
                  region=None,
                  results_dir=None,
                  running_instance_id=None,
-                 terminate=None,
                  test_dirs=None,
                  test_files=None):
         """Initialize base provider class."""
@@ -65,10 +65,10 @@ class IpaProvider(object):
 
         self.cleanup = self._get_value(cleanup)
         self.distro_name = self._get_value(distro_name)
+        self.early_exit = self._get_value(early_exit)
         self.image_id = self._get_value(image_id)
         self.instance_type = self._get_value(instance_type)
         self.running_instance_id = self._get_value(running_instance_id)
-        self.terminate = self._get_value(terminate)
         self.test_files = list(self._get_value(test_files, default=[]))
 
         self.region = self._get_value(
@@ -191,7 +191,7 @@ class IpaProvider(object):
     def _run_tests(self, tests, ssh_config):
         """Run the test suite on the image."""
         options = []
-        if self.terminate:
+        if self.early_exit:
             options.append('-x')
 
         args = "-v {} --ssh-config={} --hosts={} {}".format(
@@ -355,7 +355,7 @@ class IpaProvider(object):
                     # Todo log unidentified test item and/or raise exception
                     pass
 
-                if status and self.terminate:
+                if status and self.early_exit:
                     break
 
         # If tests pass and cleanup flag is none, or

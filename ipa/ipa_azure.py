@@ -33,6 +33,7 @@ class AzureProvider(IpaProvider):
                  cleanup=None,
                  config=None,
                  distro_name=None,
+                 early_exit=None,
                  image_id=None,
                  instance_type=None,
                  region=None,
@@ -42,7 +43,6 @@ class AzureProvider(IpaProvider):
                  ssh_private_key=None,
                  ssh_user=None,
                  storage_container=None,
-                 terminate=None,
                  test_dirs=None,
                  test_files=None):
         """Initialize Azure Provider class."""
@@ -50,12 +50,12 @@ class AzureProvider(IpaProvider):
                                             cleanup,
                                             config,
                                             distro_name,
+                                            early_exit,
                                             image_id,
                                             instance_type,
                                             region,
                                             results_dir,
                                             running_instance_id,
-                                            terminate,
                                             test_dirs,
                                             test_files)
 

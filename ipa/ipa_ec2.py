@@ -31,6 +31,7 @@ class EC2Provider(IpaProvider):
                  cleanup=None,
                  config=None,
                  distro_name=None,
+                 early_exit=None,
                  image_id=None,
                  instance_type=None,
                  region=None,
@@ -41,7 +42,6 @@ class EC2Provider(IpaProvider):
                  ssh_private_key=None,
                  ssh_user=None,
                  storage_container=None,  # Not used in EC2
-                 terminate=None,
                  test_dirs=None,
                  test_files=None):
         """Initialize EC2 provider class."""
@@ -49,12 +49,12 @@ class EC2Provider(IpaProvider):
                                           cleanup,
                                           config,
                                           distro_name,
+                                          early_exit,
                                           image_id,
                                           instance_type,
                                           region,
                                           results_dir,
                                           running_instance_id,
-                                          terminate,
                                           test_dirs,
                                           test_files)
         if not account_name:
