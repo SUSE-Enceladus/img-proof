@@ -409,8 +409,9 @@ class IpaProvider(object):
                             status = (status or
                                       self._run_tests(item, ssh_config))
                 else:
-                    # Todo log unidentified test item and/or raise exception
-                    pass
+                    raise IpaProviderException(
+                        'Invalid test item in list: %s' % item
+                    )
 
                 if status and self.early_exit:
                     break
