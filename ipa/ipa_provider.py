@@ -162,6 +162,25 @@ class IpaProvider(object):
     def _launch_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
+    def _log_info(self):
+        """Output test run information to top of log file."""
+        self.results['info'] = {
+            'platform': self.provider,
+            'distro': self.distro_name,
+            'image': self.image_id,
+            'instance': self.running_instance_id,
+            'timestamp': self.time_stamp
+        }
+
+        with open(self.log_file, 'a') as log_file:
+            log_file.write(
+                '\n'.join(
+                    '%s: %s' % (key, val) for key, val
+                    in self.results['info'].items()
+                )
+            )
+            log_file.write('\n')
+
     def _merge_results(self, results):
         """Combine results of test run with exisiting dict."""
         self.results['tests'] += results['tests']
@@ -229,7 +248,7 @@ class IpaProvider(object):
                 '\n'.join(self.test_dirs)
             )
         )
-        print('Arguments: \n{}\n'.format(args))
+        print('Arguments:\n{}\n'.format(args))
 
         cmds = shlex.split(args)
         plugin = JSONReport()
@@ -270,17 +289,22 @@ class IpaProvider(object):
             self.running_instance_id
         )
 
-        if not os.path.exists(self.results_dir):
+        try:
             os.makedirs(self.results_dir)
+        except OSError as error:
+            if not os.path.isdir(self.results_dir):
+                raise IpaProviderException(
+                    'Unable to create ipa results directory: %s' % error
+                )
 
-        time_stamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        self.out_file = ''.join(
-            [self.results_dir, os.sep, time_stamp, '.log']
+        self.time_stamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        self.log_file = ''.join(
+            [self.results_dir, os.sep, self.time_stamp, '.log']
         )
-        self.logger.debug('Created log file %s' % self.out_file)
+        self.logger.debug('Created log file %s' % self.log_file)
 
         self.results_file = ''.join(
-            [self.results_dir, os.sep, time_stamp, '.results']
+            [self.results_dir, os.sep, self.time_stamp, '.results']
         )
         self.logger.debug('Created results file %s' % self.results_file)
 
@@ -343,8 +367,9 @@ class IpaProvider(object):
 
         self._set_results_dir()
         self._set_distro()
-        status = 0
+        self._log_info()
 
+        status = 0
         with ipa_utils.ssh_config(self.ssh_user, self.ssh_private_key)\
                 as ssh_config:
             for item in self.test_files:
@@ -378,8 +403,8 @@ class IpaProvider(object):
                         )
                 elif isinstance(item, set):
                     self.logger.info('Running tests %s' % ' '.join(item))
-                    with open(self.out_file, 'a') as out_file:
-                        with ipa_utils.redirect_output(out_file):
+                    with open(self.log_file, 'a') as log_file:
+                        with ipa_utils.redirect_output(log_file):
                             # Run tests
                             status = (status or
                                       self._run_tests(item, ssh_config))
