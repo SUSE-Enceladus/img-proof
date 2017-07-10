@@ -49,7 +49,7 @@ def main():
     '-C',
     '--config',
     type=click.Path(exists=True),
-    help='ipa config file location.'
+    help='ipa config file location. Default: ~/.config/ipa/config'
 )
 @click.option(
     '-d',
@@ -97,6 +97,10 @@ def main():
     help='Cloud provider region to test image.'
 )
 @click.option(
+    '--results-dir',
+    help='Directory to store test results and output.'
+)
+@click.option(
     '-R',
     '--running-instance-id',
     help='The ID or Name of running instance to test.'
@@ -139,6 +143,7 @@ def test(access_key_id,
          instance_type,
          log_level,
          region,
+         results_dir,
          running_instance_id,
          secret_access_key,
          ssh_key_name,
@@ -161,6 +166,7 @@ def test(access_key_id,
             instance_type,
             log_level,
             region,
+            results_dir,
             running_instance_id,
             secret_access_key,
             ssh_key_name,
