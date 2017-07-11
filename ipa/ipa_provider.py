@@ -351,7 +351,6 @@ class IpaProvider(object):
 
         Returns:
             A tuple with the exit code and results json.
-
         """
         if self.running_instance_id:
             # Use existing instance

@@ -53,7 +53,6 @@ def establish_ssh_connection(ip,
     Raises:
         IpaProviderException: If connection cannot be established
             in given number of attempts.
-
     """
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -87,7 +86,6 @@ def execute_ssh_command(client, cmd):
         String output of cmd execution.
     Raises:
         IpaSSHException: If stderr returns a non-empty string.
-
     """
     try:
         stdin, stdout, stderr = client.exec_command(cmd)
@@ -111,7 +109,6 @@ def expand_test_files(test_dirs, names):
         List of test files split into sets by sync points.
     Raises:
         IpaUtilsException: If names is not a list.
-
     """
     if not isinstance(names, list):
         raise IpaUtilsException(
@@ -143,7 +140,6 @@ def find_test_file(name, tests):
 
     Raises:
         IpaUtilsException: If test file not found.
-
     """
     try:
         test_name, test_case = name.split('::', 1)
@@ -248,7 +244,6 @@ def get_test_files(test_dirs):
         IpaUtilsException: If there are multiple test files or
             test descriptions with the same name. Or, if there is a
             name overlap with a test file and test description.
-
     """
     tests = {}
     descriptions = {}
@@ -303,7 +298,6 @@ def get_tests_from_description(name,
                        recursion.
     Returns:
         A list of expanded test files.
-
     """
     tests = []
     if not parsed:
@@ -376,7 +370,6 @@ def parse_sync_points(names, tests):
         [set('test1', 'test2')]
         [set('test1', 'test2'), 'test_soft_reboot']
         [set('test1', 'test2'), 'test_soft_reboot', set('test3')]
-
     """
     test_files = []
     section = set()

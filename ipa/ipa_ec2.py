@@ -143,7 +143,6 @@ class EC2Provider(IpaProvider):
 
         Raises:
             EC2ProviderException: If the instance cannot be found.
-
         """
         instance = self._get_instance()
 
@@ -188,7 +187,8 @@ class EC2Provider(IpaProvider):
         self.image_id = instance.image_id
 
     def _set_instance_ip(self):
-        """Get instance ip of instance.
+        """
+        Get instance ip of instance.
 
         Current prefrence is for ipv4.
         """

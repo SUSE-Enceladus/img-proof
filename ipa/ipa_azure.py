@@ -130,11 +130,11 @@ class AzureProvider(IpaProvider):
         return VirtualMachine(self.account)
 
     def _is_instance_running(self):
-        """Return True if instance is in running state.
+        """
+        Return True if instance is in running state.
 
         Raises:
             AzureProviderException: If state is Undefined.
-
         """
         state = self._get_instance_state()
 
@@ -197,7 +197,8 @@ class AzureProvider(IpaProvider):
             )
 
     def _set_instance_ip(self):
-        """Get the first ip from first deployment.
+        """
+        Get the first ip from first deployment.
 
         There is only one vm in current cloud service.
         """
