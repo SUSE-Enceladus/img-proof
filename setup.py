@@ -15,7 +15,7 @@ with open('README.asciidoc') as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    'azurectl',
+    'azurectl>=2.3.2',
     'boto3',
     'Click',
     'paramiko',
