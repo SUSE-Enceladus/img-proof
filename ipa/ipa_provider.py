@@ -394,6 +394,7 @@ class IpaProvider(object):
                         raise IpaProviderException(
                             'Instance failed hard reboot: %s' % error
                         )
+
                 elif item == 'test_soft_reboot':
                     self.logger.info('Testing soft reboot')
                     try:
@@ -408,6 +409,18 @@ class IpaProvider(object):
                         raise IpaProviderException(
                             'Instance failed soft reboot: %s' % error
                         )
+
+                elif item == 'test_update':
+                    self.logger.info('Testing update')
+                    try:
+                        out = self.distro.update(self._get_ssh_client())
+                    except Exception as error:
+                        raise IpaProviderException(
+                            'Instance failed to update: %s' % error
+                        )
+                    with open(self.log_file, 'a') as log_file:
+                        log_file.write(out)
+
                 elif isinstance(item, set):
                     self.logger.info('Running tests %s' % ' '.join(item))
                     with open(self.log_file, 'a') as log_file:
