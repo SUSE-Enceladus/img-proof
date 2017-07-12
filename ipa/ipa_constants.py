@@ -28,7 +28,8 @@ IPA_RESULTS_PATH = os.path.join(HOME, 'ipa', 'results')
 
 SYNC_POINTS = (
     'test_hard_reboot',
-    'test_soft_reboot'
+    'test_soft_reboot',
+    'test_update'
 )
 
 TEST_PATHS = (

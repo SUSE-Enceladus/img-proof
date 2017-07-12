@@ -31,6 +31,10 @@ class SLES(Distro):
         if out:
             self.init_system = out.strip()
 
+    def get_refresh_repo_cmd(self):
+        """Return refresh repo command for SLES."""
+        return 'zypper refresh'
+
     def get_stop_ssh_service_cmd(self):
         """
         Return command to stop SSH service for SLES.
@@ -45,3 +49,7 @@ class SLES(Distro):
             raise IpaSLESException(
                 'The init system for SUSE distribution cannot be determined.'
             )
+
+    def get_update_cmd(self):
+        """Return command to update SLES instance."""
+        return 'zypper up --no-confirm'

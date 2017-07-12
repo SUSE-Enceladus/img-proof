@@ -29,6 +29,10 @@ class Distro(object):
         """Return reboot command for given distribution."""
         return 'shutdown -r now'
 
+    def get_refresh_repo_cmd(self):
+        """Return refresh repo command for distribution."""
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
     def get_stop_ssh_service_cmd(self):
         """Return command to stop SSH service on given distribution."""
         raise NotImplementedError(NOT_IMPLEMENTED)
@@ -36,6 +40,10 @@ class Distro(object):
     def get_sudo_exec_wrapper(self):
         """Return sudo command to wrap one or more commands."""
         return 'sudo sh -c'
+
+    def get_update_cmd(self):
+        """Return command to update instance."""
+        raise NotImplementedError(NOT_IMPLEMENTED)
 
     def reboot(self, client):
         """Execute reboot command on instance."""
@@ -53,8 +61,28 @@ class Distro(object):
                 client,
                 reboot_cmd
             )
-        except Exception as e:
+        except Exception as error:
             raise IpaDistroException(
-                'An error occurred rebooting instance: %s' % e
+                'An error occurred rebooting instance: %s' % error
             )
         ipa_utils.clear_cache()
+
+    def update(self, client):
+        """Execute update command on instance."""
+        update_cmd = "{sudo} '{refresh};{update}'".format(
+            sudo=self.get_sudo_exec_wrapper(),
+            refresh=self.get_refresh_repo_cmd(),
+            update=self.get_update_cmd()
+        )
+
+        out = ''
+        try:
+            out = ipa_utils.execute_ssh_command(
+                client,
+                update_cmd
+            )
+        except Exception as error:
+            raise IpaDistroException(
+                'An error occurred updating instance: %s' % error
+            )
+        return out
