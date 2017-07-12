@@ -91,11 +91,11 @@ def execute_ssh_command(client, cmd):
         stdin, stdout, stderr = client.exec_command(cmd)
         err = stderr.read()
         if err:
-            raise IpaSSHException(err)
+            raise IpaSSHException(err.decode())
         out = stdout.read()
     except:
         raise
-    return out
+    return out.decode()
 
 
 def expand_test_files(test_dirs, names):
