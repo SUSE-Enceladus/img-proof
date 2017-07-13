@@ -200,7 +200,7 @@ def test(access_key_id,
             storage_container,
             tests
         )
-        # TODO: Print results
+        echo_results(results)
         sys.exit(status)
     except Exception as error:
         if log_level == logging.DEBUG:
