@@ -9,6 +9,7 @@
 # See LICENSE for license information.
 
 import importlib
+import json
 
 from ipa.ipa_constants import SUPPORTED_PROVIDERS
 from ipa.ipa_exceptions import IpaControllerException
@@ -21,6 +22,7 @@ def test_image(provider_name,
                config=None,
                distro=None,
                early_exit=None,
+               history_log=None,
                image_id=None,
                instance_type=None,
                log_level=None,
@@ -48,6 +50,7 @@ def test_image(provider_name,
             config=config,
             distro_name=distro,
             early_exit=early_exit,
+            history_log=history_log,
             image_id=image_id,
             instance_type=instance_type,
             log_level=log_level,
@@ -74,5 +77,8 @@ def list_tests():
     """Return a list of test files and/or tests."""
 
 
-def collect_results():
-    """Return the result (pass/fail) or verbose results."""
+def collect_results(results_file):
+    """Return the result (pass/fail) for json file."""
+    with open(results_file, 'r') as results:
+        data = json.load(results)
+    return data

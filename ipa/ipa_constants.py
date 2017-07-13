@@ -24,6 +24,7 @@ EC2_DEFAULT_USER = 'ec2-user'
 EC2_CONFIG_FILE = os.path.join(HOME, '.ec2utils.conf')
 IPA_CONFIG_FILE = os.path.join(HOME, '.config', 'ipa', 'config')
 
+IPA_HISTORY_FILE = os.path.join(HOME, '.config', 'ipa', '.history')
 IPA_RESULTS_PATH = os.path.join(HOME, 'ipa', 'results')
 
 SYNC_POINTS = (

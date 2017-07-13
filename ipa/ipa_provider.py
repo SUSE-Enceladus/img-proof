@@ -21,6 +21,7 @@ from datetime import datetime
 from ipa import ipa_utils
 from ipa.ipa_constants import (
     IPA_CONFIG_FILE,
+    IPA_HISTORY_FILE,
     IPA_RESULTS_PATH,
     NOT_IMPLEMENTED,
     SUPPORTED_DISTROS,
@@ -49,6 +50,7 @@ class IpaProvider(object):
                  config=None,
                  distro_name=None,
                  early_exit=None,
+                 history_log=None,
                  image_id=None,
                  instance_type=None,
                  log_level=None,
@@ -85,6 +87,12 @@ class IpaProvider(object):
         self.instance_type = self._get_value(instance_type)
         self.running_instance_id = self._get_value(running_instance_id)
         self.test_files = list(self._get_value(test_files, default=[]))
+
+        self.history_log = self._get_value(
+            history_log,
+            config_key='history_log',
+            default=IPA_HISTORY_FILE
+        )
 
         self.provider_config = self._get_value(
             provider_config,
@@ -334,6 +342,15 @@ class IpaProvider(object):
         """Terminate the instance."""
         raise NotImplementedError(NOT_IMPLEMENTED)
 
+    def _update_history(self):
+        """Save the current test information to history json."""
+        history = dict(self.results['info'])
+        history.update({
+            'results': self.results_file,
+            'log': self.log_file
+        })
+        ipa_utils.update_history_log(self.history_log, item=history)
+
     def hard_reboot_instance(self):
         """Stop then start the instance."""
         self._stop_instance()
@@ -445,6 +462,7 @@ class IpaProvider(object):
             self._terminate_instance()
 
         self._save_results()
+        self._update_history()
 
         # Return status and results json
         return status, self.results['summary']

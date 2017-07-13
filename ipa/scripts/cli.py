@@ -10,12 +10,23 @@
 # See LICENSE for license information.
 
 import logging
+import pickle
 import sys
 
 import click
 
-from ipa.ipa_constants import SUPPORTED_DISTROS, SUPPORTED_PROVIDERS
-from ipa.ipa_controller import test_image
+from ipa.ipa_constants import (
+    IPA_HISTORY_FILE,
+    SUPPORTED_DISTROS,
+    SUPPORTED_PROVIDERS
+)
+from ipa import ipa_utils
+from ipa.ipa_controller import collect_results, test_image
+from ipa.scripts.cli_utils import (
+    echo_results,
+    echo_verbose_results,
+    results_history
+)
 
 
 @click.group()
@@ -61,6 +72,12 @@ def main():
     '--early-exit',
     is_flag=True,
     help='Terminate test suite on first failure.'
+)
+@click.option(
+    '-h',
+    '--history-log',
+    type=click.Path(exists=True),
+    help='ipa history log file location. Default: ~/.config/ipa/.history'
 )
 @click.option(
     '-i',
@@ -143,6 +160,7 @@ def test(access_key_id,
          config,
          distro,
          early_exit,
+         history_log,
          image_id,
          instance_type,
          log_level,
@@ -157,7 +175,7 @@ def test(access_key_id,
          storage_container,
          provider,
          tests):
-    """Test image in the given cloud framework using the supplied test file."""
+    """Test image in the given framework using the supplied test files."""
     try:
         status, results = test_image(
             provider,
@@ -167,6 +185,7 @@ def test(access_key_id,
             config,
             distro,
             early_exit,
+            history_log,
             image_id,
             instance_type,
             log_level,
@@ -195,18 +214,129 @@ def test(access_key_id,
 
 
 @click.command()
-def results():
+@click.option(
+    '--clear',
+    is_flag=True,
+    help='Clear list of results history.'
+)
+@click.option(
+    '--history-log',
+    default=IPA_HISTORY_FILE,
+    type=click.Path(exists=True),
+    help='Location of the history log file to display results from.'
+)
+@click.option(
+    '--list',
+    'list_results',
+    is_flag=True,
+    help='Display list of results history.'
+)
+@click.option(
+    '-l',
+    '--log',
+    is_flag=True,
+    help='Display the log for the given test run.'
+)
+@click.option(
+    '-n',
+    '--result',
+    default=-1,
+    help='Test result item to display.'
+)
+@click.option(
+    '-r',
+    '--results-file',
+    type=click.Path(exists=True),
+    help='The results file or log to parse.'
+)
+@click.option(
+    '-v',
+    '--verbose',
+    is_flag=True
+)
+def results(clear,
+            history_log,
+            list_results,
+            log,
+            result,
+            results_file,
+            verbose):
     """
     Print test results info from provided results json file.
 
+    If no results file is supplied display results from most recent
+    test in history if it exists.
+
     If verbose option selected, print all test cases,
     otherwise print number of tests/successes/failures/errors.
+
+    If log option selected display test log in a pager.
+
+    If list option is provided display the results history from
+    given history log.
+
+    If the clear option is provided the history will
+    be cleared.
     """
-    try:
-        raise Exception('Results command not implemented :( ... yet.')
-    except Exception as e:
-        click.echo(click.style("Broken: %s" % e, fg='red'))
-        sys.exit(1)
+    if clear:
+        ipa_utils.update_history_log(history_log, clear=True)
+    elif list_results:
+        results_history(history_log)
+    else:
+        if not results_file:
+            try:
+                with open(history_log, 'r+b') as f:
+                    data = pickle.load(f)
+
+                if log:
+                    results_file = data[result]['log']
+                else:
+                    results_file = data[result]['results']
+            except Exception as error:
+                click.secho(
+                    'Unable to retrieve results history, '
+                    'provide results file or re-run test.',
+                    fg='red'
+                )
+                sys.exit(1)
+
+        if log:
+            try:
+                with open(results_file, 'r') as f:
+                    log_file = ''.join(f.readlines())
+                click.echo(log_file)
+            except Exception as error:
+                click.secho(
+                    'Unable to open results log file: %s' % error,
+                    fg='red'
+                )
+                sys.exit(1)
+        else:
+            try:
+                data = collect_results(results_file)
+
+                if verbose:
+                    echo_verbose_results(data)
+                else:
+                    echo_results(data['summary'])
+            except ValueError:
+                click.secho(
+                    'The results file is not the proper json format.',
+                    fg='red'
+                )
+                sys.exit(1)
+            except KeyError as error:
+                click.secho(
+                    'The results json is missing key: %s' % error,
+                    fg='red'
+                )
+                sys.exit(1)
+            except Exception as error:
+                click.secho(
+                    'Unable to process results file: %s' % error,
+                    fg='red'
+                )
+                sys.exit(1)
 
 
 @click.command(name='list')

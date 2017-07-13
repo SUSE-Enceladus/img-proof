@@ -15,6 +15,7 @@ except ImportError:
 
 import fnmatch
 import os
+import pickle
 import random
 import sys
 import time
@@ -22,6 +23,7 @@ import time
 import paramiko
 import yaml
 
+from collections import deque
 from contextlib import contextmanager
 from string import ascii_lowercase
 from tempfile import NamedTemporaryFile
@@ -413,3 +415,41 @@ def ssh_config(ssh_user, ssh_private_key):
     finally:
         with ignored(OSError):
             os.remove(ssh_file.name)
+
+
+def update_history_log(history_log, item=None, clear=False):
+    """
+    Update the history log file with item.
+    If clear flag is provided the log file deque is emptied.
+    """
+    if not item and not clear:
+        raise IpaUtilsException(
+            'A history item or clear flag must be provided'
+        )
+
+    history_dir = os.path.dirname(history_log)
+    try:
+        os.makedirs(history_dir)
+    except OSError as error:
+        if not os.path.isdir(history_dir):
+            raise IpaUtilsException(
+                'Unable to create directory: %s' % error
+            )
+
+    if os.path.isfile(history_log):
+        mode = 'r+b'
+    else:
+        mode = 'w+b'
+
+    with open(history_log, mode) as f:
+        if clear:
+            data = deque([], maxlen=100)
+        else:
+            try:
+                data = pickle.load(f)
+                data.append(item)
+            except Exception as error:
+                data = deque([item], maxlen=100)
+
+        f.seek(0)
+        pickle.dump(data, f)
