@@ -29,16 +29,11 @@ import click
 from ipa.ipa_constants import SUPPORTED_DISTROS, SUPPORTED_PROVIDERS
 from ipa.ipa_controller import test_image
 
-LICENSE = '''ipa Copyright (C) 2017 SUSE LLC
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it
-under certain conditions; See LICENSE for details.'''
-
 
 def print_license(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    click.echo(LICENSE)
+    click.echo('GPL-v3')
     ctx.exit()
 
 

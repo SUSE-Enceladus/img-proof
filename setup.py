@@ -73,7 +73,7 @@ setup(
         'dev': dev_requirements,
         'test': test_requirements
     },
-    license="MIT license",
+    license='GPL-v3',
     zip_safe=False,
     keywords='ipa',
     classifiers=[
@@ -81,7 +81,7 @@ setup(
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Testing',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
