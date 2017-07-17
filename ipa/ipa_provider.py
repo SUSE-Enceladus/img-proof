@@ -32,7 +32,7 @@ from ipa.ipa_exceptions import (
     IpaSSHException,
     IpaUtilsException
 )
-from ipa.results_plugin import JSONReport
+from ipa.results_plugin import Report
 
 
 class IpaProvider(object):
@@ -191,7 +191,7 @@ class IpaProvider(object):
 
     def _merge_results(self, results):
         """Combine results of test run with exisiting dict."""
-        self.results['tests'] += results['tests']
+        self.results['tests'] += results['tests'].values()
 
         for key, value in results['summary'].items():
             if key in self.results['summary']:
@@ -267,7 +267,7 @@ class IpaProvider(object):
         print('Arguments:\n{}\n'.format(args))
 
         cmds = shlex.split(args)
-        plugin = JSONReport()
+        plugin = Report()
         result = pytest.main(cmds, plugins=[plugin])
         self._merge_results(plugin.report)
 
