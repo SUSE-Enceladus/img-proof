@@ -10,7 +10,7 @@
 # See LICENSE for license information.
 
 import logging
-import pickle
+import shlex
 import sys
 
 import click
@@ -245,16 +245,15 @@ def test(access_key_id,
     help='Display the log for the given test run.'
 )
 @click.option(
-    '-n',
-    '--result',
-    default=-1,
-    help='Test result item to display.'
-)
-@click.option(
     '-r',
     '--results-file',
     type=click.Path(exists=True),
     help='The results file or log to parse.'
+)
+@click.option(
+    '--show',
+    default=-1,
+    help='Test result to display.'
 )
 @click.option(
     '-v',
@@ -265,8 +264,8 @@ def results(clear,
             history_log,
             list_results,
             log,
-            result,
             results_file,
+            show,
             verbose):
     """
     Print test results info from provided results json file.
@@ -292,13 +291,18 @@ def results(clear,
     else:
         if not results_file:
             try:
-                with open(history_log, 'r+b') as f:
-                    data = pickle.load(f)
+                with open(history_log, 'r') as f:
+                    history = f.readlines()[show]
+
+                try:
+                    index, log_file, desc = shlex.split(history)
+                except:
+                    index, log_file = shlex.split(history)
 
                 if log:
-                    results_file = data[result]['log']
+                    results_file = log_file
                 else:
-                    results_file = data[result]['results']
+                    results_file = log_file.split('.')[0] + '.results'
             except Exception as error:
                 click.secho(
                     'Unable to retrieve results history, '

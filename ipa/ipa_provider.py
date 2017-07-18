@@ -346,12 +346,11 @@ class IpaProvider(object):
 
     def _update_history(self):
         """Save the current test information to history json."""
-        history = dict(self.results['info'])
-        history.update({
-            'results': self.results_file,
-            'log': self.log_file
-        })
-        ipa_utils.update_history_log(self.history_log, item=history)
+        ipa_utils.update_history_log(
+            self.history_log,
+            desc=self.desc,
+            test_log=self.log_file
+        )
 
     def hard_reboot_instance(self):
         """Stop then start the instance."""

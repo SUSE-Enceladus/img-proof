@@ -21,12 +21,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import pickle
 import sys
 
 import click
-
-from collections import deque
 
 
 def echo_results(data):
@@ -75,37 +72,9 @@ def echo_verbose_results(data, name_color='yellow'):
 def results_history(history_log):
     """Display a list of ipa test results history."""
     try:
-        with open(history_log, 'r+b') as f:
-            data = pickle.load(f)
-
-        if not isinstance(data, deque):
-            click.secho('History log contains invalid data.', fg='red')
-            sys.exit(1)
-        elif not data:
-            click.secho('No results data.')
-        else:
-            for index, result in enumerate(data):
-                click.secho(
-                    ' '.join([
-                        str(index),
-                        result['timestamp'],
-                        result['platform'],
-                        result['image'],
-                        result['instance']
-                    ])
-                )
-    except pickle.UnpicklingError:
-        click.secho(
-            'History log file is not in the proper format.',
-            fg='red'
-        )
-        sys.exit(1)
-    except EOFError:
-        click.secho(
-            'History log file is empty.',
-            fg='red'
-        )
-        sys.exit(1)
+        with open(history_log, 'r') as f:
+            history_file = ''.join(f.readlines())
+        click.echo(history_file)
     except Exception as error:
         click.secho(
             'Unable to process results history log.',

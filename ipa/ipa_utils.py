@@ -15,7 +15,6 @@ except ImportError:
 
 import fnmatch
 import os
-import pickle
 import random
 import sys
 import time
@@ -23,7 +22,6 @@ import time
 import paramiko
 import yaml
 
-from collections import deque
 from contextlib import contextmanager
 from string import ascii_lowercase
 from tempfile import NamedTemporaryFile
@@ -417,39 +415,43 @@ def ssh_config(ssh_user, ssh_private_key):
             os.remove(ssh_file.name)
 
 
-def update_history_log(history_log, item=None, clear=False):
+def update_history_log(history_log,
+                       clear=False,
+                       desc=None,
+                       test_log=None):
     """
     Update the history log file with item.
-    If clear flag is provided the log file deque is emptied.
+    If clear flag is provided the log file is deleted.
     """
-    if not item and not clear:
+    if not test_log and not clear:
         raise IpaUtilsException(
-            'A history item or clear flag must be provided'
+            'A test log or clear flag must be provided.'
         )
 
-    history_dir = os.path.dirname(history_log)
-    try:
-        os.makedirs(history_dir)
-    except OSError as error:
-        if not os.path.isdir(history_dir):
-            raise IpaUtilsException(
-                'Unable to create directory: %s' % error
-            )
+    if clear:
+        with ignored(OSError):
+            os.remove(history_log)
 
-    if os.path.isfile(history_log):
-        mode = 'r+b'
     else:
-        mode = 'w+b'
-
-    with open(history_log, mode) as f:
-        if clear:
-            data = deque([], maxlen=100)
-        else:
+        history_dir = os.path.dirname(history_log)
+        if not os.path.isdir(history_dir):
             try:
-                data = pickle.load(f)
-                data.append(item)
-            except Exception as error:
-                data = deque([item], maxlen=100)
+                os.makedirs(history_dir)
+            except OSError as error:
+                raise IpaUtilsException(
+                    'Unable to create directory: %s' % error
+                )
 
-        f.seek(0)
-        pickle.dump(data, f)
+        with open(history_log, 'a+') as f:
+            # Using append mode creates file if it does not exist
+            f.seek(0)
+
+            if desc:
+                desc = '"%s"' % desc
+
+            out = '{} {} {}'.format(
+                len(f.readlines()),
+                test_log,
+                desc or ''
+            )
+            f.write(out.strip() + '\n')
