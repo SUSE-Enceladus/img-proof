@@ -63,6 +63,11 @@ def main():
     help='ipa config file location. Default: ~/.config/ipa/config'
 )
 @click.option(
+    '-D',
+    '--desc',
+    help='Short description for test run.'
+)
+@click.option(
     '-d',
     '--distro',
     type=click.Choice(SUPPORTED_DISTROS),
@@ -158,6 +163,7 @@ def test(access_key_id,
          account,
          cleanup,
          config,
+         desc,
          distro,
          early_exit,
          history_log,
@@ -183,6 +189,7 @@ def test(access_key_id,
             account,
             cleanup,
             config,
+            desc,
             distro,
             early_exit,
             history_log,

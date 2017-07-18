@@ -48,6 +48,7 @@ class IpaProvider(object):
                  provider,
                  cleanup=None,
                  config=None,
+                 desc=None,
                  distro_name=None,
                  early_exit=None,
                  history_log=None,
@@ -77,6 +78,7 @@ class IpaProvider(object):
         self.ipa_config = ipa_utils.get_config(self.config)
         self.logger.debug('Using ipa config file: %s' % self.config)
 
+        self.desc = desc
         self.instance_ip = None
         self.provider = provider
 
