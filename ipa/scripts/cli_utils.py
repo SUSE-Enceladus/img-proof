@@ -25,10 +25,27 @@ import sys
 
 import click
 
+from ipa.ipa_controller import collect_results
 
-def echo_results(data):
+
+def echo_log(log_file):
+    try:
+        with open(log_file, 'r') as f:
+            log_output = ''.join(f.readlines())
+    except Exception as error:
+        click.secho(
+            'Unable to open results log file: %s' % error,
+            fg='red'
+        )
+        sys.exit(1)
+
+    click.echo(log_output)
+
+
+def echo_results(data, verbose=False):
     """Print test results in nagios style format."""
-    if 'failed' in data or 'error' in data:
+    summary = data['summary']
+    if 'failed' in summary or 'error' in summary:
         fg = 'red'
         status = 'FAILED'
     else:
@@ -37,17 +54,45 @@ def echo_results(data):
 
     results = '{} tests={}|pass={}|fail={}|error={}'.format(
         status,
-        str(data.get('num_tests', 0)),
-        str(data.get('passed', 0)),
-        str(data.get('failed', 0)),
-        str(data.get('error', 0))
+        str(summary.get('num_tests', 0)),
+        str(summary.get('passed', 0)),
+        str(summary.get('failed', 0)),
+        str(summary.get('error', 0))
     )
     click.secho(results, bold=True, fg=fg)
+
+    if verbose:
+        echo_verbose_results(data)
+
+
+def echo_results_file(results_file, verbose=False):
+    """Print test results in nagios style format."""
+    try:
+        data = collect_results(results_file)
+    except ValueError:
+        click.secho(
+            'The results file is not the proper json format.',
+            fg='red'
+        )
+        sys.exit(1)
+    except KeyError as error:
+        click.secho(
+            'The results json is missing key: %s' % error,
+            fg='red'
+        )
+        sys.exit(1)
+    except Exception as error:
+        click.secho(
+            'Unable to process results file: %s' % error,
+            fg='red'
+        )
+        sys.exit(1)
+
+    echo_results(data, verbose)
 
 
 def echo_verbose_results(data, name_color='yellow'):
     """Print list of tests and result of each test."""
-    echo_results(data['summary'])
     click.echo()
     click.secho(
         '\n'.join(
@@ -74,10 +119,11 @@ def results_history(history_log):
     try:
         with open(history_log, 'r') as f:
             history_file = ''.join(f.readlines())
-        click.echo(history_file)
     except Exception as error:
         click.secho(
             'Unable to process results history log.',
             fg='red'
         )
         sys.exit(1)
+
+    click.echo(history_file)

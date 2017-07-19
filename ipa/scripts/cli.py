@@ -21,10 +21,11 @@ from ipa.ipa_constants import (
     SUPPORTED_PROVIDERS
 )
 from ipa import ipa_utils
-from ipa.ipa_controller import collect_results, test_image
+from ipa.ipa_controller import test_image
 from ipa.scripts.cli_utils import (
+    echo_log,
     echo_results,
-    echo_verbose_results,
+    echo_results_file,
     results_history
 )
 
@@ -270,19 +271,16 @@ def results(clear,
     """
     Print test results info from provided results json file.
 
-    If no results file is supplied display results from most recent
+    If no results file is supplied echo results from most recent
     test in history if it exists.
 
-    If verbose option selected, print all test cases,
-    otherwise print number of tests/successes/failures/errors.
+    If verbose option selected, echo all test cases.
 
-    If log option selected display test log in a pager.
+    If log option selected echo test log.
 
-    If list option is provided display the results history from
-    given history log.
+    If list option is provided echo the results history file.
 
-    If the clear option is provided the history will
-    be cleared.
+    If the clear option is provided delete history file.
     """
     if clear:
         ipa_utils.update_history_log(history_log, clear=True)
@@ -290,19 +288,11 @@ def results(clear,
         results_history(history_log)
     else:
         if not results_file:
+            # Find results/log file from history
+            # Default -1 is most recent test run
             try:
                 with open(history_log, 'r') as f:
                     history = f.readlines()[show]
-
-                try:
-                    index, log_file, desc = shlex.split(history)
-                except:
-                    index, log_file = shlex.split(history)
-
-                if log:
-                    results_file = log_file
-                else:
-                    results_file = log_file.split('.')[0] + '.results'
             except Exception as error:
                 click.secho(
                     'Unable to retrieve results history, '
@@ -311,43 +301,23 @@ def results(clear,
                 )
                 sys.exit(1)
 
-        if log:
             try:
-                with open(results_file, 'r') as f:
-                    log_file = ''.join(f.readlines())
-                click.echo(log_file)
-            except Exception as error:
-                click.secho(
-                    'Unable to open results log file: %s' % error,
-                    fg='red'
-                )
-                sys.exit(1)
-        else:
-            try:
-                data = collect_results(results_file)
+                # Desc is optional
+                index, log_file, desc = shlex.split(history)
+            except:
+                index, log_file = shlex.split(history)
 
-                if verbose:
-                    echo_verbose_results(data)
-                else:
-                    echo_results(data['summary'])
-            except ValueError:
-                click.secho(
-                    'The results file is not the proper json format.',
-                    fg='red'
-                )
-                sys.exit(1)
-            except KeyError as error:
-                click.secho(
-                    'The results json is missing key: %s' % error,
-                    fg='red'
-                )
-                sys.exit(1)
-            except Exception as error:
-                click.secho(
-                    'Unable to process results file: %s' % error,
-                    fg='red'
-                )
-                sys.exit(1)
+            if log:
+                echo_log(log_file)
+            else:
+                echo_results_file(log_file.split('.')[0] + '.results', verbose)
+
+        elif log:
+            # Log file provided
+            echo_log(results_file)
+        else:
+            # Results file provided
+            echo_results_file(results_file, verbose)
 
 
 @click.command(name='list')

@@ -466,4 +466,4 @@ class IpaProvider(object):
         self._update_history()
 
         # Return status and results json
-        return status, self.results['summary']
+        return status, self.results
