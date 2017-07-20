@@ -404,7 +404,7 @@ def redirect_output(fileobj):
 def ssh_config(ssh_user, ssh_private_key):
     """Create temporary ssh config file."""
     try:
-        ssh_file = NamedTemporaryFile(delete=False)
+        ssh_file = NamedTemporaryFile(delete=False, mode='w+')
         ssh_file.write('Host *\n')
         ssh_file.write('    IdentityFile %s\n' % ssh_private_key)
         ssh_file.write('    User %s' % ssh_user)
