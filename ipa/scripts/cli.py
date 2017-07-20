@@ -26,6 +26,7 @@ from ipa.scripts.cli_utils import (
     echo_log,
     echo_results,
     echo_results_file,
+    echo_style,
     results_history
 )
 
@@ -115,6 +116,11 @@ def main():
     help='Silence logging information on test run.'
 )
 @click.option(
+    '--no-color',
+    is_flag=True,
+    help='Remove ANSI color and styling from output.'
+)
+@click.option(
     '--provider-config',
     help='The provider specific config file location.'
 )
@@ -171,6 +177,7 @@ def test(access_key_id,
          image_id,
          instance_type,
          log_level,
+         no_color,
          provider_config,
          region,
          results_dir,
@@ -208,14 +215,15 @@ def test(access_key_id,
             storage_container,
             tests
         )
-        echo_results(results)
+        echo_results(results, no_color)
         sys.exit(status)
     except Exception as error:
         if log_level == logging.DEBUG:
             raise
 
-        click.secho(
+        echo_style(
             "{}: {}".format(type(error).__name__, error),
+            no_color,
             fg='red'
         )
         sys.exit(1)
@@ -246,6 +254,11 @@ def test(access_key_id,
     help='Display the log for the given test run.'
 )
 @click.option(
+    '--no-color',
+    is_flag=True,
+    help='Remove ANSI color and styling from output.'
+)
+@click.option(
     '-r',
     '--results-file',
     type=click.Path(exists=True),
@@ -265,6 +278,7 @@ def results(clear,
             history_log,
             list_results,
             log,
+            no_color,
             results_file,
             show,
             verbose):
@@ -285,7 +299,7 @@ def results(clear,
     if clear:
         ipa_utils.update_history_log(history_log, clear=True)
     elif list_results:
-        results_history(history_log)
+        results_history(history_log, no_color)
     else:
         if not results_file:
             # Find results/log file from history
@@ -294,9 +308,10 @@ def results(clear,
                 with open(history_log, 'r') as f:
                     history = f.readlines()[show]
             except Exception as error:
-                click.secho(
+                echo_style(
                     'Unable to retrieve results history, '
                     'provide results file or re-run test.',
+                    no_color,
                     fg='red'
                 )
                 sys.exit(1)
@@ -308,16 +323,20 @@ def results(clear,
                 index, log_file = shlex.split(history)
 
             if log:
-                echo_log(log_file)
+                echo_log(log_file, no_color)
             else:
-                echo_results_file(log_file.split('.')[0] + '.results', verbose)
+                echo_results_file(
+                    log_file.split('.')[0] + '.results',
+                    no_color,
+                    verbose
+                )
 
         elif log:
             # Log file provided
-            echo_log(results_file)
+            echo_log(results_file, no_color)
         else:
             # Results file provided
-            echo_results_file(results_file, verbose)
+            echo_results_file(results_file, no_color, verbose)
 
 
 @click.command(name='list')
@@ -331,7 +350,7 @@ def list_tests():
     try:
         raise Exception('List tests command not implemented :( ... yet.')
     except Exception as e:
-        click.echo(click.style("Broken: %s" % e, fg='red'))
+        click.echo("Broken: %s" % e)
         sys.exit(1)
 
 
