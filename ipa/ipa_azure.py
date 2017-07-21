@@ -91,7 +91,7 @@ class AzureProvider(IpaProvider):
             self.region
         )
 
-        if request_id > 0:
+        if int(request_id, 16) > 0:
             # Cloud service created
             self._wait_on_request(request_id)
 

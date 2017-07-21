@@ -8,11 +8,7 @@
 #
 # See LICENSE for license information.
 
-try:
-    import configparser as ConfigParser
-except ImportError:
-    import ConfigParser
-
+import configparser
 import fnmatch
 import os
 import random
@@ -164,7 +160,7 @@ def get_config(config_path):
             'Config file not found: %s' % config_path
         )
 
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     try:
         result = config.read(config_path)
         if not result:
@@ -180,13 +176,13 @@ def get_config(config_path):
 def get_from_config(config, section, default_section, entry):
     """Retrieve an entry from the configuration."""
     value = None
-    with ignored(ConfigParser.Error):
+    with ignored(configparser.Error):
         value = config.get(section, entry)
 
     if not value:
         try:
             value = config.get(default_section, entry)
-        except ConfigParser.Error:
+        except configparser.Error:
             raise IpaUtilsException(
                 'Unable to get %s value from config.' % entry
             )
