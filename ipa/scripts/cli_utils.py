@@ -45,7 +45,15 @@ def echo_log(log_file, no_color):
 
 def echo_results(data, no_color, verbose=False):
     """Print test results in nagios style format."""
-    summary = data['summary']
+    try:
+        summary = data['summary']
+    except KeyError as error:
+        click.secho(
+            'The results json is missing key: %s' % error,
+            fg='red'
+        )
+        sys.exit(1)
+
     if 'failed' in summary or 'error' in summary:
         fg = 'red'
         status = 'FAILED'
@@ -73,13 +81,6 @@ def echo_results_file(results_file, no_color, verbose=False):
     except ValueError:
         echo_style(
             'The results file is not the proper json format.',
-            no_color,
-            fg='red'
-        )
-        sys.exit(1)
-    except KeyError as error:
-        echo_style(
-            'The results json is missing key: %s' % error,
             no_color,
             fg='red'
         )
