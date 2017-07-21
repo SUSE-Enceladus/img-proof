@@ -193,7 +193,7 @@ class IpaProvider(object):
 
     def _merge_results(self, results):
         """Combine results of test run with exisiting dict."""
-        self.results['tests'] += results['tests'].values()
+        self.results['tests'] += results['tests']
 
         for key, value in results['summary'].items():
             if key in self.results['summary']:

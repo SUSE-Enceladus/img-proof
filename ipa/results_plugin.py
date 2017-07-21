@@ -59,7 +59,7 @@ class Report(object):
             self.summary[test['outcome']] += 1
 
         self.report = {
-            'tests': self.tests,
+            'tests': self.tests.values(),
             'summary': self.summary
         }
 
