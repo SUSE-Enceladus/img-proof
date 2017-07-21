@@ -129,7 +129,7 @@ def results_history(history_log, no_color):
     """Display a list of ipa test results history."""
     try:
         with open(history_log, 'r') as f:
-            history_file = ''.join(f.readlines())
+            lines = f.readlines()
     except Exception as error:
         echo_style(
             'Unable to process results history log.',
@@ -138,4 +138,7 @@ def results_history(history_log, no_color):
         )
         sys.exit(1)
 
-    click.echo(history_file)
+    index = len(lines)
+    for item in lines:
+        click.echo('{} {}'.format(index, item), nl=False)
+        index -= 1

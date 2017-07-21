@@ -444,13 +444,10 @@ def update_history_log(history_log,
 
         with open(history_log, 'a+') as f:
             # Using append mode creates file if it does not exist
-            f.seek(0)
-
             if desc:
                 desc = '"%s"' % desc
 
-            out = '{} {} {}'.format(
-                len(f.readlines()),
+            out = '{} {}'.format(
                 test_log,
                 desc or ''
             )

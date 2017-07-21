@@ -266,7 +266,7 @@ def test(access_key_id,
 )
 @click.option(
     '--show',
-    default=-1,
+    default=1,
     help='Test result to display.'
 )
 @click.option(
@@ -306,7 +306,16 @@ def results(clear,
             # Default -1 is most recent test run
             try:
                 with open(history_log, 'r') as f:
-                    history = f.readlines()[show]
+                    lines = f.readlines()
+                lines.reverse()
+                history = lines[show - 1]
+            except IndexError:
+                echo_style(
+                    'History result at index %s does not exist.' % show,
+                    no_color,
+                    fg='red'
+                )
+                sys.exit(1)
             except Exception as error:
                 echo_style(
                     'Unable to retrieve results history, '
@@ -318,9 +327,9 @@ def results(clear,
 
             try:
                 # Desc is optional
-                index, log_file, desc = shlex.split(history)
+                log_file, desc = shlex.split(history)
             except:
-                index, log_file = shlex.split(history)
+                log_file = history.strip()
 
             if log:
                 echo_log(log_file, no_color)
