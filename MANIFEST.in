@@ -1,0 +1,4 @@
+include CHANGELOG.asciidoc
+include CONTRIBUTING.asciidoc
+include LICENSE
+include README.asciidoc

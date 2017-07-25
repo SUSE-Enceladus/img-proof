@@ -27,7 +27,7 @@ with open('README.asciidoc') as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    'azurectl>=2.3.2',
+    'azurectl>=3.0.1',
     'boto3',
     'Click',
     'paramiko',
@@ -66,7 +66,7 @@ setup(
     },
     include_package_data=True,
     dependency_links=[
-        'git+https://github.com/SUSE/azurectl.git@master#egg=azurectl-2.3.2',
+        'git+https://github.com/SUSE/azurectl.git@master#egg=azurectl-3.0.1',
     ],
     install_requires=requirements,
     extras_require={
@@ -83,7 +83,9 @@ setup(
         'Topic :: Software Development :: Testing',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
 )

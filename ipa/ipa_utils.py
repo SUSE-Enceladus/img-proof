@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Utility methods."""
+"""Utility functions."""
 
 # Copyright (c) 2017 SUSE LLC
 #
