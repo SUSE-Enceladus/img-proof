@@ -33,7 +33,7 @@ class SLES(Distro):
 
     def get_refresh_repo_cmd(self):
         """Return refresh repo command for SLES."""
-        return 'zypper refresh'
+        return 'zypper -n refresh'
 
     def get_stop_ssh_service_cmd(self):
         """
@@ -52,5 +52,4 @@ class SLES(Distro):
 
     def get_update_cmd(self):
         """Return command to update SLES instance."""
-        return 'zypper up --no-confirm --auto-agree-with-licenses ' \
-            '--force-resolution'
+        return 'zypper -n up --auto-agree-with-licenses --force-resolution'
