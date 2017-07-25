@@ -27,7 +27,7 @@ with open('README.asciidoc') as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    'azurectl>=2.3.2',
+    'azurectl>=3.0.1',
     'boto3',
     'Click',
     'paramiko',
@@ -40,6 +40,12 @@ test_requirements = [
     'coverage',
     'flake8',
     'pytest-cov'
+    'vcrpy'
+]
+
+tox_requirements = [
+    'tox',
+    'tox-pyenv'
 ]
 
 dev_requirements = [
@@ -66,12 +72,13 @@ setup(
     },
     include_package_data=True,
     dependency_links=[
-        'git+https://github.com/SUSE/azurectl.git@master#egg=azurectl-2.3.2',
+        'git+https://github.com/SUSE/azurectl.git@master#egg=azurectl-3.0.1',
     ],
     install_requires=requirements,
     extras_require={
         'dev': dev_requirements,
-        'test': test_requirements
+        'test': test_requirements,
+        'tox': tox_requirements
     },
     license='GPL-v3',
     zip_safe=False,

@@ -1,0 +1,10 @@
+[account-bob]
+access_key_id = HFGDYUYTE6WRT6RDDTTH
+secret_access_key = HFGDYUYTE6WRT6RDDTTH
+ssh_key_name = ida_test
+ssh_private_key = 
+
+[region-us-west-1]
+ami = ami-d5ea86b5
+instance_type = t2.micro
+user = ec2-user

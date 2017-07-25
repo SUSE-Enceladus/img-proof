@@ -1,0 +1,8 @@
+[ipa]
+test_dirs = tests/data/tests
+
+[Azure]
+region = West US
+
+[EC2]
+region = us-west-1

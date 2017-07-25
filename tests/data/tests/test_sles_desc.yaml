@@ -1,0 +1,4 @@
+include:
+  - test_image_desc
+tests:
+  - test_sles
