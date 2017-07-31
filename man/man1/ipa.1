@@ -1,0 +1,32 @@
+.TH "IPA" "1" "31-Jul-2017" "" "ipa Manual"
+.SH NAME
+ipa \- Ipa provides a Python API and command line...
+.SH SYNOPSIS
+.B ipa
+[OPTIONS] COMMAND [ARGS]...
+.SH DESCRIPTION
+Ipa provides a Python API and command line utility for testing images.
+
+It can be used to test images in the Public Cloud (AWS, Azure, GCE, etc.).
+.SH OPTIONS
+.TP
+\fB\-\-version\fP
+Show the version and exit.
+.TP
+\fB\-\-license\fP
+Show license information and exit.
+.SH COMMANDS
+.PP
+\fBtest\fP
+  Test image in the given framework using the...
+  See \fBipa-test(1)\fP for full documentation on the \fBtest\fP command.
+
+.PP
+\fBresults\fP
+  Print test results info from provided results...
+  See \fBipa-results(1)\fP for full documentation on the \fBresults\fP command.
+
+.PP
+\fBlist\fP
+  Print a list of test files or test cases.
+  See \fBipa-list(1)\fP for full documentation on the \fBlist\fP command.

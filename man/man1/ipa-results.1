@@ -1,0 +1,43 @@
+.TH "IPA RESULTS" "1" "31-Jul-2017" "" "ipa results Manual"
+.SH NAME
+ipa\-results \- Print test results info from provided results...
+.SH SYNOPSIS
+.B ipa results
+[OPTIONS]
+.SH DESCRIPTION
+Print test results info from provided results json file.
+
+If no results file is supplied echo results from most recent
+test in history if it exists.
+
+If verbose option selected, echo all test cases.
+
+If log option selected echo test log.
+
+If list option is provided echo the results history file.
+
+If the clear option is provided delete history file.
+.SH OPTIONS
+.TP
+\fB\-\-clear\fP
+Clear list of results history.
+.TP
+\fB\-\-history\-log\fP PATH
+Location of the history log file to display results from.
+.TP
+\fB\-\-list\fP
+Display list of results history.
+.TP
+\fB\-l,\fP \-\-log
+Display the log for the given test run.
+.TP
+\fB\-\-no\-color\fP
+Remove ANSI color and styling from output.
+.TP
+\fB\-r,\fP \-\-results\-file PATH
+The results file or log to parse.
+.TP
+\fB\-\-show\fP INTEGER
+Test result to display.
+.TP
+\fB\-v,\fP \-\-verbose
