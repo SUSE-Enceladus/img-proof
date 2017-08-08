@@ -2,3 +2,8 @@ include CHANGELOG.asciidoc
 include CONTRIBUTING.asciidoc
 include LICENSE
 include README.asciidoc
+
+recursive-include tests *
+recursive-include man *.1
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
