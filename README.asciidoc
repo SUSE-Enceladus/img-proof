@@ -34,10 +34,6 @@ The framework config is ini format ~/.config/ipa/config. Anything
 specific to the test framework can be found in this file. Thus anything
 that is cloud framework independent such as the test dir and results dir.
 
-Any settings relating to a specific cloud provider can be found in that
-cloud's config file. For example ssh key and user for EC2 can be found
-in ~/.ec2utils.conf.
-
 [source,ini]
 ----
 [ipa]
