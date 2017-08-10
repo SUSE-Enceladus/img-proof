@@ -4,7 +4,7 @@
 
 == overview
 
-*ipa* provides a Python API and command line utility to test images in the
+*ipa* provides a command line utility to test images in the
 Public Cloud (AWS, Azure, GCE, etc.).
 
 === Installation
@@ -23,7 +23,6 @@ zypper in python-ipa
 * azurectl
 * boto3
 * Click
-* google-cloud
 * paramiko
 * pytest
 * PyYaml
@@ -77,7 +76,7 @@ as `--early-exit`. If there's an interest or need for any other options/args
 please submit an issue to link:https://github.com/SUSE/ipa/issues[Github].
 ====
 
-=== CLI Usage
+=== CLI Overview
 
 The CLI provides multiple subcommands to initiate image testing:
 
@@ -104,5 +103,5 @@ See link:CONTRIBUTING.asciidoc[CONTRIBUTING] for info on getting started.
 
 Copyright (c) 2017 SUSE LLC.
 
-Distributed under the terms of GPL-v3 license, see
+Distributed under the terms of GPL-3.0 license, see
 link:LICENSE[LICENSE] for details.
