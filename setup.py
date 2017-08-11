@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """Setup script."""
@@ -39,7 +39,7 @@ requirements = [
 test_requirements = [
     'coverage',
     'flake8',
-    'pytest-cov'
+    'pytest-cov',
     'vcrpy'
 ]
 
@@ -71,16 +71,14 @@ setup(
         ]
     },
     include_package_data=True,
-    dependency_links=[
-        'git+https://github.com/SUSE/azurectl.git@master#egg=azurectl-3.0.1',
-    ],
+    python_requires='>=3.4',
     install_requires=requirements,
     extras_require={
         'dev': dev_requirements,
         'test': test_requirements,
         'tox': tox_requirements
     },
-    license='GPL-v3',
+    license='GPLv3+',
     zip_safe=False,
     keywords='ipa',
     classifiers=[
@@ -88,9 +86,11 @@ setup(
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Testing',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3+)',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
 )

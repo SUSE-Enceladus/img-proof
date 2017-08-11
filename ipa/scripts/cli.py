@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """Ipa CLI endpoints using click library."""
@@ -33,7 +32,7 @@ from ipa.ipa_constants import (
     SUPPORTED_PROVIDERS
 )
 from ipa import ipa_utils
-from ipa.ipa_controller import test_image
+from ipa.ipa_controller import collect_tests, test_image
 from ipa.scripts.cli_utils import (
     echo_log,
     echo_results,
@@ -376,23 +375,57 @@ def results(clear,
 
 
 @click.command(name='list')
-def list_tests():
+@click.option(
+    '--no-color',
+    is_flag=True,
+    help='Remove ANSI color and styling from output.'
+)
+@click.option(
+    '-v',
+    '--verbose',
+    is_flag=True
+)
+@click.argument(
+    'test_dirs',
+    nargs=-1,
+    type=click.Path(exists=True)
+)
+def list_tests(no_color, verbose, test_dirs):
     """
     Print a list of test files or test cases.
 
     If verbose option selected, print all tests cases in
     each test file, otherwise print the test files only.
+
+    If test_dirs supplied they will be used to search for
+    tests otherwise the default test directories are used.
     """
     try:
-        raise Exception('List tests command not implemented :( ... yet.')
-    except Exception as e:
-        click.echo("Broken: %s" % e)
+        results = collect_tests(test_dirs, verbose)
+    except Exception as error:
+        echo_style(
+            "An error occurred retrieving test files: {}".format(error),
+            no_color,
+            fg='red'
+        )
         sys.exit(1)
 
+    if verbose:
+        for index, test_file in enumerate(results):
+            if index % 2 == 0:
+                fg = 'blue'
+            else:
+                fg = 'green'
 
-main.add_command(test)
-main.add_command(results)
+            echo_style(
+                '\n'.join(test_file),
+                no_color,
+                fg=fg
+            )
+    else:
+        click.echo('\n'.join(results))
+
+
 main.add_command(list_tests)
-
-if __name__ == "__main__":
-    main()
+main.add_command(results)
+main.add_command(test)

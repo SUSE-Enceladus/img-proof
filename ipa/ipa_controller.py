@@ -22,9 +22,13 @@
 
 import importlib
 import json
+import pytest
+import shlex
 
-from ipa.ipa_constants import SUPPORTED_PROVIDERS
+from ipa.collect_items import CollectItemsPlugin
+from ipa.ipa_constants import SUPPORTED_PROVIDERS, TEST_PATHS
 from ipa.ipa_exceptions import IpaControllerException
+from ipa.ipa_utils import get_test_files
 
 
 def test_image(provider_name,
@@ -87,12 +91,28 @@ def test_image(provider_name,
     return provider.test_image()
 
 
-def list_tests():
-    """Return a list of test files and/or tests."""
-
-
 def collect_results(results_file):
     """Return the result (pass/fail) for json file."""
     with open(results_file, 'r') as results:
         data = json.load(results)
     return data
+
+
+def collect_tests(test_dirs, verbose=False):
+    """Return a list of test files and/or tests cases."""
+    if not test_dirs:
+        test_dirs = TEST_PATHS
+
+    if verbose:
+        plugin = CollectItemsPlugin()
+        args = '--collect-only -p no:terminal {}'.format(
+            ' '.join(test_dirs)
+        )
+        cmds = shlex.split(args)
+        pytest.main(cmds, plugins=[plugin])
+
+        return plugin.collected.values()
+    else:
+        tests, descriptions = get_test_files(test_dirs)
+        all_tests = list(tests.keys()) + list(descriptions.keys())
+        return all_tests
