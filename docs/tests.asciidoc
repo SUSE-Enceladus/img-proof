@@ -1,0 +1,163 @@
+= Writing Tests
+:toc:
+
+Tests are developed using the link:https://testinfra.readthedocs.io[Testinfra]
+package. The package extends Pytest and provides a framework for writing Python
+tests to verify the actual state of systems. The default locations for test
+files are locally in ~/ipa/tests/ and centralized in /usr/share/ipa/tests.
+
+Tests can be organized in a directory structure:
+
+----
+~/ipa/tests/:
+  conftest.py           # Pytest custom modules and config goes here
+  test-image.py         # Generic tests for all images
+  leap-leap-422:
+    test-leap-422.py        # Generic leap tests
+    EC2:
+      test-leap-422-ec2.py  # Specific EC2 tests for leap images
+    GCE:
+    ...
+  SLES12SP1:
+    test-sles-12-sp1.py
+    test-sles-12-sp1-sap.py    # Can import SLES12SP1 tests
+    EC2:
+      test-sles-12-sp1-sap-ec2.py
+    ...
+  SUMA3:
+    ...
+----
+
+A test file can inherit tests by importing another file. For example the
+test-leap-422.py file would import test-image.py to include all generic
+image tests. An example for this structure would be similar to the files
+below:
+
+[source,python]
+.test-leap-422-ec2.py
+----
+import pytest
+from test-leap-422 import *           # Import all generic leap tests
+
+@pytest.mark.parametrize("name", [
+    ("cloud-init"),
+    ("amazon-ssm-agent"),
+])
+def test-services-running-enabled(Service, name):
+    service = Service(name)
+    assert service.is-running
+    assert service.is-enabled
+----
+
+The file which contains specific leap 42.2 tests for EC2 images inherits
+all tests specific to the leap 42.2 image.
+
+[source,python]
+.test-leap-422.py
+----
+import pytest
+from test-image import *          # Import all generic image tests
+
+@pytest.mark.parametrize("repo,name", [
+    ("repo-oss", "openSUSE-Leap-42.1-Oss"),
+    ("repo-non-oss", "openSUSE-Leap-42.1-Non-Oss"),
+])
+def test-repos(CheckRepo, repo, name):
+    assert CheckRepo(repo, name)
+----
+
+The leap 42.2 test file inherits all generic image tests.
+
+[source,python]
+.test-image.py
+----
+import pytest
+
+@pytest.mark.parametrize("name,version", [
+    ("python-virtualenv", "13"),
+    ("python", "2.7"),
+])
+def test-packages(Package, name, version):
+    assert Package(name).is-installed
+    assert Package(name).version.startswith(version)
+
+
+def test-echo(Echo):
+    assert Echo("Hello") == 'Hello'
+----
+
+Thus when invoking the test-leap-422-ec2.py file the following tests are
+run:
+
+----
+$ ipa test test-leap-422-ec2 --ssh-private-key key-file --ssh-user ec2-user
+
+> PASSED tests=7|pass=7|fail=0|error=0
+----
+
+All 7 tests from the three test files are ran when testing the 42.2 EC2
+image.
+
+== Test invocation
+
+To invoke the entire test suite for a Leap image in EC2 the
+test-leap-42.2-ec2.py target would be used.
+
+To invoke a specific test the Pytest conventions can be used:
+
+----
+test-leap-422-ec2::test-services-running-enabled
+----
+
+To run only one parameterized test append ids and use [local-ID]:
+
+[source,python]
+----
+@pytest.mark.parametrize("name", [
+    ("cloud-init"),
+    ("amazon-ssm-agent"),
+], ids=['ci', 'ssm'])
+
+
+test-leap-422-ec2::test-services-running-enabled[local-ssm]
+----
+
+=== Failures
+
+By default all tests will run even with failure. Using the `--early-exit` option
+will halt test invocation at first failure.
+
+link:http://pytest.org/dev/example/simple.html#incremental-testing-test-steps[Incremental test classes]
+can be used to cause all subsequent tests to fail if the prev fails. To prevent
+expected failures.
+
+== Custom Test Modules
+
+Modules are provided for checking standard things such as packages,
+services, files, dirs etc. Modules can be easily written and extended
+from to provide custom modules such as CheckRepo. Any custom modules
+could be written in conftest.py in the same dir and would be resolved by
+Pytest automagically:
+
+[source,python]
+.conftest.py
+----
+import pytest
+
+@pytest.fixture()
+def Echo(Command):
+    def f(arg):
+        return Command.check-output("echo %s", arg)
+    return f
+
+
+@pytest.fixture()
+def CheckRepo(File):
+    def f(repo, name):
+        repo = File('/etc/zypp/repos.d/' + repo + '.repo')
+        tests = [repo.exists,
+                 repo.contains('enabled=1'),
+                 repo.contains('name=%s' % name)]
+        return all(tests)
+    return f
+----
