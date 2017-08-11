@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """Ipa CLI endpoints using click library."""
@@ -430,6 +429,3 @@ def list_tests(no_color, verbose, test_dirs):
 main.add_command(list_tests)
 main.add_command(results)
 main.add_command(test)
-
-if __name__ == "__main__":
-    main()

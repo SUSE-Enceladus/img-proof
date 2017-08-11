@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Distro module provides distrobution specific synch points."""
+"""Distro module provides distribution specific synch points."""
 
 # Copyright (c) 2017 SUSE LLC
 #
