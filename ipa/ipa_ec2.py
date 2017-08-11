@@ -20,6 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+
 import boto3
 
 from ipa import ipa_utils
@@ -75,7 +77,9 @@ class EC2Provider(IpaProvider):
                                           running_instance_id,
                                           test_dirs,
                                           test_files)
-        config_file = self.provider_config or EC2_CONFIG_FILE
+        config_file = os.path.expanduser(
+            self.provider_config or EC2_CONFIG_FILE
+        )
 
         if not account_name:
             raise EC2ProviderException(
