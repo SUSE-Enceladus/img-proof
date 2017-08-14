@@ -45,7 +45,7 @@ from ipa.scripts.cli_utils import (
 def print_license(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    click.echo('GPL-v3')
+    click.echo('GPLv3+')
     ctx.exit()
 
 

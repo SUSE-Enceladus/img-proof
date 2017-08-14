@@ -15,7 +15,7 @@ To install the package use the following commands as root:
 ----
 zypper ar http://download.opensuse.org/repositories/Cloud:/Tools/<distribution>
 zypper refresh
-zypper in python-ipa
+zypper in python3-ipa
 ----
 
 === Requirements
@@ -99,5 +99,5 @@ See link:CONTRIBUTING.asciidoc[CONTRIBUTING] for info on getting started.
 
 Copyright (c) 2017 SUSE LLC.
 
-Distributed under the terms of GPL-3.0 license, see
+Distributed under the terms of GPL-3.0+ license, see
 link:LICENSE[LICENSE] for details.
