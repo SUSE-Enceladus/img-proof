@@ -89,8 +89,12 @@ Test image in the given framework using the supplied test files.
 ----
 # Testing an image in EC2
 
-> ipa test -i {image-id} -a {account} --provider-config ~/.ec2utils.conf \
-> --no-cleanup -d openSUSE_Leap EC2 test_image
+> ipa test -i {image-id} \
+  -a {account} \
+  --provider-config ~/.ec2utils.conf \
+  --no-cleanup \
+  -d openSUSE_Leap \
+  EC2 test_image
 
 Starting instance
 Running tests /home/{user}/ipa/tests/test_image.py
@@ -98,8 +102,11 @@ PASSED tests=1|pass=1|fail=0|error=0
 
 # Testing an image in Azure
 
-> ipa test -i {image-id} --no-cleanup -d openSUSE_Leap \
-> --ssh-private-key {azure-ssh-key-file} Azure test_image
+> ipa test -i {image-id} \
+  --no-cleanup \
+  -d openSUSE_Leap \
+  --ssh-private-key {azure-ssh-key-file} \
+  Azure test_image
 
 Starting instance
 Running tests /home/{user}/ipa/tests/test_image.py
