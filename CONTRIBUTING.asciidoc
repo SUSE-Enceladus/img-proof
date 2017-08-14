@@ -1,6 +1,7 @@
 = Contributing to ipa
+:toc:
 
-=== Installation
+== Installation
 
 [source]
 ----
@@ -15,12 +16,12 @@ pip install -e .[dev]
 ipa is now installed in the active virtual environment in development
 mode.
 
-=== Dev Requirements
+== Dev Requirements
 
 * bumpversion
 * pip>=7.0.0
 
-=== Testing Requirements
+== Testing Requirements
 
 * coverage
 * flake8
@@ -28,7 +29,7 @@ mode.
 * pytest-cov
 * vcrpy
 
-=== Contribution Checklist
+== Contribution Checklist
 
 * All patches must be signed. <<Signing Commits>>
 * All contributed code must conform to flake8. <<Code Style>>
@@ -36,7 +37,7 @@ mode.
 ** Tests must pass and coverage remain above 90%. <<Unit & Integration Tests>>
 * Follow Semantic Versioning. <<Versions & Releases>>
 
-=== Versions & Releases
+== Versions & Releases
 
 *ipa* adheres to Semantic versioning; see http://semver.org/ for details.
 
@@ -48,7 +49,7 @@ bumpversion major|minor|patch
 git push && git push --tags
 ----
 
-=== Unit & Integration Tests
+== Unit & Integration Tests
 
 All tests should pass and test coverage should remain above 90%.
 
@@ -58,14 +59,14 @@ The tests and coverage can be run directly via pytest.
 pytest --cov=ipa
 ----
 
-=== Testing with tox
+== Testing with tox
 
-==== Requirements
+=== Requirements
 
 * tox
 * tox-pyenv (testing multiple Python versions 3.4+)
 
-==== Setup
+=== Setup
 
 * Install tox
 +
@@ -86,7 +87,7 @@ tox -e py{version}
 tox -e py36
 ----
 
-=== Code Style
+== Code Style
 
 Source should pass flake8 and pep8 standards.
 
@@ -94,7 +95,7 @@ Source should pass flake8 and pep8 standards.
 flake8 ipa
 ----
 
-=== Signing Commits
+== Signing Commits
 
 The repository and the code base patches sent for inclusion must be GPG signed.
 See the GitHub article,

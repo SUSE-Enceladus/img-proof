@@ -1,4 +1,5 @@
 = ipa
+:toc:
 
 *ipa* (Image Proofing App)
 
@@ -7,7 +8,7 @@
 *ipa* provides a command line utility to test images in the
 Public Cloud (AWS, Azure, GCE, etc.).
 
-=== Installation
+== Installation
 
 To install the package use the following commands as root:
 
@@ -18,7 +19,7 @@ zypper refresh
 zypper in python3-ipa
 ----
 
-=== Requirements
+== Requirements
 
 * azurectl
 * boto3
@@ -28,9 +29,9 @@ zypper in python3-ipa
 * PyYaml
 * testinfra
 
-=== Config
+== Configuration
 
-The framework config is ini format ~/.config/ipa/config. Anything
+The framework configuration is ini format ~/.config/ipa/config. Anything
 specific to the test framework can be found in this file. Thus anything
 that is cloud framework independent such as the test dir and results dir.
 
@@ -44,20 +45,20 @@ results=~/ipa/results/
 region=us-west-1
 ----
 
-=== Azure Config
+=== Azure Configuration
 
-*ipa* shares the azurectl config file. See the
+*ipa* shares the azurectl configuration file. See the
 link:https://github.com/SUSE/azurectl#configuration-file[azurectl readme] for
 more info on the location and format.
 
-=== EC2 Config
+=== EC2 Configuration
 
-For testing EC2 instances *ipa* will use the ec2utils config file located at
-~/.ec2utils.conf. See
+For testing EC2 instances *ipa* will use the ec2utils configuration file
+located at ~/.ec2utils.conf. See
 link:https://github.com/SUSE/Enceladus/tree/master/ec2utils[ec2utils] for an
-example config file.
+example configuration file.
 
-=== Tests
+== Tests
 
 *ipa* uses the Testinfra package for writing unit tests. Testinfra leverages
 Pytest and provides modules such as Package, Process and Service to test the
@@ -72,7 +73,7 @@ as `--early-exit`. If there's an interest or need for any other options/args
 please submit an issue to link:https://github.com/SUSE/ipa/issues[Github].
 ====
 
-=== CLI Overview
+== CLI Overview
 
 The CLI provides multiple subcommands to initiate image testing:
 
@@ -85,17 +86,17 @@ Print test results info.
 `ipa list`::
 Print a list of test files or test cases.
 
-=== Issues/Enhancements
+== Issues/Enhancements
 
 Please submit issues and requests to
 link:https://github.com/SUSE/ipa/issues[Github].
 
-=== Contributing
+== Contributing
 
 Contributions to *ipa* are welcome and encouraged.
 See link:CONTRIBUTING.asciidoc[CONTRIBUTING] for info on getting started.
 
-=== License
+== License
 
 Copyright (c) 2017 SUSE LLC.
 
