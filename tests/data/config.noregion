@@ -1,0 +1,6 @@
+[ipa]
+test_dirs = tests/data/tests
+
+[Azure]
+
+[EC2]

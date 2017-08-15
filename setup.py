@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 """Setup script."""
@@ -39,7 +39,13 @@ requirements = [
 test_requirements = [
     'coverage',
     'flake8',
-    'pytest-cov'
+    'pytest-cov',
+    'vcrpy'
+]
+
+tox_requirements = [
+    'tox',
+    'tox-pyenv'
 ]
 
 dev_requirements = [
@@ -69,7 +75,8 @@ setup(
     install_requires=requirements,
     extras_require={
         'dev': dev_requirements,
-        'test': test_requirements
+        'test': test_requirements,
+        'tox': tox_requirements
     },
     license='GPLv3+',
     zip_safe=False,
