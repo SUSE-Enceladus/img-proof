@@ -37,6 +37,9 @@ from tempfile import NamedTemporaryFile
 from ipa.ipa_constants import SYNC_POINTS
 from ipa.ipa_exceptions import IpaSSHException, IpaUtilsException
 
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+
 CLIENT_CACHE = {}
 
 
@@ -163,6 +166,34 @@ def find_test_file(name, tests):
     if test_case:
         path = ''.join([path, '::', test_case])
     return path
+
+
+def generate_public_ssh_key(ssh_private_key):
+    """Generate SSH public key from private key file."""
+    try:
+        with open(ssh_private_key, "rb") as key_file:
+            key = key_file.read()
+    except FileNotFoundError:
+        raise IpaUtilsException(
+            'SSH private key file: %s cannot be found.' % ssh_private_key
+        )
+
+    try:
+        private_key = serialization.load_pem_private_key(
+            key,
+            password=None,
+            backend=default_backend()
+        )
+    except ValueError:
+        raise IpaUtilsException(
+            'SSH private key file: %s is not a valid key file.'
+            % ssh_private_key
+        )
+
+    return private_key.public_key().public_bytes(
+        serialization.Encoding.OpenSSH,
+        serialization.PublicFormat.OpenSSH
+    )
 
 
 def get_config(config_path):

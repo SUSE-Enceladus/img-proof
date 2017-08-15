@@ -27,10 +27,13 @@ with open('README.asciidoc') as readme_file:
     readme = readme_file.read()
 
 requirements = [
+    'apache-libcloud',
     'azurectl>=3.0.1',
     'boto3',
     'Click',
+    'cryptography',
     'paramiko',
+    'pycrypto',
     'pytest',
     'PyYAML',
     'testinfra',
