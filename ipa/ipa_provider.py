@@ -108,9 +108,11 @@ class IpaProvider(object):
             default=IPA_HISTORY_FILE
         )
 
-        self.provider_config = self._get_value(
-            provider_config,
-            config_key='provider_config'
+        self.provider_config = os.path.expanduser(
+            self._get_value(
+                provider_config,
+                config_key='provider_config'
+            )
         )
 
         self.region = self._get_value(
