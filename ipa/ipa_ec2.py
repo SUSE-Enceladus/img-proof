@@ -52,6 +52,7 @@ class EC2Provider(IpaProvider):
                  results_dir=None,
                  running_instance_id=None,
                  secret_access_key=None,
+                 service_account_file=None,  # Not used in EC2
                  ssh_key_name=None,
                  ssh_private_key=None,
                  ssh_user=None,

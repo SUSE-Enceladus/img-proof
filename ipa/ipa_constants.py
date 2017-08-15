@@ -32,6 +32,8 @@ AZURE_DEFAULT_TYPE = 'Small'
 AZURE_DEFAULT_USER = 'azureuser'
 EC2_DEFAULT_TYPE = 't2.micro'
 EC2_DEFAULT_USER = 'ec2-user'
+GCE_DEFAULT_TYPE = 'n1-standard-1'
+GCE_DEFAULT_USER = 'root'
 
 EC2_CONFIG_FILE = os.path.join(HOME, '.ec2utils.conf')
 IPA_CONFIG_FILE = os.path.join(HOME, '.config', 'ipa', 'config')
