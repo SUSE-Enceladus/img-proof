@@ -1,0 +1,78 @@
+.TH "IPA TEST" "1" "31-Jul-2017" "" "ipa test Manual"
+.SH NAME
+ipa\-test \- Test image in the given framework using the...
+.SH SYNOPSIS
+.B ipa test
+[OPTIONS] PROVIDER [TESTS]...
+.SH DESCRIPTION
+Test image in the given framework using the supplied test files.
+.SH OPTIONS
+.TP
+\fB\-\-access\-key\-id\fP TEXT
+EC2 access key ID for login credentials.
+.TP
+\fB\-a,\fP \-\-account TEXT
+Settings account to provide connection information.
+.TP
+\fB\-\-cleanup\fP / \-\-no\-cleanup
+Terminate instance after tests. By default an instance will be deleted on success and left running if there is a test failure.
+.TP
+\fB\-C,\fP \-\-config PATH
+ipa config file location. Default: ~/.config/ipa/config
+.TP
+\fB\-D,\fP \-\-desc TEXT
+Short description for test run.
+.TP
+\fB\-d,\fP \-\-distro [openSUSE_Leap|SLES]
+The distribution of the image.
+.TP
+\fB\-\-early\-exit\fP
+Terminate test suite on first failure.
+.TP
+\fB\-h,\fP \-\-history\-log PATH
+ipa history log file location. Default: ~/.config/ipa/.history
+.TP
+\fB\-i,\fP \-\-image\-id TEXT
+The ID of the image used for instance.
+.TP
+\fB\-t,\fP \-\-instance\-type TEXT
+Instance type to use for launching machine.
+.TP
+\fB\-\-debug\fP
+Display debug level logging to console.
+.TP
+\fB\-\-verbose\fP
+(Default) Display logging info to console.
+.TP
+\fB\-\-quiet\fP
+Silence logging information on test run.
+.TP
+\fB\-\-no\-color\fP
+Remove ANSI color and styling from output.
+.TP
+\fB\-\-provider\-config\fP TEXT
+The provider specific config file location.
+.TP
+\fB\-r,\fP \-\-region TEXT
+Cloud provider region to test image.
+.TP
+\fB\-\-results\-dir\fP TEXT
+Directory to store test results and output.
+.TP
+\fB\-R,\fP \-\-running\-instance\-id TEXT
+The ID or Name of running instance to test.
+.TP
+\fB\-\-secret\-access\-key\fP TEXT
+EC2 secret access key for login credentials.
+.TP
+\fB\-\-ssh\-key\-name\fP TEXT
+SSH private key file name for EC2.
+.TP
+\fB\-\-ssh\-private\-key\fP PATH
+SSH private key file for accessing instance.
+.TP
+\fB\-u,\fP \-\-ssh\-user TEXT
+SSH user for accessing instance.
+.TP
+\fB\-S,\fP \-\-storage\-container TEXT
+Azure storage container to use.
