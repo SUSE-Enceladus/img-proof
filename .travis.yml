@@ -4,7 +4,7 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - pip install tox
-  - pip install tox-pyenv
-  - pip install tox-travis
-script: tox
+  - pip install -e .[dev]
+script:
+  - pytest --cov=ipa
+  - flake8 ipa
