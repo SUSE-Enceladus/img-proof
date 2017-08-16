@@ -1,5 +1,7 @@
 = ipa
 
+image:https://travis-ci.org/SUSE/ipa.svg?branch=master["Build Status", link="https://travis-ci.org/SUSE/ipa"]
+
 *ipa* (Image Proofing App)
 
 == overview
