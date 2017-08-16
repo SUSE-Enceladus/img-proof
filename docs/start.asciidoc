@@ -1,0 +1,174 @@
+= Getting Started
+:toc:
+
+=== Requirements
+
+* azurectl
+* boto3
+* Click
+* paramiko
+* pytest
+* PyYaml
+* testinfra
+
+== Installation
+
+To install the package use the following commands as root:
+
+[source]
+----
+zypper ar http://download.opensuse.org/repositories/Cloud:/Tools/<distribution>
+zypper refresh
+zypper in python-ipa
+----
+
+Or you can install the latest development version from github:
+
+[source]
+----
+# latest source
+pip install git+https://github.com/SUSE/ipa.git
+
+# specific branch or release
+pip install git+https://github.com/SUSE/ipa.git@{branch/release}
+----
+
+See
+link:https://pip.pypa.io/en/stable/reference/pip_install/#vcs-support[PyPi docs]
+for more information on vcs support.
+
+== Configuration
+
+The framework configuration file is ini format ~/.config/ipa/config. Anything
+specific to the test framework can be found in this file. Thus anything
+that is cloud framework independent such as the tests dir and results dir.
+
+To override the default configuration location the CLI option `-C` or `--config`
+is provided.
+
+The following is an example configuration file. The ipa section is required
+and the provider sections are optional and can be [EC2] or [Azure].
+
+[source,ini]
+----
+[ipa]
+tests=~/ipa/tests/
+results=~/ipa/results/
+
+[EC2]
+region=us-west-1
+----
+
+=== Azure
+
+*ipa* shares the azurectl configuration file. See the
+link:https://github.com/SUSE/azurectl#configuration-file[azurectl readme] for
+more info on the location and format.
+
+=== EC2
+
+For testing EC2 instances *ipa* will use the ec2utils configuration file
+located at ~/.ec2utils.conf. See
+link:https://github.com/SUSE/Enceladus/tree/master/ec2utils[ec2utils] for an
+example configuration file.
+
+=== Provider Configuration location
+
+To override the provider configuration the CLI option, `--provider-config` is
+available.
+
+== Usage
+
+=== CLI
+
+`ipa test`
+
+Test image in the given framework using the supplied test files.
+
+[source]
+----
+# Testing an image in EC2
+
+> ipa test -i {image-id} \
+  -a {account} \
+  --provider-config ~/.ec2utils.conf \
+  --no-cleanup \
+  -d openSUSE_Leap \
+  EC2 test_image
+
+Starting instance
+Running tests /home/{user}/ipa/tests/test_image.py
+PASSED tests=1|pass=1|fail=0|error=0
+
+# Testing an image in Azure
+
+> ipa test -i {image-id} \
+  --no-cleanup \
+  -d openSUSE_Leap \
+  --ssh-private-key {azure-ssh-key-file} \
+  Azure test_image
+
+Starting instance
+Running tests /home/{user}/ipa/tests/test_image.py
+PASSED tests=1|pass=1|fail=0|error=0
+----
+
+==== Verbosity
+
+The CLI output verbosity can be controlled via options:
+
+`--debug`
+
+Display debug level logging to console.
+
+`--verbose`
+
+(Default) Display logging info to console.
+
+`--quiet`
+
+Silence logging information on test run.
+
+==== Cleanup
+
+By default the instance will be terminated if all tests pass. If a test fails
+the instance will remain running. This behavior can be changed with the
+`--cleanup` and `--no-cleanup` flags.
+
+`--cleanup`
+
+Instance will be terminated in all cases.
+
+`--no-cleanup`
+
+Instance will remain running in all cases.
+
+==== ANSI Style
+
+By default the command line output will be colored. To disable color output
+use the `--no-color` option.
+
+==== Early Exit
+
+The early exit option will stop the test run on the first failure.
+`--early-exit` is passed to Pytest as `-x`. See
+link:https://docs.pytest.org/en/latest/usage.html#stopping-after-the-first-or-n-failures[Pytest docs]
+for more info.
+
+=== Code
+
+*ipa* primarily provides a CLI tool for testing images. However, the endpoints
+can be imported directly in Python 3 code through the controller.
+
+[source,python]
+----
+from ipa.ipa_controller import test_image
+
+status, results = test_image(
+    provider,
+    access_key_id,
+    ...
+    storage_container,
+    tests
+)
+----
