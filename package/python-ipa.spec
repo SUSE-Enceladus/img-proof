@@ -19,19 +19,19 @@
 %define skip_python2 1
 %bcond_without test
 Name:           python-ipa
-Version:        0.1.0
+Version:        0.0.1
 Release:        0
 Summary:        Command line and API for testing custom images
 License:        GPL-3.0+
 Group:          Development/Languages/Python
 Url:            https://github.com/SUSE/ipa
-Source:         https://files.pythonhosted.org/packages/source/i/ipa/ipa-%{version}.tar.gz
+Source:         ipa-%{version}.tar.gz
 BuildRequires:  fdupes
 BuildRequires:  python-rpm-macros
 BuildRequires:  %{python_module devel}
 BuildRequires:  %{python_module setuptools}
 %if %{with test}
-BuildRequires:  %{python_module azurectl >= 3.0.0}
+BuildRequires:  %{python_module azurectl >= 3.0.1}
 BuildRequires:  %{python_module boto3}
 BuildRequires:  %{python_module click}
 BuildRequires:  %{python_module coverage}
@@ -43,7 +43,7 @@ BuildRequires:  %{python_module PyYAML}
 BuildRequires:  %{python_module testinfra}
 BuildRequires:  %{python_module vcrpy}
 %endif
-Requires:       python-azurectl >= 3.0.0
+Requires:       python-azurectl >= 3.0.1
 Requires:       python-boto3
 Requires:       python-click
 Requires:       python-paramiko
@@ -80,9 +80,9 @@ export LANG=en_US.utf-8
 
 %files %{python_files}
 %defattr(-,root,root)
-%doc CHANGELOG.asciidoc CONTRIBUTING.asciidoc LICENSE README.asciidoc
-%doc %{_mandir}/man1/*
-%{_bindir}/ipa
+%doc CHANGES.asciidoc CONTRIBUTING.asciidoc LICENSE README.asciidoc
+%python3_only %doc %{_mandir}/man1/*
+%python3_only %{_bindir}/ipa
 %{python_sitelib}/*
 
 %changelog
