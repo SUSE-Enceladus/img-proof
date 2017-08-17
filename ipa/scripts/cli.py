@@ -354,7 +354,7 @@ def results(clear,
             try:
                 # Desc is optional
                 log_file, desc = shlex.split(history)
-            except:
+            except ValueError:
                 log_file = history.strip()
 
             if log:

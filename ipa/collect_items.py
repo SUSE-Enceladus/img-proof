@@ -43,7 +43,7 @@ class CollectItemsPlugin(object):
             test_class = None
             try:
                 path, test_class, parens, test_case = item.nodeid.split('::')
-            except:
+            except ValueError:
                 path, test_case = item.nodeid.split('::')
 
             test_file = path.split(os.sep)[-1].replace('.py', '')
