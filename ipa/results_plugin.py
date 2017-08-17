@@ -33,7 +33,7 @@ class Report(object):
     def __init__(self):
         """Initialize results plugin."""
         self.tests = defaultdict(dict)
-        self.summary = defaultdict(lambda: 0)
+        self.summary = defaultdict(int)
         self.test_index = 0
         self.report = {}
 
