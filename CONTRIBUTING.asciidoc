@@ -50,7 +50,7 @@ git push
 ----
 
 Bumpversion will create a commit with version updated in all locations. The
-annotatated tag is created separately.
+annotated tag is created separately.
 
 ----
 git tag -a v{version}
