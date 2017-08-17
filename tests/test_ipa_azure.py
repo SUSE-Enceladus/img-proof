@@ -159,7 +159,7 @@ class TestAzureProvider(object):
     @patch.object(AzureProvider, '_get_virtual_machine')
     @patch.object(AzureProvider, '_get_account')
     @patch.object(AzureProvider, '_create_cloud_service')
-    @patch.object(AzureProvider, '_generate_instance_name')
+    @patch('ipa.ipa_utils.generate_instance_name')
     def test_azure_launch_instance(self,
                                    mock_generate_instance_name,
                                    mock_get_account,
@@ -192,22 +192,6 @@ class TestAzureProvider(object):
         provider._launch_instance()
         assert provider.running_instance_id == 'azure-test-instance'
         assert vm.create_instance.call_count == 1
-
-    @patch.object(AzureProvider, '_get_virtual_machine')
-    @patch.object(AzureProvider, '_get_account')
-    def test_azure_generate_instance_name(self,
-                                          mock_get_account,
-                                          mock_get_vm):
-        """Test generate instance name method."""
-        account = MagicMock()
-        vm = MagicMock()
-        mock_get_account.return_value = account
-        mock_get_vm.return_value = vm
-
-        provider = AzureProvider(**self.kwargs)
-        name = provider._generate_instance_name()
-        assert len(name) == 20
-        assert name.startswith('azure-ipa-test-')
 
     @patch.object(AzureProvider, '_get_virtual_machine')
     @patch.object(AzureProvider, '_get_instance_state')

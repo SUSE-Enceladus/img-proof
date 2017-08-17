@@ -117,12 +117,6 @@ class GCEProvider(IpaProvider):
         self._get_service_account_info()
         self.gce_driver = self._get_driver()
 
-    def _generate_instance_name(self):
-        """Generate a new random name for instance."""
-        return 'gce-ipa-test-{}'.format(
-            ipa_utils.get_random_string(length=5)
-        )
-
     def _get_service_account_info(self):
         """Retrieve json dict from service account file."""
         with open(self.service_account_file, 'r') as f:
@@ -181,7 +175,10 @@ class GCEProvider(IpaProvider):
             )
 
         metadata = {'key': 'ssh-keys', 'value': self.ssh_public_key}
-        self.running_instance_id = self._generate_instance_name()
+        self.running_instance_id = ipa_utils.generate_instance_name(
+            'gce-ipa-test'
+        )
+
         instance = self.gce_driver.create_node(
             self.running_instance_id,
             self.instance_type or GCE_DEFAULT_TYPE,

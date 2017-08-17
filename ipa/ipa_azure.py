@@ -110,12 +110,6 @@ class AzureProvider(IpaProvider):
 
         return cloud_service
 
-    def _generate_instance_name(self):
-        """Generate a new random name for instance."""
-        return 'azure-ipa-test-{}'.format(
-            ipa_utils.get_random_string(length=5)
-        )
-
     def _get_account(self):
         """Create an account object."""
         if self.provider_config:
@@ -165,7 +159,10 @@ class AzureProvider(IpaProvider):
 
     def _launch_instance(self):
         """Create new test instance in cloud service with same name."""
-        instance_name = self._generate_instance_name()
+        instance_name = ipa_utils.generate_instance_name(
+            'azure-ipa-test'
+        )
+
         cloud_service = self._create_cloud_service(instance_name)
         fingerprint = cloud_service.add_certificate(
             instance_name,

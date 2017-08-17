@@ -168,6 +168,11 @@ def find_test_file(name, tests):
     return path
 
 
+def generate_instance_name(name):
+    """Generate a new random name for instance."""
+    return '%s-%s' % (name, get_random_string(length=5))
+
+
 def generate_public_ssh_key(ssh_private_key):
     """Generate SSH public key from private key file."""
     try:
