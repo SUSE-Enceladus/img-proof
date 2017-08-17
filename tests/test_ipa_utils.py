@@ -304,3 +304,10 @@ def test_utils_history_log_no_input():
 
     assert str(error.value) == \
         'A test log or clear flag must be provided.'
+
+
+def test_utils_generate_instance_name():
+    """Test generate instance name method."""
+    name = ipa_utils.generate_instance_name('azure-ipa-test')
+    assert len(name) == 20
+    assert name.startswith('azure-ipa-test-')

@@ -37,7 +37,7 @@ from unittest.mock import patch
 
 @patch.object(AzureAccount, 'get_management_service')
 @patch.object(AzureAccount, 'get_blob_service_host_base')
-@patch.object(AzureProvider, '_generate_instance_name')
+@patch('ipa.ipa_utils.generate_instance_name')
 @patch.object(IpaProvider, '_run_tests')
 @patch.object(IpaProvider, '_get_ssh_client')
 @patch.object(time, 'sleep')
