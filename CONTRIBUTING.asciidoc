@@ -46,7 +46,19 @@ for release version management, and is configured in `setup.cfg`:
 
 ----
 bumpversion major|minor|patch
-git push && git push --tags
+git push
+----
+
+Bumpversion will create a commit with version updated in all locations. The
+annotatated tag is created separately.
+
+----
+git tag -a v{version}
+# git tag -a v0.0.1
+
+# Create a message with the changes since last release and push tags.
+
+git push --tags
 ----
 
 == Unit & Integration Tests
