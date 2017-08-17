@@ -133,7 +133,7 @@ def results_history(history_log, no_color):
             lines = f.readlines()
     except Exception as error:
         echo_style(
-            'Unable to process results history log.',
+            'Unable to process results history log: %s' % error,
             no_color,
             fg='red'
         )
