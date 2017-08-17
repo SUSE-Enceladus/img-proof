@@ -284,4 +284,4 @@ def test_cli_license():
         ['--license']
     )
     assert result.exit_code == 0
-    assert result.output.strip() == 'GPL-v3'
+    assert result.output.strip() == 'GPLv3+'
