@@ -23,10 +23,13 @@ zypper in python3-ipa
 
 == Requirements
 
+* apache-libcloud
 * azurectl
 * boto3
 * Click
+* cryptography
 * paramiko
+* pycrypto
 * pytest
 * PyYaml
 * testinfra
@@ -43,7 +46,7 @@ that is cloud framework independent such as the test dir and results dir.
 tests=~/ipa/tests/
 results=~/ipa/results/
 
-[ec2]
+[EC2]
 region=us-west-1
 ----
 
@@ -59,6 +62,14 @@ For testing EC2 instances *ipa* will use the ec2utils configuration file
 located at ~/.ec2utils.conf. See
 link:https://github.com/SUSE/Enceladus/tree/master/ec2utils[ec2utils] for an
 example configuration file.
+
+=== GCE Configuration
+
+GCE uses service accounts for authentication. See
+link:https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances[GCE docs]
+for more info on creating a service account json file. The file must include
+a key pair for proper authentication. Additional configuration options can
+be placed in the `GCE` section of the `ipa` configuration file.
 
 == Tests
 

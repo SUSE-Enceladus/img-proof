@@ -3,10 +3,13 @@
 
 === Requirements
 
+* apache-libcloud
 * azurectl
 * boto3
 * Click
+* cryptography
 * paramiko
+* pycrypto
 * pytest
 * PyYaml
 * testinfra
@@ -47,7 +50,7 @@ To override the default configuration location the CLI option `-C` or `--config`
 is provided.
 
 The following is an example configuration file. The ipa section is required
-and the provider sections are optional and can be [EC2] or [Azure].
+and the provider sections are optional and can be [EC2], [GCE] or [Azure].
 
 [source,ini]
 ----
@@ -71,6 +74,14 @@ For testing EC2 instances *ipa* will use the ec2utils configuration file
 located at ~/.ec2utils.conf. See
 link:https://github.com/SUSE/Enceladus/tree/master/ec2utils[ec2utils] for an
 example configuration file.
+
+=== GCE
+
+GCE uses service accounts for authentication. See
+link:https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances[GCE docs]
+for more info on creating a service account json file. The file must include
+a key pair for proper authentication. Additional configuration options can
+be placed in the `GCE` section of the `ipa` configuration file.
 
 === Provider Configuration location
 
@@ -107,6 +118,18 @@ PASSED tests=1|pass=1|fail=0|error=0
   -d openSUSE_Leap \
   --ssh-private-key {azure-ssh-key-file} \
   Azure test_image
+
+Starting instance
+Running tests /home/{user}/ipa/tests/test_image.py
+PASSED tests=1|pass=1|fail=0|error=0
+----
+
+# Testing an image in GCE
+
+> ipa test -i {image-id} \
+  --no-cleanup \
+  -d openSUSE_Leap \
+  GCE test_image
 
 Starting instance
 Running tests /home/{user}/ipa/tests/test_image.py
