@@ -342,7 +342,7 @@ def results(clear,
                     fg='red'
                 )
                 sys.exit(1)
-            except Exception as error:
+            except Exception:
                 echo_style(
                     'Unable to retrieve results history, '
                     'provide results file or re-run test.',
@@ -354,7 +354,7 @@ def results(clear,
             try:
                 # Desc is optional
                 log_file, desc = shlex.split(history)
-            except:
+            except ValueError:
                 log_file = history.strip()
 
             if log:

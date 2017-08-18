@@ -352,7 +352,7 @@ def get_yaml_config(config_path):
         )
 
     with open(config_path, 'r') as f:
-        config = yaml.load(f)
+        config = yaml.safe_load(f)
     return config
 
 

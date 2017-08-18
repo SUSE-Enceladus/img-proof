@@ -28,6 +28,7 @@ import shlex
 
 import pytest
 
+from collections import defaultdict
 from datetime import datetime
 
 from ipa import ipa_utils
@@ -122,7 +123,10 @@ class IpaProvider(object):
 
         self.results = {
             "tests": [],
-            "summary": {"duration": 0, "passed": 0, "num_tests": 0}
+            "summary": defaultdict(
+                int,
+                {"duration": 0, "passed": 0, "num_tests": 0}
+            )
         }
 
         self.results_dir = os.path.expanduser(
@@ -210,10 +214,7 @@ class IpaProvider(object):
         self.results['tests'] += results['tests']
 
         for key, value in results['summary'].items():
-            if key in self.results['summary']:
-                self.results['summary'][key] += results['summary'][key]
-            else:
-                self.results['summary'][key] = results['summary'][key]
+            self.results['summary'][key] += value
 
     def _parse_test_files(self, test_dirs):
         """
