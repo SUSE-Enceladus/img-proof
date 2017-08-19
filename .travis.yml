@@ -2,6 +2,7 @@ language: python
 branches:
   only:
     - master
+    - /\bv[0-9]/
 python:
   - "3.4"
   - "3.5"
