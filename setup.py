@@ -27,10 +27,13 @@ with open('README.asciidoc') as readme_file:
     readme = readme_file.read()
 
 requirements = [
+    'apache-libcloud',
     'azurectl>=3.0.1',
     'boto3',
     'Click',
+    'cryptography',
     'paramiko',
+    'pycrypto',
     'pytest',
     'PyYAML',
     'testinfra',
@@ -56,7 +59,7 @@ dev_requirements = [
 
 setup(
     name='ipa',
-    version='0.0.2',
+    version='0.1.0',
     description="Package for automated testing of cloud images.",
     long_description=readme,
     author="SUSE",

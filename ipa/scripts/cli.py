@@ -169,6 +169,10 @@ def main():
     help='EC2 secret access key for login credentials.'
 )
 @click.option(
+    '--service-account-file',
+    help='GCE service account file for login credentials.'
+)
+@click.option(
     '--ssh-key-name',
     help='SSH private key file name for EC2.'
 )
@@ -209,6 +213,7 @@ def test(access_key_id,
          results_dir,
          running_instance_id,
          secret_access_key,
+         service_account_file,
          ssh_key_name,
          ssh_private_key,
          ssh_user,
@@ -235,6 +240,7 @@ def test(access_key_id,
             results_dir,
             running_instance_id,
             secret_access_key,
+            service_account_file,
             ssh_key_name,
             ssh_private_key,
             ssh_user,

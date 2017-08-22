@@ -1,11 +1,20 @@
-.TH "IPA LIST" "1" "31-Jul-2017" "" "ipa list Manual"
+.TH "IPA LIST" "1" "18-Aug-2017" "" "ipa list Manual"
 .SH NAME
 ipa\-list \- Print a list of test files or test cases.
 .SH SYNOPSIS
 .B ipa list
-[OPTIONS]
+[OPTIONS] [TEST_DIRS]...
 .SH DESCRIPTION
 Print a list of test files or test cases.
 
 If verbose option selected, print all tests cases in
 each test file, otherwise print the test files only.
+
+If test_dirs supplied they will be used to search for
+tests otherwise the default test directories are used.
+.SH OPTIONS
+.TP
+\fB\-\-no\-color\fP
+Remove ANSI color and styling from output.
+.TP
+\fB\-v,\fP \-\-verbose

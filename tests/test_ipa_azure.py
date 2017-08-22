@@ -57,22 +57,6 @@ class TestAzureProvider(object):
         assert str(error.value) == msg
 
     @patch.object(AzureProvider, '_get_virtual_machine')
-    @patch.object(AzureProvider, '_get_account')
-    def test_azure_generate_instance_name(self,
-                                          mock_get_account,
-                                          mock_get_vm):
-        """Test generate instance name method."""
-        account = MagicMock()
-        vm = MagicMock()
-        mock_get_account.return_value = account
-        mock_get_vm.return_value = vm
-
-        provider = AzureProvider(**self.kwargs)
-        name = provider._generate_instance_name()
-        assert len(name) == 20
-        assert name.startswith('azure-ipa-test-')
-
-    @patch.object(AzureProvider, '_get_virtual_machine')
     @patch.object(AzureProvider, '_get_instance_state')
     @patch.object(AzureProvider, '_get_account')
     def test_azure_instance_runnning_undefined(self,
