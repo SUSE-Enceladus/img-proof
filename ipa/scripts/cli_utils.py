@@ -20,12 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import sys
 
 import click
 
 from ipa.ipa_controller import collect_results
+from ipa.ipa_utils import parse_test_name
 
 
 def echo_log(log_file, no_color):
@@ -118,7 +118,7 @@ def echo_verbose_results(data, no_color):
         else:
             fg = 'red'
 
-        name = test['name'].split(os.sep)[-1].replace('.py', '')
+        name = parse_test_name(test['name'])
         echo_style(
             '{} {}'.format(name, test['outcome'].upper()),
             no_color,

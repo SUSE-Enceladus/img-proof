@@ -397,6 +397,18 @@ def parse_sync_points(names, tests):
     return test_files
 
 
+def parse_test_name(name):
+    """Parse and return formatted pytest test name string."""
+    test_class = None
+    try:
+        path, test_class, parens, test_case = name.split('::')
+    except ValueError:
+        path, test_case = name.split('::')
+
+    test_file = path.split(os.sep)[-1].replace('.py', '')
+    return '::'.join(filter(None, [test_file, test_class, test_case]))
+
+
 @contextmanager
 def redirect_output(fileobj):
     """Redirect standard out to file."""
