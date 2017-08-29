@@ -19,7 +19,7 @@
 %define skip_python2 1
 %bcond_without test
 Name:           python-ipa
-Version:        0.0.3
+Version:        0.0.4
 Release:        0
 Summary:        Command line and API for testing custom images
 License:        GPL-3.0+
