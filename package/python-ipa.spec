@@ -19,7 +19,7 @@
 %define skip_python2 1
 %bcond_without test
 Name:           python-ipa
-Version:        0.0.4
+Version:        0.0.5
 Release:        0
 Summary:        Command line and API for testing custom images
 License:        GPL-3.0+
@@ -75,7 +75,7 @@ install -m 644 man/man1/*.1 %{buildroot}/%{_mandir}/man1
 %if %{with test}
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
-%python_exec -m pytest --cov=ipa
+%python_exec -m pytest --cov=ipa --ignore=tests/data
 %endif
 
 %files %{python_files}
