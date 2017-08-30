@@ -75,7 +75,7 @@ install -m 644 man/man1/*.1 %{buildroot}/%{_mandir}/man1
 %if %{with test}
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
-%python_exec -m pytest --cov=ipa
+%python_exec -m pytest --cov=ipa --ignore=tests/data
 %endif
 
 %files %{python_files}

@@ -1,5 +1,27 @@
 = Changelog
 
+== v0.0.5 (2017-08-29)
+
+- Explicit ignore of tests/data directory in spec file.
+
+== v0.0.4 (2017-08-29)
+
+- Account for classes and parameterized tests.
+
+== v0.0.3 (2017-08-29)
+
+- Cleanup azure unit tests.
+
+== v0.0.2 (2017-08-22)
+
+- Update Travis to build only master + tags.
+- Use deault dicts in results summary.
+- Clenaup error message usage.
+- Add shebang to shell script.
+- Use yaml safe_load.
+- Spelling fixes.
+- Cleanup spec file.
+
 == v0.0.1 (2017-08-15)
 
 - Initial release.
