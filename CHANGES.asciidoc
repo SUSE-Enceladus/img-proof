@@ -1,5 +1,10 @@
 = Changelog
 
+== v0.1.1 (2017-08-30)
+
+- Python3 format spec instead of Python single spec.
+- Add missing requirements for GCE to spec.
+
 == v0.1.0 (2017-08-30)
 
 - Integrate GCE provider using apache-libcloud.
