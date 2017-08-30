@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Provider module for testing Google Cloud Compute images."""
+"""Provider module for testing Google Compute Engine (GCE) images."""
 
 # Copyright (c) 2017 SUSE LLC
 #
@@ -37,7 +37,7 @@ from libcloud.compute.providers import get_driver
 
 
 class GCEProvider(IpaProvider):
-    """Provider class for testing Google Cloud Compute images."""
+    """Provider class for testing Google Compute Engine (GCE) images."""
 
     def __init__(self,
                  access_key_id=None,  # Not used in GCE
