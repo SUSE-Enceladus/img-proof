@@ -37,9 +37,14 @@ boto3 = pytest.importorskip("boto3")
 @patch.object(time, 'sleep')
 @patch.object(IpaProvider, '_run_tests')
 @patch.object(IpaProvider, '_get_ssh_client')
+@patch('ipa.ipa_utils.get_host_key_fingerprint')
 @vcr.use_cassette()
-def test_ec2_provider(mock_get_ssh_client, mock_run_tests, mock_sleep):
+def test_ec2_provider(mock_get_host_key,
+                      mock_get_ssh_client,
+                      mock_run_tests,
+                      mock_sleep):
     """Test EC2 Provider with new instance."""
+    mock_get_host_key.return_value = b'04820482'
     mock_get_ssh_client.return_value = None
     mock_run_tests.return_value = 0
     mock_sleep.return_value = None

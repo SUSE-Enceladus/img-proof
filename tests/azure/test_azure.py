@@ -40,9 +40,11 @@ from unittest.mock import patch
 @patch('ipa.ipa_utils.generate_instance_name')
 @patch.object(IpaProvider, '_run_tests')
 @patch.object(IpaProvider, '_get_ssh_client')
+@patch('ipa.ipa_utils.get_host_key_fingerprint')
 @patch.object(time, 'sleep')
 @vcr.use_cassette()
 def test_azure_provider(mock_sleep,
+                        mock_get_host_key,
                         mock_get_ssh_client,
                         mock_run_tests,
                         mock_generate_inst_name,
@@ -51,6 +53,7 @@ def test_azure_provider(mock_sleep,
     """Test Azure Provider with a new instance."""
     # Mock SSH connection attempts
     mock_sleep.return_value = None
+    mock_get_host_key.return_value = b'04820482'
     mock_get_ssh_client.return_value = None
     mock_run_tests.return_value = 0
 

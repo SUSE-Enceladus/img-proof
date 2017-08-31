@@ -264,15 +264,18 @@ class TestIpaProvider(object):
     @patch.object(IpaProvider, '_set_image_id')
     @patch.object(IpaProvider, '_start_instance_if_stopped')
     @patch.object(IpaProvider, '_get_ssh_client')
+    @patch('ipa.ipa_utils.get_host_key_fingerprint')
     @patch.object(IpaProvider, 'hard_reboot_instance')
     def test_provider_bad_connect_hard_reboot(self,
                                               mock_hard_reboot,
+                                              mock_get_host_key,
                                               mock_get_ssh_client,
                                               mock_start_instance,
                                               mock_set_image_id,
                                               mock_set_instance_ip):
         """Test exception when connection not established after hard reboot."""
         mock_hard_reboot.return_value = None
+        mock_get_host_key.return_value = b'04820482'
         mock_get_ssh_client.side_effect = [None, IpaSSHException('ERROR!')]
         mock_start_instance.return_value = None
         mock_set_image_id.return_value = None
@@ -307,15 +310,18 @@ class TestIpaProvider(object):
     @patch.object(IpaProvider, '_set_image_id')
     @patch.object(IpaProvider, '_start_instance_if_stopped')
     @patch.object(IpaProvider, '_get_ssh_client')
+    @patch('ipa.ipa_utils.get_host_key_fingerprint')
     @patch.object(Distro, 'reboot')
     def test_provider_bad_connect_soft_reboot(self,
                                               mock_soft_reboot,
+                                              mock_get_host_key,
                                               mock_get_ssh_client,
                                               mock_start_instance,
                                               mock_set_image_id,
                                               mock_set_instance_ip):
         """Test exception when connection not established after hard reboot."""
         mock_soft_reboot.return_value = None
+        mock_get_host_key.return_value = b'04820482'
         mock_get_ssh_client.side_effect = [
             None,
             None,
@@ -354,15 +360,18 @@ class TestIpaProvider(object):
     @patch.object(IpaProvider, '_set_image_id')
     @patch.object(IpaProvider, '_start_instance_if_stopped')
     @patch.object(IpaProvider, '_get_ssh_client')
+    @patch('ipa.ipa_utils.get_host_key_fingerprint')
     @patch.object(IpaProvider, '_run_tests')
     def test_provider_break_if_test_failure(self,
                                             mock_run_tests,
+                                            mock_get_host_key,
                                             mock_get_ssh_client,
                                             mock_start_instance,
                                             mock_set_image_id,
                                             mock_set_instance_ip):
         """Test exception raised when invalid test item provided."""
         mock_run_tests.return_value = 1
+        mock_get_host_key.return_value = b'04820482'
         mock_get_ssh_client.return_value = None
         mock_start_instance.return_value = None
         mock_set_image_id.return_value = None
