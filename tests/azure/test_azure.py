@@ -26,7 +26,6 @@ import time
 import vcr
 
 from ipa import ipa_controller
-from ipa.ipa_azure import AzureProvider
 from ipa.ipa_provider import IpaProvider
 
 from azure.servicemanagement import ServiceManagementService
