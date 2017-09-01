@@ -242,6 +242,19 @@ def test_utils_get_from_config():
     assert val == 'us-west-1'
 
 
+def test_utils_get_host_key_fingerprint():
+    """Test get host key fingerprint function."""
+    client = MagicMock()
+    transport = MagicMock()
+    key = MagicMock()
+
+    client.get_transport.return_value = transport
+    transport.get_remote_server_key.return_value = key
+    key.get_fingerprint.return_value = b'\x04\x82\x04\x82'
+
+    assert ipa_utils.get_host_key_fingerprint(client) == b'04820482'
+
+
 def test_utils_get_random_string():
     """Test get random string function returns default len 12 string."""
     rand_string = ipa_utils.get_random_string()

@@ -30,6 +30,7 @@ import time
 import paramiko
 import yaml
 
+from binascii import hexlify
 from contextlib import contextmanager
 from string import ascii_lowercase
 from tempfile import NamedTemporaryFile
@@ -67,7 +68,6 @@ def establish_ssh_connection(ip,
     """
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.load_system_host_keys()
 
     while attempts:
         try:
@@ -235,6 +235,13 @@ def get_from_config(config, section, default_section, entry):
                 'Unable to get %s value from config.' % entry
             )
     return value
+
+
+def get_host_key_fingerprint(client):
+    """Get host key fingerprint of SSH client."""
+    return hexlify(
+        client.get_transport().get_remote_server_key().get_fingerprint()
+    )
 
 
 def get_random_string(length=12):

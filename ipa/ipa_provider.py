@@ -92,6 +92,7 @@ class IpaProvider(object):
         self.logger.debug('Using ipa config file: %s' % self.config)
 
         self.desc = desc
+        self.host_key_fingerprint = None
         self.instance_ip = None
         self.provider = provider
 
@@ -399,10 +400,17 @@ class IpaProvider(object):
         try:
             # Ensure instance running and SSH connection
             # can be established prior to testing instance.
-            self._get_ssh_client()
+            client = self._get_ssh_client()
+            self.host_key_fingerprint = ipa_utils.get_host_key_fingerprint(
+                client
+            )
         except IpaSSHException as error:
             raise IpaProviderException(
                 'Unable to connect to instance: %s' % error
+            )
+        except Exception as error:
+            raise IpaProviderException(
+                'An error occurred retrieving host key: %s' % error
             )
 
         self._set_results_dir()
@@ -417,7 +425,11 @@ class IpaProvider(object):
                     self.logger.info('Testing hard reboot')
                     try:
                         self.hard_reboot_instance()
-                        self._get_ssh_client()
+                        client = self._get_ssh_client()
+
+                        if self.host_key_fingerprint != \
+                                ipa_utils.get_host_key_fingerprint(client):
+                            raise Exception('Host key has changed.')
                     except IpaSSHException as error:
                         raise IpaProviderException(
                             'Unable to connect to instance after '
@@ -432,7 +444,11 @@ class IpaProvider(object):
                     self.logger.info('Testing soft reboot')
                     try:
                         self.distro.reboot(self._get_ssh_client())
-                        self._get_ssh_client()
+                        client = self._get_ssh_client()
+
+                        if self.host_key_fingerprint != \
+                                ipa_utils.get_host_key_fingerprint(client):
+                            raise Exception('Host key has changed.')
                     except IpaSSHException as error:
                         raise IpaProviderException(
                             'Unable to connect to instance after '

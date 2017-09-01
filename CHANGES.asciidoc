@@ -1,5 +1,9 @@
 = Changelog
 
+== v0.1.2 (2017-08-31)
+
+- After soft and hard reboot ensure host key has not changed.
+
 == v0.1.1 (2017-08-30)
 
 - Python3 format spec instead of Python single spec.
