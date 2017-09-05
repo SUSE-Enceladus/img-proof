@@ -1,5 +1,10 @@
 = Changelog
 
+== v0.1.3 (2017-09-05)
+
+- Check format of unit/integration tests with flake8 in tox/travis.
+- Cleanup flake8 format in azure integration test.
+
 == v0.1.2 (2017-08-31)
 
 - After soft and hard reboot ensure host key has not changed.
