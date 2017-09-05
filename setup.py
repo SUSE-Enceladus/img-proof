@@ -59,7 +59,7 @@ dev_requirements = [
 
 setup(
     name='ipa',
-    version='0.1.2',
+    version='0.1.3',
     description="Package for automated testing of cloud images.",
     long_description=readme,
     author="SUSE",
