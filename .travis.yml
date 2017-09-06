@@ -12,3 +12,4 @@ install:
 script:
   - pytest --cov=ipa
   - flake8 ipa
+  - flake8 tests --exclude=data
