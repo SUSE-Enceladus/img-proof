@@ -9,7 +9,6 @@ develop-eggs/
 dist/
 include/
 eggs/
-lib/
 lib64
 lib64/
 parts/
