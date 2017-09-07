@@ -58,6 +58,15 @@ BuildArch:      noarch
 ipa provides a command line utility to test images in
 the Public Cloud (AWS, Azure, GCE, etc.).
 
+%package tests
+Summary:        Infrastructure tests for ipa
+Group:          Development/Languages/Python
+PreReq:         python3-ipa = %{version}
+Requires:       python3-susepubliccloudinfo
+
+%description tests
+Directory of infrastructure tests for testing images.
+
 %prep
 %setup -q -n ipa-%{version}
 
@@ -69,11 +78,14 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/*.1 %{buildroot}/%{_mandir}/man1
 
+install -d -m 755 %{buildroot}/usr
+cp -r usr/* %{buildroot}/usr/
+
 %check
 %if %{with test}
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
-python3 -m pytest --cov=ipa --ignore=tests/data
+python3 -m pytest --cov=ipa --ignore=tests/data --ignore=usr
 %endif
 
 %files
@@ -82,5 +94,11 @@ python3 -m pytest --cov=ipa --ignore=tests/data
 %doc %{_mandir}/man1/*
 %{_bindir}/ipa
 %{python3_sitelib}/*
+
+%files tests
+%defattr(-,root,root)
+%dir /usr/share/lib
+%dir /usr/share/lib/ipa
+/usr/share/lib/ipa/*
 
 %changelog

@@ -206,6 +206,11 @@ class TestIpaProvider(object):
         provider = IpaProvider(*args, **self.kwargs)
 
         provider.terminate = True
+        provider.results['info'] = {
+            'platform': 'EC2',
+            'region': 'us-west-1'
+        }
+
         out = provider._run_tests(
             ['tests/data/tests/test_image.py'],
             'test.ssh'
