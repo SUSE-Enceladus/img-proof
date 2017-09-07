@@ -1,0 +1,5 @@
+tests:
+  - test_sles_install_migration
+  - test_update
+  - test_sles_zypper_migration
+  - test_soft_reboot
