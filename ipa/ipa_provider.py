@@ -373,6 +373,7 @@ class IpaProvider(object):
         self._stop_instance()
         self._start_instance()
         self._set_instance_ip()
+        self.logger.debug('IP of instance: %s' % self.instance_ip)
         ipa_utils.clear_cache()
 
     def test_image(self):
