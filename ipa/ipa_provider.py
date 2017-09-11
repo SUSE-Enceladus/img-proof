@@ -395,6 +395,8 @@ class IpaProvider(object):
             # Launch new instance
             self.logger.info('Launching new instance')
             self._launch_instance()
+            self.logger.debug('ID of instance: %s' % self.running_instance_id)
+
         self._set_instance_ip()
         self.logger.debug('IP of instance: %s' % self.instance_ip)
 
