@@ -53,6 +53,7 @@ def test_image(provider_name,
                ssh_private_key=None,
                ssh_user=None,
                storage_container=None,
+               test_dirs=None,
                tests=None):
     """Creates a cloud provider instance and initiates testing."""
     if provider_name in SUPPORTED_PROVIDERS:
@@ -83,6 +84,7 @@ def test_image(provider_name,
             ssh_private_key=ssh_private_key,
             ssh_user=ssh_user,
             storage_container=storage_container,
+            test_dirs=test_dirs,
             test_files=tests
         )
     else:

@@ -191,6 +191,10 @@ def main():
     '--storage-container',
     help='Azure storage container to use.'
 )
+@click.option(
+    '--test-dirs',
+    help='Directories to search for tests.'
+)
 @click.argument(
     'provider',
     type=click.Choice(SUPPORTED_PROVIDERS)
@@ -218,6 +222,7 @@ def test(access_key_id,
          ssh_private_key,
          ssh_user,
          storage_container,
+         test_dirs,
          provider,
          tests):
     """Test image in the given framework using the supplied test files."""
@@ -245,6 +250,7 @@ def test(access_key_id,
             ssh_private_key,
             ssh_user,
             storage_container,
+            test_dirs,
             tests
         )
         echo_results(results, no_color)

@@ -56,7 +56,7 @@ class TestIpaProvider(object):
             'history_log': 'tests/data/results/.history',
             'image_id': 'fakeimage',
             'results_dir': 'tests/data/results',
-            'test_dirs': ['tests/data/tests'],
+            'test_dirs': 'tests/data/tests',
             'test_files': ['test_image']
         }
 
@@ -185,16 +185,6 @@ class TestIpaProvider(object):
 
         for key, val in results['tests'][0].items():
             assert provider.results['tests'][0][key] == val
-
-    def test_provider_string_test_files(self):
-        """Test provider raises if test files is not a list, set or tuple."""
-        self.kwargs['test_dirs'] = 'test/string/'
-
-        with pytest.raises(IpaProviderException) as error:
-            IpaProvider(*args, **self.kwargs)
-
-        assert str(error.value) == \
-            'Test dirs must be a list containing test directories.'
 
     @patch.object(IpaProvider, '_merge_results')
     @patch.object(pytest, 'main')

@@ -41,7 +41,7 @@ class TestAzureProvider(object):
             'provider_config': 'tests/azure/azure.config',
             'running_instance_id': 'fakeinstance',
             'ssh_private_key': 'tests/data/ida_test',
-            'test_dirs': ['tests/data/tests'],
+            'test_dirs': 'tests/data/tests',
             'test_files': ['test_image']
         }
 

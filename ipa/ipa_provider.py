@@ -226,13 +226,8 @@ class IpaProvider(object):
         """
         self.test_dirs = set()
         if test_dirs:
-            if not isinstance(test_dirs, (list, set, tuple)):
-                raise IpaProviderException(
-                    'Test dirs must be a list containing test directories.'
-                )
-
             # Command line arg
-            self.test_dirs.update(test_dirs)
+            self.test_dirs.update(test_dirs.split(','))
 
         with ipa_utils.ignored(IpaUtilsException):
             # ipa config arg
