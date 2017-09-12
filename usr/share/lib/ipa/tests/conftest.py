@@ -30,8 +30,12 @@ def GetReleaseValue(host):
     def f(key):
         release = host.file('/etc/os-release')
 
+        if not release.exists:
+            release = host.file('/etc/SUSE-release')
+
         pretty_name = None
         key += '='
+
         for line in release.content_string.split('\n'):
             if line.startswith(key):
                 pretty_name = line[len(key):].replace('"', '')\

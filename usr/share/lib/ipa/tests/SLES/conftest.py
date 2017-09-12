@@ -1,7 +1,26 @@
 import pytest
 
 
+SLE_11_SP4_BASE = [
+    'SLE11-SDK-SP4-Pool',
+    'SLE11-SDK-SP4-Updates',
+    'SLE11-SP4-Debuginfo-Pool',
+    'SLE11-SP4-Debuginfo-Updates',
+    'SLES11-SP4-Pool',
+    'SLES11-SP4-Updates'
+]
+
+SLE_11_SP4_MODULES = [
+    'SLE11-Public-Cloud-Module',
+    'SLE11-Security-Module',
+    'SLES11-Extras'
+]
+
 SLE_12_BASE = [
+    'SLES12-Debuginfo-Pool',
+    'SLES12-Debuginfo-Updates',
+    'SLES12-Pool',
+    'SLES12-Updates',
     'SLE-SDK12-Debuginfo-Pool',
     'SLE-SDK12-Debuginfo-Updates',
     'SLE-SDK12-Pool',
@@ -131,7 +150,8 @@ SLE_12_SP3_SAP = [
     'SLE-HA12-SP3-Updates'
 ]
 
-sles_repos = {
+SLES_REPOS = {
+    '11.4': SLE_11_SP4_BASE + SLE_11_SP4_MODULES,
     '12': SLE_12_BASE + SLE_12_MODULES,
     '12-SAP': SLE_12_SAP,
     '12-SP1': SLE_12_SP1_BASE + SLE_12_SP1_MODULES,
@@ -146,5 +166,5 @@ sles_repos = {
 @pytest.fixture()
 def GetSLESRepos():
     def f(version):
-        return sles_repos[version]
+        return SLES_REPOS[version]
     return f
