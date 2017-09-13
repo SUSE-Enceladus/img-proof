@@ -1,0 +1,3 @@
+tests:
+  - test_sles_sap_motd
+  - test_sles_sap_license

@@ -195,6 +195,7 @@ class IpaProvider(object):
         """Output test run information to top of log file."""
         self.results['info'] = {
             'platform': self.provider,
+            'region': self.region,
             'distro': self.distro_name,
             'image': self.image_id,
             'instance': self.running_instance_id,
@@ -269,12 +270,15 @@ class IpaProvider(object):
         if self.early_exit:
             options.append('-x')
 
-        args = "-v {} --ssh-config={} --hosts={} {}".format(
-            ' '.join(options),
-            ssh_config,
-            self.instance_ip,
-            ' '.join(tests)
-        )
+        args = '-v {} --ssh-config={} --hosts={} --provider={} ' \
+            '--region="{}" {}'.format(
+                ' '.join(options),
+                ssh_config,
+                self.instance_ip,
+                self.results['info']['platform'].lower(),
+                self.results['info']['region'],
+                ' '.join(tests)
+            )
 
         # Print output captured to log file for test run
         print(

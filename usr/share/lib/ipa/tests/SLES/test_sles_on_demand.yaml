@@ -1,0 +1,5 @@
+tests:
+  - test_update
+  - test_sles_repos
+  - test_sles_smt_reg
+  - test_sles_guestregister
