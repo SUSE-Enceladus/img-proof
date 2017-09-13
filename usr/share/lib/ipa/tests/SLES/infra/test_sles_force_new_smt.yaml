@@ -1,0 +1,4 @@
+tests:
+  - test_sles_force_new_smt_reg
+  - test_update
+  - test_sles_repos

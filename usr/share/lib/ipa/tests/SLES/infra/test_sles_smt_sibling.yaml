@@ -1,0 +1,4 @@
+tests:
+  - test_sles_smt_failover
+  - test_update
+  - test_sles_repos
