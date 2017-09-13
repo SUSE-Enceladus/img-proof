@@ -1,4 +1,4 @@
-def test_sles_repos(CheckZypperRepo, GetReleaseValue, GetSLESRepos, request):
+def test_sles_sap_repos(CheckZypperRepo, GetReleaseValue, GetSLESRepos, request):
     provider = request.config.getoption('provider')
     version = GetReleaseValue('VERSION')
 
