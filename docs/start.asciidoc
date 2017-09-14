@@ -22,7 +22,7 @@ To install the package use the following commands as root:
 ----
 zypper ar http://download.opensuse.org/repositories/Cloud:/Tools/<distribution>
 zypper refresh
-zypper in python-ipa
+zypper in python3-ipa
 ----
 
 Or you can install the latest development version from github:
@@ -110,7 +110,10 @@ Test image in the given framework using the supplied test files.
 Starting instance
 Running tests /home/{user}/ipa/tests/test_image.py
 PASSED tests=1|pass=1|fail=0|error=0
+----
 
+[source]
+----
 # Testing an image in Azure
 
 > ipa test -i {image-id} \
@@ -124,6 +127,8 @@ Running tests /home/{user}/ipa/tests/test_image.py
 PASSED tests=1|pass=1|fail=0|error=0
 ----
 
+[source]
+----
 # Testing an image in GCE
 
 > ipa test -i {image-id} \
