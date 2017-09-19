@@ -1,3 +1,6 @@
+import pytest
+
+from distutils.version import StrictVersion
 
 
 def test_sles_force_new_smt_reg(CheckCloudRegister,
@@ -8,6 +11,12 @@ def test_sles_force_new_smt_reg(CheckCloudRegister,
     certs_dir = '/var/lib/regionService/certs/'
     provider = request.config.getoption('provider')
     region = request.config.getoption('region')
+
+    result = host.run('zypper if cloud-regionsrv-client | grep Version')
+    version = result.stdout.split(':')[-1].strip().split('-')[0]
+
+    if StrictVersion(version) < StrictVersion('7.0.6'):
+        pytest.skip("Guest register client must be at least version 7.0.6.")
 
     host.run("sudo sh -c ': > /var/log/cloudregister'")
     result = host.run('cat /etc/regionserverclnt.cfg | grep regionsrv')
