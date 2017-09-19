@@ -68,6 +68,7 @@ class IpaProvider(object):
                  image_id=None,
                  instance_type=None,
                  log_level=None,
+                 no_default_test_dirs=None,
                  provider_config=None,
                  region=None,
                  results_dir=None,
@@ -151,7 +152,7 @@ class IpaProvider(object):
         if not self.test_files:
             raise IpaProviderException('No test files found.')
 
-        self._parse_test_files(test_dirs)
+        self._parse_test_files(test_dirs, no_default_test_dirs)
 
     def _get_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
@@ -217,7 +218,7 @@ class IpaProvider(object):
         for key, value in results['summary'].items():
             self.results['summary'][key] += value
 
-    def _parse_test_files(self, test_dirs):
+    def _parse_test_files(self, test_dirs, no_default_test_dirs):
         """
         Collect all test dirs and expand test files.
 
@@ -241,17 +242,21 @@ class IpaProvider(object):
             if test_dirs:
                 self.test_dirs.update(test_dirs.split(','))
 
-        if not self.test_dirs:
-            # If no directories provided by config or args use defaults
+        if not no_default_test_dirs:
             self.test_dirs.update(TEST_PATHS)
 
-        # Confirm all test dir paths are absolute and normalized
-        # (remove redundant slashes .../ ...// etc.)
+        # Confirm all test dir paths are absolute, unique and
+        # normalized (remove redundant slashes .../ ...// etc.)
         self.test_dirs = set(
             os.path.normpath(
                 os.path.expanduser(test_dir)
             ) for test_dir in self.test_dirs
         )
+
+        if not self.test_dirs:
+            raise IpaProviderException(
+                'At least one test directory is required.'
+            )
 
         self.test_files = ipa_utils.expand_test_files(
             self.test_dirs,

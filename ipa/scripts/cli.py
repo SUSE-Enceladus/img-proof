@@ -147,6 +147,11 @@ def main():
     help='Remove ANSI color and styling from output.'
 )
 @click.option(
+    '--no-default-test-dirs',
+    is_flag=True,
+    help='Do not include default test directories in test run.'
+)
+@click.option(
     '--provider-config',
     help='The provider specific config file location.'
 )
@@ -212,6 +217,7 @@ def test(access_key_id,
          instance_type,
          log_level,
          no_color,
+         no_default_test_dirs,
          provider_config,
          region,
          results_dir,
@@ -240,6 +246,7 @@ def test(access_key_id,
             image_id,
             instance_type,
             log_level,
+            no_default_test_dirs,
             provider_config,
             region,
             results_dir,
