@@ -482,8 +482,9 @@ class IpaProvider(object):
                     with open(self.log_file, 'a') as log_file:
                         with ipa_utils.redirect_output(log_file):
                             # Run tests
-                            status = (status or
-                                      self._run_tests(item, ssh_config))
+                            result = self._run_tests(item, ssh_config)
+                            status = status or result
+
                 else:
                     raise IpaProviderException(
                         'Invalid test item in list: %s' % item
