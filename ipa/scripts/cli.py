@@ -149,6 +149,7 @@ def main():
 @click.option(
     '--no-default-test-dirs',
     is_flag=True,
+    default=False,
     help='Do not include default test directories in test run.'
 )
 @click.option(

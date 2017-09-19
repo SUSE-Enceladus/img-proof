@@ -47,7 +47,7 @@ class EC2Provider(IpaProvider):
                  image_id=None,
                  instance_type=None,
                  log_level=30,
-                 no_default_test_dirs=None,
+                 no_default_test_dirs=False,
                  provider_config=None,
                  region=None,
                  results_dir=None,

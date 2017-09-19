@@ -68,7 +68,7 @@ class IpaProvider(object):
                  image_id=None,
                  instance_type=None,
                  log_level=None,
-                 no_default_test_dirs=None,
+                 no_default_test_dirs=False,
                  provider_config=None,
                  region=None,
                  results_dir=None,
