@@ -1,11 +1,16 @@
 import shlex
 
 
-def test_sles_smt_failover(GetSMTServerName,
-                           GetSMTServers,
-                           GetReleaseValue,
-                           host,
-                           request):
+def test_sles_switch_smt(GetSMTServerName,
+                         GetSMTServers,
+                         GetReleaseValue,
+                         host,
+                         request):
+    """
+    This is a helper function for SMT failover test.
+
+    It is cast as a test to be easily included in test suite.
+    """
     provider = request.config.getoption('provider')
     region = request.config.getoption('region')
 

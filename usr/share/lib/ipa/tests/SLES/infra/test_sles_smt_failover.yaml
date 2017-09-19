@@ -1,4 +1,4 @@
 tests:
-  - test_sles_smt_failover
+  - test_sles_switch_smt
   - test_update
   - test_sles_repos
