@@ -3,123 +3,89 @@
 
 Tests are developed using the link:https://testinfra.readthedocs.io[Testinfra]
 package. The package extends Pytest and provides a framework for writing Python
-tests to verify the actual state of systems. The default locations for test
-files are locally in ~/ipa/tests/ and centralized in /usr/share/ipa/tests.
+tests to verify the actual state of systems.
+
+== Test directories
+
+The default locations for test files are locally in ~/ipa/tests/ and
+centralized in /usr/share/ipa/tests. These locations can be overridden in the
+config and/or command line arguments.
+
+== Test organization
 
 Tests can be organized in a directory structure:
 
 ----
 ~/ipa/tests/:
-  conftest.py           # Pytest custom modules and config goes here
-  test-image.py         # Generic tests for all images
-  leap-leap-422:
-    test-leap-422.py        # Generic leap tests
+  conftest.py
+  test_image.py
+  openSUSE:
+    test_leap.py
     EC2:
-      test-leap-422-ec2.py  # Specific EC2 tests for leap images
+      test_leap_ec2.py
     GCE:
     ...
-  SLES12SP1:
-    test-sles-12-sp1.py
-    test-sles-12-sp1-sap.py    # Can import SLES12SP1 tests
+  SLES:
+    test_sles.py
+    test_sles_sap.py
     EC2:
-      test-sles-12-sp1-sap-ec2.py
-    ...
-  SUMA3:
+      test_sles_ec2.py
     ...
 ----
 
-A test file can inherit tests by importing another file. For example the
-test-leap-422.py file would import test-image.py to include all generic
-image tests. An example for this structure would be similar to the files
-below:
+Additionally, test descriptions in YAML format can be used to organize tests:
 
-[source,python]
-.test-leap-422-ec2.py
+[source]
+.test_leap_423.yaml
 ----
-import pytest
-from test-leap-422 import *           # Import all generic leap tests
-
-@pytest.mark.parametrize("name", [
-    ("cloud-init"),
-    ("amazon-ssm-agent"),
-])
-def test-services-running-enabled(Service, name):
-    service = Service(name)
-    assert service.is-running
-    assert service.is-enabled
+tests:
+  - test_image
+  - test_leap
 ----
 
-The file which contains specific leap 42.2 tests for EC2 images inherits
-all tests specific to the leap 42.2 image.
-
-[source,python]
-.test-leap-422.py
-----
-import pytest
-from test-image import *          # Import all generic image tests
-
-@pytest.mark.parametrize("repo,name", [
-    ("repo-oss", "openSUSE-Leap-42.1-Oss"),
-    ("repo-non-oss", "openSUSE-Leap-42.1-Non-Oss"),
-])
-def test-repos(CheckRepo, repo, name):
-    assert CheckRepo(repo, name)
-----
-
-The leap 42.2 test file inherits all generic image tests.
-
-[source,python]
-.test-image.py
-----
-import pytest
-
-@pytest.mark.parametrize("name,version", [
-    ("python-virtualenv", "13"),
-    ("python", "2.7"),
-])
-def test-packages(Package, name, version):
-    assert Package(name).is-installed
-    assert Package(name).version.startswith(version)
-
-
-def test-echo(Echo):
-    assert Echo("Hello") == 'Hello'
-----
-
-Thus when invoking the test-leap-422-ec2.py file the following tests are
-run:
+Adding tests to command line args you simply drop the extension:
 
 ----
-$ ipa test test-leap-422-ec2 --ssh-private-key key-file --ssh-user ec2-user
-
-> PASSED tests=7|pass=7|fail=0|error=0
+ipa test ... test_leap_423
 ----
 
-All 7 tests from the three test files are ran when testing the 42.2 EC2
-image.
+This means there cannot be a name overlap with test files and/or test
+descriptions.
+
+Test descriptions can also include other descriptions:
+
+[source]
+.test_leap_423.yaml
+----
+tests:
+  - ...
+include:
+  - test_another_description
+----
 
 == Test invocation
-
-To invoke the entire test suite for a Leap image in EC2 the
-test-leap-42.2-ec2.py target would be used.
 
 To invoke a specific test the Pytest conventions can be used:
 
 ----
-test-leap-422-ec2::test-services-running-enabled
+test_leap_ec2::test-services-running-enabled
 ----
 
-To run only one parameterized test append ids and use [local-ID]:
+To run only one parameterized test append ids and use [ID]:
 
 [source,python]
+.test_leap_ec2.py
 ----
 @pytest.mark.parametrize("name", [
     ("cloud-init"),
     ("amazon-ssm-agent"),
 ], ids=['ci', 'ssm'])
+def test_leap_ec2():
+  ...
+----
 
-
-test-leap-422-ec2::test-services-running-enabled[local-ssm]
+----
+ipa test ... test_leap_ec2::test-services-running-enabled[ssm]
 ----
 
 === Failures
@@ -133,11 +99,12 @@ expected failures.
 
 == Custom Test Modules
 
-Modules are provided for checking standard things such as packages,
-services, files, dirs etc. Modules can be easily written and extended
-from to provide custom modules such as CheckRepo. Any custom modules
-could be written in conftest.py in the same dir and would be resolved by
-Pytest automagically:
+link:http://testinfra.readthedocs.io/en/latest/modules.html[Modules] are
+provided for checking standard things such as packages, services, files, etc.
+
+Modules can be easily written or extended from using
+link:https://docs.pytest.org/en/latest/fixture.html[Pytest fixtures]. Any
+custom modules reside in the conftest.py file inside the test directory:
 
 [source,python]
 .conftest.py
@@ -161,3 +128,9 @@ def CheckRepo(File):
         return all(tests)
     return f
 ----
+
+== Useful Links
+
+For more info on writing tests see the
+link:http://testinfra.readthedocs.io/en/latest/[Testinfra] and
+link:https://docs.pytest.org/en/latest/contents.html[Pytest] documentation.
