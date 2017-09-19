@@ -40,6 +40,7 @@ class TestEC2Provider(object):
             'config': 'tests/data/config',
             'distro_name': 'SLES',
             'image_id': 'fakeimage',
+            'no_default_test_dirs': True,
             'provider_config': 'tests/ec2/.ec2utils.conf',
             'test_files': ['test_image']
         }

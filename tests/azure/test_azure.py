@@ -72,6 +72,7 @@ def test_azure_provider(mock_sleep,
         history_log='tests/data/results/.history',
         image_id='b4590d9e3ed742e4a1d46e5424aa335e__'
                  'suse-sles-12-sp2-byos-v20170320',
+        no_default_test_dirs=True,
         provider_config='tests/azure/azure.config',
         results_dir='tests/data/results',
         ssh_private_key='tests/data/ida_test',

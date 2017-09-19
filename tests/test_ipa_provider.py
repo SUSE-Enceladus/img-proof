@@ -55,6 +55,7 @@ class TestIpaProvider(object):
             'distro_name': 'SLES',
             'history_log': 'tests/data/results/.history',
             'image_id': 'fakeimage',
+            'no_default_test_dirs': True,
             'results_dir': 'tests/data/results',
             'test_dirs': 'tests/data/tests',
             'test_files': ['test_image']

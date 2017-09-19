@@ -38,6 +38,7 @@ class TestAzureProvider(object):
             'config': 'tests/data/config',
             'distro_name': 'SLES',
             'image_id': 'fakeimage',
+            'no_default_test_dirs': True,
             'provider_config': 'tests/azure/azure.config',
             'running_instance_id': 'fakeinstance',
             'ssh_private_key': 'tests/data/ida_test',
