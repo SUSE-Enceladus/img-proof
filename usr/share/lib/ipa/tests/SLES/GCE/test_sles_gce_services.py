@@ -9,5 +9,5 @@ import pytest
     ('google-shutdown-scripts.service'),
     ('google-startup-scripts.service'),
 ])
-def test_sles_gce_services(CheckService, name):
-    assert CheckService(name)
+def test_sles_gce_services(check_service, name):
+    assert check_service(name)

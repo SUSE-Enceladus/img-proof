@@ -10,7 +10,7 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture()
-def CheckCloudRegister(host):
+def check_cloud_register(host):
     def f():
         client_log = host.file('/var/log/cloudregister')
         return all([
@@ -21,7 +21,7 @@ def CheckCloudRegister(host):
 
 
 @pytest.fixture()
-def CheckService(host):
+def check_service(host):
     def f(service_name, running=True, enabled=True):
         service = host.service(service_name)
         return all([
@@ -32,7 +32,7 @@ def CheckService(host):
 
 
 @pytest.fixture()
-def CheckZypperRepo(host):
+def check_zypper_repo(host):
     def f(repo):
         repo = host.file('/etc/zypp/repos.d/' + repo + '.repo')
         return repo.exists
@@ -40,7 +40,7 @@ def CheckZypperRepo(host):
 
 
 @pytest.fixture()
-def GetReleaseValue(host):
+def get_release_value(host):
     def f(key):
         release = host.file('/etc/os-release')
 
@@ -61,14 +61,14 @@ def GetReleaseValue(host):
 
 
 @pytest.fixture()
-def GetSMTServerName(host):
+def get_smt_server_name(host):
     def f(provider):
         return 'smt-{}.susecloud.net'.format(provider)
     return f
 
 
 @pytest.fixture()
-def GetSMTServers(host):
+def get_smt_servers(host):
     def f(pretty_name, provider, region):
         if 'SAP' in pretty_name:
             smt_type = 'smt-sap'
@@ -99,7 +99,7 @@ def GetSMTServers(host):
 
 
 @pytest.fixture()
-def InstallZypperPackage(host):
+def install_zypper_package(host):
     def f(name):
         result = host.run('sudo zypper -n in %s' % name)
         return result.rc

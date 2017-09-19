@@ -1,2 +1,2 @@
-def test_sles_haveged(CheckService):
-    assert CheckService('haveged.service')
+def test_sles_haveged(check_service):
+    assert check_service('haveged.service')

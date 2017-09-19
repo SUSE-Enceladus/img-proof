@@ -3,9 +3,9 @@ import pytest
 from distutils.version import StrictVersion
 
 
-def test_sles_force_new_smt_reg(CheckCloudRegister,
-                                GetReleaseValue,
-                                GetSMTServers,
+def test_sles_force_new_smt_reg(check_cloud_register,
+                                get_release_value,
+                                get_smt_servers,
                                 host,
                                 request):
     certs_dir = '/var/lib/regionService/certs/'
@@ -28,8 +28,8 @@ def test_sles_force_new_smt_reg(CheckCloudRegister,
     )
     fingerprint = result.stdout.split('=')[-1]
 
-    pretty_name = GetReleaseValue('PRETTY_NAME')
-    servers = GetSMTServers(pretty_name, provider, region)
+    pretty_name = get_release_value('PRETTY_NAME')
+    servers = get_smt_servers(pretty_name, provider, region)
 
     result = host.run(
         'sudo registercloudguest --force-new --smt-ip={ip} '
@@ -41,4 +41,4 @@ def test_sles_force_new_smt_reg(CheckCloudRegister,
     )
 
     assert result.rc == 0
-    assert CheckCloudRegister()
+    assert check_cloud_register()
