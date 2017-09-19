@@ -1,0 +1,4 @@
+tests:
+  - test_sles_switch_smt
+  - test_update
+  - test_sles_repos

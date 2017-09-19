@@ -1,9 +1,23 @@
+import json
 import pytest
+
+from susepubliccloudinfoclient import infoserverrequests
 
 
 def pytest_addoption(parser):
     parser.addoption('--provider', action='store', help='ipa provider')
     parser.addoption('--region', action='store', help='ipa region')
+
+
+@pytest.fixture()
+def CheckCloudRegister(host):
+    def f():
+        client_log = host.file('/var/log/cloudregister')
+        return all([
+            client_log.contains('ERROR') is False,
+            client_log.contains('failed') is False
+        ])
+    return f
 
 
 @pytest.fixture()
@@ -43,6 +57,44 @@ def GetReleaseValue(host):
                 break
 
         return pretty_name
+    return f
+
+
+@pytest.fixture()
+def GetSMTServerName(host):
+    def f(provider):
+        return 'smt-{}.susecloud.net'.format(provider)
+    return f
+
+
+@pytest.fixture()
+def GetSMTServers(host):
+    def f(pretty_name, provider, region):
+        if 'SAP' in pretty_name:
+            smt_type = 'smt-sap'
+        else:
+            smt_type = 'smt-sles'
+
+        if provider == 'azure':
+            provider = 'microsoft'
+        elif provider == 'ec2':
+            provider = 'amazon'
+        elif provider == 'gce':
+            provider = 'google'
+        else:
+            raise Exception('Provider %s unknown' % provider)
+
+        output = json.loads(
+            infoserverrequests.get_server_data(
+                provider,
+                'smt',
+                'json',
+                region,
+                'type~{smt_type}'.format(smt_type=smt_type)
+            )
+        )
+
+        return output['servers']
     return f
 
 
