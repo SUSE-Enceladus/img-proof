@@ -1,4 +1,4 @@
-.TH "IPA TEST" "1" "18-Aug-2017" "" "ipa test Manual"
+.TH "IPA TEST" "1" "19-Sep-2017" "" "ipa test Manual"
 .SH NAME
 ipa\-test \- Test image in the given framework using the...
 .SH SYNOPSIS
@@ -50,6 +50,9 @@ Silence logging information on test run.
 \fB\-\-no\-color\fP
 Remove ANSI color and styling from output.
 .TP
+\fB\-\-no\-default\-test\-dirs\fP
+Do not include default test directories in test run.
+.TP
 \fB\-\-provider\-config\fP TEXT
 The provider specific config file location.
 .TP
@@ -79,3 +82,6 @@ SSH user for accessing instance.
 .TP
 \fB\-S,\fP \-\-storage\-container TEXT
 Azure storage container to use.
+.TP
+\fB\-\-test\-dirs\fP TEXT
+Directories to search for tests.
