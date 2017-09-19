@@ -56,6 +56,7 @@ def test_ec2_provider(mock_get_host_key,
         distro='SLES',
         history_log='tests/data/results/.history',
         image_id='ami-859bd1e5',
+        no_default_test_dirs=True,
         provider_config='tests/ec2/.ec2utils.conf',
         results_dir='tests/data/results',
         tests=['test_hard_reboot']

@@ -40,6 +40,7 @@ class TestGCEProvider(object):
             'config': 'tests/data/config',
             'distro_name': 'SLES',
             'image_id': 'fakeimage',
+            'no_default_test_dirs': True,
             'service_account_file': 'tests/gce/service-account.json',
             'ssh_private_key': 'tests/data/ida_test',
             'test_files': ['test_image']

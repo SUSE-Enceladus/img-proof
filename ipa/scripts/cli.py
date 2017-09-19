@@ -147,6 +147,12 @@ def main():
     help='Remove ANSI color and styling from output.'
 )
 @click.option(
+    '--no-default-test-dirs',
+    is_flag=True,
+    default=False,
+    help='Do not include default test directories in test run.'
+)
+@click.option(
     '--provider-config',
     help='The provider specific config file location.'
 )
@@ -191,6 +197,10 @@ def main():
     '--storage-container',
     help='Azure storage container to use.'
 )
+@click.option(
+    '--test-dirs',
+    help='Directories to search for tests.'
+)
 @click.argument(
     'provider',
     type=click.Choice(SUPPORTED_PROVIDERS)
@@ -208,6 +218,7 @@ def test(access_key_id,
          instance_type,
          log_level,
          no_color,
+         no_default_test_dirs,
          provider_config,
          region,
          results_dir,
@@ -218,6 +229,7 @@ def test(access_key_id,
          ssh_private_key,
          ssh_user,
          storage_container,
+         test_dirs,
          provider,
          tests):
     """Test image in the given framework using the supplied test files."""
@@ -235,6 +247,7 @@ def test(access_key_id,
             image_id,
             instance_type,
             log_level,
+            no_default_test_dirs,
             provider_config,
             region,
             results_dir,
@@ -245,6 +258,7 @@ def test(access_key_id,
             ssh_private_key,
             ssh_user,
             storage_container,
+            test_dirs,
             tests
         )
         echo_results(results, no_color)

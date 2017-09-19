@@ -43,6 +43,7 @@ def test_image(provider_name,
                image_id=None,
                instance_type=None,
                log_level=None,
+               no_default_test_dirs=None,
                provider_config=None,
                region=None,
                results_dir=None,
@@ -53,6 +54,7 @@ def test_image(provider_name,
                ssh_private_key=None,
                ssh_user=None,
                storage_container=None,
+               test_dirs=None,
                tests=None):
     """Creates a cloud provider instance and initiates testing."""
     if provider_name in SUPPORTED_PROVIDERS:
@@ -73,6 +75,7 @@ def test_image(provider_name,
             image_id=image_id,
             instance_type=instance_type,
             log_level=log_level,
+            no_default_test_dirs=no_default_test_dirs,
             provider_config=provider_config,
             region=region,
             results_dir=results_dir,
@@ -83,6 +86,7 @@ def test_image(provider_name,
             ssh_private_key=ssh_private_key,
             ssh_user=ssh_user,
             storage_container=storage_container,
+            test_dirs=test_dirs,
             test_files=tests
         )
     else:
