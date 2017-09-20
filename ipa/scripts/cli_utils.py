@@ -61,10 +61,11 @@ def echo_results(data, no_color, verbose=False):
         fg = 'green'
         status = 'PASSED'
 
-    results = '{} tests={}|pass={}|fail={}|error={}'.format(
+    results = '{} tests={}|pass={}|skip={}|fail={}|error={}'.format(
         status,
         str(summary.get('num_tests', 0)),
         str(summary.get('passed', 0)),
+        str(summary.get('skipped', 0)),
         str(summary.get('failed', 0)),
         str(summary.get('error', 0))
     )
@@ -115,6 +116,8 @@ def echo_verbose_results(data, no_color):
     for test in data['tests']:
         if test['outcome'] == 'passed':
             fg = 'green'
+        elif test['outcome'] == 'skipped':
+            fg = 'yellow'
         else:
             fg = 'red'
 
