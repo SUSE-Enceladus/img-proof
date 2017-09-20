@@ -150,7 +150,7 @@ def main():
     '--no-default-test-dirs',
     is_flag=True,
     default=False,
-    help='Do not include default test directories in test run.'
+    help='Do not include default test directories in search for tests.'
 )
 @click.option(
     '--provider-config',
