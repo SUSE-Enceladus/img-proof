@@ -1,5 +1,14 @@
 = Changelog
 
+== v0.3.0 (2017-09-20)
+
+- Add test_dirs to args for test endpoint.
+- Fix bug if test fails before sync point.
+- Add SLES update infrastructure tests.
+- Add command line option --no-default-test-dirs.
+- Add skipped tests to results output.
+- Update man pages and and cleanup docs.
+
 == v0.2.0 (2017-09-07)
 
 - Add test suite for testing SLES images.
