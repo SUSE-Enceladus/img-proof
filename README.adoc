@@ -107,7 +107,7 @@ link:https://github.com/SUSE/ipa/issues[Github].
 == Contributing
 
 Contributions to *ipa* are welcome and encouraged.
-See link:CONTRIBUTING.asciidoc[CONTRIBUTING] for info on getting started.
+See link:CONTRIBUTING.adoc[CONTRIBUTING] for info on getting started.
 
 == License
 

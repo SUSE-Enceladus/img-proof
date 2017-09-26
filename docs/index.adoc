@@ -1,0 +1,7 @@
+= *ipa* Docs
+
+== Contents
+
+* link:start.adoc[Getting Started]
+* link:tests.adoc[Writing Tests]
+* link:source.adoc[Source Overview]
