@@ -27,7 +27,6 @@ mode.
 * flake8
 * mock
 * pytest-cov
-* vcrpy
 
 == Contribution Checklist
 

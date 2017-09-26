@@ -39,7 +39,6 @@ BuildRequires:  python3-pytest
 BuildRequires:  python3-pytest-cov
 BuildRequires:  python3-PyYAML
 BuildRequires:  python3-testinfra
-BuildRequires:  python3-vcrpy
 %endif
 Requires:       python3-apache-libcloud
 Requires:       python3-azurectl >= 3.0.1

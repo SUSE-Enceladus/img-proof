@@ -42,8 +42,7 @@ requirements = [
 test_requirements = [
     'coverage',
     'flake8',
-    'pytest-cov',
-    'vcrpy'
+    'pytest-cov'
 ]
 
 tox_requirements = [

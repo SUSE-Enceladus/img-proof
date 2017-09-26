@@ -235,6 +235,26 @@ class TestIpaProvider(object):
         assert mock_start_instance.call_count == 1
 
     @patch.object(IpaProvider, '_set_instance_ip')
+    @patch.object(IpaProvider, '_stop_instance')
+    @patch.object(IpaProvider, '_start_instance')
+    def test_provider_hard_reboot(self,
+                                  mock_start_instance,
+                                  mock_stop_instance,
+                                  mock_set_instance_ip):
+        """Test start instance if stopped method."""
+        mock_stop_instance.return_value = None
+        mock_start_instance.return_value = None
+        mock_set_instance_ip.return_value = None
+
+        provider = IpaProvider(*args, **self.kwargs)
+        provider.instance_ip = '0.0.0.0'
+        provider.hard_reboot_instance()
+
+        assert mock_stop_instance.call_count == 1
+        assert mock_start_instance.call_count == 1
+        assert mock_set_instance_ip.call_count == 1
+
+    @patch.object(IpaProvider, '_set_instance_ip')
     @patch.object(IpaProvider, '_set_image_id')
     @patch.object(IpaProvider, '_start_instance_if_stopped')
     @patch.object(IpaProvider, '_get_ssh_client')
@@ -351,6 +371,40 @@ class TestIpaProvider(object):
         assert mock_get_ssh_client.call_count > 0
         assert mock_soft_reboot.call_count == 1
         mock_soft_reboot.reset_mock()
+
+    @patch.object(IpaProvider, '_set_instance_ip')
+    @patch.object(IpaProvider, '_set_image_id')
+    @patch.object(IpaProvider, '_start_instance_if_stopped')
+    @patch.object(IpaProvider, '_get_ssh_client')
+    @patch.object(IpaProvider, '_terminate_instance')
+    @patch('ipa.ipa_utils.get_host_key_fingerprint')
+    @patch.object(Distro, 'update')
+    def test_provider_distro_update(self,
+                                    mock_distro_update,
+                                    mock_get_host_key,
+                                    mock_terminate_instance,
+                                    mock_get_ssh_client,
+                                    mock_start_instance,
+                                    mock_set_image_id,
+                                    mock_set_instance_ip):
+        """Test exception raised when invalid test item provided."""
+        mock_distro_update.return_value = 'Updated!'
+        mock_get_host_key.return_value = b'04820482'
+        mock_terminate_instance.return_value = None
+        mock_get_ssh_client.return_value = None
+        mock_start_instance.return_value = None
+        mock_set_image_id.return_value = None
+        mock_set_instance_ip.return_value = None
+        self.kwargs['running_instance_id'] = 'fakeinstance'
+        self.kwargs['test_files'] = ['test_update']
+
+        provider = IpaProvider(*args, **self.kwargs)
+        provider.ssh_private_key = 'tests/data/ida_test'
+        provider.ssh_user = 'root'
+
+        status, results = provider.test_image()
+        assert status == 0
+        assert mock_distro_update.call_count == 1
 
     @patch.object(IpaProvider, '_set_instance_ip')
     @patch.object(IpaProvider, '_set_image_id')
