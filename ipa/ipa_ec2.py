@@ -154,7 +154,9 @@ class EC2Provider(LibcloudProvider):
             instance = instances[0]
         except (IndexError, BaseHTTPError):
             raise EC2ProviderException(
-                f'Instance with ID: {self.running_instance_id} not found.'
+                'Instance with ID: {instance_id} not found.'.format(
+                    instance_id=self.running_instance_id
+                )
             )
         return instance
 
@@ -172,7 +174,9 @@ class EC2Provider(LibcloudProvider):
             size = [size for size in sizes if size.id == instance_type][0]
         except IndexError:
             raise EC2ProviderException(
-                f'Instance type: {instance_type} not found.'
+                'Instance type: {instance_type} not found.'.format(
+                    instance_type=instance_type
+                )
             )
 
         try:
@@ -181,7 +185,9 @@ class EC2Provider(LibcloudProvider):
             )[0]
         except (IndexError, BaseHTTPError):
             raise EC2ProviderException(
-                f'Image with ID: {self.image_id} not found.'
+                'Image with ID: {image_id} not found.'.format(
+                    image_id=self.image_id
+                )
             )
 
         instance = self.compute_driver.create_node(

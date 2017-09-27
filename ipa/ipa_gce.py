@@ -187,7 +187,9 @@ class GCEProvider(LibcloudProvider):
                 message = error
 
             raise GCEProviderException(
-                f'An error occurred launching instance: {message}.'
+                'An error occurred launching instance: {message}.'.format(
+                    message=message
+                )
             )
 
         self.compute_driver.wait_until_running([instance])
