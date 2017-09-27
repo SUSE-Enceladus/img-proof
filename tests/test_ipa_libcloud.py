@@ -79,7 +79,7 @@ class TestLibcloudProvider(object):
 
     @patch.object(LibcloudProvider, '_get_instance')
     def test_libcloud_set_instance_ip(self, mock_get_instance):
-        """Test libcloud provider set image id method."""
+        """Test libcloud provider set instance ip method."""
         instance = MagicMock()
         instance.public_ips = []
 
