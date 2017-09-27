@@ -382,3 +382,16 @@ class TestIpaProvider(object):
         status, results = provider.test_image()
         assert status == 1
         assert mock_run_tests.call_count == 1
+
+    @patch.object(IpaProvider, '_get_instance_state')
+    @patch('time.sleep')
+    def test_azure_wait_on_instance(self,
+                                    mock_sleep,
+                                    mock_get_instance_state):
+        """Test wait on instance method."""
+        mock_get_instance_state.return_value = 'Stopped'
+        mock_sleep.return_value = None
+
+        provider = IpaProvider(*args, **self.kwargs)
+        provider._wait_on_instance('Stopped')
+        assert mock_get_instance_state.call_count == 1
