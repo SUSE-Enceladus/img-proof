@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import boto3
+import time
 
 from ipa import ipa_utils
 from ipa.ipa_constants import (
@@ -30,6 +30,10 @@ from ipa.ipa_constants import (
 )
 from ipa.ipa_exceptions import EC2ProviderException
 from ipa.ipa_provider import IpaProvider
+
+from libcloud.common.exceptions import BaseHTTPError
+from libcloud.compute.types import Provider
+from libcloud.compute.providers import get_driver
 
 
 class EC2Provider(IpaProvider):
@@ -123,24 +127,16 @@ class EC2Provider(IpaProvider):
                 'SSH private key file is required to connect to instance.'
             )
 
-    def _connect(self):
-        """Connect to ec2 resource."""
-        resource = None
-        try:
-            resource = boto3.resource(
-                'ec2',
-                aws_access_key_id=self.access_key_id,
-                aws_secret_access_key=self.secret_access_key,
-                region_name=self.region
-            )
-            # boto3 resource is lazy so attempt method to test connection
-            resource.meta.client.describe_account_attributes()
-        except:
-            raise EC2ProviderException(
-                'Could not connect to region: %s' % self.region
-            )
+        self.ec2_driver = self._get_driver()
 
-        return resource
+    def _get_driver(self):
+        """Get authenticated EC2 driver."""
+        ComputeEngine = get_driver(Provider.EC2)
+        return ComputeEngine(
+            self.access_key_id,
+            self.secret_access_key,
+            region=self.region
+        )
 
     def _get_from_ec2_config(self, entry):
         """Get config entry from ec2utils config file."""
@@ -153,29 +149,21 @@ class EC2Provider(IpaProvider):
 
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
-        resource = self._connect()
-        return resource.Instance(self.running_instance_id)
+        try:
+            instances = self.ec2_driver.list_nodes(
+                ex_node_ids=[self.running_instance_id]
+            )
+            instance = instances[0]
+        except (IndexError, BaseHTTPError):
+            raise EC2ProviderException(
+                f'Instance with ID: {self.running_instance_id} not found.'
+            )
+        return instance
 
     def _get_instance_state(self):
-        """
-        Attempt to retrieve the state of the instance.
-
-        Raises:
-            EC2ProviderException: If the instance cannot be found.
-        """
+        """Attempt to retrieve the state of the instance."""
         instance = self._get_instance()
-
-        state = None
-        try:
-            state = instance.state['Name']
-        except:
-            raise EC2ProviderException(
-                'Instance with id: {instance_id}, '
-                'cannot be found.'.format(
-                    instance_id=self.running_instance_id
-                )
-            )
-        return state
+        return instance.state
 
     def _is_instance_running(self):
         """Return True if instance is in running state."""
@@ -183,59 +171,71 @@ class EC2Provider(IpaProvider):
 
     def _launch_instance(self):
         """Launch an instance of the given image."""
-        if not self.ssh_key_name:
+        instance_type = self.instance_type or EC2_DEFAULT_TYPE
+
+        try:
+            sizes = self.ec2_driver.list_sizes()
+            size = [size for size in sizes if size.id == instance_type][0]
+        except IndexError:
             raise EC2ProviderException(
-                'SSH Key Name is required to launch an EC2 instance.'
+                f'Instance type: {instance_type} not found.'
             )
 
-        resource = self._connect()
-        instances = resource.create_instances(
-            ImageId=self.image_id,
-            MinCount=1,
-            MaxCount=1,
-            KeyName=self.ssh_key_name,
-            InstanceType=self.instance_type or EC2_DEFAULT_TYPE,
-        )
+        try:
+            image = self.ec2_driver.list_images(
+                ex_image_ids=[self.image_id]
+            )[0]
+        except (IndexError, BaseHTTPError):
+            raise EC2ProviderException(
+                f'Image with ID: {self.image_id} not found.'
+            )
 
-        instances[0].wait_until_running()
-        self.running_instance_id = instances[0].instance_id
+        instance = self.ec2_driver.create_node(
+            name=ipa_utils.generate_instance_name('ec2-ipa-test'),
+            size=size,
+            image=image,
+            ex_keyname=self.ssh_key_name
+        )
+        self.ec2_driver.wait_until_running([instance])
+        self.running_instance_id = instance.id
 
     def _set_image_id(self):
-        """If existing image used get image id from boto3."""
+        """If existing image used get image id."""
         instance = self._get_instance()
-        self.image_id = instance.image_id
+        self.image_id = instance.extra['image_id']
 
     def _set_instance_ip(self):
-        """
-        Get instance ip of instance.
-
-        Current prefrence is for ipv4.
-        """
+        """Retrieve and set the instance ip address."""
         instance = self._get_instance()
-        if instance.public_ip_address:
-            self.instance_ip = instance.public_ip_address
-        else:
-            try:
-                self.instance_ip = \
-                        instance.network_interfaces[0].ipv6_addresses[0]
-            except IndexError:
-                raise EC2ProviderException(
-                    'IP address for instance cannot be found.'
-                )
+
+        try:
+            self.instance_ip = instance.public_ips[0]
+        except IndexError:
+            raise EC2ProviderException(
+                'IP address for instance: %s cannot be found.'
+                % self.running_instance_id
+            )
 
     def _start_instance(self):
         """Start the instance."""
         instance = self._get_instance()
-        instance.start()
-        instance.wait_until_running()
+        self.ec2_driver.ex_start_node(instance)
+        self.ec2_driver.wait_until_running([instance])
 
     def _stop_instance(self):
         """Stop the instance."""
         instance = self._get_instance()
-        instance.stop()
-        instance.wait_until_stopped()
+        self.ec2_driver.ex_stop_node(instance)
+        self._wait_on_instance('stopped')
 
     def _terminate_instance(self):
         """Terminate the instance."""
         instance = self._get_instance()
-        instance.terminate()
+        instance.destroy()
+
+    def _wait_on_instance(self, state):
+        """Wait until instance is in given state."""
+        current_state = 'Undefined'
+        while state != current_state:
+            time.sleep(10)
+            current_state = self._get_instance_state()
