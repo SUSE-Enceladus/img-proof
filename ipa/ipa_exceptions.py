@@ -75,3 +75,7 @@ class IpaUtilsException(IpaException):
 
 class IpaSSHException(IpaUtilsException):
     """Generic exception for ipa SSH methods."""
+
+
+class LibcloudProviderException(IpaProviderException):
+    """Generic libcloud exception."""

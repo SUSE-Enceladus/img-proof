@@ -20,8 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
-
 from ipa import ipa_utils
 from ipa.ipa_constants import (
     EC2_CONFIG_FILE,
@@ -29,6 +27,7 @@ from ipa.ipa_constants import (
     EC2_DEFAULT_USER
 )
 from ipa.ipa_exceptions import EC2ProviderException
+from ipa.ipa_libcloud import LibcloudProvider
 from ipa.ipa_provider import IpaProvider
 
 from libcloud.common.exceptions import BaseHTTPError
@@ -36,7 +35,7 @@ from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 
 
-class EC2Provider(IpaProvider):
+class EC2Provider(LibcloudProvider, IpaProvider):
     """Provider class for testing AWS EC2 images."""
 
     def __init__(self,
@@ -127,7 +126,7 @@ class EC2Provider(IpaProvider):
                 'SSH private key file is required to connect to instance.'
             )
 
-        self.ec2_driver = self._get_driver()
+        self.compute_driver = self._get_driver()
 
     def _get_driver(self):
         """Get authenticated EC2 driver."""
@@ -150,7 +149,7 @@ class EC2Provider(IpaProvider):
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
         try:
-            instances = self.ec2_driver.list_nodes(
+            instances = self.compute_driver.list_nodes(
                 ex_node_ids=[self.running_instance_id]
             )
             instance = instances[0]
@@ -160,21 +159,12 @@ class EC2Provider(IpaProvider):
             )
         return instance
 
-    def _get_instance_state(self):
-        """Attempt to retrieve the state of the instance."""
-        instance = self._get_instance()
-        return instance.state
-
-    def _is_instance_running(self):
-        """Return True if instance is in running state."""
-        return self._get_instance_state() == 'running'
-
     def _launch_instance(self):
         """Launch an instance of the given image."""
         instance_type = self.instance_type or EC2_DEFAULT_TYPE
 
         try:
-            sizes = self.ec2_driver.list_sizes()
+            sizes = self.compute_driver.list_sizes()
             size = [size for size in sizes if size.id == instance_type][0]
         except IndexError:
             raise EC2ProviderException(
@@ -182,7 +172,7 @@ class EC2Provider(IpaProvider):
             )
 
         try:
-            image = self.ec2_driver.list_images(
+            image = self.compute_driver.list_images(
                 ex_image_ids=[self.image_id]
             )[0]
         except (IndexError, BaseHTTPError):
@@ -190,52 +180,16 @@ class EC2Provider(IpaProvider):
                 f'Image with ID: {self.image_id} not found.'
             )
 
-        instance = self.ec2_driver.create_node(
+        instance = self.compute_driver.create_node(
             name=ipa_utils.generate_instance_name('ec2-ipa-test'),
             size=size,
             image=image,
             ex_keyname=self.ssh_key_name
         )
-        self.ec2_driver.wait_until_running([instance])
+        self.compute_driver.wait_until_running([instance])
         self.running_instance_id = instance.id
 
     def _set_image_id(self):
         """If existing image used get image id."""
         instance = self._get_instance()
         self.image_id = instance.extra['image_id']
-
-    def _set_instance_ip(self):
-        """Retrieve and set the instance ip address."""
-        instance = self._get_instance()
-
-        try:
-            self.instance_ip = instance.public_ips[0]
-        except IndexError:
-            raise EC2ProviderException(
-                'IP address for instance: %s cannot be found.'
-                % self.running_instance_id
-            )
-
-    def _start_instance(self):
-        """Start the instance."""
-        instance = self._get_instance()
-        self.ec2_driver.ex_start_node(instance)
-        self.ec2_driver.wait_until_running([instance])
-
-    def _stop_instance(self):
-        """Stop the instance."""
-        instance = self._get_instance()
-        self.ec2_driver.ex_stop_node(instance)
-        self._wait_on_instance('stopped')
-
-    def _terminate_instance(self):
-        """Terminate the instance."""
-        instance = self._get_instance()
-        instance.destroy()
-
-    def _wait_on_instance(self, state):
-        """Wait until instance is in given state."""
-        current_state = 'Undefined'
-        while state != current_state:
-            time.sleep(10)
-            current_state = self._get_instance_state()

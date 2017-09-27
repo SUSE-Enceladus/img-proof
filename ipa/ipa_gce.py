@@ -29,6 +29,7 @@ from ipa.ipa_constants import (
     GCE_DEFAULT_USER
 )
 from ipa.ipa_exceptions import GCEProviderException
+from ipa.ipa_libcloud import LibcloudProvider
 from ipa.ipa_provider import IpaProvider
 
 from libcloud.common.google import ResourceNotFoundError
@@ -36,7 +37,7 @@ from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 
 
-class GCEProvider(IpaProvider):
+class GCEProvider(LibcloudProvider, IpaProvider):
     """Provider class for testing Google Compute Engine (GCE) images."""
 
     def __init__(self,
@@ -117,7 +118,7 @@ class GCEProvider(IpaProvider):
 
         self.ssh_public_key = self._get_ssh_public_key()
         self._get_service_account_info()
-        self.gce_driver = self._get_driver()
+        self.compute_driver = self._get_driver()
 
     def _get_service_account_info(self):
         """Retrieve json dict from service account file."""
@@ -139,7 +140,7 @@ class GCEProvider(IpaProvider):
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
         try:
-            instance = self.gce_driver.ex_get_node(
+            instance = self.compute_driver.ex_get_node(
                 self.running_instance_id,
                 zone=self.region
             )
@@ -152,11 +153,6 @@ class GCEProvider(IpaProvider):
 
         return instance
 
-    def _get_instance_state(self):
-        """Attempt to retrieve the state of the instance."""
-        instance = self._get_instance()
-        return instance.state
-
     def _get_ssh_public_key(self):
         """Generate SSH public key from private key."""
         key = ipa_utils.generate_public_ssh_key(self.ssh_private_key)
@@ -164,10 +160,6 @@ class GCEProvider(IpaProvider):
             user=self.ssh_user,
             key=key.decode()
         )
-
-    def _is_instance_running(self):
-        """Return True if instance is in running state."""
-        return self._get_instance_state() == 'running'
 
     def _launch_instance(self):
         """Launch an instance of the given image."""
@@ -181,44 +173,27 @@ class GCEProvider(IpaProvider):
             'gce-ipa-test'
         )
 
-        instance = self.gce_driver.create_node(
-            self.running_instance_id,
-            self.instance_type or GCE_DEFAULT_TYPE,
-            self.image_id,
-            self.region,
-            ex_metadata=metadata
-        )
-        self.gce_driver.wait_until_running([instance])
+        try:
+            instance = self.compute_driver.create_node(
+                self.running_instance_id,
+                self.instance_type or GCE_DEFAULT_TYPE,
+                self.image_id,
+                self.region,
+                ex_metadata=metadata
+            )
+        except ResourceNotFoundError as error:
+            try:
+                message = error.value['message']
+            except TypeError:
+                message = error
+
+            raise GCEProviderException(
+                f'An error occurred launching instance: {message}.'
+            )
+
+        self.compute_driver.wait_until_running([instance])
 
     def _set_image_id(self):
         """If existing image used get image id."""
         instance = self._get_instance()
         self.image_id = instance.image
-
-    def _set_instance_ip(self):
-        """Retrieve and set the instance ip address."""
-        instance = self._get_instance()
-
-        try:
-            self.instance_ip = instance.public_ips[0]
-        except IndexError:
-            raise GCEProviderException(
-                'IP address for instance: %s cannot be found.'
-                % self.running_instance_id
-            )
-
-    def _start_instance(self):
-        """Start the instance."""
-        instance = self._get_instance()
-        self.gce_driver.ex_start_node(instance)
-        self.gce_driver.wait_until_running([instance])
-
-    def _stop_instance(self):
-        """Stop the instance."""
-        instance = self._get_instance()
-        self.gce_driver.ex_stop_node(instance)
-
-    def _terminate_instance(self):
-        """Terminate the instance."""
-        instance = self._get_instance()
-        instance.destroy()
