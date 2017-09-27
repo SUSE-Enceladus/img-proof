@@ -29,7 +29,6 @@ with open('README.asciidoc') as readme_file:
 requirements = [
     'apache-libcloud',
     'azurectl>=3.0.1',
-    'boto3',
     'Click',
     'cryptography',
     'paramiko',

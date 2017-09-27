@@ -5,7 +5,6 @@
 
 * apache-libcloud
 * azurectl
-* boto3
 * Click
 * cryptography
 * paramiko
