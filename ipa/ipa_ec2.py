@@ -161,6 +161,11 @@ class EC2Provider(LibcloudProvider, IpaProvider):
 
     def _launch_instance(self):
         """Launch an instance of the given image."""
+        if not self.ssh_key_name:
+            raise EC2ProviderException(
+                'SSH Key Name is required to launch an EC2 instance.'
+            )
+
         instance_type = self.instance_type or EC2_DEFAULT_TYPE
 
         try:
