@@ -30,14 +30,13 @@ from ipa.ipa_constants import (
 )
 from ipa.ipa_exceptions import GCEProviderException
 from ipa.ipa_libcloud import LibcloudProvider
-from ipa.ipa_provider import IpaProvider
 
 from libcloud.common.google import ResourceNotFoundError
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 
 
-class GCEProvider(LibcloudProvider, IpaProvider):
+class GCEProvider(LibcloudProvider):
     """Provider class for testing Google Compute Engine (GCE) images."""
 
     def __init__(self,

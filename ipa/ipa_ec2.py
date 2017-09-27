@@ -28,14 +28,13 @@ from ipa.ipa_constants import (
 )
 from ipa.ipa_exceptions import EC2ProviderException
 from ipa.ipa_libcloud import LibcloudProvider
-from ipa.ipa_provider import IpaProvider
 
 from libcloud.common.exceptions import BaseHTTPError
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 
 
-class EC2Provider(LibcloudProvider, IpaProvider):
+class EC2Provider(LibcloudProvider):
     """Provider class for testing AWS EC2 images."""
 
     def __init__(self,
