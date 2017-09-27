@@ -20,8 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
-
 from ipa.ipa_exceptions import LibcloudProviderException
 from ipa.ipa_provider import IpaProvider
 
@@ -66,10 +64,3 @@ class LibcloudProvider(IpaProvider):
         """Terminate the instance."""
         instance = self._get_instance()
         instance.destroy()
-
-    def _wait_on_instance(self, state):
-        """Wait until instance is in given state."""
-        current_state = 'Undefined'
-        while state != current_state:
-            time.sleep(10)
-            current_state = self._get_instance_state()
