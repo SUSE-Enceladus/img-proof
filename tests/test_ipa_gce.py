@@ -97,7 +97,7 @@ class TestGCEProvider(object):
         mock_get_ssh_key.return_value = None
 
         provider = GCEProvider(**self.kwargs)
-        assert driver == provider.gce_driver
+        assert driver == provider.compute_driver
 
     @patch.object(GCEProvider, '_get_ssh_public_key')
     @patch.object(GCEProvider, '_get_driver')
@@ -131,26 +131,6 @@ class TestGCEProvider(object):
         assert str(error.value) == "Instance with id: test-instance cannot" \
             " be found: 'Broken'"
 
-    @patch.object(GCEProvider, '_get_ssh_public_key')
-    @patch.object(GCEProvider, '_get_driver')
-    @patch.object(GCEProvider, '_get_instance')
-    def test_gce_get_instance_state(self,
-                                    mock_get_instance,
-                                    mock_get_driver,
-                                    mock_get_ssh_key):
-        """Test GCE get instance method."""
-        instance = MagicMock()
-        instance.state = 'running'
-
-        mock_get_instance.return_value = instance
-        mock_get_driver.return_value = None
-        mock_get_ssh_key.return_value = None
-
-        provider = GCEProvider(**self.kwargs)
-        val = provider._get_instance_state()
-        assert val == 'running'
-        assert mock_get_instance.call_count == 1
-
     @patch.object(GCEProvider, '_get_driver')
     def test_gce_get_ssh_public_key(self, mock_get_driver):
         """Test GCE get instance method."""
@@ -158,29 +138,6 @@ class TestGCEProvider(object):
 
         provider = GCEProvider(**self.kwargs)
         assert provider.ssh_public_key
-
-    @patch.object(GCEProvider, '_get_ssh_public_key')
-    @patch.object(GCEProvider, '_get_driver')
-    @patch.object(GCEProvider, '_get_instance_state')
-    def test_gce_is_instance_running(self,
-                                     mock_get_instance_state,
-                                     mock_get_driver,
-                                     mock_get_ssh_key):
-        """Test gce provider is instance runnning method."""
-        mock_get_instance_state.return_value = 'running'
-        mock_get_driver.return_value = None
-        mock_get_ssh_key.return_value = None
-
-        provider = GCEProvider(**self.kwargs)
-        assert provider._is_instance_running()
-        assert mock_get_instance_state.call_count == 1
-
-        mock_get_instance_state.return_value = 'stopped'
-        mock_get_instance_state.reset_mock()
-
-        provider = GCEProvider(**self.kwargs)
-        assert not provider._is_instance_running()
-        assert mock_get_instance_state.call_count == 1
 
     @patch('ipa.ipa_utils.generate_instance_name')
     @patch.object(GCEProvider, '_get_driver')
@@ -228,98 +185,4 @@ class TestGCEProvider(object):
         provider._set_image_id()
 
         assert provider.image_id == instance.image
-        assert mock_get_instance.call_count == 1
-
-    @patch.object(GCEProvider, '_get_ssh_public_key')
-    @patch.object(GCEProvider, '_get_driver')
-    @patch.object(GCEProvider, '_get_instance')
-    def test_gce_set_instance_ip(self,
-                                 mock_get_instance,
-                                 mock_get_driver,
-                                 mock_get_ssh_key):
-        """Test gce provider set image id method."""
-        instance = MagicMock()
-        instance.public_ips = []
-
-        mock_get_instance.return_value = instance
-        mock_get_driver.return_value = None
-        mock_get_ssh_key.return_value = None
-
-        provider = GCEProvider(**self.kwargs)
-        provider.running_instance_id = 'test'
-
-        with pytest.raises(GCEProviderException) as error:
-            provider._set_instance_ip()
-
-        assert str(error.value) == \
-            'IP address for instance: test cannot be found.'
-        assert mock_get_instance.call_count == 1
-        mock_get_instance.reset_mock()
-
-        instance.public_ips = ['127.0.0.1']
-        provider._set_instance_ip()
-
-        assert provider.instance_ip == '127.0.0.1'
-        assert mock_get_instance.call_count == 1
-
-    @patch.object(GCEProvider, '_get_ssh_public_key')
-    @patch.object(GCEProvider, '_get_driver')
-    @patch.object(GCEProvider, '_get_instance')
-    def test_gce_start_instance(self,
-                                mock_get_instance,
-                                mock_get_driver,
-                                mock_get_ssh_key):
-        """Test gce start instance method."""
-        instance = MagicMock()
-        driver = MagicMock()
-
-        mock_get_instance.return_value = instance
-        mock_get_driver.return_value = driver
-        mock_get_ssh_key.return_value = None
-
-        driver.ex_start_node.return_value = None
-        driver.wait_until_running.return_value = None
-
-        provider = GCEProvider(**self.kwargs)
-        provider._start_instance()
-        assert mock_get_instance.call_count == 1
-
-    @patch.object(GCEProvider, '_get_ssh_public_key')
-    @patch.object(GCEProvider, '_get_driver')
-    @patch.object(GCEProvider, '_get_instance')
-    def test_gce_stop_instance(self,
-                               mock_get_instance,
-                               mock_get_driver,
-                               mock_get_ssh_key):
-        """Test gce stop instance method."""
-        instance = MagicMock()
-        driver = MagicMock()
-
-        mock_get_instance.return_value = instance
-        mock_get_driver.return_value = driver
-        mock_get_ssh_key.return_value = None
-
-        driver.ex_stop_node.return_value = None
-
-        provider = GCEProvider(**self.kwargs)
-        provider._stop_instance()
-        assert mock_get_instance.call_count == 1
-
-    @patch.object(GCEProvider, '_get_ssh_public_key')
-    @patch.object(GCEProvider, '_get_driver')
-    @patch.object(GCEProvider, '_get_instance')
-    def test_gce_terminate_instance(self,
-                                    mock_get_instance,
-                                    mock_get_driver,
-                                    mock_get_ssh_key):
-        """Test gce terminate instance method."""
-        instance = MagicMock()
-        instance.terminate.return_value = None
-
-        mock_get_instance.return_value = instance
-        mock_get_driver.return_value = None
-        mock_get_ssh_key.return_value = None
-
-        provider = GCEProvider(**self.kwargs)
-        provider._terminate_instance()
         assert mock_get_instance.call_count == 1
