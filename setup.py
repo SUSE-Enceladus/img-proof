@@ -23,7 +23,7 @@
 
 from setuptools import find_packages, setup
 
-with open('README.asciidoc') as readme_file:
+with open('README.adoc') as readme_file:
     readme = readme_file.read()
 
 requirements = [

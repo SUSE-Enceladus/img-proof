@@ -1,7 +1,7 @@
-include CHANGES.asciidoc
-include CONTRIBUTING.asciidoc
+include CHANGES.adoc
+include CONTRIBUTING.adoc
 include LICENSE
-include README.asciidoc
+include README.adoc
 
 recursive-include tests *
 recursive-include usr *
