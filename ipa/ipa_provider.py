@@ -373,12 +373,23 @@ class IpaProvider(object):
             test_log=self.log_file
         )
 
-    def _wait_on_instance(self, state):
+    def _wait_on_instance(self, state, attempts=30):
         """Wait until instance is in given state."""
         current_state = 'Undefined'
-        while state != current_state:
-            time.sleep(10)
+        while attempts:
             current_state = self._get_instance_state()
+
+            if state == current_state:
+                return
+
+            attempts -= 1
+            time.sleep(10)
+
+        raise IpaProviderException(
+            'Instance has not arrived at the given state: {state}'.format(
+                state=state
+            )
+        )
 
     def hard_reboot_instance(self):
         """Stop then start the instance."""
