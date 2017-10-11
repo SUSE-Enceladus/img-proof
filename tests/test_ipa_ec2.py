@@ -21,7 +21,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import boto3
 import pytest
 
 from ipa.ipa_ec2 import EC2Provider
@@ -78,76 +77,77 @@ class TestEC2Provider(object):
         assert str(error.value) == msg
         self.kwargs['provider_config'] = 'tests/ec2/.ec2utils.conf'
 
-    @patch.object(boto3, 'resource')
-    def test_ec2_bad_connection(self, mock_boto3):
-        """Test an exception is raised if boto3 unable to connect."""
-        mock_boto3.side_effect = Exception('ERROR!')
+    @patch('libcloud.compute.drivers.ec2.EC2NodeDriver')
+    def test_gce_get_driver(self, mock_node_driver):
+        """Test ec2 get driver method."""
+        driver = MagicMock()
+        mock_node_driver.return_value = driver
 
         provider = EC2Provider(**self.kwargs)
-        msg = 'Could not connect to region: %s' % provider.region
+        assert driver == provider.compute_driver
 
-        # Test ssh private key file required
-        with pytest.raises(EC2ProviderException) as error:
-            provider._connect()
-
-        assert str(error.value) == msg
-        assert mock_boto3.call_count > 0
-
-    @patch.object(EC2Provider, '_connect')
-    def test_ec2_get_instance(self, mock_connect):
+    @patch.object(EC2Provider, '_get_driver')
+    def test_ec2_get_instance(self, mock_get_driver):
         """Test get instance method."""
         instance = MagicMock()
-        resource = MagicMock()
-        resource.Instance.return_value = instance
-        mock_connect.return_value = resource
+        driver = MagicMock()
+        mock_get_driver.return_value = driver
+        driver.list_nodes.return_value = [instance]
 
         provider = EC2Provider(**self.kwargs)
         val = provider._get_instance()
         assert val == instance
-        assert mock_connect.call_count == 1
+        assert driver.list_nodes.call_count == 1
 
-    @patch.object(EC2Provider, '_get_instance')
-    def test_ec2_get_instance_state(self, mock_get_instance):
-        """Test an exception is raised if boto3 unable to connect."""
-        instance = MagicMock()
-        instance.state = {'Name': 'ReadyRole'}
-        mock_get_instance.return_value = instance
+    @patch.object(EC2Provider, '_get_driver')
+    def test_ec2_get_instance_not_found(self, mock_get_driver):
+        """Test get instance method."""
+        driver = MagicMock()
+        mock_get_driver.return_value = driver
+        driver.list_nodes.return_value = []
 
+        self.kwargs['running_instance_id'] = 'i-123456789'
         provider = EC2Provider(**self.kwargs)
-        val = provider._get_instance_state()
-        assert val == 'ReadyRole'
-        assert mock_get_instance.call_count == 1
 
-        instance.state = {}
-        mock_get_instance.reset_mock()
-        msg = 'Instance with id: %s, cannot be found.' \
-            % provider.running_instance_id
-
-        # Test exception raised if instance state not found
         with pytest.raises(EC2ProviderException) as error:
-            provider._get_instance_state()
+            provider._get_instance()
 
-        assert str(error.value) == msg
-        assert mock_get_instance.call_count == 1
+        assert str(error.value) == 'Instance with ID: i-123456789 not found.'
+        assert driver.list_nodes.call_count == 1
 
-    @patch.object(EC2Provider, '_get_instance_state')
-    def test_ec2_is_instance_running(self, mock_get_instance_state):
-        """Test ec2 provider is instance runnning method."""
-        mock_get_instance_state.return_value = 'running'
+    @patch.object(EC2Provider, '_get_driver')
+    def test_ec2_launch_instance(self, mock_get_driver):
+        """Test ec2 provider launch instance method."""
+        driver = MagicMock()
+
+        size = MagicMock()
+        size.id = 't2.micro'
+        driver.list_sizes.return_value = [size]
+
+        image = MagicMock()
+        image.id = 'fakeimage'
+        driver.list_images.return_value = [image]
+
+        instance = MagicMock()
+        instance.id = 'i-123456789'
+        driver.create_node.return_value = instance
+
+        mock_get_driver.return_value = driver
 
         provider = EC2Provider(**self.kwargs)
-        assert provider._is_instance_running()
-        assert mock_get_instance_state.call_count == 1
+        provider._launch_instance()
 
-        mock_get_instance_state.return_value = 'stopped'
-        mock_get_instance_state.reset_mock()
+        assert instance.id == provider.running_instance_id
+        assert driver.list_sizes.call_count == 1
+        assert driver.list_images.call_count == 1
+        assert driver.create_node.call_count == 1
 
-        provider = EC2Provider(**self.kwargs)
-        assert not provider._is_instance_running()
-        assert mock_get_instance_state.call_count == 1
-
-    def test_ec2_launch_no_key_name(self):
+    @patch.object(EC2Provider, '_get_driver')
+    def test_ec2_launch_no_key_name(self, mock_get_driver):
         """Test ec2 provider raises exception if no ssh key name method."""
+        driver = MagicMock()
+        mock_get_driver.return_value = driver
+
         provider = EC2Provider(**self.kwargs)
         provider.ssh_key_name = None
         msg = 'SSH Key Name is required to launch an EC2 instance.'
@@ -157,83 +157,52 @@ class TestEC2Provider(object):
 
         assert str(error.value) == msg
 
+    @patch.object(EC2Provider, '_get_driver')
+    def test_ec2_launch_instance_no_size(self, mock_get_driver):
+        """Test exception raised if instance type not found."""
+        driver = MagicMock()
+        driver.list_sizes.return_value = []
+
+        mock_get_driver.return_value = driver
+        provider = EC2Provider(**self.kwargs)
+
+        with pytest.raises(EC2ProviderException) as error:
+            provider._launch_instance()
+
+        assert str(error.value) == 'Instance type: t2.micro not found.'
+        assert driver.list_sizes.call_count == 1
+
+    @patch.object(EC2Provider, '_get_driver')
+    def test_ec2_launch_instance_no_image(self, mock_get_driver):
+        """Test exception raised if image not found."""
+        driver = MagicMock()
+
+        size = MagicMock()
+        size.id = 't2.micro'
+        driver.list_sizes.return_value = [size]
+        driver.list_images.return_value = []
+
+        mock_get_driver.return_value = driver
+        provider = EC2Provider(**self.kwargs)
+
+        with pytest.raises(EC2ProviderException) as error:
+            provider._launch_instance()
+
+        assert str(error.value) == 'Image with ID: fakeimage not found.'
+        assert driver.list_sizes.call_count == 1
+        assert driver.list_images.call_count == 1
+
     @patch.object(EC2Provider, '_get_instance')
-    def test_ec2_set_image_id(self, mock_get_instance):
+    @patch.object(EC2Provider, '_get_driver')
+    def test_ec2_set_image_id(self, mock_get_driver, mock_get_instance):
         """Test ec2 provider set image id method."""
         instance = MagicMock()
-        instance.image_id = 'ami-123456'
+        instance.extra = {'image_id': 'ami-123456'}
         mock_get_instance.return_value = instance
+        mock_get_driver.return_value = None
 
         provider = EC2Provider(**self.kwargs)
         provider._set_image_id()
 
-        assert provider.image_id == instance.image_id
-        assert mock_get_instance.call_count == 1
-
-    @patch.object(EC2Provider, '_get_instance')
-    def test_ec2_set_instance_ip(self, mock_get_instance):
-        """Test ec2 provider set image id method."""
-        instance = MagicMock()
-        instance.public_ip_address = None
-        instance.network_interfaces = []
-        mock_get_instance.return_value = instance
-
-        provider = EC2Provider(**self.kwargs)
-        msg = 'IP address for instance cannot be found.'
-
-        with pytest.raises(EC2ProviderException) as error:
-            provider._set_instance_ip()
-
-        assert str(error.value) == msg
-        assert mock_get_instance.call_count == 1
-        mock_get_instance.reset_mock()
-
-        network_interface = MagicMock()
-        network_interface.ipv6_addresses = ['127.0.0.1']
-        instance.network_interfaces = [network_interface]
-
-        provider._set_instance_ip()
-        assert provider.instance_ip == '127.0.0.1'
-        assert mock_get_instance.call_count == 1
-        mock_get_instance.reset_mock()
-
-        instance.public_ip_address = '127.0.0.2'
-
-        provider._set_instance_ip()
-        assert provider.instance_ip == '127.0.0.2'
-        assert mock_get_instance.call_count == 1
-
-    @patch.object(EC2Provider, '_get_instance')
-    def test_ec2_start_instance(self, mock_get_instance):
-        """Test ec2 start instance method."""
-        instance = MagicMock()
-        instance.start.return_value = None
-        instance.wait_until_running.return_value = None
-        mock_get_instance.return_value = instance
-
-        provider = EC2Provider(**self.kwargs)
-        provider._start_instance()
-        assert mock_get_instance.call_count == 1
-
-    @patch.object(EC2Provider, '_get_instance')
-    def test_ec2_stop_instance(self, mock_get_instance):
-        """Test ec2 stop instance method."""
-        instance = MagicMock()
-        instance.stop.return_value = None
-        instance.wait_until_stopped.return_value = None
-        mock_get_instance.return_value = instance
-
-        provider = EC2Provider(**self.kwargs)
-        provider._stop_instance()
-        assert mock_get_instance.call_count == 1
-
-    @patch.object(EC2Provider, '_get_instance')
-    def test_ec2_terminate_instance(self, mock_get_instance):
-        """Test ec2 terminate instance method."""
-        instance = MagicMock()
-        instance.terminate.return_value = None
-        mock_get_instance.return_value = instance
-
-        provider = EC2Provider(**self.kwargs)
-        provider._terminate_instance()
+        assert provider.image_id == instance.extra['image_id']
         assert mock_get_instance.call_count == 1

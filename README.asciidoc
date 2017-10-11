@@ -25,7 +25,6 @@ zypper in python3-ipa
 
 * apache-libcloud
 * azurectl
-* boto3
 * Click
 * cryptography
 * paramiko

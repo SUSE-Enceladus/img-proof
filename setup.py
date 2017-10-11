@@ -29,7 +29,6 @@ with open('README.asciidoc') as readme_file:
 requirements = [
     'apache-libcloud',
     'azurectl>=3.0.1',
-    'boto3',
     'Click',
     'cryptography',
     'paramiko',
@@ -42,8 +41,7 @@ requirements = [
 test_requirements = [
     'coverage',
     'flake8',
-    'pytest-cov',
-    'vcrpy'
+    'pytest-cov'
 ]
 
 tox_requirements = [

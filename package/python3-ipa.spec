@@ -29,7 +29,6 @@ BuildRequires:  python3-setuptools
 %if %{with test}
 BuildRequires:  python3-apache-libcloud
 BuildRequires:  python3-azurectl >= 3.0.1
-BuildRequires:  python3-boto3
 BuildRequires:  python3-click
 BuildRequires:  python3-coverage
 BuildRequires:  python3-cryptography
@@ -39,11 +38,9 @@ BuildRequires:  python3-pytest
 BuildRequires:  python3-pytest-cov
 BuildRequires:  python3-PyYAML
 BuildRequires:  python3-testinfra
-BuildRequires:  python3-vcrpy
 %endif
 Requires:       python3-apache-libcloud
 Requires:       python3-azurectl >= 3.0.1
-Requires:       python3-boto3
 Requires:       python3-click
 Requires:       python3-cryptography
 Requires:       python3-paramiko

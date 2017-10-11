@@ -20,8 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
-
 import azurectl.logger
 
 from azurectl.account.service import AzureAccount
@@ -250,13 +248,6 @@ class AzureProvider(IpaProvider):
         """Terminate the cloud service and instance."""
         cloud_service = self._get_cloud_service()
         cloud_service.delete(self.running_instance_id, complete=True)
-
-    def _wait_on_instance(self, state):
-        """Retrieve state for running instance."""
-        current_state = 'Undefined'
-        while state != current_state:
-            time.sleep(10)
-            current_state = self._get_instance_state()
 
     def _wait_on_request(self, request_id):
         """Wait for request to complete."""

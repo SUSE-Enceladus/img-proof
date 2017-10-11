@@ -405,28 +405,6 @@ class TestAzureProvider(object):
         provider._terminate_instance()
         assert cloud_service.delete.call_count == 1
 
-    @patch.object(AzureProvider, '_get_instance_state')
-    @patch.object(AzureProvider, '_get_virtual_machine')
-    @patch.object(AzureProvider, '_get_account')
-    @patch('time.sleep')
-    def test_azure_wait_on_instance(self,
-                                    mock_sleep,
-                                    mock_get_account,
-                                    mock_get_vm,
-                                    mock_get_instance_state):
-        """Test wait on instance method."""
-        account = MagicMock()
-        vm = MagicMock()
-
-        mock_get_account.return_value = account
-        mock_get_vm.return_value = vm
-        mock_get_instance_state.return_value = 'Stopped'
-        mock_sleep.return_value = None
-
-        provider = AzureProvider(**self.kwargs)
-        provider._wait_on_instance('Stopped')
-        assert mock_get_instance_state.call_count == 1
-
     @patch('ipa.ipa_azure.RequestResult')
     @patch.object(AzureProvider, '_get_virtual_machine')
     @patch.object(AzureProvider, '_get_account')
