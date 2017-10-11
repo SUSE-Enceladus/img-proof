@@ -162,10 +162,9 @@ class EC2Provider(LibcloudProvider):
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
         try:
-            instances = self.compute_driver.list_nodes(
+            instance = self.compute_driver.list_nodes(
                 ex_node_ids=[self.running_instance_id]
-            )
-            instance = instances[0]
+            )[0]
         except (IndexError, BaseHTTPError):
             raise EC2ProviderException(
                 'Instance with ID: {instance_id} not found.'.format(
