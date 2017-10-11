@@ -146,6 +146,7 @@ class EC2Provider(LibcloudProvider):
         )
 
     def _get_image(self):
+        """Retrieve NodeImage given the image id."""
         try:
             image = self.compute_driver.list_images(
                 ex_image_ids=[self.image_id]
@@ -174,6 +175,7 @@ class EC2Provider(LibcloudProvider):
         return instance
 
     def _get_instance_size(self):
+        """Retrieve NodeSize given the instance type."""
         instance_type = self.instance_type or EC2_DEFAULT_TYPE
 
         try:
