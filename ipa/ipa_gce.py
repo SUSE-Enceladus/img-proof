@@ -173,10 +173,10 @@ class GCEProvider(LibcloudProvider):
         )
 
         instance = self.compute_driver.create_node(
-            self.running_instance_id,
-            self._get_instance_size(GCE_DEFAULT_TYPE),
-            self._get_image(),
-            self.region,
+            name=self.running_instance_id,
+            size=self._get_instance_size(GCE_DEFAULT_TYPE),
+            image=self._get_image(),
+            location=self.region,
             ex_metadata=metadata
         )
         self.compute_driver.wait_until_running([instance])
