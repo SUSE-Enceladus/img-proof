@@ -145,13 +145,27 @@ class EC2Provider(LibcloudProvider):
             entry
         )
 
+    def _get_image(self):
+        """Retrieve NodeImage given the image id."""
+        try:
+            image = self.compute_driver.list_images(
+                ex_image_ids=[self.image_id]
+            )[0]
+        except (IndexError, BaseHTTPError):
+            raise EC2ProviderException(
+                'Image with ID: {image_id} not found.'.format(
+                    image_id=self.image_id
+                )
+            )
+
+        return image
+
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
         try:
-            instances = self.compute_driver.list_nodes(
+            instance = self.compute_driver.list_nodes(
                 ex_node_ids=[self.running_instance_id]
-            )
-            instance = instances[0]
+            )[0]
         except (IndexError, BaseHTTPError):
             raise EC2ProviderException(
                 'Instance with ID: {instance_id} not found.'.format(
@@ -160,13 +174,8 @@ class EC2Provider(LibcloudProvider):
             )
         return instance
 
-    def _launch_instance(self):
-        """Launch an instance of the given image."""
-        if not self.ssh_key_name:
-            raise EC2ProviderException(
-                'SSH Key Name is required to launch an EC2 instance.'
-            )
-
+    def _get_instance_size(self):
+        """Retrieve NodeSize given the instance type."""
         instance_type = self.instance_type or EC2_DEFAULT_TYPE
 
         try:
@@ -179,21 +188,19 @@ class EC2Provider(LibcloudProvider):
                 )
             )
 
-        try:
-            image = self.compute_driver.list_images(
-                ex_image_ids=[self.image_id]
-            )[0]
-        except (IndexError, BaseHTTPError):
+        return size
+
+    def _launch_instance(self):
+        """Launch an instance of the given image."""
+        if not self.ssh_key_name:
             raise EC2ProviderException(
-                'Image with ID: {image_id} not found.'.format(
-                    image_id=self.image_id
-                )
+                'SSH Key Name is required to launch an EC2 instance.'
             )
 
         instance = self.compute_driver.create_node(
             name=ipa_utils.generate_instance_name('ec2-ipa-test'),
-            size=size,
-            image=image,
+            size=self._get_instance_size(),
+            image=self._get_image(),
             ex_keyname=self.ssh_key_name
         )
         self.compute_driver.wait_until_running([instance])
