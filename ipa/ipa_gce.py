@@ -172,26 +172,13 @@ class GCEProvider(LibcloudProvider):
             'gce-ipa-test'
         )
 
-        try:
-            instance = self.compute_driver.create_node(
-                self.running_instance_id,
-                self.instance_type or GCE_DEFAULT_TYPE,
-                self.image_id,
-                self.region,
-                ex_metadata=metadata
-            )
-        except ResourceNotFoundError as error:
-            try:
-                message = error.value['message']
-            except TypeError:
-                message = error
-
-            raise GCEProviderException(
-                'An error occurred launching instance: {message}.'.format(
-                    message=message
-                )
-            )
-
+        instance = self.compute_driver.create_node(
+            self.running_instance_id,
+            self._get_instance_size(GCE_DEFAULT_TYPE),
+            self._get_image(),
+            self.region,
+            ex_metadata=metadata
+        )
         self.compute_driver.wait_until_running([instance])
 
     def _set_image_id(self):

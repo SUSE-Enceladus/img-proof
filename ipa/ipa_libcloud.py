@@ -20,12 +20,50 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from libcloud.common.exceptions import BaseHTTPError
+
 from ipa.ipa_exceptions import LibcloudProviderException
 from ipa.ipa_provider import IpaProvider
 
 
 class LibcloudProvider(IpaProvider):
     """Provider class for testing images with libcloud."""
+
+    def _get_image(self):
+        """Retrieve NodeImage given the image id."""
+        try:
+            images = self.compute_driver.list_images()
+            image = [
+                image for image in images if image.id == self.image_id
+                or image.name == self.image_id
+            ][0]
+        except (IndexError, BaseHTTPError):
+            raise LibcloudProviderException(
+                'Image with ID: {image_id} not found.'.format(
+                    image_id=self.image_id
+                )
+            )
+
+        return image
+
+    def _get_instance_size(self, default_type):
+        """Retrieve NodeSize given the instance type."""
+        instance_type = self.instance_type or default_type
+
+        try:
+            sizes = self.compute_driver.list_sizes(location=self.region)
+            size = [
+                size for size in sizes if size.name == instance_type
+                or size.id == instance_type
+            ][0]
+        except IndexError:
+            raise LibcloudProviderException(
+                'Instance type: {instance_type} not found.'.format(
+                    instance_type=instance_type
+                )
+            )
+
+        return size
 
     def _get_instance_state(self):
         """Attempt to retrieve the state of the instance."""

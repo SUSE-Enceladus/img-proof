@@ -24,7 +24,7 @@
 import pytest
 
 from ipa.ipa_ec2 import EC2Provider
-from ipa.ipa_exceptions import EC2ProviderException
+from ipa.ipa_exceptions import EC2ProviderException, LibcloudProviderException
 
 from unittest.mock import MagicMock, patch
 
@@ -166,7 +166,7 @@ class TestEC2Provider(object):
         mock_get_driver.return_value = driver
         provider = EC2Provider(**self.kwargs)
 
-        with pytest.raises(EC2ProviderException) as error:
+        with pytest.raises(LibcloudProviderException) as error:
             provider._launch_instance()
 
         assert str(error.value) == 'Instance type: t2.micro not found.'
@@ -185,7 +185,7 @@ class TestEC2Provider(object):
         mock_get_driver.return_value = driver
         provider = EC2Provider(**self.kwargs)
 
-        with pytest.raises(EC2ProviderException) as error:
+        with pytest.raises(LibcloudProviderException) as error:
             provider._launch_instance()
 
         assert str(error.value) == 'Image with ID: fakeimage not found.'
