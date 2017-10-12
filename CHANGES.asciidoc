@@ -1,5 +1,10 @@
 = Changelog
 
+== v0.4.0 (2017-10-12)
+
+- Migrate EC2 provider to apache-libcloud.
+- Remove vcrpy integration tests.
+
 == v0.3.0 (2017-09-20)
 
 - Add test_dirs to args for test endpoint.
