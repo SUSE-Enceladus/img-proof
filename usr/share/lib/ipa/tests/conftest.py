@@ -68,9 +68,10 @@ def get_smt_server_name(host):
 
 
 @pytest.fixture()
-def get_smt_servers(host):
-    def f(pretty_name, provider, region):
-        if 'SAP' in pretty_name:
+def get_smt_servers(get_release_value, host):
+    def f(provider, region):
+        cpe_name = get_release_value('CPE_NAME')
+        if 'sap' in cpe_name:
             smt_type = 'smt-sap'
         else:
             smt_type = 'smt-sles'

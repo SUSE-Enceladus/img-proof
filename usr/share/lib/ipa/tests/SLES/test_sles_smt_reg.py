@@ -2,7 +2,6 @@ import shlex
 
 
 def test_sles_smt_reg(check_cloud_register,
-                      get_release_value,
                       get_smt_server_name,
                       get_smt_servers,
                       host,
@@ -12,8 +11,7 @@ def test_sles_smt_reg(check_cloud_register,
 
     assert check_cloud_register()
 
-    pretty_name = get_release_value('PRETTY_NAME')
-    servers = get_smt_servers(pretty_name, provider, region)
+    servers = get_smt_servers(provider, region)
     smt_ips = [server['ip'] for server in servers]
 
     result = host.run(
