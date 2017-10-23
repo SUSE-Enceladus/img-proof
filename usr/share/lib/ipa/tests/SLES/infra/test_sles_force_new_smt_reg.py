@@ -4,7 +4,6 @@ from distutils.version import StrictVersion
 
 
 def test_sles_force_new_smt_reg(check_cloud_register,
-                                get_release_value,
                                 get_smt_servers,
                                 host,
                                 request):
@@ -28,8 +27,7 @@ def test_sles_force_new_smt_reg(check_cloud_register,
     )
     fingerprint = result.stdout.split('=')[-1]
 
-    pretty_name = get_release_value('PRETTY_NAME')
-    servers = get_smt_servers(pretty_name, provider, region)
+    servers = get_smt_servers(provider, region)
 
     result = host.run(
         'sudo registercloudguest --force-new --smt-ip={ip} '

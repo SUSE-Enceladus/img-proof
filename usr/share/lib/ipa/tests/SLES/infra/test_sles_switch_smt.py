@@ -3,7 +3,6 @@ import shlex
 
 def test_sles_switch_smt(get_smt_server_name,
                          get_smt_servers,
-                         get_release_value,
                          host,
                          request):
     """
@@ -19,8 +18,7 @@ def test_sles_switch_smt(get_smt_server_name,
     )
     smt_ip = shlex.split(result.stdout)[0]
 
-    pretty_name = get_release_value('PRETTY_NAME')
-    servers = get_smt_servers(pretty_name, provider, region)
+    servers = get_smt_servers(provider, region)
 
     for server in servers:
         if server['ip'] != smt_ip:
