@@ -20,8 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from libcloud.common.exceptions import BaseHTTPError
-
 from ipa.ipa_exceptions import LibcloudProviderException
 from ipa.ipa_provider import IpaProvider
 
@@ -32,12 +30,8 @@ class LibcloudProvider(IpaProvider):
     def _get_image(self):
         """Retrieve NodeImage given the image id."""
         try:
-            images = self.compute_driver.list_images()
-            image = [
-                image for image in images if image.id == self.image_id
-                or image.name == self.image_id
-            ][0]
-        except (IndexError, BaseHTTPError):
+            image = self.compute_driver.get_image(self.image_id)
+        except Exception:
             raise LibcloudProviderException(
                 'Image with ID: {image_id} not found.'.format(
                     image_id=self.image_id
