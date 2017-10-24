@@ -154,7 +154,7 @@ def find_test_file(name, tests):
     """
     try:
         test_name, test_case = name.split('::', 1)
-    except:
+    except ValueError:
         test_name, test_case = name, None
 
     path = tests.get(test_name, None)
@@ -212,8 +212,8 @@ def get_config(config_path):
     try:
         result = config.read(config_path)
         if not result:
-            raise
-    except:
+            raise Exception('Empty result.')
+    except Exception:
         raise IpaUtilsException(
             'Error parsing config file: %s' % config_path
         )

@@ -153,6 +153,14 @@ class TestGCEProvider(object):
         mock_get_driver.return_value = driver
         mock_generate_instance_name.return_value = 'test-instance'
 
+        size = MagicMock()
+        size.name = 'n1-standard-1'
+        driver.list_sizes.return_value = [size]
+
+        image = MagicMock()
+        image.name = 'fakeimage'
+        driver.list_images.return_value = [image]
+
         provider = GCEProvider(**self.kwargs)
         provider.region = None
 

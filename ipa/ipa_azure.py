@@ -221,7 +221,7 @@ class AzureProvider(IpaProvider):
 
         try:
             self.instance_ip = \
-                    service_info['deployments'][0]['virtual_ips'][0]['address']
+                service_info['deployments'][0]['virtual_ips'][0]['address']
         except IndexError:
             raise AzureProviderException(
                 'IP address for instance cannot be found.'
@@ -230,8 +230,8 @@ class AzureProvider(IpaProvider):
     def _start_instance(self):
         """Start the instance."""
         self.vm.start_instance(
-           cloud_service_name=self.running_instance_id,
-           instance_name=self.running_instance_id
+            cloud_service_name=self.running_instance_id,
+            instance_name=self.running_instance_id
         )
         self._wait_on_instance('ReadyRole')
 

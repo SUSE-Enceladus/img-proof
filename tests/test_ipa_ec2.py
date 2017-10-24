@@ -24,7 +24,7 @@
 import pytest
 
 from ipa.ipa_ec2 import EC2Provider
-from ipa.ipa_exceptions import EC2ProviderException
+from ipa.ipa_exceptions import EC2ProviderException, LibcloudProviderException
 
 from unittest.mock import MagicMock, patch
 
@@ -139,7 +139,7 @@ class TestEC2Provider(object):
 
         assert instance.id == provider.running_instance_id
         assert driver.list_sizes.call_count == 1
-        assert driver.list_images.call_count == 1
+        assert driver.get_image.call_count == 1
         assert driver.create_node.call_count == 1
 
     @patch.object(EC2Provider, '_get_driver')
@@ -166,7 +166,7 @@ class TestEC2Provider(object):
         mock_get_driver.return_value = driver
         provider = EC2Provider(**self.kwargs)
 
-        with pytest.raises(EC2ProviderException) as error:
+        with pytest.raises(LibcloudProviderException) as error:
             provider._launch_instance()
 
         assert str(error.value) == 'Instance type: t2.micro not found.'
@@ -180,17 +180,17 @@ class TestEC2Provider(object):
         size = MagicMock()
         size.id = 't2.micro'
         driver.list_sizes.return_value = [size]
-        driver.list_images.return_value = []
+        driver.get_image.side_effect = Exception('No Image!')
 
         mock_get_driver.return_value = driver
         provider = EC2Provider(**self.kwargs)
 
-        with pytest.raises(EC2ProviderException) as error:
+        with pytest.raises(LibcloudProviderException) as error:
             provider._launch_instance()
 
         assert str(error.value) == 'Image with ID: fakeimage not found.'
         assert driver.list_sizes.call_count == 1
-        assert driver.list_images.call_count == 1
+        assert driver.get_image.call_count == 1
 
     @patch.object(EC2Provider, '_get_instance')
     @patch.object(EC2Provider, '_get_driver')

@@ -136,6 +136,19 @@ class GCEProvider(LibcloudProvider):
             project=self.service_account_project
         )
 
+    def _get_image(self):
+        """Retrieve NodeImage given the image id."""
+        try:
+            image = self.compute_driver.ex_get_image(self.image_id)
+        except ResourceNotFoundError:
+            raise GCEProviderException(
+                'Image with ID: {image_id} not found.'.format(
+                    image_id=self.image_id
+                )
+            )
+
+        return image
+
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
         try:
@@ -172,26 +185,13 @@ class GCEProvider(LibcloudProvider):
             'gce-ipa-test'
         )
 
-        try:
-            instance = self.compute_driver.create_node(
-                self.running_instance_id,
-                self.instance_type or GCE_DEFAULT_TYPE,
-                self.image_id,
-                self.region,
-                ex_metadata=metadata
-            )
-        except ResourceNotFoundError as error:
-            try:
-                message = error.value['message']
-            except TypeError:
-                message = error
-
-            raise GCEProviderException(
-                'An error occurred launching instance: {message}.'.format(
-                    message=message
-                )
-            )
-
+        instance = self.compute_driver.create_node(
+            name=self.running_instance_id,
+            size=self._get_instance_size(GCE_DEFAULT_TYPE),
+            image=self._get_image(),
+            location=self.region,
+            ex_metadata=metadata
+        )
         self.compute_driver.wait_until_running([instance])
 
     def _set_image_id(self):

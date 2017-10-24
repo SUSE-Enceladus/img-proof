@@ -113,8 +113,8 @@ class IpaProvider(object):
         )
 
         self.provider_config = self._get_value(
-                provider_config,
-                config_key='provider_config'
+            provider_config,
+            config_key='provider_config'
         )
         if self.provider_config:
             self.provider_config = os.path.expanduser(self.provider_config)
