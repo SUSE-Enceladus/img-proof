@@ -47,8 +47,8 @@ class LibcloudProvider(IpaProvider):
         try:
             sizes = self.compute_driver.list_sizes(location=self.region)
             size = [
-                size for size in sizes if size.name == instance_type
-                or size.id == instance_type
+                size for size in sizes if size.name == instance_type or
+                size.id == instance_type
             ][0]
         except IndexError:
             raise LibcloudProviderException(
