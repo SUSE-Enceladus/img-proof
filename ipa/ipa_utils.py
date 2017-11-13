@@ -78,7 +78,7 @@ def establish_ssh_connection(ip,
                 key_filename=ssh_private_key,
                 timeout=timeout
             )
-        except:
+        except:  # noqa: E722
             attempts -= 1
             time.sleep(10)
         else:
@@ -104,7 +104,7 @@ def execute_ssh_command(client, cmd):
         if err:
             raise IpaSSHException(err.decode())
         out = stdout.read()
-    except:
+    except:  # noqa: E722
         raise
     return out.decode()
 
@@ -154,7 +154,7 @@ def find_test_file(name, tests):
     """
     try:
         test_name, test_case = name.split('::', 1)
-    except:
+    except ValueError:
         test_name, test_case = name, None
 
     path = tests.get(test_name, None)
@@ -213,7 +213,7 @@ def get_config(config_path):
         result = config.read(config_path)
         if not result:
             raise
-    except:
+    except Exception:
         raise IpaUtilsException(
             'Error parsing config file: %s' % config_path
         )
@@ -270,7 +270,7 @@ def get_ssh_client(ip,
                 timeout=timeout
             )
             execute_ssh_command(client, 'ls')
-        except:
+        except:  # noqa: E722
             if client:
                 client.close()
             attempts -= 1
