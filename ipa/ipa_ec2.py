@@ -83,7 +83,7 @@ class EC2Provider(LibcloudProvider):
         self.account_name = account_name
 
         if not self.account_name:
-            self.logger.warning(
+            self.logger.debug(
                 'No account provided. To use the EC2 config file an '
                 'account name is required.'
             )
