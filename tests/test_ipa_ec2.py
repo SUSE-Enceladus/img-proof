@@ -46,18 +46,7 @@ class TestEC2Provider(object):
 
     def test_ec2_exception_required_args(self):
         """Test an exception is raised if required args missing."""
-        self.kwargs['account_name'] = None
-        msg = 'Account required for config file: %s' \
-            % self.kwargs['provider_config']
-
-        # Test account required
-        with pytest.raises(EC2ProviderException) as error:
-            EC2Provider(**self.kwargs)
-
-        assert str(error.value) == msg
-
         self.kwargs['config'] = 'tests/data/config.noregion'
-        self.kwargs['account_name'] = 'bob'
         msg = 'Region is required to connect to EC2.'
 
         # Test region required
