@@ -201,7 +201,9 @@ class IpaProvider(object):
             'distro': self.distro_name,
             'image': self.image_id,
             'instance': self.running_instance_id,
-            'timestamp': self.time_stamp
+            'timestamp': self.time_stamp,
+            'log_file': self.log_file,
+            'results_file': self.results_file
         }
 
         with open(self.log_file, 'a') as log_file:
