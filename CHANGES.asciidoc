@@ -1,5 +1,13 @@
 = Changelog
 
+== v0.5.0 (2017-12-11)
+
+- Use cpe_name to determine SAP product in SLES tests.
+- Allow EC2 testing without a config file.
+- Update README overview with more info.
+- Provide log_file and results_file in results dict.
+- Other formatting and bug fixes.
+
 == v0.4.0 (2017-10-12)
 
 - Migrate EC2 provider to apache-libcloud.
