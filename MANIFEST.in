@@ -2,9 +2,17 @@ include CHANGES.asciidoc
 include CONTRIBUTING.asciidoc
 include LICENSE
 include README.asciidoc
+include tox.ini
+include ipa-complete.sh
+include package/python3-ipa.spec
 
 recursive-include tests *
-recursive-include usr *
+recursive-include usr *.py
+recursive-include usr *.yaml
 recursive-include man *.1
+recursive-include docs *.asciidoc 
 recursive-exclude * __pycache__
+recursive-exclude * *.coverage
 recursive-exclude * *.py[co]
+recursive-exclude tests/data/results *
+
