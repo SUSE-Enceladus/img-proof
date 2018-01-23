@@ -5,3 +5,4 @@ tests:
   - test_hard_reboot
   - test_sles_hostname
   - test_sles_haveged
+  - test_sles_lscpu
