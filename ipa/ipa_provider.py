@@ -150,9 +150,6 @@ class IpaProvider(object):
                 'Image ID or running instance is required.'
             )
 
-        if not self.test_files:
-            raise IpaProviderException('No test files found.')
-
         self._parse_test_files(test_dirs, no_default_test_dirs)
 
     def _get_instance(self):
