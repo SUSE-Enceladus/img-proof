@@ -94,18 +94,6 @@ class TestIpaProvider(object):
         assert str(error.value) == \
             'Image ID or running instance is required.'
 
-    def test_provider_tests_required(self):
-        """Test exception raised if no tests provided."""
-        with pytest.raises(IpaProviderException) as error:
-            IpaProvider(
-                *args,
-                config='tests/data/config',
-                distro_name='SLES',
-                image_id='test'
-            )
-
-        assert str(error.value) == 'No test files found.'
-
     @patch.object(ipa_utils, 'get_ssh_client')
     def test_provider_get_ssh_client(self, mock_get_ssh_client):
         """Test get ssh client method."""
