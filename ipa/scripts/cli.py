@@ -199,7 +199,7 @@ def main():
 )
 @click.option(
     '--subnet-id',
-    help='Subnet to place the new instance in when launched.'
+    help='Subnet to launch the new instance into.'
 )
 @click.option(
     '--test-dirs',
