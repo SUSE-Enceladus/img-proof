@@ -62,6 +62,7 @@ class GCEProvider(LibcloudProvider):
                  ssh_private_key=None,
                  ssh_user=None,
                  storage_container=None,  # Not used in GCE
+                 subnet_id=None,
                  test_dirs=None,
                  test_files=None):
         super(GCEProvider, self).__init__('GCE',
@@ -116,6 +117,8 @@ class GCEProvider(LibcloudProvider):
         )
 
         self.ssh_public_key = self._get_ssh_public_key()
+        self.subnet_id = subnet_id
+
         self._get_service_account_info()
         self.compute_driver = self._get_driver()
 
@@ -160,11 +163,30 @@ class GCEProvider(LibcloudProvider):
             key=key.decode()
         )
 
+    def _get_subnet(self, subnet_id):
+        subnet = None
+        try:
+            # Subnet lives in a region whereas self.region
+            # is a specific zone (us-west1-a).
+            region = '-'.join(self.region.split('-')[:-1])
+            subnet = self.compute_driver.ex_get_subnetwork(
+                subnet_id, region=region
+            )
+        except Exception:
+            raise GCEProviderException(
+                'GCE subnet: {subnet_id} not found.'.format(
+                    subnet_id=subnet_id
+                )
+            )
+
+        return subnet
+
     def _launch_instance(self):
         """Launch an instance of the given image."""
         if not self.region:
             raise GCEProviderException(
-                'Zone (region) is required to launch a new GCE instance.'
+                'Zone is required to launch a new GCE instance. '
+                'Example: us-west1-a'
             )
 
         metadata = {'key': 'ssh-keys', 'value': self.ssh_public_key}
@@ -172,13 +194,21 @@ class GCEProvider(LibcloudProvider):
             'gce-ipa-test'
         )
 
+        kwargs = {
+            'location': self.region,
+            'ex_metadata': metadata,
+        }
+
+        if self.subnet_id:
+            kwargs['ex_subnetwork'] = self._get_subnet(self.subnet_id)
+            kwargs['ex_network'] = kwargs['ex_subnetwork'].network
+
         try:
             instance = self.compute_driver.create_node(
                 self.running_instance_id,
                 self.instance_type or GCE_DEFAULT_TYPE,
                 self.image_id,
-                self.region,
-                ex_metadata=metadata
+                **kwargs
             )
         except ResourceNotFoundError as error:
             try:

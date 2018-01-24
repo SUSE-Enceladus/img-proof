@@ -139,11 +139,43 @@ class TestGCEProvider(object):
         provider = GCEProvider(**self.kwargs)
         assert provider.ssh_public_key
 
+    @patch.object(GCEProvider, '_get_driver')
+    def test_gce_get_subnet(self, mock_get_driver):
+        """Test GCE get subnetwork method."""
+        subnetwork = MagicMock()
+        driver = MagicMock()
+        driver.ex_get_subnetwork.return_value = subnetwork
+        mock_get_driver.return_value = driver
+
+        provider = GCEProvider(**self.kwargs)
+        provider.region = 'us-west-1a'
+        result = provider._get_subnet('test-subnet')
+
+        assert result == subnetwork
+
+    @patch.object(GCEProvider, '_get_driver')
+    def test_gce_get_subnet_exception(self, mock_get_driver):
+        """Test GCE get subnetwork method."""
+        driver = MagicMock()
+        driver.ex_get_subnetwork.side_effect = Exception('Cannot find subnet!')
+        mock_get_driver.return_value = driver
+
+        provider = GCEProvider(**self.kwargs)
+        provider.region = 'us-west-1a'
+
+        msg = 'GCE subnet: test-subnet not found.'
+        with pytest.raises(GCEProviderException) as error:
+            provider._get_subnet('test-subnet')
+
+        assert msg == str(error.value)
+
+    @patch.object(GCEProvider, '_get_subnet')
     @patch('ipa.ipa_utils.generate_instance_name')
     @patch.object(GCEProvider, '_get_driver')
     def test_gce_launch_instance(self,
                                  mock_get_driver,
-                                 mock_generate_instance_name):
+                                 mock_generate_instance_name,
+                                 mock_get_subnet):
         """Test GCE launch instance method."""
         driver = MagicMock()
         instance = MagicMock()
@@ -160,9 +192,17 @@ class TestGCEProvider(object):
             provider._launch_instance()
 
         assert str(error.value) == \
-            'Zone (region) is required to launch a new GCE instance.'
+            'Zone is required to launch a new GCE instance. ' \
+            'Example: us-west1-a'
 
         provider.region = 'us-west1-a'
+        provider.subnet_id = 'test-subnet'
+
+        subnet = MagicMock()
+        network = MagicMock()
+        subnet.network = network
+        mock_get_subnet.return_value = subnet
+
         provider._launch_instance()
 
         assert provider.running_instance_id == 'test-instance'

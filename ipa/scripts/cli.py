@@ -198,6 +198,10 @@ def main():
     help='Azure storage container to use.'
 )
 @click.option(
+    '--subnet-id',
+    help='Subnet to place the new instance in when launched.'
+)
+@click.option(
     '--test-dirs',
     help='Directories to search for tests.'
 )
@@ -229,6 +233,7 @@ def test(access_key_id,
          ssh_private_key,
          ssh_user,
          storage_container,
+         subnet_id,
          test_dirs,
          provider,
          tests):
@@ -258,6 +263,7 @@ def test(access_key_id,
             ssh_private_key,
             ssh_user,
             storage_container,
+            subnet_id,
             test_dirs,
             tests
         )

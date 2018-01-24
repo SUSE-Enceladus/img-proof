@@ -60,6 +60,7 @@ class AzureProvider(IpaProvider):
                  ssh_private_key=None,
                  ssh_user=None,
                  storage_container=None,
+                 subnet_id=None,  # Not used in Azure
                  test_dirs=None,
                  test_files=None):
         """Initialize Azure Provider class."""
