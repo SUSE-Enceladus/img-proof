@@ -105,7 +105,36 @@ class TestEC2Provider(object):
         assert driver.list_nodes.call_count == 1
 
     @patch.object(EC2Provider, '_get_driver')
-    def test_ec2_launch_instance(self, mock_get_driver):
+    def test_ec2_get_subnet(self, mock_get_driver):
+        """Test EC2 get subnetwork method."""
+        subnetwork = MagicMock()
+        driver = MagicMock()
+        driver.ex_list_subnets.return_value = [subnetwork]
+        mock_get_driver.return_value = driver
+
+        provider = EC2Provider(**self.kwargs)
+        result = provider._get_subnet('test-subnet')
+
+        assert result == subnetwork
+
+    @patch.object(EC2Provider, '_get_driver')
+    def test_ec2_get_subnet_exception(self, mock_get_driver):
+        """Test EC2 get subnetwork method."""
+        driver = MagicMock()
+        driver.ex_list_subnets.side_effect = Exception('Cannot find subnet!')
+        mock_get_driver.return_value = driver
+
+        provider = EC2Provider(**self.kwargs)
+
+        msg = 'EC2 subnet: test-subnet not found.'
+        with pytest.raises(EC2ProviderException) as error:
+            provider._get_subnet('test-subnet')
+
+        assert msg == str(error.value)
+
+    @patch.object(EC2Provider, '_get_subnet')
+    @patch.object(EC2Provider, '_get_driver')
+    def test_ec2_launch_instance(self, mock_get_driver, mock_get_subnet):
         """Test ec2 provider launch instance method."""
         driver = MagicMock()
 
@@ -123,7 +152,11 @@ class TestEC2Provider(object):
 
         mock_get_driver.return_value = driver
 
+        subnet = MagicMock()
+        mock_get_subnet.return_value = subnet
+
         provider = EC2Provider(**self.kwargs)
+        provider.subnet_id = 'test-subnet'
         provider._launch_instance()
 
         assert instance.id == provider.running_instance_id

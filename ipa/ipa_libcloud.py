@@ -40,9 +40,11 @@ class LibcloudProvider(IpaProvider):
         """Retrieve and set the instance ip address."""
         instance = self._get_instance()
 
-        try:
+        if instance.public_ips:
             self.instance_ip = instance.public_ips[0]
-        except IndexError:
+        elif instance.private_ips:
+            self.instance_ip = instance.private_ips[0]
+        else:
             raise LibcloudProviderException(
                 'IP address for instance: %s cannot be found.'
                 % self.running_instance_id

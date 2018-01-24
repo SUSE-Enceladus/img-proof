@@ -82,6 +82,7 @@ class TestLibcloudProvider(object):
         """Test libcloud provider set instance ip method."""
         instance = MagicMock()
         instance.public_ips = []
+        instance.private_ips = []
 
         mock_get_instance.return_value = instance
 

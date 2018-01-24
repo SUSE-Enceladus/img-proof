@@ -60,6 +60,7 @@ class EC2Provider(LibcloudProvider):
                  ssh_private_key=None,
                  ssh_user=None,
                  storage_container=None,  # Not used in EC2
+                 subnet_id=None,
                  test_dirs=None,
                  test_files=None):
         """Initialize EC2 provider class."""
@@ -127,6 +128,7 @@ class EC2Provider(LibcloudProvider):
             self._get_from_ec2_config('user') or
             EC2_DEFAULT_USER
         )
+        self.subnet_id = subnet_id
 
         if not self.ssh_private_key:
             raise EC2ProviderException(
@@ -211,6 +213,21 @@ class EC2Provider(LibcloudProvider):
 
         return size
 
+    def _get_subnet(self, subnet_id):
+        subnet = None
+        try:
+            subnet = self.compute_driver.ex_list_subnets(
+                subnet_ids=[subnet_id]
+            )[0]
+        except Exception:
+            raise EC2ProviderException(
+                'EC2 subnet: {subnet_id} not found.'.format(
+                    subnet_id=subnet_id
+                )
+            )
+
+        return subnet
+
     def _launch_instance(self):
         """Launch an instance of the given image."""
         if not self.ssh_key_name:
@@ -218,12 +235,18 @@ class EC2Provider(LibcloudProvider):
                 'SSH Key Name is required to launch an EC2 instance.'
             )
 
-        instance = self.compute_driver.create_node(
-            name=ipa_utils.generate_instance_name('ec2-ipa-test'),
-            size=self._get_instance_size(),
-            image=self._get_image(),
-            ex_keyname=self.ssh_key_name
-        )
+        kwargs = {
+            'name': ipa_utils.generate_instance_name('ec2-ipa-test'),
+            'size': self._get_instance_size(),
+            'image': self._get_image(),
+            'ex_keyname': self.ssh_key_name
+        }
+
+        if self.subnet_id:
+            kwargs['ex_subnet'] = self._get_subnet(self.subnet_id)
+
+        instance = self.compute_driver.create_node(**kwargs)
+
         self.compute_driver.wait_until_running([instance])
         self.running_instance_id = instance.id
 
