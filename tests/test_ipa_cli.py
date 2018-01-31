@@ -86,7 +86,7 @@ def test_cli_test_image_exception():
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ['test', 'EC2', '-d', 'SLES', '-C', 'tests/data/config']
+        ['test', 'ec2', '-d', 'SLES', '-C', 'tests/data/config']
     )
     assert result.exit_code != 0
     assert 'Image ID or running instance is required.' in result.output

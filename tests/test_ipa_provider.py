@@ -30,7 +30,7 @@ from ipa.ipa_provider import IpaProvider
 
 from unittest.mock import MagicMock, patch
 
-args = ['EC2']
+args = ['ec2']
 
 NOT_IMPL_METHODS = [
     '_get_instance',
@@ -186,7 +186,7 @@ class TestIpaProvider(object):
 
         provider.terminate = True
         provider.results['info'] = {
-            'platform': 'EC2',
+            'platform': 'ec2',
             'region': 'us-west-1'
         }
 

@@ -64,7 +64,7 @@ class AzureProvider(IpaProvider):
                  test_dirs=None,
                  test_files=None):
         """Initialize Azure Provider class."""
-        super(AzureProvider, self).__init__('Azure',
+        super(AzureProvider, self).__init__('azure',
                                             cleanup,
                                             config,
                                             desc,

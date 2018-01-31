@@ -234,11 +234,11 @@ def test_utils_get_from_config():
     config = ipa_utils.get_config('tests/data/config')
 
     with pytest.raises(IpaUtilsException) as error:
-        ipa_utils.get_from_config(config, 'EC2', 'ipa', 'fakevalue')
+        ipa_utils.get_from_config(config, 'ec2', 'ipa', 'fakevalue')
 
     assert str(error.value) == 'Unable to get fakevalue value from config.'
 
-    val = ipa_utils.get_from_config(config, 'EC2', 'ipa', 'region')
+    val = ipa_utils.get_from_config(config, 'ec2', 'ipa', 'region')
     assert val == 'us-west-1'
 
 

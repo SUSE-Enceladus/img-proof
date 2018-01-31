@@ -25,7 +25,7 @@ from ipa.scripts import cli_utils
 
 DATA = {
     "info": {
-        "platform": "Azure",
+        "platform": "azure",
         "image": "test_image",
         "instance": "azure-ipa-test",
         "timestamp": "20170622155322",

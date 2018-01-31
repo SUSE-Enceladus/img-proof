@@ -65,7 +65,7 @@ class GCEProvider(LibcloudProvider):
                  subnet_id=None,
                  test_dirs=None,
                  test_files=None):
-        super(GCEProvider, self).__init__('GCE',
+        super(GCEProvider, self).__init__('gce',
                                           cleanup,
                                           config,
                                           desc,
