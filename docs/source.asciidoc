@@ -10,7 +10,7 @@ public cloud environment. The image id, tests and provider are required
 arguments. See below for options:
 
 ----
-Example: ipa test --ssh-private-key /path/to/key -d SLES Azure test_image
+Example: ipa test --ssh-private-key /path/to/key -d SLES azure test_image
 ----
 
  ipa results

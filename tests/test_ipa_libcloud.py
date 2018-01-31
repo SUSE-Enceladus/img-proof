@@ -28,7 +28,7 @@ from ipa.ipa_libcloud import LibcloudProvider
 
 from unittest.mock import MagicMock, patch
 
-args = ['EC2']
+args = ['ec2']
 
 
 class TestLibcloudProvider(object):

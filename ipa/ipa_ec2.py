@@ -64,7 +64,7 @@ class EC2Provider(LibcloudProvider):
                  test_dirs=None,
                  test_files=None):
         """Initialize EC2 provider class."""
-        super(EC2Provider, self).__init__('EC2',
+        super(EC2Provider, self).__init__('ec2',
                                           cleanup,
                                           config,
                                           desc,

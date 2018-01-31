@@ -61,7 +61,7 @@ that is cloud framework independent such as the test dir and results dir.
 tests=~/ipa/tests/
 results=~/ipa/results/
 
-[EC2]
+[ec2]
 region=us-west-1
 ----
 
@@ -84,7 +84,7 @@ GCE uses service accounts for authentication. See
 link:https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances[GCE docs]
 for more info on creating a service account json file. The file must include
 a key pair for proper authentication. Additional configuration options can
-be placed in the `GCE` section of the `ipa` configuration file.
+be placed in the `gce` section of the `ipa` configuration file.
 
 == Tests
 

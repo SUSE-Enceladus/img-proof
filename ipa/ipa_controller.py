@@ -20,14 +20,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import importlib
 import json
 import pytest
 import shlex
 
 from ipa.collect_items import CollectItemsPlugin
-from ipa.ipa_constants import SUPPORTED_PROVIDERS, TEST_PATHS
+from ipa.ipa_azure import AzureProvider
+from ipa.ipa_constants import TEST_PATHS
+from ipa.ipa_ec2 import EC2Provider
 from ipa.ipa_exceptions import IpaControllerException
+from ipa.ipa_gce import GCEProvider
 from ipa.ipa_utils import get_test_files
 
 
@@ -58,43 +60,44 @@ def test_image(provider_name,
                test_dirs=None,
                tests=None):
     """Creates a cloud provider instance and initiates testing."""
-    if provider_name in SUPPORTED_PROVIDERS:
-        provider_module = importlib.import_module(
-            'ipa.ipa_%s' % provider_name.lower()
-        )
-        provider_class = '%sProvider' % provider_name
-
-        provider = getattr(provider_module, provider_class)(
-            access_key_id=access_key_id,
-            account_name=account,
-            cleanup=cleanup,
-            config=config,
-            desc=desc,
-            distro_name=distro,
-            early_exit=early_exit,
-            history_log=history_log,
-            image_id=image_id,
-            instance_type=instance_type,
-            log_level=log_level,
-            no_default_test_dirs=no_default_test_dirs,
-            provider_config=provider_config,
-            region=region,
-            results_dir=results_dir,
-            running_instance_id=running_instance_id,
-            secret_access_key=secret_access_key,
-            service_account_file=service_account_file,
-            ssh_key_name=ssh_key_name,
-            ssh_private_key=ssh_private_key,
-            ssh_user=ssh_user,
-            storage_container=storage_container,
-            subnet_id=subnet_id,
-            test_dirs=test_dirs,
-            test_files=tests
-        )
+    if provider_name == 'azure':
+        provider_class = AzureProvider
+    elif provider_name == 'ec2':
+        provider_class = EC2Provider
+    elif provider_name == 'gce':
+        provider_class = GCEProvider
     else:
         raise IpaControllerException(
             'Provider: %s unavailable.' % provider_name
         )
+
+    provider = provider_class(
+        access_key_id=access_key_id,
+        account_name=account,
+        cleanup=cleanup,
+        config=config,
+        desc=desc,
+        distro_name=distro,
+        early_exit=early_exit,
+        history_log=history_log,
+        image_id=image_id,
+        instance_type=instance_type,
+        log_level=log_level,
+        no_default_test_dirs=no_default_test_dirs,
+        provider_config=provider_config,
+        region=region,
+        results_dir=results_dir,
+        running_instance_id=running_instance_id,
+        secret_access_key=secret_access_key,
+        service_account_file=service_account_file,
+        ssh_key_name=ssh_key_name,
+        ssh_private_key=ssh_private_key,
+        ssh_user=ssh_user,
+        storage_container=storage_container,
+        subnet_id=subnet_id,
+        test_dirs=test_dirs,
+        test_files=tests
+    )
 
     return provider.test_image()
 
