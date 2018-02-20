@@ -55,8 +55,8 @@ def test_image(provider_name,
                ssh_key_name=None,
                ssh_private_key=None,
                ssh_user=None,
-               storage_container=None,
                subnet_id=None,
+               subscription_id=None,
                test_dirs=None,
                tests=None):
     """Creates a cloud provider instance and initiates testing."""
@@ -93,8 +93,7 @@ def test_image(provider_name,
         ssh_key_name=ssh_key_name,
         ssh_private_key=ssh_private_key,
         ssh_user=ssh_user,
-        storage_container=storage_container,
-        subnet_id=subnet_id,
+        subscription_id=subscription_id,
         test_dirs=test_dirs,
         test_files=tests
     )

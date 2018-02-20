@@ -59,8 +59,8 @@ class EC2Provider(LibcloudProvider):
                  ssh_key_name=None,
                  ssh_private_key=None,
                  ssh_user=None,
-                 storage_container=None,  # Not used in EC2
                  subnet_id=None,
+                 subscription_id=None,  # Not used in EC2
                  test_dirs=None,
                  test_files=None):
         """Initialize EC2 provider class."""

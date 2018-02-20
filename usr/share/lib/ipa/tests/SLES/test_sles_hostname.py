@@ -1,2 +1,4 @@
 def test_sles_hostname(host):
-    assert host.system_info.hostname != 'linux'
+    result = host.run('hostname')
+    print('*** %s ***' % result.stdout.strip())
+    assert result.stdout.strip() != 'linux'

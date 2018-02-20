@@ -61,7 +61,6 @@ class GCEProvider(LibcloudProvider):
                  ssh_key_name=None,  # Not used in GCE
                  ssh_private_key=None,
                  ssh_user=None,
-                 storage_container=None,  # Not used in GCE
                  subnet_id=None,
                  test_dirs=None,
                  test_files=None):

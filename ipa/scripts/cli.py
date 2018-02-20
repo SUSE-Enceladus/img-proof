@@ -193,13 +193,12 @@ def main():
     help='SSH user for accessing instance.'
 )
 @click.option(
-    '-S',
-    '--storage-container',
-    help='Azure storage container to use.'
-)
-@click.option(
     '--subnet-id',
     help='Subnet to launch the new instance into.'
+)
+@click.option(
+    '--subscription-id',
+    help='Subscription ID for Azure account.'
 )
 @click.option(
     '--test-dirs',
@@ -232,8 +231,8 @@ def test(access_key_id,
          ssh_key_name,
          ssh_private_key,
          ssh_user,
-         storage_container,
          subnet_id,
+         subscription_id,
          test_dirs,
          provider,
          tests):
@@ -262,8 +261,8 @@ def test(access_key_id,
             ssh_key_name,
             ssh_private_key,
             ssh_user,
-            storage_container,
             subnet_id,
+            subscription_id,
             test_dirs,
             tests
         )
@@ -387,7 +386,7 @@ def results(clear,
                 echo_log(log_file, no_color)
             else:
                 echo_results_file(
-                    log_file.split('.')[0] + '.results',
+                    log_file.rsplit('.', 1)[0] + '.results',
                     no_color,
                     verbose
                 )
