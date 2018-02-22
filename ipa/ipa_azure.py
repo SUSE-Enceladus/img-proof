@@ -195,7 +195,7 @@ class AzureProvider(IpaProvider):
                 {
                     'location': self.region,
                     'ip_configurations': [{
-                        'name': self.ipa_config_name,
+                        'name': self.ip_config_name,
                         'private_ip_allocation_method': 'Dynamic',
                         'subnet': {
                             'id': subnet_info.id
