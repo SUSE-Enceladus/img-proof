@@ -197,10 +197,6 @@ def main():
     help='Subnet to launch the new instance into.'
 )
 @click.option(
-    '--subscription-id',
-    help='Subscription ID for Azure account.'
-)
-@click.option(
     '--test-dirs',
     help='Directories to search for tests.'
 )
@@ -232,7 +228,6 @@ def test(access_key_id,
          ssh_private_key,
          ssh_user,
          subnet_id,
-         subscription_id,
          test_dirs,
          provider,
          tests):
@@ -262,7 +257,6 @@ def test(access_key_id,
             ssh_private_key,
             ssh_user,
             subnet_id,
-            subscription_id,
             test_dirs,
             tests
         )
