@@ -28,6 +28,7 @@ with open('README.asciidoc') as readme_file:
 
 requirements = [
     'apache-libcloud',
+    'azure-common',
     'azure-mgmt-compute',
     'azure-mgmt-network',
     'azure-mgmt-resource',
