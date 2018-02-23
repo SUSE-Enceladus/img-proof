@@ -61,7 +61,10 @@ class EC2Provider(LibcloudProvider):
                  ssh_user=None,
                  subnet_id=None,
                  test_dirs=None,
-                 test_files=None):
+                 test_files=None,
+                 vnet_name=None,  # Not used in EC2
+                 vnet_resource_group=None  # Not used in EC2
+                 ):
         """Initialize EC2 provider class."""
         super(EC2Provider, self).__init__('ec2',
                                           cleanup,

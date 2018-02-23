@@ -200,6 +200,14 @@ def main():
     '--test-dirs',
     help='Directories to search for tests.'
 )
+@click.option(
+    '--vnet-name',
+    help='Azure virtual network name to attach network interface.'
+)
+@click.option(
+    '--vnet-resource-group',
+    help='Azure resource group name where virtual network is found.'
+)
 @click.argument(
     'provider',
     type=click.Choice(SUPPORTED_PROVIDERS)
@@ -229,6 +237,8 @@ def test(access_key_id,
          ssh_user,
          subnet_id,
          test_dirs,
+         vnet_name,
+         vnet_resource_group,
          provider,
          tests):
     """Test image in the given framework using the supplied test files."""
@@ -258,7 +268,9 @@ def test(access_key_id,
             ssh_user,
             subnet_id,
             test_dirs,
-            tests
+            tests,
+            vnet_name,
+            vnet_resource_group
         )
         echo_results(results, no_color)
         sys.exit(status)

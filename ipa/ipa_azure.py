@@ -59,9 +59,11 @@ class AzureProvider(IpaProvider):
                  ssh_key_name=None,  # Not used in Azure
                  ssh_private_key=None,
                  ssh_user=None,
-                 subnet_id=None,  # Not used in Azure
+                 subnet_id=None,
                  test_dirs=None,
-                 test_files=None):
+                 test_files=None,
+                 vnet_name=None,
+                 vnet_resource_group=None):
         """Initialize Azure Provider class."""
         super(AzureProvider, self).__init__('azure',
                                             cleanup,
@@ -80,6 +82,12 @@ class AzureProvider(IpaProvider):
                                             running_instance_id,
                                             test_dirs,
                                             test_files)
+
+        if subnet_id and not (vnet_name and vnet_resource_group):
+            raise AzureProviderException(
+                'If subnet_id is provided vnet_resource_group and vnet_name'
+                ' are also required.'
+            )
 
         self.service_account_file = (
             service_account_file or
@@ -112,6 +120,9 @@ class AzureProvider(IpaProvider):
 
         self.ssh_user = ssh_user or AZURE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
+        self.subnet_id = subnet_id
+        self.vnet_resource_group = vnet_resource_group
+        self.vnet_name = vnet_name
 
         self.compute = self._get_management_client(ComputeManagementClient)
         self.network = self._get_management_client(NetworkManagementClient)
@@ -364,22 +375,30 @@ class AzureProvider(IpaProvider):
         self.running_instance_id = ipa_utils.generate_instance_name(
             'azure-ipa-test'
         )
-        self._set_default_resource_names(new_instance=True)
+        self._set_default_resource_names()
 
         try:
             # Try block acts as a transaction. If an exception is raised
-            # attempt to cleanup the resource group and all resources.
+            # attempt to cleanup the resource group and all created resources.
 
             # Create resource group.
             self._create_resource_group(self.region, self.running_instance_id)
 
-            # Setup network, subnet, interface and public ip in resource group.
-            self._create_virtual_network(
-                self.region, self.running_instance_id, self.vnet_name
-            )
-            subnet = self._create_subnet(
-                self.running_instance_id, self.subnet_name, self.vnet_name
-            )
+            if self.subnet_id:
+                # Use existing vnet/subnet.
+                subnet = self.network.subnets.get(
+                    self.vnet_resource_group, self.vnet_name, self.subnet_id
+                )
+            else:
+                # Create new vnet/subnet.
+                self._create_virtual_network(
+                    self.region, self.running_instance_id, self.vnet_name
+                )
+                subnet = self._create_subnet(
+                    self.running_instance_id, self.subnet_name, self.vnet_name
+                )
+
+            # Setup interface and public ip in resource group.
             public_ip = self._create_public_ip(
                 self.public_ip_name, self.running_instance_id, self.region
             )
