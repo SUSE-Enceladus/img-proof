@@ -25,7 +25,7 @@ import os
 
 HOME = os.path.expanduser('~')
 NOT_IMPLEMENTED = 'Implement method in child classes.'
-SUPPORTED_DISTROS = ('openSUSE_Leap', 'SLES')
+SUPPORTED_DISTROS = ('opensuse_leap', 'sles')
 SUPPORTED_PROVIDERS = ('azure', 'ec2', 'gce')
 
 AZURE_DEFAULT_TYPE = 'Small'

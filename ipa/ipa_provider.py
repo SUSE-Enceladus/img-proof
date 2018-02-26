@@ -20,7 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import importlib
 import json
 import logging
 import os
@@ -38,9 +37,10 @@ from ipa.ipa_constants import (
     IPA_HISTORY_FILE,
     IPA_RESULTS_PATH,
     NOT_IMPLEMENTED,
-    SUPPORTED_DISTROS,
     TEST_PATHS
 )
+from ipa.ipa_opensuse_leap import openSUSE_Leap
+from ipa.ipa_sles import SLES
 from ipa.ipa_exceptions import (
     IpaProviderException,
     IpaSSHException,
@@ -144,6 +144,8 @@ class IpaProvider(object):
             raise IpaProviderException(
                 'Distro name is required.'
             )
+        else:
+            self.distro_name = self.distro_name.lower()
 
         if not self.image_id and not self.running_instance_id:
             raise IpaProviderException(
@@ -302,15 +304,14 @@ class IpaProvider(object):
 
     def _set_distro(self):
         """Determine distro for image and create instance of class."""
-        if self.distro_name not in SUPPORTED_DISTROS:
+        if self.distro_name == 'sles':
+            self.distro = SLES()
+        elif self.distro_name == 'opensuse_leap':
+            self.distro = openSUSE_Leap()
+        else:
             raise IpaProviderException(
                 'Distribution: %s, not supported.' % self.distro_name
             )
-
-        distro_module = importlib.import_module(
-            'ipa.ipa_%s' % self.distro_name.lower()
-        )
-        self.distro = getattr(distro_module, self.distro_name)()
 
     def _set_image_id(self):
         raise NotImplementedError(NOT_IMPLEMENTED)

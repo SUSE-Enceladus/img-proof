@@ -68,7 +68,7 @@ def main():
     pass
 
 
-@click.command()
+@click.command(context_settings=dict(token_normalize_func=str.lower))
 @click.option(
     '--access-key-id',
     help='EC2 access key ID for login credentials.'
