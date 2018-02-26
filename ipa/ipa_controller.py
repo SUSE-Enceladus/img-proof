@@ -60,6 +60,7 @@ def test_image(provider_name,
                test_dirs=None,
                tests=None):
     """Creates a cloud provider instance and initiates testing."""
+    provider_name = provider_name.lower()
     if provider_name == 'azure':
         provider_class = AzureProvider
     elif provider_name == 'ec2':
