@@ -92,7 +92,7 @@ def main():
 )
 @click.option(
     '-D',
-    '--desc',
+    '--description',
     help='Short description for test run.'
 )
 @click.option(
@@ -214,7 +214,7 @@ def test(access_key_id,
          account,
          cleanup,
          config,
-         desc,
+         description,
          distro,
          early_exit,
          history_log,
@@ -245,7 +245,7 @@ def test(access_key_id,
             account,
             cleanup,
             config,
-            desc,
+            description,
             distro,
             early_exit,
             history_log,
@@ -379,7 +379,7 @@ def results(clear,
 
             try:
                 # Desc is optional
-                log_file, desc = shlex.split(history)
+                log_file, description = shlex.split(history)
             except ValueError:
                 log_file = history.strip()
 

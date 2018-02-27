@@ -62,7 +62,7 @@ class IpaProvider(object):
                  provider,
                  cleanup=None,
                  config=None,
-                 desc=None,
+                 description=None,
                  distro_name=None,
                  early_exit=None,
                  history_log=None,
@@ -93,7 +93,7 @@ class IpaProvider(object):
         self.ipa_config = ipa_utils.get_config(self.config)
         self.logger.debug('Using ipa config file: %s' % self.config)
 
-        self.desc = desc
+        self.description = description
         self.host_key_fingerprint = None
         self.instance_ip = None
         self.provider = provider
@@ -369,7 +369,7 @@ class IpaProvider(object):
         """Save the current test information to history json."""
         ipa_utils.update_history_log(
             self.history_log,
-            desc=self.desc,
+            description=self.description,
             test_log=self.log_file
         )
 
