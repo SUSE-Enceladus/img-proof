@@ -44,7 +44,7 @@ class GCEProvider(LibcloudProvider):
                  account_name=None,  # Not used in GCE
                  cleanup=None,
                  config=None,
-                 desc=None,
+                 description=None,
                  distro_name=None,
                  early_exit=None,
                  history_log=None,
@@ -68,7 +68,7 @@ class GCEProvider(LibcloudProvider):
         super(GCEProvider, self).__init__('gce',
                                           cleanup,
                                           config,
-                                          desc,
+                                          description,
                                           distro_name,
                                           early_exit,
                                           history_log,

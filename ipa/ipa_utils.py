@@ -485,7 +485,7 @@ def ssh_config(ssh_user, ssh_private_key):
 
 def update_history_log(history_log,
                        clear=False,
-                       desc=None,
+                       description=None,
                        test_log=None):
     """
     Update the history log file with item.
@@ -512,11 +512,11 @@ def update_history_log(history_log,
 
         with open(history_log, 'a+') as f:
             # Using append mode creates file if it does not exist
-            if desc:
-                desc = '"%s"' % desc
+            if description:
+                description = '"%s"' % description
 
             out = '{} {}'.format(
                 test_log,
-                desc or ''
+                description or ''
             )
             f.write(out.strip() + '\n')
