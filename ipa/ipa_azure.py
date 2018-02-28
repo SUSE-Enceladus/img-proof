@@ -202,24 +202,6 @@ class AzureProvider(IpaProvider):
                 'Unable to create resource group: {0}.'.format(error)
             )
 
-    def _create_vm(self, vm_config):
-        """
-        Attempt to create or update VM instance based on vm_parameters config.
-        """
-        try:
-            vm_operation = self.compute.virtual_machines.create_or_update(
-                self.running_instance_id, self.running_instance_id,
-                vm_config
-            )
-        except Exception as error:
-            raise AzureProviderException(
-                'An exception occurred creating virtual machine: {0}'.format(
-                    error
-                )
-            )
-
-        vm_operation.wait()
-
     def _create_subnet(self, resource_group_name, subnet_name, vnet_name):
         """
         Create a subnet in the provided vnet and resource group.
@@ -258,6 +240,24 @@ class AzureProvider(IpaProvider):
             )
 
         vnet_operation.wait()
+
+    def _create_vm(self, vm_config):
+        """
+        Attempt to create or update VM instance based on vm_parameters config.
+        """
+        try:
+            vm_operation = self.compute.virtual_machines.create_or_update(
+                self.running_instance_id, self.running_instance_id,
+                vm_config
+            )
+        except Exception as error:
+            raise AzureProviderException(
+                'An exception occurred creating virtual machine: {0}'.format(
+                    error
+                )
+            )
+
+        vm_operation.wait()
 
     def _create_vm_config(self, interface):
         """
@@ -306,6 +306,33 @@ class AzureProvider(IpaProvider):
 
         return vm_config
 
+    def _get_instance(self):
+        """
+        Return the instance matching the running_instance_id.
+        """
+        try:
+            instance = self.compute.virtual_machines.get(
+                self.running_instance_id, self.running_instance_id,
+                expand='instanceView'
+            )
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to retrieve instance: {0}'.format(error)
+            )
+
+        return instance
+
+    def _get_instance_state(self):
+        """
+        Retrieve state of instance.
+        """
+        instance = self._get_instance()
+        statuses = instance.instance_view.statuses
+
+        for status in statuses:
+            if status.code.startswith('PowerState'):
+                return status.display_status
+
     def _get_management_client(self, client_class):
         """
         Return instance of resource management client.
@@ -336,33 +363,6 @@ class AzureProvider(IpaProvider):
         """
         key = ipa_utils.generate_public_ssh_key(self.ssh_private_key)
         return key.decode()
-
-    def _get_instance(self):
-        """
-        Return the instance matching the running_instance_id.
-        """
-        try:
-            instance = self.compute.virtual_machines.get(
-                self.running_instance_id, self.running_instance_id,
-                expand='instanceView'
-            )
-        except Exception as error:
-            raise AzureProviderException(
-                'Unable to retrieve instance: {0}'.format(error)
-            )
-
-        return instance
-
-    def _get_instance_state(self):
-        """
-        Retrieve state of instance.
-        """
-        instance = self._get_instance()
-        statuses = instance.instance_view.statuses
-
-        for status in statuses:
-            if status.code.startswith('PowerState'):
-                return status.display_status
 
     def _is_instance_running(self):
         """
@@ -444,6 +444,18 @@ class AzureProvider(IpaProvider):
                 '{Publisher}:{Offer}:{Sku}:{Version}.'
             )
 
+    def _set_default_resource_names(self):
+        """
+        Generate names for resources based on the running_instance_id.
+        """
+        self.ip_config_name = ''.join([
+            self.running_instance_id, '-ip-config'
+        ])
+        self.nic_name = ''.join([self.running_instance_id, '-nic'])
+        self.subnet_name = ''.join([self.running_instance_id, '-subnet'])
+        self.vnet_name = ''.join([self.running_instance_id, '-vnet'])
+        self.public_ip_name = ''.join([self.running_instance_id, '-public-ip'])
+
     def _set_image_id(self):
         """
         If an existing instance is used get image id from deployment.
@@ -479,18 +491,6 @@ class AzureProvider(IpaProvider):
                 )
 
         self.instance_ip = ip_address
-
-    def _set_default_resource_names(self):
-        """
-        Generate names for resources based on the running_instance_id.
-        """
-        self.ip_config_name = ''.join([
-            self.running_instance_id, '-ip-config'
-        ])
-        self.nic_name = ''.join([self.running_instance_id, '-nic'])
-        self.subnet_name = ''.join([self.running_instance_id, '-subnet'])
-        self.vnet_name = ''.join([self.running_instance_id, '-vnet'])
-        self.public_ip_name = ''.join([self.running_instance_id, '-public-ip'])
 
     def _start_instance(self):
         """
