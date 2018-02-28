@@ -139,23 +139,23 @@ class AzureProvider(IpaProvider):
 
         Attach NIC to the subnet and public IP provided.
         """
+        nic_config = {
+            'location': region,
+            'ip_configurations': [{
+                'name': ip_config_name,
+                'private_ip_allocation_method': 'Dynamic',
+                'subnet': {
+                    'id': subnet.id
+                },
+                'public_ip_address': {
+                    'id': public_ip.id
+                },
+            }]
+        }
+
         try:
             nic_operation = self.network.network_interfaces.create_or_update(
-                resource_group_name,
-                nic_name,
-                {
-                    'location': region,
-                    'ip_configurations': [{
-                        'name': ip_config_name,
-                        'private_ip_allocation_method': 'Dynamic',
-                        'subnet': {
-                            'id': subnet.id
-                        },
-                        'public_ip_address': {
-                            'id': public_ip.id
-                        },
-                    }]
-                }
+                resource_group_name, nic_name, nic_config
             )
         except Exception as error:
             raise AzureProviderException(
@@ -170,15 +170,15 @@ class AzureProvider(IpaProvider):
         """
         Create dynamic public IP address in the resource group.
         """
+        public_ip_config = {
+            'location': region,
+            'public_ip_allocation_method': 'Dynamic'
+        }
+
         try:
             public_ip_operation = \
                 self.network.public_ip_addresses.create_or_update(
-                    resource_group_name,
-                    public_ip_name,
-                    {
-                        'location': region,
-                        'public_ip_allocation_method': 'Dynamic'
-                    }
+                    resource_group_name, public_ip_name, public_ip_config
                 )
         except Exception as error:
             raise AzureProviderException(
@@ -191,23 +191,25 @@ class AzureProvider(IpaProvider):
         """
         Create resource group if it does not exist.
         """
+        resource_group_config = {'location': region}
+
         try:
             self.resource.resource_groups.create_or_update(
-                resource_group_name, {'location': region}
+                resource_group_name, resource_group_config
             )
         except Exception as error:
             raise AzureProviderException(
                 'Unable to create resource group: {0}.'.format(error)
             )
 
-    def _create_vm(self, vm_parameters):
+    def _create_vm(self, vm_config):
         """
         Attempt to create or update VM instance based on vm_parameters config.
         """
         try:
             vm_operation = self.compute.virtual_machines.create_or_update(
                 self.running_instance_id, self.running_instance_id,
-                vm_parameters
+                vm_config
             )
         except Exception as error:
             raise AzureProviderException(
@@ -222,12 +224,11 @@ class AzureProvider(IpaProvider):
         """
         Create a subnet in the provided vnet and resource group.
         """
+        subnet_config = {'address_prefix': '10.0.0.0/29'}
+
         try:
             subnet_operation = self.network.subnets.create_or_update(
-                resource_group_name,
-                vnet_name,
-                subnet_name,
-                {'address_prefix': '10.0.0.0/29'}
+                resource_group_name, vnet_name, subnet_name, subnet_config
             )
         except Exception as error:
             raise AzureProviderException(
@@ -240,16 +241,16 @@ class AzureProvider(IpaProvider):
         """
         Create a vnet in the given resource group with default address space.
         """
+        vnet_config = {
+            'location': region,
+            'address_space': {
+                'address_prefixes': ['10.0.0.0/27']
+            }
+        }
+
         try:
             vnet_operation = self.network.virtual_networks.create_or_update(
-                resource_group_name,
-                vnet_name,
-                {
-                    'location': region,
-                    'address_space': {
-                        'address_prefixes': ['10.0.0.0/27']
-                    }
-                }
+                resource_group_name, vnet_name, vnet_config
             )
         except Exception as error:
             raise AzureProviderException(
@@ -258,16 +259,16 @@ class AzureProvider(IpaProvider):
 
         vnet_operation.wait()
 
-    def _create_vm_parameters(self, interface):
+    def _create_vm_config(self, interface):
         """
-        Create the VM parameters dictionary.
+        Create the VM config dictionary.
 
         Requires an existing network interface object.
         """
         # Split image ID into it's components.
         self._process_image_id()
 
-        return {
+        vm_config = {
             'location': self.region,
             'os_profile': {
                 'computer_name': self.running_instance_id,
@@ -302,6 +303,8 @@ class AzureProvider(IpaProvider):
                 }]
             }
         }
+
+        return vm_config
 
     def _get_management_client(self, client_class):
         """
@@ -407,8 +410,8 @@ class AzureProvider(IpaProvider):
             )
 
             # Get dictionary of VM parameters and create instance.
-            vm_parameters = self._create_vm_parameters(interface)
-            self._create_vm(vm_parameters)
+            vm_config = self._create_vm_config(interface)
+            self._create_vm(vm_config)
         except Exception:
             try:
                 self._terminate_instance()
