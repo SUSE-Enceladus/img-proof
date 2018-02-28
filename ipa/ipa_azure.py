@@ -154,7 +154,7 @@ class AzureProvider(IpaProvider):
         }
 
         try:
-            nic_operation = self.network.network_interfaces.create_or_update(
+            nic_setup = self.network.network_interfaces.create_or_update(
                 resource_group_name, nic_name, nic_config
             )
         except Exception as error:
@@ -164,7 +164,7 @@ class AzureProvider(IpaProvider):
                 )
             )
 
-        return nic_operation.result()
+        return nic_setup.result()
 
     def _create_public_ip(self, public_ip_name, resource_group_name, region):
         """
@@ -176,7 +176,7 @@ class AzureProvider(IpaProvider):
         }
 
         try:
-            public_ip_operation = \
+            public_ip_setup = \
                 self.network.public_ip_addresses.create_or_update(
                     resource_group_name, public_ip_name, public_ip_config
                 )
@@ -185,7 +185,7 @@ class AzureProvider(IpaProvider):
                 'Unable to create public IP: {0}.'.format(error)
             )
 
-        return public_ip_operation.result()
+        return public_ip_setup.result()
 
     def _create_resource_group(self, region, resource_group_name):
         """
@@ -209,7 +209,7 @@ class AzureProvider(IpaProvider):
         subnet_config = {'address_prefix': '10.0.0.0/29'}
 
         try:
-            subnet_operation = self.network.subnets.create_or_update(
+            subnet_setup = self.network.subnets.create_or_update(
                 resource_group_name, vnet_name, subnet_name, subnet_config
             )
         except Exception as error:
@@ -217,7 +217,7 @@ class AzureProvider(IpaProvider):
                 'Unable to create subnet: {0}.'.format(error)
             )
 
-        return subnet_operation.result()
+        return subnet_setup.result()
 
     def _create_virtual_network(self, region, resource_group_name, vnet_name):
         """
@@ -231,7 +231,7 @@ class AzureProvider(IpaProvider):
         }
 
         try:
-            vnet_operation = self.network.virtual_networks.create_or_update(
+            vnet_setup = self.network.virtual_networks.create_or_update(
                 resource_group_name, vnet_name, vnet_config
             )
         except Exception as error:
@@ -239,14 +239,14 @@ class AzureProvider(IpaProvider):
                 'Unable to create vnet: {0}.'.format(error)
             )
 
-        vnet_operation.wait()
+        vnet_setup.wait()
 
     def _create_vm(self, vm_config):
         """
         Attempt to create or update VM instance based on vm_parameters config.
         """
         try:
-            vm_operation = self.compute.virtual_machines.create_or_update(
+            vm_setup = self.compute.virtual_machines.create_or_update(
                 self.running_instance_id, self.running_instance_id,
                 vm_config
             )
@@ -257,7 +257,7 @@ class AzureProvider(IpaProvider):
                 )
             )
 
-        vm_operation.wait()
+        vm_setup.wait()
 
     def _create_vm_config(self, interface):
         """
@@ -268,40 +268,48 @@ class AzureProvider(IpaProvider):
         # Split image ID into it's components.
         self._process_image_id()
 
+        hardware_profile = {
+            'vm_size': self.instance_type or AZURE_DEFAULT_TYPE
+        }
+
+        network_profile = {
+            'network_interfaces': [{
+                'id': interface.id,
+                'primary': True
+            }]
+        }
+
+        storage_profile = {
+            'image_reference': {
+                'publisher': self.image_publisher,
+                'offer': self.image_offer,
+                'sku': self.image_sku,
+                'version': self.image_version
+            },
+        }
+
+        os_profile = {
+            'computer_name': self.running_instance_id,
+            'admin_username': self.ssh_user,
+            'linux_configuration': {
+                'disable_password_authentication': True,
+                'ssh': {
+                    'public_keys': [{
+                        'path': '/home/{0}/.ssh/authorized_keys'.format(
+                            self.ssh_user
+                        ),
+                        'key_data': self.ssh_public_key
+                    }]
+                }
+            }
+        }
+
         vm_config = {
             'location': self.region,
-            'os_profile': {
-                'computer_name': self.running_instance_id,
-                'admin_username': self.ssh_user,
-                'linux_configuration': {
-                    'disable_password_authentication': True,
-                    'ssh': {
-                        'public_keys': [{
-                            'path': '/home/{0}/.ssh/authorized_keys'.format(
-                                self.ssh_user
-                            ),
-                            'key_data': self.ssh_public_key
-                        }]
-                    }
-                }
-            },
-            'hardware_profile': {
-                'vm_size': self.instance_type or AZURE_DEFAULT_TYPE
-            },
-            'storage_profile': {
-                'image_reference': {
-                    'publisher': self.image_publisher,
-                    'offer': self.image_offer,
-                    'sku': self.image_sku,
-                    'version': self.image_version
-                },
-            },
-            'network_profile': {
-                'network_interfaces': [{
-                    'id': interface.id,
-                    'primary': True
-                }]
-            }
+            'os_profile': os_profile,
+            'hardware_profile': hardware_profile,
+            'storage_profile': storage_profile,
+            'network_profile': network_profile
         }
 
         return vm_config
@@ -497,7 +505,7 @@ class AzureProvider(IpaProvider):
         Start the instance.
         """
         try:
-            start_operation = self.compute.virtual_machines.start(
+            vm_start = self.compute.virtual_machines.start(
                 self.running_instance_id, self.running_instance_id
             )
         except Exception as error:
@@ -505,14 +513,14 @@ class AzureProvider(IpaProvider):
                 'Unable to start instance: {0}.'.format(error)
             )
 
-        start_operation.wait()
+        vm_start.wait()
 
     def _stop_instance(self):
         """
         Stop the instance.
         """
         try:
-            stop_operation = self.compute.virtual_machines.power_off(
+            vm_stop = self.compute.virtual_machines.power_off(
                 self.running_instance_id, self.running_instance_id
             )
         except Exception as error:
@@ -520,7 +528,7 @@ class AzureProvider(IpaProvider):
                 'Unable to stop instance: {0}.'.format(error)
             )
 
-        stop_operation.wait()
+        vm_stop.wait()
 
     def _terminate_instance(self):
         """
