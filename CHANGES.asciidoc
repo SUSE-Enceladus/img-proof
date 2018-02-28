@@ -1,5 +1,17 @@
 = Changelog
 
+== v0.6.0 (2018-02-27)
+
+- Add .pytest_cache to gitignore.
+- Make provider and distro names all lowercase.
+  + Remove need to magically load modules based on name format.
+- Add option to launch instance into existing subnet on GCE
+  and EC2.
+- Add regression test for EC2 UUID.
+- Add regression test for lscpu.
+- Update hostname test, system_info module no longer exists in
+  testinfra.
+
 == v0.5.1 (2017-12-11)
 
 - Cleanup MANIFEST.
