@@ -21,7 +21,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
 import pytest
 
 from ipa.ipa_azure import AzureProvider
@@ -82,8 +81,8 @@ class TestAzureProvider(object):
     @patch('ipa.ipa_azure.get_client_from_auth_file')
     def test_get_management_client_json_error(self, mock_get_client):
         client_class = MagicMock()
-        mock_get_client.side_effect = json.JSONDecodeError(
-            'Not valid', 'tests/azure/test-sa.json', 34
+        mock_get_client.side_effect = ValueError(
+            'Not valid'
         )
 
         provider = self.helper_get_provider()
@@ -92,7 +91,7 @@ class TestAzureProvider(object):
             provider._get_management_client(client_class)
 
         assert str(error.value) == 'Service account file format is invalid: ' \
-            'Not valid: line 1 column 35 (char 34).'
+            'Not valid.'
 
     @patch('ipa.ipa_azure.get_client_from_auth_file')
     def test_get_management_client_key_error(self, mock_get_client):

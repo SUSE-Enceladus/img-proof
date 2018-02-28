@@ -20,7 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
 import os
 
 from azure.common.client_factory import get_client_from_auth_file
@@ -312,7 +311,7 @@ class AzureProvider(IpaProvider):
             client = get_client_from_auth_file(
                 client_class, auth_path=self.service_account_file
             )
-        except json.JSONDecodeError as error:
+        except ValueError as error:
             raise AzureProviderException(
                 'Service account file format is invalid: {0}.'.format(error)
             )
