@@ -58,7 +58,6 @@ class GCEProvider(LibcloudProvider):
                  running_instance_id=None,
                  secret_access_key=None,  # Not used in GCE
                  service_account_file=None,
-                 ssh_key_name=None,  # Not used in GCE
                  ssh_private_key=None,
                  ssh_user=None,
                  storage_container=None,  # Not used in GCE

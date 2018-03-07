@@ -22,6 +22,7 @@
 
 from ipa import ipa_utils
 from ipa.ipa_constants import (
+    CLOUD_INIT_CONFIG,
     EC2_CONFIG_FILE,
     EC2_DEFAULT_TYPE,
     EC2_DEFAULT_USER
@@ -56,7 +57,6 @@ class EC2Provider(LibcloudProvider):
                  running_instance_id=None,
                  secret_access_key=None,
                  service_account_file=None,  # Not used in EC2
-                 ssh_key_name=None,
                  ssh_private_key=None,
                  ssh_user=None,
                  storage_container=None,  # Not used in EC2
@@ -115,13 +115,10 @@ class EC2Provider(LibcloudProvider):
             secret_access_key or
             self._get_from_ec2_config('secret_access_key')
         )
-        self.ssh_key_name = (
-            ssh_key_name or
-            self._get_from_ec2_config('ssh_key_name')
-        )
         self.ssh_private_key = (
             ssh_private_key or
-            self._get_from_ec2_config('ssh_private_key')
+            self._get_from_ec2_config('ssh_private_key') or
+            self._get_value('ssh_private_key', 'ec2')
         )
         self.ssh_user = (
             ssh_user or
@@ -228,18 +225,24 @@ class EC2Provider(LibcloudProvider):
 
         return subnet
 
+    def _get_user_data(self):
+        """
+        Return cloud init config string.
+
+        The public ssh key is added by cloud init to the instance based on
+        the ssh user and private key file.
+        """
+        key = ipa_utils.generate_public_ssh_key(self.ssh_private_key).decode()
+        data = CLOUD_INIT_CONFIG.format(user=self.ssh_user, key=key)
+        return data
+
     def _launch_instance(self):
         """Launch an instance of the given image."""
-        if not self.ssh_key_name:
-            raise EC2ProviderException(
-                'SSH Key Name is required to launch an EC2 instance.'
-            )
-
         kwargs = {
             'name': ipa_utils.generate_instance_name('ec2-ipa-test'),
             'size': self._get_instance_size(),
             'image': self._get_image(),
-            'ex_keyname': self.ssh_key_name
+            'ex_userdata': self._get_user_data()
         }
 
         if self.subnet_id:
