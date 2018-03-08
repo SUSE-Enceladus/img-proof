@@ -118,7 +118,7 @@ class EC2Provider(LibcloudProvider):
         self.ssh_private_key = (
             ssh_private_key or
             self._get_from_ec2_config('ssh_private_key') or
-            self._get_value('ssh_private_key', 'ec2')
+            self._get_value(ssh_private_key, config_key='ssh_private_key')
         )
         self.ssh_user = (
             ssh_user or

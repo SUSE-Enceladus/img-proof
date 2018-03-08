@@ -132,9 +132,23 @@ class TestEC2Provider(object):
 
         assert msg == str(error.value)
 
+    @patch('ipa.ipa_ec2.ipa_utils.generate_public_ssh_key')
+    def test_ec2_get_user_data(self, mock_generate_ssh_key):
+        mock_generate_ssh_key.return_value = b'testkey12345'
+
+        provider = EC2Provider(**self.kwargs)
+
+        result = provider._get_user_data()
+
+        assert result == '#cloud-config\nusers:\n  - name: ec2-user\n    ' \
+            'ssh-authorized-keys:\n      - testkey12345\n'
+
+    @patch.object(EC2Provider, '_get_user_data')
     @patch.object(EC2Provider, '_get_subnet')
     @patch.object(EC2Provider, '_get_driver')
-    def test_ec2_launch_instance(self, mock_get_driver, mock_get_subnet):
+    def test_ec2_launch_instance(
+        self, mock_get_driver, mock_get_subnet, mock_get_user_data
+    ):
         """Test ec2 provider launch instance method."""
         driver = MagicMock()
 
@@ -163,21 +177,6 @@ class TestEC2Provider(object):
         assert driver.list_sizes.call_count == 1
         assert driver.list_images.call_count == 1
         assert driver.create_node.call_count == 1
-
-    @patch.object(EC2Provider, '_get_driver')
-    def test_ec2_launch_no_key_name(self, mock_get_driver):
-        """Test ec2 provider raises exception if no ssh key name method."""
-        driver = MagicMock()
-        mock_get_driver.return_value = driver
-
-        provider = EC2Provider(**self.kwargs)
-        provider.ssh_key_name = None
-        msg = 'SSH Key Name is required to launch an EC2 instance.'
-
-        with pytest.raises(EC2ProviderException) as error:
-            provider._launch_instance()
-
-        assert str(error.value) == msg
 
     @patch.object(EC2Provider, '_get_driver')
     def test_ec2_launch_instance_no_size(self, mock_get_driver):
