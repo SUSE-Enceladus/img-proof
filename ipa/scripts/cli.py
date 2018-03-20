@@ -287,7 +287,7 @@ def test(context,
         sys.exit(1)
 
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click.option(
     '--history-log',
     default=IPA_HISTORY_FILE,
@@ -299,6 +299,9 @@ def results(context, history_log):
     if context.obj is None:
         context.obj = {}
     context.obj['history_log'] = history_log
+
+    if context.invoked_subcommand is None:
+        context.invoke(show, item=1)
 
 
 @click.command()
