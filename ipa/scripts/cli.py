@@ -60,13 +60,21 @@ def print_license(ctx, param, value):
     is_eager=True,
     help='Show license information and exit.'
 )
-def main():
+@click.option(
+    '--no-color',
+    is_flag=True,
+    help='Remove ANSI color and styling from output.'
+)
+@click.pass_context
+def main(context, no_color):
     """
     Ipa provides a Python API and command line utility for testing images.
 
     It can be used to test images in the Public Cloud (AWS, Azure, GCE, etc.).
     """
-    pass
+    if context.obj is None:
+        context.obj = {}
+    context.obj['no_color'] = no_color
 
 
 @click.command(context_settings=dict(token_normalize_func=str.lower))
@@ -143,11 +151,6 @@ def main():
     help='Silence logging information on test run.'
 )
 @click.option(
-    '--no-color',
-    is_flag=True,
-    help='Remove ANSI color and styling from output.'
-)
-@click.option(
     '--no-default-test-dirs',
     is_flag=True,
     default=False,
@@ -211,7 +214,9 @@ def main():
     type=click.Choice(SUPPORTED_PROVIDERS)
 )
 @click.argument('tests', nargs=-1)
-def test(access_key_id,
+@click.pass_context
+def test(context,
+         access_key_id,
          account,
          cleanup,
          config,
@@ -222,7 +227,6 @@ def test(access_key_id,
          image_id,
          instance_type,
          log_level,
-         no_color,
          no_default_test_dirs,
          provider_config,
          region,
@@ -239,6 +243,7 @@ def test(access_key_id,
          provider,
          tests):
     """Test image in the given framework using the supplied test files."""
+    no_color = context.obj['no_color']
     try:
         status, results = test_image(
             provider,
@@ -283,44 +288,40 @@ def test(access_key_id,
 
 
 @click.group()
-def results():
-    pass
-
-
-@click.command()
 @click.option(
     '--history-log',
     default=IPA_HISTORY_FILE,
     type=click.Path(exists=True),
     help='Location of the history log file to display results from.'
 )
-def clear(history_log):
+@click.pass_context
+def results(context, history_log):
+    if context.obj is None:
+        context.obj = {}
+    context.obj['history_log'] = history_log
+
+
+@click.command()
+@click.pass_context
+def clear(context):
     """
     Clear the results from the history file.
     """
-    ipa_utils.update_history_log(history_log, clear=True)
+    ipa_utils.update_history_log(context.obj['history_log'], clear=True)
 
 
 @click.command()
-@click.option(
-    '--history-log',
-    default=IPA_HISTORY_FILE,
-    type=click.Path(exists=True),
-    help='Location of the history log file to display results from.'
-)
-@click.option(
-    '--no-color',
-    is_flag=True,
-    help='Remove ANSI color and styling from output.'
-)
 @click.argument(
     'item',
     type=click.INT
 )
-def delete(history_log, no_color, item):
+@click.pass_context
+def delete(context, item):
     """
     Delete the specified history item from the history log.
     """
+    history_log = context.obj['history_log']
+    no_color = context.obj['no_color']
     try:
         with open(history_log, 'r+') as f:
             lines = f.readlines()
@@ -369,41 +370,20 @@ def delete(history_log, no_color, item):
 
 
 @click.command(name='list')
-@click.option(
-    '--history-log',
-    default=IPA_HISTORY_FILE,
-    type=click.Path(exists=True),
-    help='Location of the history log file to display results from.'
-)
-@click.option(
-    '--no-color',
-    is_flag=True,
-    help='Remove ANSI color and styling from output.'
-)
-def list_results(history_log, no_color):
+@click.pass_context
+def list_results(context):
     """
     Display list of results history.
     """
-    results_history(history_log, no_color)
+    results_history(context.obj['history_log'], context.obj['no_color'])
 
 
 @click.command()
-@click.option(
-    '--history-log',
-    default=IPA_HISTORY_FILE,
-    type=click.Path(exists=True),
-    help='Location of the history log file to display results from.'
-)
 @click.option(
     '-l',
     '--log',
     is_flag=True,
     help='Display the log for the given test run.'
-)
-@click.option(
-    '--no-color',
-    is_flag=True,
-    help='Remove ANSI color and styling from output.'
 )
 @click.option(
     '-r',
@@ -420,9 +400,9 @@ def list_results(history_log, no_color):
     'item',
     default=1
 )
-def show(history_log,
+@click.pass_context
+def show(context,
          log,
-         no_color,
          results_file,
          verbose,
          item):
@@ -436,6 +416,8 @@ def show(history_log,
 
     If log option selected echo test log.
     """
+    history_log = context.obj['history_log']
+    no_color = context.obj['no_color']
     if not results_file:
         # Find results/log file from history
         # Default -1 is most recent test run
@@ -485,11 +467,6 @@ def show(history_log,
 
 @click.command(name='list')
 @click.option(
-    '--no-color',
-    is_flag=True,
-    help='Remove ANSI color and styling from output.'
-)
-@click.option(
     '-v',
     '--verbose',
     is_flag=True
@@ -499,7 +476,8 @@ def show(history_log,
     nargs=-1,
     type=click.Path(exists=True)
 )
-def list_tests(no_color, verbose, test_dirs):
+@click.pass_context
+def list_tests(context, verbose, test_dirs):
     """
     Print a list of test files or test cases.
 
@@ -509,6 +487,7 @@ def list_tests(no_color, verbose, test_dirs):
     If test_dirs supplied they will be used to search for
     tests otherwise the default test directories are used.
     """
+    no_color = context.obj['no_color']
     try:
         results = collect_tests(test_dirs, verbose)
     except Exception as error:
