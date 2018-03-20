@@ -109,7 +109,19 @@ The CLI provides multiple subcommands to initiate image testing:
 Test image in the given framework using the supplied test files.
 
 `ipa results`::
-Print test results info.
+Invokes the default show subcommand `ipa results show 1`.
+
+`ipa results clear`::
+Clear the results from the history file.
+
+`ipa results delete`::
+Delete the specified history item from the history log.
+
+`ipa results list`::
+Display list of results history.
+
+`ipa results show`::
+Display the results or log file for a history item.
 
 `ipa list`::
 Print a list of test files or test cases.
