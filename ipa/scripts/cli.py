@@ -197,17 +197,20 @@ def main(context, no_color):
     help='SSH user for accessing instance.'
 )
 @click.option(
-    '-S',
-    '--storage-container',
-    help='Azure storage container to use.'
-)
-@click.option(
     '--subnet-id',
     help='Subnet to launch the new instance into.'
 )
 @click.option(
     '--test-dirs',
     help='Directories to search for tests.'
+)
+@click.option(
+    '--vnet-name',
+    help='Azure virtual network name to attach network interface.'
+)
+@click.option(
+    '--vnet-resource-group',
+    help='Azure resource group name where virtual network is found.'
 )
 @click.argument(
     'provider',
@@ -237,9 +240,10 @@ def test(context,
          ssh_key_name,
          ssh_private_key,
          ssh_user,
-         storage_container,
          subnet_id,
          test_dirs,
+         vnet_name,
+         vnet_resource_group,
          provider,
          tests):
     """Test image in the given framework using the supplied test files."""
@@ -268,10 +272,11 @@ def test(context,
             ssh_key_name,
             ssh_private_key,
             ssh_user,
-            storage_container,
             subnet_id,
             test_dirs,
-            tests
+            tests,
+            vnet_name,
+            vnet_resource_group
         )
         echo_results(results, no_color)
         sys.exit(status)

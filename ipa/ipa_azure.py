@@ -20,13 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import azurectl.logger
+import os
 
-from azurectl.account.service import AzureAccount
-from azurectl.config.parser import Config as AzurectlConfig
-from azurectl.instance.cloud_service import CloudService
-from azurectl.instance.virtual_machine import VirtualMachine
-from azurectl.management.request_result import RequestResult
+from azure.common.client_factory import get_client_from_auth_file
+from azure.mgmt.resource import ResourceManagementClient
+from azure.mgmt.network import NetworkManagementClient
+from azure.mgmt.compute import ComputeManagementClient
 
 from ipa import ipa_utils
 from ipa.ipa_constants import AZURE_DEFAULT_TYPE, AZURE_DEFAULT_USER
@@ -59,10 +58,11 @@ class AzureProvider(IpaProvider):
                  ssh_key_name=None,  # Not used in Azure
                  ssh_private_key=None,
                  ssh_user=None,
-                 storage_container=None,
-                 subnet_id=None,  # Not used in Azure
+                 subnet_id=None,
                  test_dirs=None,
-                 test_files=None):
+                 test_files=None,
+                 vnet_name=None,
+                 vnet_resource_group=None):
         """Initialize Azure Provider class."""
         super(AzureProvider, self).__init__('azure',
                                             cleanup,
@@ -82,176 +82,461 @@ class AzureProvider(IpaProvider):
                                             test_dirs,
                                             test_files)
 
-        azurectl.logger.init()
-        self.account_name = account_name
+        if subnet_id and not (vnet_name and vnet_resource_group):
+            raise AzureProviderException(
+                'If subnet_id is provided vnet_resource_group and vnet_name'
+                ' are also required.'
+            )
 
-        if not ssh_private_key:
+        self.service_account_file = (
+            service_account_file or
+            self._get_value(
+                service_account_file,
+                config_key='service_account_file'
+            )
+        )
+        if not self.service_account_file:
+            raise AzureProviderException(
+                'Service account file is required to connect to Azure.'
+            )
+        else:
+            self.service_account_file = os.path.expanduser(
+                self.service_account_file
+            )
+
+        self.ssh_private_key = (
+            ssh_private_key or
+            self._get_value(ssh_private_key, config_key='ssh_private_key')
+        )
+        if not self.ssh_private_key:
             raise AzureProviderException(
                 'SSH private key file is required to connect to instance.'
             )
         else:
-            self.ssh_private_key = ssh_private_key
+            self.ssh_private_key = os.path.expanduser(
+                self.ssh_private_key
+            )
 
         self.ssh_user = ssh_user or AZURE_DEFAULT_USER
-        self.storage_container = storage_container
-        self.account = self._get_account()
-        self.vm = self._get_virtual_machine()
+        self.ssh_public_key = self._get_ssh_public_key()
+        self.subnet_id = subnet_id
+        self.vnet_resource_group = vnet_resource_group
+        self.vnet_name = vnet_name
 
-    def _create_cloud_service(self, instance_name):
-        """Create cloud service if it does not exist."""
-        cloud_service = self._get_cloud_service()
-        request_id = cloud_service.create(
-            instance_name,
-            self.region
-        )
+        self.compute = self._get_management_client(ComputeManagementClient)
+        self.network = self._get_management_client(NetworkManagementClient)
+        self.resource = self._get_management_client(ResourceManagementClient)
 
-        if int(request_id, 16) > 0:
-            # Cloud service created
-            self._wait_on_request(request_id)
+        if self.running_instance_id:
+            self._set_default_resource_names()
 
-        return cloud_service
+    def _create_network_interface(
+        self, ip_config_name, nic_name, public_ip, region,
+        resource_group_name, subnet
+    ):
+        """
+        Create a network interface in the resource group.
 
-    def _get_account(self):
-        """Create an account object."""
-        if self.provider_config:
-            self.logger.debug(
-                'Using Azure config file: %s' % self.provider_config
+        Attach NIC to the subnet and public IP provided.
+        """
+        nic_config = {
+            'location': region,
+            'ip_configurations': [{
+                'name': ip_config_name,
+                'private_ip_allocation_method': 'Dynamic',
+                'subnet': {
+                    'id': subnet.id
+                },
+                'public_ip_address': {
+                    'id': public_ip.id
+                },
+            }]
+        }
+
+        try:
+            nic_setup = self.network.network_interfaces.create_or_update(
+                resource_group_name, nic_name, nic_config
             )
-        else:
-            self.logger.debug('Using default Azure config file')
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to create network interface: {0}.'.format(
+                    error
+                )
+            )
 
-        config = AzurectlConfig(
-            account_name=self.account_name,
-            filename=self.provider_config,
-            region_name=self.region,
-            storage_container_name=self.storage_container
-        )
+        return nic_setup.result()
 
-        return AzureAccount(config)
+    def _create_public_ip(self, public_ip_name, resource_group_name, region):
+        """
+        Create dynamic public IP address in the resource group.
+        """
+        public_ip_config = {
+            'location': region,
+            'public_ip_allocation_method': 'Dynamic'
+        }
 
-    def _get_cloud_service(self):
-        """Return instance of CloudService class."""
-        return CloudService(self.account)
+        try:
+            public_ip_setup = \
+                self.network.public_ip_addresses.create_or_update(
+                    resource_group_name, public_ip_name, public_ip_config
+                )
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to create public IP: {0}.'.format(error)
+            )
+
+        return public_ip_setup.result()
+
+    def _create_resource_group(self, region, resource_group_name):
+        """
+        Create resource group if it does not exist.
+        """
+        resource_group_config = {'location': region}
+
+        try:
+            self.resource.resource_groups.create_or_update(
+                resource_group_name, resource_group_config
+            )
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to create resource group: {0}.'.format(error)
+            )
+
+    def _create_subnet(self, resource_group_name, subnet_name, vnet_name):
+        """
+        Create a subnet in the provided vnet and resource group.
+        """
+        subnet_config = {'address_prefix': '10.0.0.0/29'}
+
+        try:
+            subnet_setup = self.network.subnets.create_or_update(
+                resource_group_name, vnet_name, subnet_name, subnet_config
+            )
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to create subnet: {0}.'.format(error)
+            )
+
+        return subnet_setup.result()
+
+    def _create_virtual_network(self, region, resource_group_name, vnet_name):
+        """
+        Create a vnet in the given resource group with default address space.
+        """
+        vnet_config = {
+            'location': region,
+            'address_space': {
+                'address_prefixes': ['10.0.0.0/27']
+            }
+        }
+
+        try:
+            vnet_setup = self.network.virtual_networks.create_or_update(
+                resource_group_name, vnet_name, vnet_config
+            )
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to create vnet: {0}.'.format(error)
+            )
+
+        vnet_setup.wait()
+
+    def _create_vm(self, vm_config):
+        """
+        Attempt to create or update VM instance based on vm_parameters config.
+        """
+        try:
+            vm_setup = self.compute.virtual_machines.create_or_update(
+                self.running_instance_id, self.running_instance_id,
+                vm_config
+            )
+        except Exception as error:
+            raise AzureProviderException(
+                'An exception occurred creating virtual machine: {0}'.format(
+                    error
+                )
+            )
+
+        vm_setup.wait()
+
+    def _create_vm_config(self, interface):
+        """
+        Create the VM config dictionary.
+
+        Requires an existing network interface object.
+        """
+        # Split image ID into it's components.
+        self._process_image_id()
+
+        hardware_profile = {
+            'vm_size': self.instance_type or AZURE_DEFAULT_TYPE
+        }
+
+        network_profile = {
+            'network_interfaces': [{
+                'id': interface.id,
+                'primary': True
+            }]
+        }
+
+        storage_profile = {
+            'image_reference': {
+                'publisher': self.image_publisher,
+                'offer': self.image_offer,
+                'sku': self.image_sku,
+                'version': self.image_version
+            },
+        }
+
+        os_profile = {
+            'computer_name': self.running_instance_id,
+            'admin_username': self.ssh_user,
+            'linux_configuration': {
+                'disable_password_authentication': True,
+                'ssh': {
+                    'public_keys': [{
+                        'path': '/home/{0}/.ssh/authorized_keys'.format(
+                            self.ssh_user
+                        ),
+                        'key_data': self.ssh_public_key
+                    }]
+                }
+            }
+        }
+
+        vm_config = {
+            'location': self.region,
+            'os_profile': os_profile,
+            'hardware_profile': hardware_profile,
+            'storage_profile': storage_profile,
+            'network_profile': network_profile
+        }
+
+        return vm_config
+
+    def _get_instance(self):
+        """
+        Return the instance matching the running_instance_id.
+        """
+        try:
+            instance = self.compute.virtual_machines.get(
+                self.running_instance_id, self.running_instance_id,
+                expand='instanceView'
+            )
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to retrieve instance: {0}'.format(error)
+            )
+
+        return instance
 
     def _get_instance_state(self):
-        """Retrieve state of instance."""
-        return self.vm.instance_status(self.running_instance_id)
+        """
+        Retrieve state of instance.
+        """
+        instance = self._get_instance()
+        statuses = instance.instance_view.statuses
 
-    def _get_virtual_machine(self):
-        """Return instance of VirtualMachine class."""
-        return VirtualMachine(self.account)
+        for status in statuses:
+            if status.code.startswith('PowerState'):
+                return status.display_status
+
+    def _get_management_client(self, client_class):
+        """
+        Return instance of resource management client.
+        """
+        try:
+            client = get_client_from_auth_file(
+                client_class, auth_path=self.service_account_file
+            )
+        except ValueError as error:
+            raise AzureProviderException(
+                'Service account file format is invalid: {0}.'.format(error)
+            )
+        except KeyError as error:
+            raise AzureProviderException(
+                'Service account file missing key: {0}.'.format(error)
+            )
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to create resource management client: '
+                '{0}.'.format(error)
+            )
+
+        return client
+
+    def _get_ssh_public_key(self):
+        """
+        Generate SSH public key from private key.
+        """
+        key = ipa_utils.generate_public_ssh_key(self.ssh_private_key)
+        return key.decode()
 
     def _is_instance_running(self):
         """
         Return True if instance is in running state.
-
-        Raises:
-            AzureProviderException: If state is Undefined.
         """
-        state = self._get_instance_state()
-
-        if state == 'Undefined':
-            raise AzureProviderException(
-                'Instance with name: %s, '
-                'cannot be found.' % self.running_instance_id
-            )
-
-        return state == 'ReadyRole'
+        return self._get_instance_state() == 'VM running'
 
     def _launch_instance(self):
-        """Create new test instance in cloud service with same name."""
-        instance_name = ipa_utils.generate_instance_name(
+        """
+        Create new test instance in a resource group with the same name.
+        """
+        self.running_instance_id = ipa_utils.generate_instance_name(
             'azure-ipa-test'
         )
+        self._set_default_resource_names()
 
-        cloud_service = self._create_cloud_service(instance_name)
-        fingerprint = cloud_service.add_certificate(
-            instance_name,
-            self.ssh_private_key
-        )
+        try:
+            # Try block acts as a transaction. If an exception is raised
+            # attempt to cleanup the resource group and all created resources.
 
-        linux_configuration = self.vm.create_linux_configuration(
-            instance_name=instance_name,
-            fingerprint=fingerprint
-        )
+            # Create resource group.
+            self._create_resource_group(self.region, self.running_instance_id)
 
-        ssh_endpoint = self.vm.create_network_endpoint(
-            name='SSH',
-            public_port=22,
-            local_port=22,
-            protocol='TCP'
-        )
+            if self.subnet_id:
+                # Use existing vnet/subnet.
+                subnet = self.network.subnets.get(
+                    self.vnet_resource_group, self.vnet_name, self.subnet_id
+                )
+            else:
+                # Create new vnet/subnet.
+                self._create_virtual_network(
+                    self.region, self.running_instance_id, self.vnet_name
+                )
+                subnet = self._create_subnet(
+                    self.running_instance_id, self.subnet_name, self.vnet_name
+                )
 
-        network_configuration = self.vm.create_network_configuration(
-            [ssh_endpoint]
-        )
+            # Setup interface and public ip in resource group.
+            public_ip = self._create_public_ip(
+                self.public_ip_name, self.running_instance_id, self.region
+            )
+            interface = self._create_network_interface(
+                self.ip_config_name, self.nic_name, public_ip, self.region,
+                self.running_instance_id, subnet
+            )
 
-        self.vm.create_instance(
-            instance_name,
-            self.image_id,
-            linux_configuration,
-            network_config=network_configuration,
-            machine_size=self.instance_type or AZURE_DEFAULT_TYPE
-        )
+            # Get dictionary of VM parameters and create instance.
+            vm_config = self._create_vm_config(interface)
+            self._create_vm(vm_config)
+        except Exception:
+            try:
+                self._terminate_instance()
+            except Exception:
+                pass
+            raise
+        else:
+            # Ensure VM is in the running state.
+            self._wait_on_instance('VM running')
 
-        self.running_instance_id = instance_name
-        self._wait_on_instance('ReadyRole')
+    def _process_image_id(self):
+        """
+        Split image id into component values.
+
+        Example: SUSE:SLES:12-SP3:2018.01.04
+                 Publisher:Offer:Sku:Version
+
+        Raises:
+            If image_id is not a valid format.
+        """
+        try:
+            image_info = self.image_id.strip().split(':')
+            self.image_publisher = image_info[0]
+            self.image_offer = image_info[1]
+            self.image_sku = image_info[2]
+            self.image_version = image_info[3]
+        except Exception:
+            raise AzureProviderException(
+                'Image ID is invalid. Format must match '
+                '{Publisher}:{Offer}:{Sku}:{Version}.'
+            )
+
+    def _set_default_resource_names(self):
+        """
+        Generate names for resources based on the running_instance_id.
+        """
+        self.ip_config_name = ''.join([
+            self.running_instance_id, '-ip-config'
+        ])
+        self.nic_name = ''.join([self.running_instance_id, '-nic'])
+        self.subnet_name = ''.join([self.running_instance_id, '-subnet'])
+        self.vnet_name = ''.join([self.running_instance_id, '-vnet'])
+        self.public_ip_name = ''.join([self.running_instance_id, '-public-ip'])
 
     def _set_image_id(self):
-        """If an existing instance is used get image id from deployment."""
-        try:
-            properties = self.vm.service.get_hosted_service_properties(
-                service_name=self.running_instance_id,
-                embed_detail=True
-            )
-            self.image_id = properties.deployments[0].role_list[0]\
-                .os_virtual_hard_disk.source_image_name
-        except IndexError:
-            raise AzureProviderException(
-                'Image name for instance cannot be found.'
-            )
+        """
+        If an existing instance is used get image id from deployment.
+        """
+        instance = self._get_instance()
+        image_info = instance.storage_profile.image_reference
+
+        self.image_id = ':'.join([
+            image_info.publisher, image_info.offer,
+            image_info.sku, image_info.version
+        ])
 
     def _set_instance_ip(self):
         """
-        Get the first ip from first deployment.
+        Get the IP address based on instance ID.
 
-        There is only one vm in current cloud service.
+        If public IP address not found attempt to get private IP.
         """
-        cloud_service = self._get_cloud_service()
-        service_info = cloud_service.get_properties(self.running_instance_id)
-
         try:
-            self.instance_ip = \
-                    service_info['deployments'][0]['virtual_ips'][0]['address']
-        except IndexError:
-            raise AzureProviderException(
-                'IP address for instance cannot be found.'
-            )
+            ip_address = self.network.public_ip_addresses.get(
+                self.running_instance_id, self.public_ip_name
+            ).ip_address
+        except Exception:
+            try:
+                ip_address = self.network.network_interfaces.get(
+                    self.running_instance_id, self.nic_name
+                ).ip_configurations[0].private_ip_address
+            except Exception as error:
+                raise AzureProviderException(
+                    'Unable to retrieve instance IP address: {0}.'.format(
+                        error
+                    )
+                )
+
+        self.instance_ip = ip_address
 
     def _start_instance(self):
-        """Start the instance."""
-        self.vm.start_instance(
-           cloud_service_name=self.running_instance_id,
-           instance_name=self.running_instance_id
-        )
-        self._wait_on_instance('ReadyRole')
+        """
+        Start the instance.
+        """
+        try:
+            vm_start = self.compute.virtual_machines.start(
+                self.running_instance_id, self.running_instance_id
+            )
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to start instance: {0}.'.format(error)
+            )
+
+        vm_start.wait()
 
     def _stop_instance(self):
-        """Stop the instance."""
-        self.vm.shutdown_instance(
-            cloud_service_name=self.running_instance_id,
-            instance_name=self.running_instance_id,
-            deallocate_resources=True
-        )
-        self._wait_on_instance('StoppedDeallocated')
+        """
+        Stop the instance.
+        """
+        try:
+            vm_stop = self.compute.virtual_machines.power_off(
+                self.running_instance_id, self.running_instance_id
+            )
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to stop instance: {0}.'.format(error)
+            )
+
+        vm_stop.wait()
 
     def _terminate_instance(self):
-        """Terminate the cloud service and instance."""
-        cloud_service = self._get_cloud_service()
-        cloud_service.delete(self.running_instance_id, complete=True)
-
-    def _wait_on_request(self, request_id):
-        """Wait for request to complete."""
-        service = self.account.get_management_service()
-        request_result = RequestResult(request_id)
-        request_result.wait_for_request_completion(service)
+        """
+        Terminate the resource group and instance.
+        """
+        try:
+            self.resource.resource_groups.delete(self.running_instance_id)
+        except Exception as error:
+            raise AzureProviderException(
+                'Unable to terminate resource group: {0}.'.format(error)
+            )

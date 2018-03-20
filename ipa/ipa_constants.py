@@ -28,7 +28,7 @@ NOT_IMPLEMENTED = 'Implement method in child classes.'
 SUPPORTED_DISTROS = ('opensuse_leap', 'sles')
 SUPPORTED_PROVIDERS = ('azure', 'ec2', 'gce')
 
-AZURE_DEFAULT_TYPE = 'Small'
+AZURE_DEFAULT_TYPE = 'Standard_B1ms'
 AZURE_DEFAULT_USER = 'azureuser'
 EC2_DEFAULT_TYPE = 't2.micro'
 EC2_DEFAULT_USER = 'ec2-user'
