@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import shlex
 import sys
 
 import click
@@ -127,6 +128,20 @@ def echo_verbose_results(data, no_color):
             no_color,
             fg=fg
         )
+
+
+def get_log_file_from_item(history):
+    """
+    Return the log file based on provided history item.
+
+    Description is optional.
+    """
+    try:
+        log_file, description = shlex.split(history)
+    except ValueError:
+        log_file = history.strip()
+
+    return log_file
 
 
 def results_history(history_log, no_color):

@@ -22,7 +22,6 @@
 
 import logging
 import os
-import shlex
 import sys
 
 import click
@@ -39,6 +38,7 @@ from ipa.scripts.cli_utils import (
     echo_results,
     echo_results_file,
     echo_style,
+    get_log_file_from_item,
     results_history
 )
 
@@ -347,12 +347,7 @@ def delete(context, item):
         )
         sys.exit(1)
 
-    try:
-        # Desc is optional
-        log_file, description = shlex.split(history)
-    except ValueError:
-        log_file = history.strip()
-
+    log_file = get_log_file_from_item(history)
     try:
         os.remove(log_file)
     except Exception:
@@ -445,12 +440,7 @@ def show(context,
             )
             sys.exit(1)
 
-        try:
-            # Desc is optional
-            log_file, description = shlex.split(history)
-        except ValueError:
-            log_file = history.strip()
-
+        log_file = get_log_file_from_item(history)
         if log:
             echo_log(log_file, no_color)
         else:
