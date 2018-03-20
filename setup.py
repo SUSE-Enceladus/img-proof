@@ -28,7 +28,10 @@ with open('README.asciidoc') as readme_file:
 
 requirements = [
     'apache-libcloud',
-    'azurectl>=3.0.1',
+    'azure-common',
+    'azure-mgmt-compute',
+    'azure-mgmt-network',
+    'azure-mgmt-resource',
     'Click',
     'cryptography',
     'paramiko',
@@ -87,7 +90,8 @@ setup(
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Testing',
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'License :: OSI Approved :: '
+        'GNU General Public License v3 or later (GPLv3+)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',

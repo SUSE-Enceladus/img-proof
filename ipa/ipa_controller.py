@@ -55,10 +55,11 @@ def test_image(provider_name,
                ssh_key_name=None,
                ssh_private_key=None,
                ssh_user=None,
-               storage_container=None,
                subnet_id=None,
                test_dirs=None,
-               tests=None):
+               tests=None,
+               vnet_name=None,
+               vnet_resource_group=None):
     """Creates a cloud provider instance and initiates testing."""
     provider_name = provider_name.lower()
     if provider_name == 'azure':
@@ -94,10 +95,11 @@ def test_image(provider_name,
         ssh_key_name=ssh_key_name,
         ssh_private_key=ssh_private_key,
         ssh_user=ssh_user,
-        storage_container=storage_container,
         subnet_id=subnet_id,
         test_dirs=test_dirs,
-        test_files=tests
+        test_files=tests,
+        vnet_name=vnet_name,
+        vnet_resource_group=vnet_resource_group
     )
 
     return provider.test_image()
