@@ -57,6 +57,7 @@ class EC2Provider(LibcloudProvider):
                  running_instance_id=None,
                  secret_access_key=None,
                  service_account_file=None,  # Not used in EC2
+                 ssh_key_name=None,
                  ssh_private_key=None,
                  ssh_user=None,
                  storage_container=None,  # Not used in EC2
@@ -114,6 +115,10 @@ class EC2Provider(LibcloudProvider):
         self.secret_access_key = (
             secret_access_key or
             self._get_from_ec2_config('secret_access_key')
+        )
+        self.ssh_key_name = (
+            ssh_key_name or
+            self._get_from_ec2_config('ssh_key_name')
         )
         self.ssh_private_key = (
             ssh_private_key or
@@ -241,9 +246,13 @@ class EC2Provider(LibcloudProvider):
         kwargs = {
             'name': ipa_utils.generate_instance_name('ec2-ipa-test'),
             'size': self._get_instance_size(),
-            'image': self._get_image(),
-            'ex_userdata': self._get_user_data()
+            'image': self._get_image()
         }
+
+        if self.ssh_key_name:
+            kwargs['ex_keyname'] = self.ssh_key_name
+        else:
+            kwargs['ex_userdata'] = self._get_user_data()
 
         if self.subnet_id:
             kwargs['ex_subnet'] = self._get_subnet(self.subnet_id)
