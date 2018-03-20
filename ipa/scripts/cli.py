@@ -296,6 +296,7 @@ def test(context,
 )
 @click.pass_context
 def results(context, history_log):
+    """Process provided history log and results files."""
     if context.obj is None:
         context.obj = {}
     context.obj['history_log'] = history_log
