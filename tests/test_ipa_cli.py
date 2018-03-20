@@ -229,6 +229,34 @@ def test_cli_clear_history():
         assert 'Path "test/.history" does not exist.' in result.output
 
 
+def test_cli_delete_history_item():
+    """Test ipa delete history item at given index."""
+    lines = []
+    with open('tests/data/.history') as history_log:
+        lines = history_log.readlines()
+
+    before_count = len(lines)
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        try:
+            os.makedirs('test')
+        except OSError as error:
+            pass
+
+        with open('test/.history', 'w') as history_log:
+            history_log.writelines(lines)
+
+        result = runner.invoke(
+            main,
+            ['results', '--history-log', 'test/.history', 'delete', '1']
+        )
+        assert result.exit_code == 0
+
+        with open('test/.history') as history_log:
+            lines = history_log.readlines()
+        assert before_count - 1 == len(lines)
+
+
 def test_cli_history_empty():
     """Test ipa history endpoint with empty history log."""
     runner = CliRunner()
