@@ -22,7 +22,7 @@
 
 from ipa import ipa_utils
 from ipa.ipa_constants import (
-    CLOUD_INIT_CONFIG,
+    BASH_SSH_SCRIPT,
     EC2_CONFIG_FILE,
     EC2_DEFAULT_TYPE,
     EC2_DEFAULT_USER
@@ -238,7 +238,7 @@ class EC2Provider(LibcloudProvider):
         the ssh user and private key file.
         """
         key = ipa_utils.generate_public_ssh_key(self.ssh_private_key).decode()
-        data = CLOUD_INIT_CONFIG.format(user=self.ssh_user, key=key)
+        data = BASH_SSH_SCRIPT.format(user=self.ssh_user, key=key)
         return data
 
     def _launch_instance(self):

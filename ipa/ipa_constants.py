@@ -41,11 +41,8 @@ IPA_CONFIG_FILE = os.path.join(HOME, '.config', 'ipa', 'config')
 IPA_HISTORY_FILE = os.path.join(HOME, '.config', 'ipa', '.history')
 IPA_RESULTS_PATH = os.path.join(HOME, 'ipa', 'results')
 
-CLOUD_INIT_CONFIG = '''#cloud-config
-users:
-  - name: {user}
-    ssh-authorized-keys:
-      - {key}
+BASH_SSH_SCRIPT = '''#!/bin/bash
+echo {key} >> /home/{user}/.ssh/authorized_keys
 '''
 
 SYNC_POINTS = (

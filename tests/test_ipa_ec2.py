@@ -140,8 +140,8 @@ class TestEC2Provider(object):
 
         result = provider._get_user_data()
 
-        assert result == '#cloud-config\nusers:\n  - name: ec2-user\n    ' \
-            'ssh-authorized-keys:\n      - testkey12345\n'
+        assert result == '#!/bin/bash\n' \
+            'echo testkey12345 >> /home/ec2-user/.ssh/authorized_keys\n'
 
     @patch.object(EC2Provider, '_get_user_data')
     @patch.object(EC2Provider, '_get_subnet')
