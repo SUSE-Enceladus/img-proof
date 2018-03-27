@@ -41,6 +41,10 @@ IPA_CONFIG_FILE = os.path.join(HOME, '.config', 'ipa', 'config')
 IPA_HISTORY_FILE = os.path.join(HOME, '.config', 'ipa', '.history')
 IPA_RESULTS_PATH = os.path.join(HOME, 'ipa', 'results')
 
+BASH_SSH_SCRIPT = '''#!/bin/bash
+echo {key} >> /home/{user}/.ssh/authorized_keys
+'''
+
 SYNC_POINTS = (
     'test_hard_reboot',
     'test_soft_reboot',

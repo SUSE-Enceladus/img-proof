@@ -22,6 +22,7 @@
 
 from ipa import ipa_utils
 from ipa.ipa_constants import (
+    BASH_SSH_SCRIPT,
     EC2_CONFIG_FILE,
     EC2_DEFAULT_TYPE,
     EC2_DEFAULT_USER
@@ -123,7 +124,8 @@ class EC2Provider(LibcloudProvider):
         )
         self.ssh_private_key = (
             ssh_private_key or
-            self._get_from_ec2_config('ssh_private_key')
+            self._get_from_ec2_config('ssh_private_key') or
+            self._get_value(ssh_private_key, config_key='ssh_private_key')
         )
         self.ssh_user = (
             ssh_user or
@@ -230,19 +232,29 @@ class EC2Provider(LibcloudProvider):
 
         return subnet
 
+    def _get_user_data(self):
+        """
+        Return formatted bash script string.
+
+        The public ssh key is added by cloud init to the instance based on
+        the ssh user and private key file.
+        """
+        key = ipa_utils.generate_public_ssh_key(self.ssh_private_key).decode()
+        script = BASH_SSH_SCRIPT.format(user=self.ssh_user, key=key)
+        return script
+
     def _launch_instance(self):
         """Launch an instance of the given image."""
-        if not self.ssh_key_name:
-            raise EC2ProviderException(
-                'SSH Key Name is required to launch an EC2 instance.'
-            )
-
         kwargs = {
             'name': ipa_utils.generate_instance_name('ec2-ipa-test'),
             'size': self._get_instance_size(),
-            'image': self._get_image(),
-            'ex_keyname': self.ssh_key_name
+            'image': self._get_image()
         }
+
+        if self.ssh_key_name:
+            kwargs['ex_keyname'] = self.ssh_key_name
+        else:
+            kwargs['ex_userdata'] = self._get_user_data()
 
         if self.subnet_id:
             kwargs['ex_subnet'] = self._get_subnet(self.subnet_id)
