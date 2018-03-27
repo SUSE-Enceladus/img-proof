@@ -232,14 +232,14 @@ class EC2Provider(LibcloudProvider):
 
     def _get_user_data(self):
         """
-        Return cloud init config string.
+        Return formatted bash script string.
 
         The public ssh key is added by cloud init to the instance based on
         the ssh user and private key file.
         """
         key = ipa_utils.generate_public_ssh_key(self.ssh_private_key).decode()
-        data = BASH_SSH_SCRIPT.format(user=self.ssh_user, key=key)
-        return data
+        script = BASH_SSH_SCRIPT.format(user=self.ssh_user, key=key)
+        return script
 
     def _launch_instance(self):
         """Launch an instance of the given image."""
