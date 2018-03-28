@@ -184,7 +184,7 @@ def main(context, no_color):
 )
 @click.option(
     '--ssh-key-name',
-    help='SSH private key file name for EC2.'
+    help='Optional SSH private key-pair name for EC2.'
 )
 @click.option(
     '--ssh-private-key',
