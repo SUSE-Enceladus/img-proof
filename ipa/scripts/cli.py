@@ -337,6 +337,7 @@ def delete(context, item):
             history = lines.pop(len(lines) - item)
             f.seek(0)
             f.write(''.join(lines))
+            f.flush()
             f.truncate()
     except IndexError:
         echo_style(
@@ -428,8 +429,7 @@ def show(context,
         try:
             with open(history_log, 'r') as f:
                 lines = f.readlines()
-            lines.reverse()
-            history = lines[item - 1]
+            history = lines[len(lines) - item]
         except IndexError:
             echo_style(
                 'History result at index %s does not exist.' % item,

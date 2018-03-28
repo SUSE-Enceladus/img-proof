@@ -160,7 +160,7 @@ def test_cli_results_history_exception():
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ['results', '--history-log', 'tests/data/.history', 'show', '0']
+        ['results', '--history-log', 'tests/data/.history', 'show', '2']
     )
     assert result.exit_code != 0
     assert 'Unable to process results file:' in result.output
@@ -174,7 +174,7 @@ def test_cli_results_history_log_exception():
         ['results',
          '--history-log',
          'tests/data/.history',
-         'show', '-l', '0']
+         'show', '-l', '2']
     )
     assert result.exit_code != 0
     assert 'Unable to open results log file' in result.output
