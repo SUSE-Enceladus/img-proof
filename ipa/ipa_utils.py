@@ -212,7 +212,7 @@ def get_config(config_path):
     try:
         result = config.read(config_path)
         if not result:
-            raise
+            raise Exception('Empty result.')
     except Exception:
         raise IpaUtilsException(
             'Error parsing config file: %s' % config_path
