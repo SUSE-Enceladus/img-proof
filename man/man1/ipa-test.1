@@ -1,4 +1,4 @@
-.TH "IPA TEST" "1" "20-Mar-2018" "" "ipa test Manual"
+.TH "IPA TEST" "1" "28-Mar-2018" "" "ipa test Manual"
 .SH NAME
 ipa\-test \- Test image in the given framework using the...
 .SH SYNOPSIS
@@ -47,9 +47,6 @@ Display debug level logging to console.
 \fB\-\-quiet\fP
 Silence logging information on test run.
 .TP
-\fB\-\-no\-color\fP
-Remove ANSI color and styling from output.
-.TP
 \fB\-\-no\-default\-test\-dirs\fP
 Do not include default test directories in search for tests.
 .TP
@@ -80,11 +77,14 @@ SSH private key file for accessing instance.
 \fB\-u,\fP \-\-ssh\-user TEXT
 SSH user for accessing instance.
 .TP
-\fB\-S,\fP \-\-storage\-container TEXT
-Azure storage container to use.
-.TP
 \fB\-\-subnet\-id\fP TEXT
 Subnet to launch the new instance into.
 .TP
 \fB\-\-test\-dirs\fP TEXT
 Directories to search for tests.
+.TP
+\fB\-\-vnet\-name\fP TEXT
+Azure virtual network name to attach network interface.
+.TP
+\fB\-\-vnet\-resource\-group\fP TEXT
+Azure resource group name where virtual network is found.

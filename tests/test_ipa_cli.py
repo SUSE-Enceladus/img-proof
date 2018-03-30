@@ -44,7 +44,7 @@ def test_cli_ipa_help():
     [('list',
       'Print a list of test files or test cases.'),
      ('results',
-      'Print test results info from provided results json file.'),
+      'Process provided history log and results files.'),
      ('test',
       'Test image in the given framework using the supplied test files.')],
     ids=['ipa-list', 'ipa-results', 'ipa-test']
@@ -112,25 +112,24 @@ def test_cli_results():
     result = runner.invoke(
         main,
         ['results',
-         '-v', '-r',
-         'tests/data/test.results',
          '--history-log',
-         'tests/data/.history']
+         'tests/data/.history',
+         'show', '-v', '-r',
+         'tests/data/test.results']
     )
     assert result.exit_code == 0
 
 
 def test_cli_results_log():
-    """Test ipa results log dislpay."""
+    """Test ipa results log display."""
     runner = CliRunner()
     result = runner.invoke(
         main,
         ['results',
-         '-l',
-         '-r',
-         'tests/data/history.log',
          '--history-log',
-         'tests/data/.history']
+         'tests/data/.history',
+         'show', '-l', '-r',
+         'tests/data/history.log']
     )
     assert result.exit_code == 0
 
@@ -140,7 +139,7 @@ def test_cli_results_show_exception():
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ['results', '--show', '100', '--history-log', 'tests/data/.history']
+        ['results', '--history-log', 'tests/data/.history', 'show', '100']
     )
     assert result.exit_code != 0
     assert 'History result at index 100 does not exist.' in result.output
@@ -151,7 +150,7 @@ def test_cli_results_history():
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ['results', '--list', '--history-log', 'tests/data/.history']
+        ['results', '--history-log', 'tests/data/.history', 'list']
     )
     assert result.exit_code == 0
 
@@ -161,7 +160,7 @@ def test_cli_results_history_exception():
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ['results', '--show', '0', '--history-log', 'tests/data/.history']
+        ['results', '--history-log', 'tests/data/.history', 'show', '2']
     )
     assert result.exit_code != 0
     assert 'Unable to process results file:' in result.output
@@ -173,11 +172,9 @@ def test_cli_results_history_log_exception():
     result = runner.invoke(
         main,
         ['results',
-         '-l',
-         '--show',
-         '0',
          '--history-log',
-         'tests/data/.history']
+         'tests/data/.history',
+         'show', '-l', '2']
     )
     assert result.exit_code != 0
     assert 'Unable to open results log file' in result.output
@@ -188,23 +185,23 @@ def test_cli_results_history_log():
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ['results', '-l', '--list', '--history-log', 'tests/data/.history']
+        ['results', '--history-log', 'tests/data/.history', 'show', '-l']
     )
     assert result.exit_code == 0
 
 
 def test_cli_history():
-    """Test ipa history endpoint."""
+    """Test ipa list history sub command."""
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ['results', '--list', '--history-log', 'tests/data/.history']
+        ['results', '--history-log', 'tests/data/.history', 'list']
     )
     assert result.exit_code == 0
 
 
 def test_cli_clear_history():
-    """Test ipa clear history."""
+    """Test ipa clear history sub command."""
     lines = ''
     with open('tests/data/.history') as history_log:
         lines = history_log.readlines()
@@ -221,23 +218,51 @@ def test_cli_clear_history():
 
         result = runner.invoke(
             main,
-            ['results', '--clear', '--history-log', 'test/.history']
+            ['results', '--history-log', 'test/.history', 'clear']
         )
         assert result.exit_code == 0
 
         result = runner.invoke(
             main,
-            ['results', '--list', '--history-log', 'test/.history']
+            ['results', '--history-log', 'test/.history', 'list']
         )
         assert 'Path "test/.history" does not exist.' in result.output
 
 
+def test_cli_delete_history_item():
+    """Test ipa delete history item at given index."""
+    lines = []
+    with open('tests/data/.history') as history_log:
+        lines = history_log.readlines()
+
+    before_count = len(lines)
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        try:
+            os.makedirs('test')
+        except OSError as error:
+            pass
+
+        with open('test/.history', 'w') as history_log:
+            history_log.writelines(lines)
+
+        result = runner.invoke(
+            main,
+            ['results', '--history-log', 'test/.history', 'delete', '1']
+        )
+        assert result.exit_code == 0
+
+        with open('test/.history') as history_log:
+            lines = history_log.readlines()
+        assert before_count - 1 == len(lines)
+
+
 def test_cli_history_empty():
-    """Test ipa history endpoint."""
+    """Test ipa history endpoint with empty history log."""
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ['results', '--list', '--history-log', 'tests/data/empty.history']
+        ['results', '--history-log', 'tests/data/empty.history', 'list']
     )
     assert result.exit_code == 0
 
@@ -248,11 +273,10 @@ def test_cli_results_non_json():
     result = runner.invoke(
         main,
         ['results',
-         '-v',
-         '-r',
-         'tests/data/config',
          '--history-log',
-         'tests/data/.history']
+         'tests/data/.history',
+         'show', '-v', '-r',
+         'tests/data/config']
     )
     assert result.exit_code == 1
     assert result.output.strip() == \
@@ -265,11 +289,10 @@ def test_cli_results_missing_key():
     result = runner.invoke(
         main,
         ['results',
-         '-v',
-         '-r',
-         'tests/data/bad.results',
          '--history-log',
-         'tests/data/.history']
+         'tests/data/.history',
+         'show', '-v', '-r',
+         'tests/data/bad.results']
     )
     assert result.exit_code == 1
     assert result.output.strip() == \

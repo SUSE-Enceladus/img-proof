@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import shlex
+import os
 import sys
 
 import click
@@ -38,6 +38,7 @@ from ipa.scripts.cli_utils import (
     echo_results,
     echo_results_file,
     echo_style,
+    get_log_file_from_item,
     results_history
 )
 
@@ -59,13 +60,21 @@ def print_license(ctx, param, value):
     is_eager=True,
     help='Show license information and exit.'
 )
-def main():
+@click.option(
+    '--no-color',
+    is_flag=True,
+    help='Remove ANSI color and styling from output.'
+)
+@click.pass_context
+def main(context, no_color):
     """
     Ipa provides a Python API and command line utility for testing images.
 
     It can be used to test images in the Public Cloud (AWS, Azure, GCE, etc.).
     """
-    pass
+    if context.obj is None:
+        context.obj = {}
+    context.obj['no_color'] = no_color
 
 
 @click.command(context_settings=dict(token_normalize_func=str.lower))
@@ -142,11 +151,6 @@ def main():
     help='Silence logging information on test run.'
 )
 @click.option(
-    '--no-color',
-    is_flag=True,
-    help='Remove ANSI color and styling from output.'
-)
-@click.option(
     '--no-default-test-dirs',
     is_flag=True,
     default=False,
@@ -213,7 +217,9 @@ def main():
     type=click.Choice(SUPPORTED_PROVIDERS)
 )
 @click.argument('tests', nargs=-1)
-def test(access_key_id,
+@click.pass_context
+def test(context,
+         access_key_id,
          account,
          cleanup,
          config,
@@ -224,7 +230,6 @@ def test(access_key_id,
          image_id,
          instance_type,
          log_level,
-         no_color,
          no_default_test_dirs,
          provider_config,
          region,
@@ -242,6 +247,7 @@ def test(access_key_id,
          provider,
          tests):
     """Test image in the given framework using the supplied test files."""
+    no_color = context.obj['no_color']
     try:
         status, results = test_image(
             provider,
@@ -286,34 +292,103 @@ def test(access_key_id,
         sys.exit(1)
 
 
-@click.command()
-@click.option(
-    '--clear',
-    is_flag=True,
-    help='Clear list of results history.'
-)
+@click.group(invoke_without_command=True)
 @click.option(
     '--history-log',
     default=IPA_HISTORY_FILE,
     type=click.Path(exists=True),
     help='Location of the history log file to display results from.'
 )
-@click.option(
-    '--list',
-    'list_results',
-    is_flag=True,
-    help='Display list of results history.'
+@click.pass_context
+def results(context, history_log):
+    """Process provided history log and results files."""
+    if context.obj is None:
+        context.obj = {}
+    context.obj['history_log'] = history_log
+
+    if context.invoked_subcommand is None:
+        context.invoke(show, item=1)
+
+
+@click.command()
+@click.pass_context
+def clear(context):
+    """
+    Clear the results from the history file.
+    """
+    ipa_utils.update_history_log(context.obj['history_log'], clear=True)
+
+
+@click.command()
+@click.argument(
+    'item',
+    type=click.INT
 )
+@click.pass_context
+def delete(context, item):
+    """
+    Delete the specified history item from the history log.
+    """
+    history_log = context.obj['history_log']
+    no_color = context.obj['no_color']
+    try:
+        with open(history_log, 'r+') as f:
+            lines = f.readlines()
+            history = lines.pop(len(lines) - item)
+            f.seek(0)
+            f.write(''.join(lines))
+            f.flush()
+            f.truncate()
+    except IndexError:
+        echo_style(
+            'History result at index %s does not exist.' % item,
+            no_color,
+            fg='red'
+        )
+        sys.exit(1)
+    except Exception as error:
+        echo_style(
+            'Unable to delete result item {0}. {1}'.format(item, error),
+            no_color,
+            fg='red'
+        )
+        sys.exit(1)
+
+    log_file = get_log_file_from_item(history)
+    try:
+        os.remove(log_file)
+    except Exception:
+        echo_style(
+            'Unable to delete results file for item {0}.'.format(item),
+            no_color,
+            fg='red'
+        )
+
+    try:
+        os.remove(log_file.rsplit('.', 1)[0] + '.results')
+    except Exception:
+        echo_style(
+            'Unable to delete log file for item {0}.'.format(item),
+            no_color,
+            fg='red'
+        )
+
+
+@click.command(name='list')
+@click.pass_context
+def list_results(context):
+    """
+    Display list of results history.
+    """
+    results_history(context.obj['history_log'], context.obj['no_color'])
+
+
+@click.command()
 @click.option(
     '-l',
     '--log',
     is_flag=True,
     help='Display the log for the given test run.'
-)
-@click.option(
-    '--no-color',
-    is_flag=True,
-    help='Remove ANSI color and styling from output.'
 )
 @click.option(
     '-r',
@@ -322,23 +397,20 @@ def test(access_key_id,
     help='The results file or log to parse.'
 )
 @click.option(
-    '--show',
-    default=1,
-    help='Test result to display.'
-)
-@click.option(
     '-v',
     '--verbose',
     is_flag=True
 )
-def results(clear,
-            history_log,
-            list_results,
-            log,
-            no_color,
-            results_file,
-            show,
-            verbose):
+@click.argument(
+    'item',
+    default=1
+)
+@click.pass_context
+def show(context,
+         log,
+         results_file,
+         verbose,
+         item):
     """
     Print test results info from provided results json file.
 
@@ -348,69 +420,51 @@ def results(clear,
     If verbose option selected, echo all test cases.
 
     If log option selected echo test log.
-
-    If list option is provided echo the results history file.
-
-    If the clear option is provided delete history file.
     """
-    if clear:
-        ipa_utils.update_history_log(history_log, clear=True)
-    elif list_results:
-        results_history(history_log, no_color)
-    else:
-        if not results_file:
-            # Find results/log file from history
-            # Default -1 is most recent test run
-            try:
-                with open(history_log, 'r') as f:
-                    lines = f.readlines()
-                lines.reverse()
-                history = lines[show - 1]
-            except IndexError:
-                echo_style(
-                    'History result at index %s does not exist.' % show,
-                    no_color,
-                    fg='red'
-                )
-                sys.exit(1)
-            except Exception:
-                echo_style(
-                    'Unable to retrieve results history, '
-                    'provide results file or re-run test.',
-                    no_color,
-                    fg='red'
-                )
-                sys.exit(1)
+    history_log = context.obj['history_log']
+    no_color = context.obj['no_color']
+    if not results_file:
+        # Find results/log file from history
+        # Default -1 is most recent test run
+        try:
+            with open(history_log, 'r') as f:
+                lines = f.readlines()
+            history = lines[len(lines) - item]
+        except IndexError:
+            echo_style(
+                'History result at index %s does not exist.' % item,
+                no_color,
+                fg='red'
+            )
+            sys.exit(1)
+        except Exception:
+            echo_style(
+                'Unable to retrieve results history, '
+                'provide results file or re-run test.',
+                no_color,
+                fg='red'
+            )
+            sys.exit(1)
 
-            try:
-                # Desc is optional
-                log_file, description = shlex.split(history)
-            except ValueError:
-                log_file = history.strip()
-
-            if log:
-                echo_log(log_file, no_color)
-            else:
-                echo_results_file(
-                    log_file.rsplit('.', 1)[0] + '.results',
-                    no_color,
-                    verbose
-                )
-
-        elif log:
-            # Log file provided
-            echo_log(results_file, no_color)
+        log_file = get_log_file_from_item(history)
+        if log:
+            echo_log(log_file, no_color)
         else:
-            # Results file provided
-            echo_results_file(results_file, no_color, verbose)
+            echo_results_file(
+                log_file.rsplit('.', 1)[0] + '.results',
+                no_color,
+                verbose
+            )
+
+    elif log:
+        # Log file provided
+        echo_log(results_file, no_color)
+    else:
+        # Results file provided
+        echo_results_file(results_file, no_color, verbose)
 
 
 @click.command(name='list')
-@click.option(
-    '--no-color',
-    is_flag=True,
-    help='Remove ANSI color and styling from output.'
-)
 @click.option(
     '-v',
     '--verbose',
@@ -421,7 +475,8 @@ def results(clear,
     nargs=-1,
     type=click.Path(exists=True)
 )
-def list_tests(no_color, verbose, test_dirs):
+@click.pass_context
+def list_tests(context, verbose, test_dirs):
     """
     Print a list of test files or test cases.
 
@@ -431,6 +486,7 @@ def list_tests(no_color, verbose, test_dirs):
     If test_dirs supplied they will be used to search for
     tests otherwise the default test directories are used.
     """
+    no_color = context.obj['no_color']
     try:
         results = collect_tests(test_dirs, verbose)
     except Exception as error:
@@ -458,5 +514,9 @@ def list_tests(no_color, verbose, test_dirs):
 
 
 main.add_command(list_tests)
+results.add_command(clear)
+results.add_command(delete)
+results.add_command(list_results)
+results.add_command(show)
 main.add_command(results)
 main.add_command(test)

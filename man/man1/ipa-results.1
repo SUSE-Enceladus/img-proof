@@ -1,44 +1,29 @@
-.TH "IPA RESULTS" "1" "20-Mar-2018" "" "ipa results Manual"
+.TH "IPA RESULTS" "1" "28-Mar-2018" "" "ipa results Manual"
 .SH NAME
-ipa\-results \- Print test results info from provided results...
+ipa\-results \- Process provided history log and results...
 .SH SYNOPSIS
 .B ipa results
-[OPTIONS]
+[OPTIONS] COMMAND [ARGS]...
 .SH DESCRIPTION
-Print test results info from provided results json file.
-.PP
-If no results file is supplied echo results from most recent
-test in history if it exists.
-.PP
-If verbose option selected, echo all test cases.
-.PP
-If log option selected echo test log.
-.PP
-If list option is provided echo the results history file.
-.PP
-If the clear option is provided delete history file.
+Process provided history log and results files.
 .SH OPTIONS
-.TP
-\fB\-\-clear\fP
-Clear list of results history.
 .TP
 \fB\-\-history\-log\fP PATH
 Location of the history log file to display results from.
-.TP
-\fB\-\-list\fP
-Display list of results history.
-.TP
-\fB\-l,\fP \-\-log
-Display the log for the given test run.
-.TP
-\fB\-\-no\-color\fP
-Remove ANSI color and styling from output.
-.TP
-\fB\-r,\fP \-\-results\-file PATH
-The results file or log to parse.
-.TP
-\fB\-\-show\fP INTEGER
-Test result to display.
-.TP
-\fB\-v,\fP \-\-verbose
+.SH COMMANDS
 .PP
+\fBclear\fP
+  Clear the results from the history file.
+  See \fBipa results-clear(1)\fP for full documentation on the \fBclear\fP command.
+.PP
+\fBdelete\fP
+  Delete the specified history item from the...
+  See \fBipa results-delete(1)\fP for full documentation on the \fBdelete\fP command.
+.PP
+\fBlist\fP
+  Display list of results history.
+  See \fBipa results-list(1)\fP for full documentation on the \fBlist\fP command.
+.PP
+\fBshow\fP
+  Print test results info from provided results...
+  See \fBipa results-show(1)\fP for full documentation on the \fBshow\fP command.
