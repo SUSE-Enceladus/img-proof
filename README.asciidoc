@@ -67,9 +67,8 @@ region=us-west-1
 
 === Azure Configuration
 
-*ipa* shares the azurectl configuration file. See the
-link:https://github.com/SUSE/azurectl#configuration-file[azurectl readme] for
-more info on the location and format.
+There is no additional configuration file used for Azure. All options
+should be placed in the *ipa* config file.
 
 === EC2 Configuration
 
