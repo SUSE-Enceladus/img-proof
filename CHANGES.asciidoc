@@ -1,5 +1,36 @@
 = Changelog
 
+== v1.0.0 (2018-03-30)
+
+* Tests argument is now optional.
+  link:https://github.com/SUSE/ipa/pull/56[#56]
+** This allows for the use of `--no-cleanup` option to
+    start an instance in the given framework.
+* Add regression test to check for valid UUID on SLES
+  instance in EC2.
+  link:https://github.com/SUSE/ipa/pull/57[#57]
+* Add regression test to confirm lscpu binary returns
+  successful exit code.
+  link:https://github.com/SUSE/ipa/pull/58[#58]
+* Subnet option has been added to launch a new instance
+  in the given network/subnet (`--subnet-id`).
+  link:https://github.com/SUSE/ipa/pull/59[#59]
+* Remove requirement on case with distro and provider
+  options.
+  link:https://github.com/SUSE/ipa/pull/60[#60] &
+  link:https://github.com/SUSE/ipa/pull/65[#65]
+* Use Testinfra run module to check hostname. System Info
+  module was removed from package.
+  link:https://github.com/SUSE/ipa/pull/61[#61]
+* Migrate Azure provider to the ARM (resource manager API).
+  link:https://github.com/SUSE/ipa/pull/63[#63]
+* Add option to use user-data for loading SSH public key
+  to instance in EC2.
+  link:https://github.com/SUSE/ipa/pull/68[#68]
+* Add delete history item option to results command.
+  link:https://github.com/SUSE/ipa/pull/69[#69]
+** Split up results command into separate subcommands.
+
 == v0.5.1 (2017-12-11)
 
 - Cleanup MANIFEST.
