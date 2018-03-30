@@ -1,5 +1,4 @@
 = ipa
-:toc:
 
 image:https://travis-ci.org/SUSE/ipa.svg?branch=master["Build Status", link="https://travis-ci.org/SUSE/ipa"]
 
@@ -40,7 +39,10 @@ zypper in python3-ipa
 == Requirements
 
 * apache-libcloud
-* azurectl
+* azure-common
+* azure-mgmt-compute
+* azure-mgmt-network
+* azure-mgmt-resource
 * Click
 * cryptography
 * paramiko
