@@ -63,8 +63,12 @@ region=us-west-1
 
 === Azure
 
-There is no additional configuration file used for Azure. All options
-should be placed in the *ipa* config file.
+Azure uses service principals for authentication. See
+link:https://docs.microsoft.com/en-us/python/azure/python-sdk-azure-authenticate?view=azure-python#mgmt-auth-file[Azure docs]
+for more info on creating a service principal json file. Additional
+configuration options can be placed in the `azure` section of the
+`ipa` configuration file.
+
 
 === EC2
 
