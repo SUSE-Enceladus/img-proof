@@ -262,6 +262,20 @@ def test_utils_get_random_string():
     assert isinstance(rand_string, str)
 
 
+def test_utils_put_file():
+    client = MagicMock()
+    sftp_client = MagicMock()
+    client.open_sftp.return_value = sftp_client
+
+    source_file = '/home/user/temp.file'
+    destination_file = 'temp.file'
+
+    ipa_utils.put_file(client, source_file, destination_file)
+
+    sftp_client.put.assert_called_once_with(source_file, destination_file)
+    sftp_client.close.assert_called_once_with()
+
+
 def test_utils_redirect_output():
     """Test redirect output context manager."""
     temp_file = NamedTemporaryFile(mode='w+', delete=False)

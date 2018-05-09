@@ -399,6 +399,22 @@ class IpaProvider(object):
         self.logger.debug('IP of instance: %s' % self.instance_ip)
         ipa_utils.clear_cache()
 
+    def put_file(self, client, source_file):
+        """
+        Put file on instance in default SSH directory.
+        """
+        try:
+            file_name = os.path.basename(source_file)
+            ipa_utils.put_file(client, source_file, file_name)
+        except Exception as error:
+            raise IpaProviderException(
+                'Failed copying file, "{0}"; {1}.'.format(
+                    source_file, error
+                )
+            )
+        else:
+            return file_name
+
     def test_image(self):
         """
         The entry point for testing an image.

@@ -457,6 +457,22 @@ def parse_test_name(name):
     return '::'.join(filter(None, [test_file, test_class, test_case]))
 
 
+def put_file(client, source_file, destination_file):
+    """
+    Copy file to instance using Paramiko client connection.
+    """
+    try:
+        sftp_client = client.open_sftp()
+        sftp_client.put(source_file, destination_file)
+    except Exception as error:
+        raise IpaUtilsException(
+            'Error copying file to instance: {0}.'.format(error)
+        )
+    finally:
+        with ignored(Exception):
+            sftp_client.close()
+
+
 @contextmanager
 def redirect_output(fileobj):
     """Redirect standard out to file."""

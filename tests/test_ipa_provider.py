@@ -242,6 +242,22 @@ class TestIpaProvider(object):
         assert mock_start_instance.call_count == 1
         assert mock_set_instance_ip.call_count == 1
 
+    @patch('ipa.ipa_utils.put_file')
+    def test_provider_put_file(self, mock_put_file):
+        client = MagicMock()
+
+        file_path = '/home/user/test.file'
+        basename = 'test.file'
+
+        provider = IpaProvider(*args, **self.kwargs)
+        out = provider.put_file(client, file_path)
+
+        assert out == basename
+
+        mock_put_file.assert_called_once_with(
+            client, file_path, basename
+        )
+
     @patch.object(IpaProvider, '_set_instance_ip')
     @patch.object(IpaProvider, '_set_image_id')
     @patch.object(IpaProvider, '_start_instance_if_stopped')
