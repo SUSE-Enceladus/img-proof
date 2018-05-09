@@ -21,6 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import io
 import pytest
 
 from ipa import ipa_utils
@@ -28,7 +29,7 @@ from ipa.ipa_distro import Distro
 from ipa.ipa_exceptions import IpaProviderException, IpaSSHException
 from ipa.ipa_provider import IpaProvider
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import call, MagicMock, patch
 
 args = ['ec2']
 
@@ -221,6 +222,30 @@ class TestIpaProvider(object):
 
         assert mock_instance_running.call_count == 1
         assert mock_start_instance.call_count == 1
+
+    @patch('ipa.ipa_utils.extract_archive')
+    def test_provider_extract_archive(self, mock_extract_archive):
+        client = MagicMock()
+
+        mock_extract_archive.return_value = 'archive extracted successfully!'
+
+        provider = IpaProvider(*args, **self.kwargs)
+        provider.log_file = 'fake_file.name'
+
+        with patch('builtins.open', create=True) as mock_open:
+            mock_open.return_value = MagicMock(spec=io.IOBase)
+            file_handle = mock_open.return_value.__enter__.return_value
+
+            provider.extract_archive(client, 'archive.tar.xz')
+
+            file_handle.write.assert_has_calls([
+                call('\n'),
+                call('archive extracted successfully!')
+            ])
+
+        mock_extract_archive.assert_called_once_with(
+            client, 'archive.tar.xz'
+        )
 
     @patch.object(IpaProvider, '_set_instance_ip')
     @patch.object(IpaProvider, '_stop_instance')

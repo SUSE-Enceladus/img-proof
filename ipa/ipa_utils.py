@@ -142,6 +142,34 @@ def expand_test_files(test_dirs, names):
     return parse_sync_points(expanded_names, tests)
 
 
+def extract_archive(client, archive_path):
+    """
+    Extract the archive in current path using the provided client.
+
+    Accepts gzip, bzip2 and xz compressed archives.
+    """
+    compression = archive_path.rsplit(sep='.')[-1].lower()
+
+    if compression in ['gz', 'tgz']:
+        options = 'xzf'
+    elif compression in ['bz2', 'tb2', 'tbz', 'tbz2']:
+        options = 'xvjf'
+    elif compression in ['xz', 'txz']:
+        options = 'xJf'
+    else:
+        raise IpaUtilsException(
+            'Tar compression extension: {0} is not supported.'.format(
+                compression
+            )
+        )
+
+    command = 'tar -{options} {path}'.format(
+        options=options, path=archive_path
+    )
+    out = execute_ssh_command(client, command)
+    return out
+
+
 def find_test_file(name, tests):
     """
     Find test file by name, given a list of tests.

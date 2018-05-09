@@ -174,6 +174,34 @@ def test_utils_expand_sync_points():
     assert expanded[2] == 'test_hard_reboot'
 
 
+@patch('ipa.ipa_utils.execute_ssh_command')
+def test_utils_extract_archive(mock_exec_ssh_command):
+    client = MagicMock()
+
+    mock_exec_ssh_command.return_value = 'archive successfully extracted!'
+
+    # Test gzip
+    ipa_utils.extract_archive(client, 'archive.tar.gz')
+    mock_exec_ssh_command.assert_called_once_with(
+        client, 'tar -xzf archive.tar.gz'
+    )
+    mock_exec_ssh_command.reset_mock()
+
+    # Test bzip2
+    ipa_utils.extract_archive(client, 'archive.tar.bz2')
+    mock_exec_ssh_command.assert_called_once_with(
+        client, 'tar -xvjf archive.tar.bz2'
+    )
+    mock_exec_ssh_command.reset_mock()
+
+    # Test xz
+    ipa_utils.extract_archive(client, 'archive.tar.xz')
+    mock_exec_ssh_command.assert_called_once_with(
+        client, 'tar -xJf archive.tar.xz'
+    )
+    mock_exec_ssh_command.reset_mock()
+
+
 def test_utils_duplicate_files():
     """Test exception raised if duplicate test files exist."""
     test_dirs = ['tests/data/tests', 'tests/data/tests2']

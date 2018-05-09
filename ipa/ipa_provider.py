@@ -391,6 +391,21 @@ class IpaProvider(object):
             )
         )
 
+    def extract_archive(self, client, archive_path):
+        """Extract the archive files using the client in the current path."""
+        try:
+            out = ipa_utils.extract_archive(client, archive_path)
+        except Exception as error:
+            raise IpaProviderException(
+                'Failed to extract archive, "{0}": {1}.'.format(
+                    archive_path, error
+                )
+            )
+        else:
+            with open(self.log_file, 'a') as log_file:
+                log_file.write('\n')
+                log_file.write(out)
+
     def hard_reboot_instance(self):
         """Stop then start the instance."""
         self._stop_instance()
