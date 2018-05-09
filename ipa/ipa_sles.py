@@ -43,6 +43,10 @@ class SLES(Distro):
         if out:
             self.init_system = out.strip()
 
+    def get_install_cmd(self):
+        """Return install package command for SLES."""
+        return 'zypper -n --no-gpg-checks in -y'
+
     def get_refresh_repo_cmd(self):
         """Return refresh repo command for SLES."""
         return 'zypper -n refresh'

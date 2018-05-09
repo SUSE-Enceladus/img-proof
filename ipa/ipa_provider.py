@@ -399,6 +399,23 @@ class IpaProvider(object):
         self.logger.debug('IP of instance: %s' % self.instance_ip)
         ipa_utils.clear_cache()
 
+    def install_package(self, client, package):
+        """
+        Install package using distro specific install method.
+        """
+        try:
+            out = self.distro.install_package(client, package)
+        except Exception as error:
+            raise IpaProviderException(
+                'Failed installing package, "{0}"; {1}.'.format(
+                    package, error
+                )
+            )
+        else:
+            with open(self.log_file, 'a') as log_file:
+                log_file.write('\n')
+                log_file.write(out)
+
     def test_image(self):
         """
         The entry point for testing an image.

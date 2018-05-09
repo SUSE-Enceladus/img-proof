@@ -62,6 +62,21 @@ def test_sles_get_stop_ssh_cmd():
         'The init system for SUSE distribution cannot be determined.'
 
 
+def test_sles_install_package():
+    """Test install package method for SLES distro."""
+    client = MagicMock()
+    sles = SLES()
+
+    with patch('ipa.ipa_utils.execute_ssh_command',
+               MagicMock(return_value='')) as mocked:
+        sles.install_package(client, 'python')
+
+    mocked.assert_called_once_with(
+        client,
+        "sudo sh -c 'zypper -n --no-gpg-checks in -y python'"
+    )
+
+
 def test_sles_reboot():
     """Test soft reboot method for SLES distro."""
     client = MagicMock()
