@@ -391,6 +391,21 @@ class IpaProvider(object):
             )
         )
 
+    def execute_ssh_command(self, client, command):
+        """Execute the provided command and log output."""
+        try:
+            out = ipa_utils.execute_ssh_command(client, command)
+        except Exception as error:
+            raise IpaProviderException(
+                'Command: "{0}", failed execution: {1}.'.format(
+                    command, error
+                )
+            )
+        else:
+            with open(self.log_file, 'a') as log_file:
+                log_file.write('\n')
+                log_file.write(out)
+
     def hard_reboot_instance(self):
         """Stop then start the instance."""
         self._stop_instance()
