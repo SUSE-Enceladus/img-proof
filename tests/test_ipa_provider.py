@@ -224,7 +224,7 @@ class TestIpaProvider(object):
         assert mock_start_instance.call_count == 1
 
     @patch('ipa.ipa_utils.execute_ssh_command')
-    def test_provider_install_package(self, mock_exec_cmd):
+    def test_provider_execute_ssh_command(self, mock_exec_cmd):
         client = MagicMock()
         mock_exec_cmd.return_value = 'command executed successfully!'
 
