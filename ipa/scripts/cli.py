@@ -127,6 +127,11 @@ def main(context, no_color):
     help='The ID of the image used for instance.'
 )
 @click.option(
+    '--inject',
+    help='Path to an injection yaml config file.',
+    type=click.Path(exists=True)
+)
+@click.option(
     '-t',
     '--instance-type',
     help='Instance type to use for launching machine.'
@@ -228,6 +233,7 @@ def test(context,
          early_exit,
          history_log,
          image_id,
+         inject,
          instance_type,
          log_level,
          no_default_test_dirs,
@@ -260,6 +266,7 @@ def test(context,
             early_exit,
             history_log,
             image_id,
+            inject,
             instance_type,
             log_level,
             no_default_test_dirs,
