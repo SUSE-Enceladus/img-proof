@@ -27,22 +27,33 @@ from unittest.mock import MagicMock
 
 import pytest
 
+methods = [
+    'get_install_cmd',
+    'get_refresh_repo_cmd',
+    'get_stop_ssh_service_cmd',
+    'get_update_cmd'
+]
 
-def test_distro_not_implemented_methods():
+
+@pytest.mark.parametrize(
+    "method",
+    methods,
+    ids=methods
+)
+def test_distro_not_implemented_methods(method):
     """Confirm methods raise not implemented exception."""
     distro = Distro()
-    methods = [
-        'get_refresh_repo_cmd',
-        'get_stop_ssh_service_cmd',
-        'get_update_cmd'
-    ]
-    for method in methods:
-        pytest.raises(
-            NotImplementedError,
-            getattr(distro, method)
-        )
+    pytest.raises(
+        NotImplementedError,
+        getattr(distro, method)
+    )
 
+
+def test_distro_set_init_system():
+    """Test set init system raises not implemented exception."""
+    distro = Distro()
     client = MagicMock()
+
     pytest.raises(
         NotImplementedError,
         getattr(distro, '_set_init_system'),

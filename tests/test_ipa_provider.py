@@ -223,6 +223,25 @@ class TestIpaProvider(object):
         assert mock_instance_running.call_count == 1
         assert mock_start_instance.call_count == 1
 
+    @patch('ipa.ipa_utils.execute_ssh_command')
+    def test_provider_execute_ssh_command(self, mock_exec_cmd):
+        client = MagicMock()
+        mock_exec_cmd.return_value = 'command executed successfully!'
+
+        provider = IpaProvider(*args, **self.kwargs)
+        provider.log_file = 'fake_file.name'
+
+        with patch('builtins.open', create=True) as mock_open:
+            mock_open.return_value = MagicMock(spec=io.IOBase)
+            file_handle = mock_open.return_value.__enter__.return_value
+
+            provider.execute_ssh_command(client, 'python test.py')
+
+            file_handle.write.assert_has_calls([
+                call('\n'),
+                call('command executed successfully!')
+            ])
+
     @patch('ipa.ipa_utils.extract_archive')
     def test_provider_extract_archive(self, mock_extract_archive):
         client = MagicMock()
@@ -266,6 +285,26 @@ class TestIpaProvider(object):
         assert mock_stop_instance.call_count == 1
         assert mock_start_instance.call_count == 1
         assert mock_set_instance_ip.call_count == 1
+
+    def test_provider_install_package(self):
+        client = MagicMock()
+        distro = MagicMock()
+        distro.install_package.return_value = 'package install successful!'
+
+        provider = IpaProvider(*args, **self.kwargs)
+        provider.log_file = 'fake_file.name'
+        provider.distro = distro
+
+        with patch('builtins.open', create=True) as mock_open:
+            mock_open.return_value = MagicMock(spec=io.IOBase)
+            file_handle = mock_open.return_value.__enter__.return_value
+
+            provider.install_package(client, 'python')
+
+            file_handle.write.assert_has_calls([
+                call('\n'),
+                call('package install successful!')
+            ])
 
     @patch.object(IpaProvider, '_set_instance_ip')
     @patch.object(IpaProvider, '_set_image_id')
