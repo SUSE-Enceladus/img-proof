@@ -183,21 +183,7 @@ def test_utils_extract_archive(mock_exec_ssh_command):
     # Test gzip
     ipa_utils.extract_archive(client, 'archive.tar.gz')
     mock_exec_ssh_command.assert_called_once_with(
-        client, 'tar -xzf archive.tar.gz'
-    )
-    mock_exec_ssh_command.reset_mock()
-
-    # Test bzip2
-    ipa_utils.extract_archive(client, 'archive.tar.bz2')
-    mock_exec_ssh_command.assert_called_once_with(
-        client, 'tar -xvjf archive.tar.bz2'
-    )
-    mock_exec_ssh_command.reset_mock()
-
-    # Test xz
-    ipa_utils.extract_archive(client, 'archive.tar.xz')
-    mock_exec_ssh_command.assert_called_once_with(
-        client, 'tar -xJf archive.tar.xz'
+        client, 'tar -xf archive.tar.gz'
     )
     mock_exec_ssh_command.reset_mock()
 

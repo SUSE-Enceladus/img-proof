@@ -145,27 +145,8 @@ def expand_test_files(test_dirs, names):
 def extract_archive(client, archive_path):
     """
     Extract the archive in current path using the provided client.
-
-    Accepts gzip, bzip2 and xz compressed archives.
     """
-    compression = archive_path.rsplit(sep='.')[-1].lower()
-
-    if compression in ['gz', 'tgz']:
-        options = 'xzf'
-    elif compression in ['bz2', 'tb2', 'tbz', 'tbz2']:
-        options = 'xvjf'
-    elif compression in ['xz', 'txz']:
-        options = 'xJf'
-    else:
-        raise IpaUtilsException(
-            'Tar compression extension: {0} is not supported.'.format(
-                compression
-            )
-        )
-
-    command = 'tar -{options} {path}'.format(
-        options=options, path=archive_path
-    )
+    command = 'tar -xf {path}'.format(path=archive_path)
     out = execute_ssh_command(client, command)
     return out
 
