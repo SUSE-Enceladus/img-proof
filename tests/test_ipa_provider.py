@@ -262,6 +262,26 @@ class TestIpaProvider(object):
         assert mock_start_instance.call_count == 1
         assert mock_set_instance_ip.call_count == 1
 
+    def test_provider_install_package(self):
+        client = MagicMock()
+        distro = MagicMock()
+        distro.install_package.return_value = 'package install successful!'
+
+        provider = IpaProvider(*args, **self.kwargs)
+        provider.log_file = 'fake_file.name'
+        provider.distro = distro
+
+        with patch('builtins.open', create=True) as mock_open:
+            mock_open.return_value = MagicMock(spec=io.IOBase)
+            file_handle = mock_open.return_value.__enter__.return_value
+
+            provider.install_package(client, 'python')
+
+            file_handle.write.assert_has_calls([
+                call('\n'),
+                call('package install successful!')
+            ])
+
     @patch.object(IpaProvider, '_set_instance_ip')
     @patch.object(IpaProvider, '_set_image_id')
     @patch.object(IpaProvider, '_start_instance_if_stopped')

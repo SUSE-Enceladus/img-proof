@@ -37,6 +37,10 @@ class Distro(object):
         """Determine the init system of distribution."""
         raise NotImplementedError(NOT_IMPLEMENTED)
 
+    def get_install_cmd(self):
+        """Return install package command for distribution."""
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
     def get_reboot_cmd(self):
         """Return reboot command for given distribution."""
         return 'shutdown -r now'
@@ -56,6 +60,30 @@ class Distro(object):
     def get_update_cmd(self):
         """Return command to update instance."""
         raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def install_package(self, client, package):
+        """Install package on instance."""
+        install_cmd = "{sudo} '{install} {package}'".format(
+            sudo=self.get_sudo_exec_wrapper(),
+            install=self.get_install_cmd(),
+            package=package
+        )
+
+        try:
+            out = ipa_utils.execute_ssh_command(
+                client,
+                install_cmd
+            )
+        except Exception as error:
+            raise IpaDistroException(
+                'An error occurred installing package {package} '
+                'on instance: {error}'.format(
+                    package=package,
+                    error=error
+                )
+            )
+        else:
+            return out
 
     def reboot(self, client):
         """Execute reboot command on instance."""
