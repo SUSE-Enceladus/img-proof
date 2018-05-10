@@ -406,10 +406,10 @@ class IpaProvider(object):
                 log_file.write('\n')
                 log_file.write(out)
 
-    def extract_archive(self, client, archive_path):
+    def extract_archive(self, client, archive_path, extract_path=None):
         """Extract the archive files using the client in the current path."""
         try:
-            out = ipa_utils.extract_archive(client, archive_path)
+            out = ipa_utils.extract_archive(client, archive_path, extract_path)
         except Exception as error:
             raise IpaProviderException(
                 'Failed to extract archive, "{0}": {1}.'.format(

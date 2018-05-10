@@ -181,9 +181,9 @@ def test_utils_extract_archive(mock_exec_ssh_command):
     mock_exec_ssh_command.return_value = 'archive successfully extracted!'
 
     # Test gzip
-    ipa_utils.extract_archive(client, 'archive.tar.gz')
+    ipa_utils.extract_archive(client, 'archive.tar.gz', extract_path='/tmp/')
     mock_exec_ssh_command.assert_called_once_with(
-        client, 'tar -xf archive.tar.gz'
+        client, 'tar -xf archive.tar.gz -C /tmp/'
     )
     mock_exec_ssh_command.reset_mock()
 

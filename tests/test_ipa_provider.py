@@ -263,7 +263,7 @@ class TestIpaProvider(object):
             ])
 
         mock_extract_archive.assert_called_once_with(
-            client, 'archive.tar.xz'
+            client, 'archive.tar.xz', None
         )
 
     @patch.object(IpaProvider, '_set_instance_ip')
