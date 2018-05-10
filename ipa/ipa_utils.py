@@ -142,6 +142,21 @@ def expand_test_files(test_dirs, names):
     return parse_sync_points(expanded_names, tests)
 
 
+def extract_archive(client, archive_path, extract_path=None):
+    """
+    Extract the archive in current path using the provided client.
+
+    If extract_path is provided extract the archive there.
+    """
+    command = 'tar -xf {path}'.format(path=archive_path)
+
+    if extract_path:
+        command += ' -C {extract_path}'.format(extract_path=extract_path)
+
+    out = execute_ssh_command(client, command)
+    return out
+
+
 def find_test_file(name, tests):
     """
     Find test file by name, given a list of tests.

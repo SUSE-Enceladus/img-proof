@@ -242,6 +242,30 @@ class TestIpaProvider(object):
                 call('command executed successfully!')
             ])
 
+    @patch('ipa.ipa_utils.extract_archive')
+    def test_provider_extract_archive(self, mock_extract_archive):
+        client = MagicMock()
+
+        mock_extract_archive.return_value = 'archive extracted successfully!'
+
+        provider = IpaProvider(*args, **self.kwargs)
+        provider.log_file = 'fake_file.name'
+
+        with patch('builtins.open', create=True) as mock_open:
+            mock_open.return_value = MagicMock(spec=io.IOBase)
+            file_handle = mock_open.return_value.__enter__.return_value
+
+            provider.extract_archive(client, 'archive.tar.xz')
+
+            file_handle.write.assert_has_calls([
+                call('\n'),
+                call('archive extracted successfully!')
+            ])
+
+        mock_extract_archive.assert_called_once_with(
+            client, 'archive.tar.xz', None
+        )
+
     @patch.object(IpaProvider, '_set_instance_ip')
     @patch.object(IpaProvider, '_stop_instance')
     @patch.object(IpaProvider, '_start_instance')
