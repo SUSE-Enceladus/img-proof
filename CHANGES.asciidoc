@@ -2,7 +2,7 @@
 
 == v1.1.0 (2018-05-15)
 
-* Add requirements and external test injection.
+* Add requirements and external test injection with the `--inject` option.
   link:https://github.com/SUSE/ipa/pull/78[#78]
 ** Adds the option to inject packages, archives and
    files. Also provides the ability to execute commands
