@@ -456,14 +456,17 @@ class IpaProvider(object):
         There are 5 injection options:
 
         :inject_packages: an rpm path or list of rpm paths which will be
-                          copied and installed on instance.
+                          copied and installed on the test instance.
         :inject_archives: an archive or list of archives which will
-                          be copied and extracted on instance.
+                          be copied and extracted on the test instance.
         :inject_files: a file path or list of file paths which
-                       will be copied to instance.
-        :execute: a command or list of commands to run.
+                       will be copied to the test instance.
+        :execute: a command or list of commands to run on the test instance.
         :install: a package name or list of package names to
-                 install from an existing repo.
+                 install from an existing repo on the test instance.
+
+        The order of processing is as follows: inject_packages,
+        inject_archives, inject_files, execute, install.
         """
         configuration = ipa_utils.get_yaml_config(self.inject)
 
