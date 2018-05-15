@@ -322,6 +322,44 @@ class TestIpaProvider(object):
                 call('package install successful!')
             ])
 
+    @patch.object(IpaProvider, 'execute_ssh_command')
+    @patch.object(IpaProvider, 'extract_archive')
+    @patch.object(IpaProvider, 'install_package')
+    @patch.object(IpaProvider, 'put_file')
+    def test_process_injection_file(self,
+                                    mock_put_file,
+                                    mock_install_package,
+                                    mock_extract_archive,
+                                    mock_execute_command):
+        client = MagicMock()
+        mock_put_file.side_effect = [
+            'test.noarch.rpm', 'test.tar.xz', 'test.py'
+        ]
+
+        provider = IpaProvider(*args, **self.kwargs)
+        provider.inject = 'tests/data/injection/test_injection.yaml'
+
+        provider.process_injection_file(client)
+
+        mock_put_file.assert_has_calls([
+            call(client, '/home/user/test.noarch.rpm'),
+            call(client, '/home/user/test.tar.xz'),
+            call(client, '/home/user/test.py')
+        ])
+
+        mock_install_package.assert_has_calls([
+            call(client, 'test.noarch.rpm'),
+            call(client, 'python3')
+        ])
+
+        mock_extract_archive.assert_called_once_with(
+            client, 'test.tar.xz'
+        )
+
+        mock_execute_command.assert_called_once_with(
+            client, 'python test.py'
+        )
+
     @patch.object(IpaProvider, '_set_instance_ip')
     @patch.object(IpaProvider, '_set_image_id')
     @patch.object(IpaProvider, '_start_instance_if_stopped')

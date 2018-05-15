@@ -67,6 +67,7 @@ class IpaProvider(object):
                  early_exit=None,
                  history_log=None,
                  image_id=None,
+                 inject=None,
                  instance_type=None,
                  log_level=None,
                  no_default_test_dirs=False,
@@ -102,6 +103,7 @@ class IpaProvider(object):
         self.distro_name = self._get_value(distro_name)
         self.early_exit = self._get_value(early_exit)
         self.image_id = self._get_value(image_id)
+        self.inject = self._get_value(inject)
         self.instance_type = self._get_value(instance_type)
         self.running_instance_id = self._get_value(running_instance_id)
         self.test_files = list(self._get_value(test_files, default=[]))
@@ -447,6 +449,74 @@ class IpaProvider(object):
                 log_file.write('\n')
                 log_file.write(out)
 
+    def process_injection_file(self, client):
+        """
+        Load yaml file and process injection configuration.
+
+        There are 5 injection options:
+
+        :inject_packages: an rpm path or list of rpm paths which will be
+                          copied and installed on the test instance.
+        :inject_archives: an archive or list of archives which will
+                          be copied and extracted on the test instance.
+        :inject_files: a file path or list of file paths which
+                       will be copied to the test instance.
+        :execute: a command or list of commands to run on the test instance.
+        :install: a package name or list of package names to
+                 install from an existing repo on the test instance.
+
+        The order of processing is as follows: inject_packages,
+        inject_archives, inject_files, execute, install.
+        """
+        configuration = ipa_utils.get_yaml_config(self.inject)
+
+        if configuration.get('inject_packages'):
+            inject_packages = configuration['inject_packages']
+
+            if not isinstance(inject_packages, list):
+                inject_packages = [inject_packages]
+
+            for package in inject_packages:
+                package_path = self.put_file(client, package)
+                self.install_package(client, package_path)
+
+        if configuration.get('inject_archives'):
+            inject_archives = configuration['inject_archives']
+
+            if not isinstance(inject_archives, list):
+                inject_archives = [inject_archives]
+
+            for archive in inject_archives:
+                archive_path = self.put_file(client, archive)
+                self.extract_archive(client, archive_path)
+
+        if configuration.get('inject_files'):
+            inject_files = configuration['inject_files']
+
+            if not isinstance(inject_files, list):
+                inject_files = [inject_files]
+
+            for file_path in inject_files:
+                self.put_file(client, file_path)
+
+        if configuration.get('execute'):
+            execute = configuration['execute']
+
+            if not isinstance(execute, list):
+                execute = [execute]
+
+            for command in execute:
+                self.execute_ssh_command(client, command)
+
+        if configuration.get('install'):
+            install = configuration['install']
+
+            if not isinstance(install, list):
+                install = [install]
+
+            for package in install:
+                self.install_package(client, package)
+
     def put_file(self, client, source_file):
         """
         Put file on instance in default SSH directory.
@@ -506,6 +576,9 @@ class IpaProvider(object):
         self._set_results_dir()
         self._set_distro()
         self._log_info()
+
+        if self.inject:
+            self.process_injection_file(self._get_ssh_client())
 
         status = 0
         with ipa_utils.ssh_config(self.ssh_user, self.ssh_private_key)\

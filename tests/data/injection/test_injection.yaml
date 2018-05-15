@@ -1,0 +1,5 @@
+inject_packages: /home/user/test.noarch.rpm
+inject_archives: /home/user/test.tar.xz
+install: python3
+inject_files: /home/user/test.py
+execute: python test.py
