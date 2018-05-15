@@ -185,6 +185,61 @@ The early exit option will stop the test run on the first failure.
 link:https://docs.pytest.org/en/latest/usage.html#stopping-after-the-first-or-n-failures[Pytest docs]
 for more info.
 
+==== Requirements and external test injection
+
+Using the `--inject` option; packages, archives and files can be injected
+on the test instance. This also provides the ability to install packages
+in an existing repository and run commands on the test instance. The
+following sections may be provided in a YAML style config file. Each
+section can be a single item or a list of items. All files are copy to
+and extracted to the default SSH location for the test instance. This
+is generally the user's home directory.
+
+*_inject_packages_*::
+an rpm path or list of rpm paths which will be copied and installed on
+the test instance.
+
+*_inject_archives_*::
+an archive or list of archives which will be copied and extracted on the
+test instance.
+
+*_inject_files_*::
+a file path or list of file paths which will be copied to the test instance.
+
+*_execute_*::
+a command or list of commands to run on the test instance.
+
+*_install_*::
+a package name or list of package names to install from an existing repo on
+the test instance.
+
+The order of processing for the sections is as follows:
+
+1. inject_packages
+1. inject_archives
+1. inject_files
+1. execute
+1. install
+
+===== Example
+
+[source]
+.testing_injection.yaml
+----
+inject_packages: /home/user/test.noarch.rpm
+inject_archives: /home/user/test.tar.xz
+inject_files: /home/user/test.py
+install:
+  - python3
+  - python3-Django
+execute: python test.py
+----
+
+[source]
+----
+> ipa test ... --inject testing_injection.yaml
+----
+
 === Code
 
 *ipa* primarily provides a CLI tool for testing images. However, the endpoints

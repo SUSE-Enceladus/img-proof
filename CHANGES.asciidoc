@@ -1,5 +1,13 @@
 = Changelog
 
+== v1.1.0 (2018-05-15)
+
+* Add requirements and external test injection.
+  link:https://github.com/SUSE/ipa/pull/78[#78]
+** Adds the option to inject packages, archives and
+   files. Also provides the ability to execute commands
+   and install packages from an existing repository.
+
 == v1.0.0 (2018-03-30)
 
 * Tests argument is now optional.
