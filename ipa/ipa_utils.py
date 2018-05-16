@@ -47,9 +47,14 @@ CLIENT_CACHE = {}
 def clear_cache(ip=None):
     """Clear the client cache or remove key matching the given ip."""
     if ip:
-        with ignored(KeyError):
+        with ignored(Exception):
+            client = CLIENT_CACHE[ip]
             del CLIENT_CACHE[ip]
+            client.close()
     else:
+        for client in CLIENT_CACHE.values():
+            with ignored(Exception):
+                client.close()
         CLIENT_CACHE.clear()
 
 
