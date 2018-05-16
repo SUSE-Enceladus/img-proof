@@ -1,5 +1,11 @@
 = Changelog
 
+== v1.1.1 (2018-05-16)
+
+* Cleanup typo in docs.
+* Explicitly close SSH connections.
+  link:https://github.com/SUSE/ipa/pull/79[#79]
+
 == v1.1.0 (2018-05-15)
 
 * Add requirements and external test injection with the `--inject` option.
