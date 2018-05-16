@@ -191,7 +191,7 @@ Using the `--inject` option; packages, archives and files can be injected
 on the test instance. This also provides the ability to install packages
 in an existing repository and run commands on the test instance. The
 following sections may be provided in a YAML style config file. Each
-section can be a single item or a list of items. All files are copy to
+section can be a single item or a list of items. All files are copied
 and extracted to the default SSH location for the test instance. This
 is generally the user's home directory.
 
