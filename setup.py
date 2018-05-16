@@ -60,7 +60,7 @@ dev_requirements = [
 
 setup(
     name='python3-ipa',
-    version='1.1.0',
+    version='1.1.1',
     description="Package for automated testing of cloud images.",
     long_description=readme,
     author="SUSE",
