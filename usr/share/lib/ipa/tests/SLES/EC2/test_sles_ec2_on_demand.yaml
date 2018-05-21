@@ -1,0 +1,2 @@
+tests:
+  - test_sles_ec2_billing_code
