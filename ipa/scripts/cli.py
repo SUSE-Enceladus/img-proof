@@ -175,6 +175,14 @@ def main(context, no_color):
     help='Directory to store test results and output.'
 )
 @click.option(
+    '--root-device-size',
+    help='The size in GB of the root disk device.'
+)
+@click.option(
+    '--root-device-type',
+    help='The device type of the root disk.'
+)
+@click.option(
     '-R',
     '--running-instance-id',
     help='The ID or Name of running instance to test.'
@@ -240,6 +248,8 @@ def test(context,
          provider_config,
          region,
          results_dir,
+         root_device_size,
+         root_device_type,
          running_instance_id,
          secret_access_key,
          service_account_file,
@@ -273,6 +283,8 @@ def test(context,
             provider_config,
             region,
             results_dir,
+            root_device_size,
+            root_device_type,
             running_instance_id,
             secret_access_key,
             service_account_file,

@@ -56,6 +56,8 @@ class GCEProvider(LibcloudProvider):
                  provider_config=None,
                  region=None,
                  results_dir=None,
+                 root_device_size=None,
+                 root_device_type=None,
                  running_instance_id=None,
                  secret_access_key=None,  # Not used in GCE
                  service_account_file=None,
@@ -83,6 +85,8 @@ class GCEProvider(LibcloudProvider):
                                           provider_config,
                                           region,
                                           results_dir,
+                                          root_device_size,
+                                          root_device_type,
                                           running_instance_id,
                                           test_dirs,
                                           test_files)
@@ -143,6 +147,56 @@ class GCEProvider(LibcloudProvider):
             project=self.service_account_project
         )
 
+    def _get_disk_config(self):
+        """
+        Return a list of dictionary disk configurations.
+
+        Contains the root device config for instance.
+        """
+        disk_type = self._get_disk_type()
+        image = self._get_image()
+
+        disk_config = [{
+            'autoDelete': True,
+            'boot': True,
+            'type': 'PERSISTENT',
+            'mode': 'READ_WRITE',
+            'deviceName': self.running_instance_id,
+            'initializeParams': {
+                'diskName': self.running_instance_id,
+                'diskSizeGb': self.root_device_size or 10,
+                'diskType': disk_type.extra['selfLink'],
+                'sourceImage': image.extra['selfLink']
+            }
+        }]
+
+        return disk_config
+
+    def _get_disk_type(self):
+        """Return the disk type object based on name."""
+        try:
+            disk_type = self.compute_driver.ex_get_disktype(
+                self.root_device_type or 'pd-standard',
+                zone=self.region
+            )
+        except Exception as error:
+            raise GCEProviderException(
+                'Unable to locate disk device type: {0}.'.format(error)
+            )
+
+        return disk_type
+
+    def _get_image(self):
+        """Return the image type object based on image id."""
+        try:
+            image = self.compute_driver.ex_get_image(self.image_id)
+        except Exception as error:
+            raise GCEProviderException(
+                'Unable to locate image type: {0}.'.format(error)
+            )
+
+        return image
+
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
         try:
@@ -201,6 +255,7 @@ class GCEProvider(LibcloudProvider):
         kwargs = {
             'location': self.region,
             'ex_metadata': metadata,
+            'ex_disks_gce_struct': self._get_disk_config(),
         }
 
         if self.subnet_id:
