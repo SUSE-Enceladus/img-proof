@@ -23,8 +23,12 @@
 import logging
 import os
 import sys
+import tarfile
+import tempfile
 
 import click
+
+from datetime import datetime
 
 from ipa.ipa_constants import (
     IPA_HISTORY_FILE,
@@ -34,6 +38,7 @@ from ipa.ipa_constants import (
 from ipa import ipa_utils
 from ipa.ipa_controller import collect_tests, test_image
 from ipa.scripts.cli_utils import (
+    archive_history_item,
     echo_log,
     echo_results,
     echo_results_file,
@@ -325,6 +330,52 @@ def results(context, history_log):
 
 
 @click.command()
+@click.option(
+    '-c',
+    '--clear-log',
+    help='Clear the history log after archiving.',
+    is_flag=True
+)
+@click.argument(
+    'path',
+    type=click.Path(exists=True),
+)
+@click.pass_context
+def archive(context, clear_log, path):
+    """
+    Archive the history log and all results/log files.
+
+    After archive is created optionally clear the history log.
+    """
+    history_log = context.obj['history_log']
+
+    with open(history_log, 'r') as f:
+        # Get history items
+        history_items = f.readlines()
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        for item in history_items:
+            # Copy log and results file,
+            # update results file with relative path.
+            archive_history_item(item, temp_dir)
+
+        time_stamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        file_name = ''.join(['ipa_', time_stamp, '.tar.gz'])
+        archive_path = os.path.join(path, file_name)
+
+        with tarfile.open(archive_path, "w:gz") as tar:
+            # Create tar archive
+            tar.add(temp_dir, arcname='results')
+
+    if clear_log:
+        context.invoke(clear)
+
+    click.echo(
+        'Exported results history to archive: {0}'.format(archive_path)
+    )
+
+
+@click.command()
 @click.pass_context
 def clear(context):
     """
@@ -528,6 +579,7 @@ def list_tests(context, verbose, test_dirs):
 
 
 main.add_command(list_tests)
+results.add_command(archive)
 results.add_command(clear)
 results.add_command(delete)
 results.add_command(list_results)
