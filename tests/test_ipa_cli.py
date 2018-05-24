@@ -120,6 +120,49 @@ def test_cli_results():
     assert result.exit_code == 0
 
 
+def test_cli_archive():
+    """Test ipa archive history sub command."""
+    with open('tests/data/history.log') as f:
+        log_file = f.readlines()
+
+    with open('tests/data/history.results') as f:
+        results_file = f.readlines()
+
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        base_path = 'tests/data/ec2/ami-859bd1e5/i-44444444444444444/'
+        os.makedirs(base_path)
+        os.makedirs('archives')
+
+        with open('tests/.history', 'w') as f:
+            f.writelines([
+                'tests/data/not.log\n',
+                base_path + '20170626142856.log\n'
+            ])
+
+        with open(base_path + '20170626142856.log', 'w') as f:
+            f.writelines(log_file)
+
+        with open(base_path + '20170626142856.results', 'w') as f:
+            f.writelines(results_file)
+
+        result = runner.invoke(
+            main,
+            [
+                'results', '--history-log', 'tests/.history', 'archive',
+                'archives/', '--clear-log'
+            ]
+        )
+        output = result.output.split(':')[-1].strip()
+        assert os.path.exists(output)
+
+        result = runner.invoke(
+            main,
+            ['results', '--history-log', 'tests/.history', 'list']
+        )
+        assert 'Path "tests/.history" does not exist.' in result.output
+
+
 def test_cli_results_log():
     """Test ipa results log display."""
     runner = CliRunner()
