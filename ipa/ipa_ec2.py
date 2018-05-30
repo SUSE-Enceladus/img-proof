@@ -55,6 +55,8 @@ class EC2Provider(LibcloudProvider):
                  provider_config=None,
                  region=None,
                  results_dir=None,
+                 root_device_size=None,
+                 root_device_type=None,
                  running_instance_id=None,
                  secret_access_key=None,
                  service_account_file=None,  # Not used in EC2
@@ -83,6 +85,8 @@ class EC2Provider(LibcloudProvider):
                                           provider_config,
                                           region,
                                           results_dir,
+                                          root_device_size,
+                                          root_device_type,
                                           running_instance_id,
                                           test_dirs,
                                           test_files)
@@ -250,7 +254,16 @@ class EC2Provider(LibcloudProvider):
         kwargs = {
             'name': ipa_utils.generate_instance_name('ec2-ipa-test'),
             'size': self._get_instance_size(),
-            'image': self._get_image()
+            'image': self._get_image(),
+            'ex_blockdevicemappings': [
+                {
+                    'DeviceName': '/dev/sda1',
+                    'Ebs': {
+                        'VolumeSize': self.root_device_size or 10,
+                        'VolumeType': self.root_device_type or 'gp2'
+                    }
+                }
+            ]
         }
 
         if self.ssh_key_name:

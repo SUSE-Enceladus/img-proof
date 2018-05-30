@@ -21,6 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
 import pytest
 
 from ipa.ipa_gce import GCEProvider
@@ -99,6 +100,66 @@ class TestGCEProvider(object):
         provider = GCEProvider(**self.kwargs)
         assert driver == provider.compute_driver
 
+    @patch.object(GCEProvider, '_get_driver')
+    def test_gce_get_disk_config(self,
+                                 mock_get_driver):
+        """Test gce get disk config method."""
+        driver = MagicMock()
+        mock_get_driver.return_value = driver
+
+        disk_type = MagicMock()
+        disk_type.extra = {'selfLink': 'disk_type_link'}
+        driver.ex_get_disktype.return_value = disk_type
+
+        image = MagicMock()
+        image.extra = {'selfLink': 'image_link'}
+        driver.ex_get_image.return_value = image
+
+        provider = GCEProvider(**self.kwargs)
+        provider.running_instance_id = 'instance123'
+        config = provider._get_disk_config()
+
+        expected_config = '[{"autoDelete": true, "boot": true, ' \
+                          '"deviceName": "instance123", "initializeParams": ' \
+                          '{"diskName": "instance123", "diskSizeGb": 10, ' \
+                          '"diskType": "disk_type_link", ' \
+                          '"sourceImage": "image_link"}, "mode": ' \
+                          '"READ_WRITE", "type": "PERSISTENT"}]'
+
+        assert json.dumps(config, sort_keys=True) == expected_config
+
+    @patch.object(GCEProvider, '_get_driver')
+    def test_get_disk_type_exception(self, mock_get_driver):
+        driver = MagicMock()
+        mock_get_driver.return_value = driver
+        driver.ex_get_disktype.side_effect = Exception(
+            'Invalid disk type'
+        )
+
+        provider = GCEProvider(**self.kwargs)
+
+        with pytest.raises(Exception) as e:
+            provider._get_disk_type()
+
+        assert str(e.value) == \
+            'Unable to locate disk device type: Invalid disk type.'
+
+    @patch.object(GCEProvider, '_get_driver')
+    def test_get_image_exception(self, mock_get_driver):
+        driver = MagicMock()
+        mock_get_driver.return_value = driver
+        driver.ex_get_image.side_effect = Exception(
+            'Invalid image type'
+        )
+
+        provider = GCEProvider(**self.kwargs)
+
+        with pytest.raises(Exception) as e:
+            provider._get_image()
+
+        assert str(e.value) == \
+            'Unable to locate image type: Invalid image type.'
+
     @patch.object(GCEProvider, '_get_ssh_public_key')
     @patch.object(GCEProvider, '_get_driver')
     def test_gce_get_instance(self,
@@ -169,13 +230,15 @@ class TestGCEProvider(object):
 
         assert msg == str(error.value)
 
+    @patch.object(GCEProvider, '_get_disk_config')
     @patch.object(GCEProvider, '_get_subnet')
     @patch('ipa.ipa_utils.generate_instance_name')
     @patch.object(GCEProvider, '_get_driver')
     def test_gce_launch_instance(self,
                                  mock_get_driver,
                                  mock_generate_instance_name,
-                                 mock_get_subnet):
+                                 mock_get_subnet,
+                                 mock_get_disk_config):
         """Test GCE launch instance method."""
         driver = MagicMock()
         instance = MagicMock()
@@ -184,6 +247,20 @@ class TestGCEProvider(object):
 
         mock_get_driver.return_value = driver
         mock_generate_instance_name.return_value = 'test-instance'
+
+        mock_get_disk_config.return_value = [{
+            'autoDelete': True,
+            'boot': True,
+            'type': 'PERSISTENT',
+            'mode': 'READ_WRITE',
+            'deviceName': 'test-instance',
+            'initializeParams': {
+                'diskName': 'test-instance',
+                'diskSizeGb': 10,
+                'diskType': 'disk_type',
+                'sourceImage': 'source_image'
+            }
+        }]
 
         provider = GCEProvider(**self.kwargs)
         provider.region = None

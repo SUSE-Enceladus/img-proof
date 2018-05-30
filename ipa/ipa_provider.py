@@ -74,6 +74,8 @@ class IpaProvider(object):
                  provider_config=None,
                  region=None,
                  results_dir=None,
+                 root_device_size=None,
+                 root_device_type=None,
                  running_instance_id=None,
                  test_dirs=None,
                  test_files=None):
@@ -105,6 +107,8 @@ class IpaProvider(object):
         self.image_id = self._get_value(image_id)
         self.inject = self._get_value(inject)
         self.instance_type = self._get_value(instance_type)
+        self.root_device_size = self._get_value(root_device_size)
+        self.root_device_type = self._get_value(root_device_type)
         self.running_instance_id = self._get_value(running_instance_id)
         self.test_files = list(self._get_value(test_files, default=[]))
 

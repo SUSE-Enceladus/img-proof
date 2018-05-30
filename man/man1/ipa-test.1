@@ -1,4 +1,4 @@
-.TH "IPA TEST" "1" "28-Mar-2018" "" "ipa test Manual"
+.TH "IPA TEST" "1" "22-May-2018" "" "ipa test Manual"
 .SH NAME
 ipa\-test \- Test image in the given framework using the...
 .SH SYNOPSIS
@@ -35,6 +35,9 @@ ipa history log file location. Default: ~/.config/ipa/.history
 \fB\-i,\fP \-\-image\-id TEXT
 The ID of the image used for instance.
 .TP
+\fB\-\-inject\fP PATH
+Path to an injection yaml config file.
+.TP
 \fB\-t,\fP \-\-instance\-type TEXT
 Instance type to use for launching machine.
 .TP
@@ -58,6 +61,12 @@ Cloud provider region to test image.
 .TP
 \fB\-\-results\-dir\fP TEXT
 Directory to store test results and output.
+.TP
+\fB\-\-root\-device\-size\fP TEXT
+The size in GB of the root disk device.
+.TP
+\fB\-\-root\-device\-type\fP TEXT
+The device type of the root disk.
 .TP
 \fB\-R,\fP \-\-running\-instance\-id TEXT
 The ID or Name of running instance to test.

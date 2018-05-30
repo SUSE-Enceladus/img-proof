@@ -53,6 +53,8 @@ class AzureProvider(IpaProvider):
                  provider_config=None,
                  region=None,
                  results_dir=None,
+                 root_device_size=None,
+                 root_device_type=None,
                  running_instance_id=None,
                  secret_access_key=None,  # Not used in Azure
                  service_account_file=None,
@@ -80,6 +82,8 @@ class AzureProvider(IpaProvider):
                                             provider_config,
                                             region,
                                             results_dir,
+                                            root_device_size,
+                                            root_device_type,
                                             running_instance_id,
                                             test_dirs,
                                             test_files)
@@ -288,6 +292,14 @@ class AzureProvider(IpaProvider):
                 'sku': self.image_sku,
                 'version': self.image_version
             },
+            'osDisk': {
+                'createOption': 'FromImage',
+                'diskSizeGB': self.root_device_size or 30,
+                'managedDisk': {
+                    'storageAccountType':
+                        self.root_device_type or 'Standard_LRS'
+                }
+            }
         }
 
         os_profile = {
