@@ -1,4 +1,4 @@
-.TH "IPA TEST" "1" "28-Mar-2018" "" "ipa test Manual"
+.TH "IPA TEST" "1" "31-May-2018" "" "ipa test Manual"
 .SH NAME
 ipa\-test \- Test image in the given framework using the...
 .SH SYNOPSIS
@@ -34,6 +34,9 @@ ipa history log file location. Default: ~/.config/ipa/.history
 .TP
 \fB\-i,\fP \-\-image\-id TEXT
 The ID of the image used for instance.
+.TP
+\fB\-\-inject\fP PATH
+Path to an injection yaml config file.
 .TP
 \fB\-t,\fP \-\-instance\-type TEXT
 Instance type to use for launching machine.
@@ -82,6 +85,9 @@ Subnet to launch the new instance into.
 .TP
 \fB\-\-test\-dirs\fP TEXT
 Directories to search for tests.
+.TP
+\fB\-\-timeout\fP INTEGER RANGE
+The time to wait when establishing an SSH connection and for instances to change state.
 .TP
 \fB\-\-vnet\-name\fP TEXT
 Azure virtual network name to attach network interface.
