@@ -62,6 +62,7 @@ class AzureProvider(IpaProvider):
                  subnet_id=None,
                  test_dirs=None,
                  test_files=None,
+                 timeout=None,
                  vnet_name=None,
                  vnet_resource_group=None):
         """Initialize Azure Provider class."""
@@ -82,7 +83,8 @@ class AzureProvider(IpaProvider):
                                             results_dir,
                                             running_instance_id,
                                             test_dirs,
-                                            test_files)
+                                            test_files,
+                                            timeout)
 
         if subnet_id and not (vnet_name and vnet_resource_group):
             raise AzureProviderException(
@@ -430,7 +432,7 @@ class AzureProvider(IpaProvider):
             raise
         else:
             # Ensure VM is in the running state.
-            self._wait_on_instance('VM running')
+            self._wait_on_instance('VM running', timeout=self.timeout)
 
     def _process_image_id(self):
         """

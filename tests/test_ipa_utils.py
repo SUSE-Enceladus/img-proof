@@ -77,15 +77,21 @@ def test_utils_get_ssh_connection(mock_connect, mock_exec_cmd):
     ipa_utils.clear_cache()
 
 
+@patch.object(time, 'time')
 @patch.object(time, 'sleep')
 @patch.object(paramiko.SSHClient, 'connect')
-def test_utils_ssh_connect_exception(mock_connect, mock_sleep):
+def test_utils_ssh_connect_exception(mock_connect, mock_sleep, mock_time):
     """Test exception raised connecting to ssh."""
     mock_connect.side_effect = paramiko.ssh_exception.SSHException('ERROR!')
     mock_sleep.return_value = None
+    mock_time.side_effect = [0, 0, 2]
 
     with pytest.raises(IpaSSHException) as error:
-        ipa_utils.get_ssh_client(LOCALHOST, 'tests/data/ida_test')
+        ipa_utils.get_ssh_client(
+            LOCALHOST,
+            'tests/data/ida_test',
+            timeout=1
+        )
 
     assert str(error.value) == 'Attempt to establish SSH connection failed.'
     assert mock_connect.call_count > 0

@@ -273,28 +273,30 @@ def get_ssh_client(ip,
                    ssh_private_key,
                    ssh_user='root',
                    port=22,
-                   attempts=3,
-                   timeout=10):
+                   timeout=600,
+                   wait_period=10):
     """Attempt to establish and test ssh connection."""
     if ip in CLIENT_CACHE:
         return CLIENT_CACHE[ip]
 
+    start = time.time()
+    end = start + timeout
+
     client = None
-    while attempts:
+    while time.time() < end:
         try:
             client = establish_ssh_connection(
                 ip,
                 ssh_private_key,
                 ssh_user,
                 port,
-                timeout=timeout
+                timeout=wait_period
             )
             execute_ssh_command(client, 'ls')
         except:  # noqa: E722
             if client:
                 client.close()
-            attempts -= 1
-            timeout += timeout
+            wait_period += wait_period
         else:
             CLIENT_CACHE[ip] = client
             return client
