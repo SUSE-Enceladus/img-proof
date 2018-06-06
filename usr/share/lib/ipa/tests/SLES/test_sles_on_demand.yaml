@@ -1,4 +1,5 @@
 tests:
+  - test_sles_wait_on_registration
   - test_update
   - test_sles_repos
   - test_sles_smt_reg
