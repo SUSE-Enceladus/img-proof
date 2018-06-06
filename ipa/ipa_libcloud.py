@@ -54,13 +54,16 @@ class LibcloudProvider(IpaProvider):
         """Start the instance."""
         instance = self._get_instance()
         self.compute_driver.ex_start_node(instance)
-        self.compute_driver.wait_until_running([instance])
+        self.compute_driver.wait_until_running(
+            [instance],
+            timeout=self.timeout
+        )
 
     def _stop_instance(self):
         """Stop the instance."""
         instance = self._get_instance()
         self.compute_driver.ex_stop_node(instance)
-        self._wait_on_instance('stopped')
+        self._wait_on_instance('stopped', timeout=self.timeout)
 
     def _terminate_instance(self):
         """Terminate the instance."""

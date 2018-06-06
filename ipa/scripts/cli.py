@@ -210,6 +210,12 @@ def main(context, no_color):
     help='Directories to search for tests.'
 )
 @click.option(
+    '--timeout',
+    help='The time to wait when establishing an SSH '
+         'connection and for instances to change state.',
+    type=click.IntRange(min=1)
+)
+@click.option(
     '--vnet-name',
     help='Azure virtual network name to attach network interface.'
 )
@@ -248,6 +254,7 @@ def test(context,
          ssh_user,
          subnet_id,
          test_dirs,
+         timeout,
          vnet_name,
          vnet_resource_group,
          provider,
@@ -282,6 +289,7 @@ def test(context,
             subnet_id,
             test_dirs,
             tests,
+            timeout,
             vnet_name,
             vnet_resource_group
         )

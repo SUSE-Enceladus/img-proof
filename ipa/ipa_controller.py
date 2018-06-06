@@ -59,6 +59,7 @@ def test_image(provider_name,
                subnet_id=None,
                test_dirs=None,
                tests=None,
+               timeout=None,
                vnet_name=None,
                vnet_resource_group=None):
     """Creates a cloud provider instance and initiates testing."""
@@ -100,6 +101,7 @@ def test_image(provider_name,
         subnet_id=subnet_id,
         test_dirs=test_dirs,
         test_files=tests,
+        timeout=timeout,
         vnet_name=vnet_name,
         vnet_resource_group=vnet_resource_group
     )

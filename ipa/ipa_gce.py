@@ -65,6 +65,7 @@ class GCEProvider(LibcloudProvider):
                  subnet_id=None,
                  test_dirs=None,
                  test_files=None,
+                 timeout=None,
                  vnet_name=None,  # Not used in GCE
                  vnet_resource_group=None  # Not used in GCE
                  ):
@@ -85,7 +86,8 @@ class GCEProvider(LibcloudProvider):
                                           results_dir,
                                           running_instance_id,
                                           test_dirs,
-                                          test_files)
+                                          test_files,
+                                          timeout)
         self.service_account_file = (
             service_account_file or
             self._get_value(
@@ -226,7 +228,10 @@ class GCEProvider(LibcloudProvider):
                 )
             )
 
-        self.compute_driver.wait_until_running([instance])
+        self.compute_driver.wait_until_running(
+            [instance],
+            timeout=self.timeout
+        )
 
     def _set_image_id(self):
         """If existing image used get image id."""

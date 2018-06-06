@@ -76,7 +76,8 @@ class IpaProvider(object):
                  results_dir=None,
                  running_instance_id=None,
                  test_dirs=None,
-                 test_files=None):
+                 test_files=None,
+                 timeout=None):
         """Initialize base provider class."""
         super(IpaProvider, self).__init__()
         log_level = log_level or logging.INFO
@@ -107,6 +108,11 @@ class IpaProvider(object):
         self.instance_type = self._get_value(instance_type)
         self.running_instance_id = self._get_value(running_instance_id)
         self.test_files = list(self._get_value(test_files, default=[]))
+        self.timeout = self._get_value(
+            timeout,
+            config_key='timeout',
+            default=600
+        )
 
         self.history_log = self._get_value(
             history_log,
@@ -167,7 +173,8 @@ class IpaProvider(object):
         return ipa_utils.get_ssh_client(
             self.instance_ip,
             self.ssh_private_key,
-            self.ssh_user
+            self.ssh_user,
+            timeout=self.timeout
         )
 
     def _get_value(self, arg, config_key=None, default=None):
@@ -375,17 +382,19 @@ class IpaProvider(object):
             test_log=self.log_file
         )
 
-    def _wait_on_instance(self, state, attempts=30):
+    def _wait_on_instance(self, state, timeout=600, wait_period=10):
         """Wait until instance is in given state."""
         current_state = 'Undefined'
-        while attempts:
+        start = time.time()
+        end = start + timeout
+
+        while time.time() < end:
             current_state = self._get_instance_state()
 
             if state == current_state:
                 return
 
-            attempts -= 1
-            time.sleep(10)
+            time.sleep(wait_period)
 
         raise IpaProviderException(
             'Instance has not arrived at the given state: {state}'.format(

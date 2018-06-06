@@ -64,6 +64,7 @@ class EC2Provider(LibcloudProvider):
                  subnet_id=None,
                  test_dirs=None,
                  test_files=None,
+                 timeout=None,
                  vnet_name=None,  # Not used in EC2
                  vnet_resource_group=None  # Not used in EC2
                  ):
@@ -85,7 +86,8 @@ class EC2Provider(LibcloudProvider):
                                           results_dir,
                                           running_instance_id,
                                           test_dirs,
-                                          test_files)
+                                          test_files,
+                                          timeout)
         self.account_name = account_name
 
         if not self.account_name:
@@ -263,7 +265,10 @@ class EC2Provider(LibcloudProvider):
 
         instance = self.compute_driver.create_node(**kwargs)
 
-        self.compute_driver.wait_until_running([instance])
+        self.compute_driver.wait_until_running(
+            [instance],
+            timeout=self.timeout
+        )
         self.running_instance_id = instance.id
 
     def _set_image_id(self):
