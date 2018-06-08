@@ -159,6 +159,28 @@ class TestAzureProvider(object):
         assert self.client.virtual_networks.create_or_update.call_count == 1
         assert provider.running_instance_id == 'azure-test-instance'
 
+    @patch.object(AzureProvider, '_wait_on_instance')
+    @patch('ipa.ipa_utils.generate_instance_name')
+    def test_create_storage_profile(
+            self, mock_generate_instance_name, mock_wait_on_instance
+    ):
+        """Test launch instance method."""
+        mock_generate_instance_name.return_value = 'azure-test-instance'
+        self.kwargs['image_id'] = 'custom-image.vhd'
+
+        image = MagicMock()
+        image.name = 'custom-image.vhd'
+        image.id = '/id/custom-image.vhd'
+        self.client.images.list.return_value = [image]
+
+        provider = self.helper_get_provider()
+
+        provider._process_image_id()
+        storage_profile = provider._create_storage_profile()
+
+        assert storage_profile['image_reference']['id'] == \
+            '/id/custom-image.vhd'
+
     def test_process_image_id(self):
         provider = self.helper_get_provider()
         provider._process_image_id()
@@ -168,15 +190,12 @@ class TestAzureProvider(object):
         assert provider.image_sku == 'image'
         assert provider.image_version == 'id'
 
-    def test_process_image_id_invalid(self):
+    def test_process_custom_image_id(self):
         provider = self.helper_get_provider()
-        provider.image_id = 'invalid:id'
+        provider.image_id = 'custom-image.vhd'
 
-        with pytest.raises(AzureProviderException) as error:
-            provider._process_image_id()
-
-        assert str(error.value) == 'Image ID is invalid. Format must match ' \
-            '{Publisher}:{Offer}:{Sku}:{Version}.'
+        provider._process_image_id()
+        assert provider.image_publisher is None
 
     def test_set_default_resource_names(self):
         provider = self.helper_get_provider()
