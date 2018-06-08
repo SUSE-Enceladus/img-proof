@@ -206,6 +206,39 @@ class AzureProvider(IpaProvider):
                 'Unable to create resource group: {0}.'.format(error)
             )
 
+    def _create_storage_profile(self):
+        """
+        Create the storage profile for the instance.
+
+        Image reference can be a custom image name or a published urn.
+        """
+        if self.image_publisher:
+            storage_profile = {
+                'image_reference': {
+                    'publisher': self.image_publisher,
+                    'offer': self.image_offer,
+                    'sku': self.image_sku,
+                    'version': self.image_version
+                },
+            }
+        else:
+            for image in self.compute.images.list():
+                if image.name == self.image_id:
+                    image_id = image.id
+                    break
+            else:
+                raise AzureProviderException(
+                    'Image with name {0} not found.'.format(self.image_id)
+                )
+
+            storage_profile = {
+                'image_reference': {
+                    'id': image_id
+                }
+            }
+
+        return storage_profile
+
     def _create_subnet(self, resource_group_name, subnet_name, vnet_name):
         """
         Create a subnet in the provided vnet and resource group.
@@ -283,14 +316,7 @@ class AzureProvider(IpaProvider):
             }]
         }
 
-        storage_profile = {
-            'image_reference': {
-                'publisher': self.image_publisher,
-                'offer': self.image_offer,
-                'sku': self.image_sku,
-                'version': self.image_version
-            },
-        }
+        storage_profile = self._create_storage_profile()
 
         os_profile = {
             'computer_name': self.running_instance_id,
@@ -451,10 +477,7 @@ class AzureProvider(IpaProvider):
             self.image_sku = image_info[2]
             self.image_version = image_info[3]
         except Exception:
-            raise AzureProviderException(
-                'Image ID is invalid. Format must match '
-                '{Publisher}:{Offer}:{Sku}:{Version}.'
-            )
+            self.image_publisher = None
 
     def _set_default_resource_names(self):
         """
@@ -475,10 +498,13 @@ class AzureProvider(IpaProvider):
         instance = self._get_instance()
         image_info = instance.storage_profile.image_reference
 
-        self.image_id = ':'.join([
-            image_info.publisher, image_info.offer,
-            image_info.sku, image_info.version
-        ])
+        if image_info.publisher:
+            self.image_id = ':'.join([
+                image_info.publisher, image_info.offer,
+                image_info.sku, image_info.version
+            ])
+        else:
+            self.image_id = image_info.id.rsplit('/', maxsplit=1)[1]
 
     def _set_instance_ip(self):
         """
