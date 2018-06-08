@@ -1,6 +1,9 @@
+import shlex
+
+
 def test_sles_root_pass(host):
     # Ensure root does not have a password
     result = host.run(
-        "sudo getent shadow | grep '^root[^:]*:.\?:' | cut -d: -f1"
+        'sudo passwd --status root'
     )
-    assert result.stdout.strip() == 'root'
+    assert shlex.split(result.stdout.strip())[1] in ['L', 'NP']
