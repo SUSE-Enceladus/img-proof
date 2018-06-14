@@ -1,5 +1,19 @@
 = Changelog
 
+== v1.2.0 (2018-06-14)
+
+* Add SLES test to ensure root user has no password.
+  link:https://github.com/SUSE/ipa/pull/90[#90]
+* Fix typo in force new reg test.
+* Add --timeout cli and configuration option.
+  link:https://github.com/SUSE/ipa/pull/86[#86]
+* Add a test to wait on registration for on-demand instances.
+  link:https://github.com/SUSE/ipa/pull/87[#87]
+* Add azure tests to check billing tag in metadata.
+  link:https://github.com/SUSE/ipa/pull/88[#88]
+* Handle custom Azure image vhd id's.
+  link:https://github.com/SUSE/ipa/pull/89[#89]
+
 == v1.1.1 (2018-05-16)
 
 * Cleanup typo in docs.
