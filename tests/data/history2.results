@@ -1,0 +1,1 @@
+{"info": {"platform": "ec2", "image": "ami-859bd1e5", "instance": "i-44444444444444444", "timestamp": "20170626142857", "distro": "SLES"}, "tests": [], "summary": {"duration": 0, "passed": 0, "num_tests": 0}}

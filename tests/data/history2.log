@@ -1,0 +1,5 @@
+platform: ec2
+distro: SLES
+image: ami-859bd1e5
+instance: i-44444444444444444
+timestamp: 20170626142856

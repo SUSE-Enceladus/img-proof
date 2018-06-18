@@ -128,6 +128,12 @@ def test_cli_archive():
     with open('tests/data/history.results') as f:
         results_file = f.readlines()
 
+    with open('tests/data/history.log') as f:
+        log2_file = f.readlines()
+
+    with open('tests/data/history.results') as f:
+        results2_file = f.readlines()
+
     runner = CliRunner()
     with runner.isolated_filesystem():
         base_path = 'tests/data/ec2/ami-859bd1e5/i-44444444444444444/'
@@ -137,7 +143,8 @@ def test_cli_archive():
         with open('tests/.history', 'w') as f:
             f.writelines([
                 'tests/data/not.log\n',
-                base_path + '20170626142856.log\n'
+                base_path + '20170626142856.log\n',
+                base_path + '20170626142857.log\n'
             ])
 
         with open(base_path + '20170626142856.log', 'w') as f:
@@ -145,6 +152,12 @@ def test_cli_archive():
 
         with open(base_path + '20170626142856.results', 'w') as f:
             f.writelines(results_file)
+
+        with open(base_path + '20170626142857.log', 'w') as f:
+            f.writelines(log2_file)
+
+        with open(base_path + '20170626142857.results', 'w') as f:
+            f.writelines(results2_file)
 
         result = runner.invoke(
             main,
@@ -161,6 +174,53 @@ def test_cli_archive():
             ['results', '--history-log', 'tests/.history', 'list']
         )
         assert 'Path "tests/.history" does not exist.' in result.output
+
+
+def test_cli_archive_item():
+    """Test ipa archive specific history item."""
+    with open('tests/data/history.log') as f:
+        log_file = f.readlines()
+
+    with open('tests/data/history.results') as f:
+        results_file = f.readlines()
+
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        base_path = 'tests/data/ec2/ami-859bd1e5/i-44444444444444444/'
+        os.makedirs(base_path)
+        os.makedirs('archives')
+
+        with open('tests/.history', 'w') as f:
+            f.writelines([
+                'tests/data/not.log\n',
+                base_path + '20170626142856.log\n',
+                base_path + '20170626142857.log\n'
+            ])
+
+        with open(base_path + '20170626142856.log', 'w') as f:
+            f.writelines(log_file)
+
+        with open(base_path + '20170626142856.results', 'w') as f:
+            f.writelines(results_file)
+
+        result = runner.invoke(
+            main,
+            [
+                'results', '--history-log', 'tests/.history', 'archive',
+                'archives/', '--clear-log', '-i', '1'
+            ]
+        )
+        output = result.output.split(':')[-1].strip()
+        assert os.path.exists(output)
+
+        result = runner.invoke(
+            main,
+            ['results', '--history-log', 'tests/.history', 'list']
+        )
+        expected_output = '2 tests/data/not.log\n' \
+            '1 tests/data/ec2/ami-859bd1e5/i-44444444444444444/' \
+            '20170626142856.log\n'
+        assert expected_output == result.output
 
 
 def test_cli_results_log():
@@ -203,7 +263,7 @@ def test_cli_results_history_exception():
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ['results', '--history-log', 'tests/data/.history', 'show', '2']
+        ['results', '--history-log', 'tests/data/.history', 'show', '3']
     )
     assert result.exit_code != 0
     assert 'Unable to process results file:' in result.output
@@ -217,7 +277,7 @@ def test_cli_results_history_log_exception():
         ['results',
          '--history-log',
          'tests/data/.history',
-         'show', '-l', '2']
+         'show', '-l', '3']
     )
     assert result.exit_code != 0
     assert 'Unable to open results log file' in result.output

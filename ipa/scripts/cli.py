@@ -336,12 +336,18 @@ def results(context, history_log):
     help='Clear the history log after archiving.',
     is_flag=True
 )
+@click.option(
+    '-i',
+    '--items',
+    help='List of history items to archive. Must be a comma separated list.',
+    type=click.STRING
+)
 @click.argument(
     'path',
     type=click.Path(exists=True),
 )
 @click.pass_context
-def archive(context, clear_log, path):
+def archive(context, clear_log, items, path):
     """
     Archive the history log and all results/log files.
 
@@ -352,6 +358,15 @@ def archive(context, clear_log, path):
     with open(history_log, 'r') as f:
         # Get history items
         history_items = f.readlines()
+
+    if items:
+        # Split comma separated list and cast indices to integer.
+        items = [int(item) for item in items.split(',')]
+
+        lines = []
+        for index in items:
+            lines.append(history_items[len(history_items) - index])
+        history_items = lines
 
     with tempfile.TemporaryDirectory() as temp_dir:
         for item in history_items:
@@ -368,7 +383,17 @@ def archive(context, clear_log, path):
             tar.add(temp_dir, arcname='results')
 
     if clear_log:
-        context.invoke(clear)
+        if items:
+            # Remove duplicates to prevent unwanted deletion.
+            items = list(set(items))
+
+            # Must delete items from bottom to top of history file
+            # to preserve indices. (Index 0 is last item in file)
+            items.sort()
+            for index in items:
+                context.invoke(delete, item=index)
+        else:
+            context.invoke(clear)
 
     click.echo(
         'Exported results history to archive: {0}'.format(archive_path)
