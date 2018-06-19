@@ -46,7 +46,7 @@ from ipa.ipa_exceptions import (
     IpaSSHException,
     IpaUtilsException
 )
-from ipa.results_plugin import Report
+from pytest_jsonreport.plugin import JSONReport
 
 
 class IpaProvider(object):
@@ -282,12 +282,13 @@ class IpaProvider(object):
             options.append('-x')
 
         args = '-v {} --ssh-config={} --hosts={} --provider={} ' \
-            '--region="{}" {}'.format(
+            '--region="{}" --json-report-file={} {}'.format(
                 ' '.join(options),
                 ssh_config,
                 self.instance_ip,
                 self.results['info']['platform'].lower(),
                 self.results['info']['region'],
+                os.devnull,
                 ' '.join(tests)
             )
 
@@ -300,7 +301,7 @@ class IpaProvider(object):
         print('Arguments:\n{}\n'.format(args))
 
         cmds = shlex.split(args)
-        plugin = Report()
+        plugin = JSONReport()
         result = pytest.main(cmds, plugins=[plugin])
         self._merge_results(plugin.report)
 
