@@ -32,11 +32,11 @@ DATA = {
         "distro": "SLES"
     },
     "tests": [{
-        "name": "ipa/tests/test_sles.py::test_sles",
+        "nodeid": "ipa/tests/test_sles.py::test_sles",
         "test_index": 0,
         "outcome": "passed"
     }, {
-        "name": "ipa/tests/test_broken.py::test_broken",
+        "nodeid": "ipa/tests/test_broken.py::test_broken",
         "test_index": 1,
         "outcome": "failed"
     }],

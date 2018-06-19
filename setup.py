@@ -36,7 +36,8 @@ requirements = [
     'cryptography',
     'paramiko',
     'pycrypto',
-    'pytest',
+    'pytest>=3.3.2',
+    'pytest-json-report',
     'PyYAML',
     'testinfra',
 ]
