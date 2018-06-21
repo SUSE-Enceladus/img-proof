@@ -166,7 +166,6 @@ def main(context, no_color):
     help='The provider specific config file location.'
 )
 @click.option(
-    '-r',
     '--region',
     help='Cloud provider region to test image.'
 )
