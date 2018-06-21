@@ -31,7 +31,7 @@ from ipa.ipa_controller import collect_results
 from ipa.ipa_utils import parse_test_name, update_history_log
 
 
-def archive_history_item(item, destination):
+def archive_history_item(item, destination, no_color):
     """
     Archive the log and results file for the given history item.
 
@@ -47,18 +47,23 @@ def archive_history_item(item, destination):
     results_src = log_src.rsplit('.', 1)[0] + '.results'
     results_dest = log_dest.rsplit('.', 1)[0] + '.results'
 
-    try:
-        destination_path = os.path.join(destination, log_dest)
+    destination_path = os.path.join(destination, log_dest)
+    log_dir = os.path.dirname(destination_path)
 
-        log_dir = os.path.dirname(destination_path)
+    try:
         if not os.path.isdir(log_dir):
             os.makedirs(log_dir)
 
         # Copy results and log files to archive directory.
         shutil.copyfile(log_src, destination_path)
         shutil.copyfile(results_src, os.path.join(destination, results_dest))
-    except Exception:
-        pass  # File does not exist, nothing we can do now.
+    except Exception as error:
+        echo_style(
+            'Unable to archive history item: %s' % error,
+            no_color,
+            fg='red'
+        )
+        sys.exit(1)
     else:
         # Only update the archive results log if no error occur.
         update_history_log(

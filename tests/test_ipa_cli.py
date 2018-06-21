@@ -142,7 +142,6 @@ def test_cli_archive():
 
         with open('tests/.history', 'w') as f:
             f.writelines([
-                'tests/data/not.log\n',
                 base_path + '20170626142856.log\n',
                 base_path + '20170626142857.log\n'
             ])
@@ -163,7 +162,7 @@ def test_cli_archive():
             main,
             [
                 'results', '--history-log', 'tests/.history', 'archive',
-                'archives/', '--clear-log'
+                '--clear-log', 'archives/', 'archive_123'
             ]
         )
         output = result.output.split(':')[-1].strip()
@@ -192,7 +191,6 @@ def test_cli_archive_item():
 
         with open('tests/.history', 'w') as f:
             f.writelines([
-                'tests/data/not.log\n',
                 base_path + '20170626142856.log\n',
                 base_path + '20170626142857.log\n'
             ])
@@ -207,9 +205,10 @@ def test_cli_archive_item():
             main,
             [
                 'results', '--history-log', 'tests/.history', 'archive',
-                'archives/', '--clear-log', '-i', '1'
+                '--clear-log', '-i', '2', 'archives/', 'archive_123'
             ]
         )
+
         output = result.output.split(':')[-1].strip()
         assert os.path.exists(output)
 
@@ -217,10 +216,36 @@ def test_cli_archive_item():
             main,
             ['results', '--history-log', 'tests/.history', 'list']
         )
-        expected_output = '2 tests/data/not.log\n' \
-            '1 tests/data/ec2/ami-859bd1e5/i-44444444444444444/' \
-            '20170626142856.log\n'
+        expected_output = '1 tests/data/ec2/ami-859bd1e5/' \
+            'i-44444444444444444/20170626142857.log\n'
         assert expected_output == result.output
+
+
+def test_cli_archive_missing_item():
+    """Test ipa archive missing history item."""
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        base_path = 'tests/data/ec2/ami-859bd1e5/i-44444444444444444/'
+        os.makedirs('archives')
+        os.makedirs('tests')
+
+        with open('tests/.history', 'w') as f:
+            f.writelines([
+                base_path + '20170626142856.log\n',
+            ])
+
+        result = runner.invoke(
+            main,
+            [
+                'results', '--history-log', 'tests/.history', 'archive',
+                '--clear-log', '-i', '1', 'archives/', 'archive_123'
+            ]
+        )
+
+        assert result.output == \
+            "Unable to archive history item: [Errno 2] No such file or " \
+            "directory: 'tests/data/ec2/ami-859bd1e5/i-44444444444444444/" \
+            "20170626142856.log'\n"
 
 
 def test_cli_results_log():

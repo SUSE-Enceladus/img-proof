@@ -28,8 +28,6 @@ import tempfile
 
 import click
 
-from datetime import datetime
-
 from ipa.ipa_constants import (
     IPA_HISTORY_FILE,
     SUPPORTED_DISTROS,
@@ -346,14 +344,19 @@ def results(context, history_log):
     'path',
     type=click.Path(exists=True),
 )
+@click.argument(
+    'name',
+    type=click.STRING
+)
 @click.pass_context
-def archive(context, clear_log, items, path):
+def archive(context, clear_log, items, path, name):
     """
     Archive the history log and all results/log files.
 
     After archive is created optionally clear the history log.
     """
     history_log = context.obj['history_log']
+    no_color = context.obj['no_color']
 
     with open(history_log, 'r') as f:
         # Get history items
@@ -372,10 +375,9 @@ def archive(context, clear_log, items, path):
         for item in history_items:
             # Copy log and results file,
             # update results file with relative path.
-            archive_history_item(item, temp_dir)
+            archive_history_item(item, temp_dir, no_color)
 
-        time_stamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        file_name = ''.join(['ipa_', time_stamp, '.tar.gz'])
+        file_name = ''.join([name, '.tar.gz'])
         archive_path = os.path.join(path, file_name)
 
         with tarfile.open(archive_path, "w:gz") as tar:
