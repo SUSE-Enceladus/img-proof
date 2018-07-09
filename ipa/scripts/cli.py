@@ -118,7 +118,7 @@ def main(context, no_color):
 @click.option(
     '-h',
     '--history-log',
-    type=click.Path(exists=True),
+    type=click.Path(),
     help='ipa history log file location. Default: ~/.config/ipa/.history'
 )
 @click.option(
