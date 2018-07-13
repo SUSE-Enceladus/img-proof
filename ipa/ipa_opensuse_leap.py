@@ -25,3 +25,7 @@ from ipa.ipa_sles import SLES
 
 class openSUSE_Leap(SLES):
     """openSUSE Leap distro class."""
+
+    def get_refresh_repo_cmd(self):
+        """Return refresh repo command for SLES."""
+        return 'zypper -n --gpg-auto-import-keys refresh'
