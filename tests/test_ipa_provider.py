@@ -176,6 +176,18 @@ class TestIpaProvider(object):
         for key, val in results['tests'][0].items():
             assert provider.results['tests'][0][key] == val
 
+    def test_process_sync_test_results(self):
+        provider = IpaProvider(*args, **self.kwargs)
+        provider._process_sync_test_results(5.0, 'test_test')
+
+        assert provider.results['summary']['duration'] == 5.0
+        assert provider.results['summary']['num_tests'] == 1
+        assert provider.results['summary']['passed'] == 1
+
+        test = provider.results['tests'][0]
+        assert test['outcome'] == 'passed'
+        assert test['name'] == 'test_test'
+
     @patch.object(IpaProvider, '_merge_results')
     @patch.object(pytest, 'main')
     def test_provider_run_tests(self, mock_pytest, mock_merge_results):
@@ -408,21 +420,24 @@ class TestIpaProvider(object):
         provider = IpaProvider(*args, **self.kwargs)
         provider.ssh_private_key = 'tests/data/ida_test'
         provider.ssh_user = 'root'
+        provider.logger = MagicMock()
 
-        with pytest.raises(IpaProviderException) as error:
-            provider.test_image()
-        assert str(error.value) == \
+        provider.test_image()
+        provider.logger.error.assert_called_once_with(
             'Unable to connect to instance after hard reboot: ERROR!'
+        )
+        provider.logger.error.reset_mock()
 
         assert mock_get_ssh_client.call_count > 0
         assert mock_hard_reboot.call_count == 1
         mock_hard_reboot.reset_mock()
 
         mock_get_ssh_client.side_effect = [None, Exception('ERROR!')]
-        with pytest.raises(IpaProviderException) as error:
-            provider.test_image()
-        assert str(error.value) == \
+
+        provider.test_image()
+        provider.logger.error.assert_called_once_with(
             'Instance failed hard reboot: ERROR!'
+        )
 
         assert mock_get_ssh_client.call_count > 0
         assert mock_hard_reboot.call_count == 1
@@ -458,21 +473,24 @@ class TestIpaProvider(object):
         provider = IpaProvider(*args, **self.kwargs)
         provider.ssh_private_key = 'tests/data/ida_test'
         provider.ssh_user = 'root'
+        provider.logger = MagicMock()
 
-        with pytest.raises(IpaProviderException) as error:
-            provider.test_image()
-        assert str(error.value) == \
+        provider.test_image()
+        provider.logger.error.assert_called_once_with(
             'Unable to connect to instance after soft reboot: ERROR!'
+        )
+        provider.logger.error.reset_mock()
 
         assert mock_get_ssh_client.call_count > 0
         assert mock_soft_reboot.call_count == 1
         mock_soft_reboot.reset_mock()
 
         mock_get_ssh_client.side_effect = [None, None, Exception('ERROR!')]
-        with pytest.raises(IpaProviderException) as error:
-            provider.test_image()
-        assert str(error.value) == \
+
+        provider.test_image()
+        provider.logger.error.assert_called_once_with(
             'Instance failed soft reboot: ERROR!'
+        )
 
         assert mock_get_ssh_client.call_count > 0
         assert mock_soft_reboot.call_count == 1

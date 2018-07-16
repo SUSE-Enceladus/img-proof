@@ -275,6 +275,25 @@ class IpaProvider(object):
             self.test_files
         )
 
+    def _process_sync_test_results(self, duration, test_name, success=0):
+        """Create result dict for sync test and merge with overall results."""
+        status = 'passed' if success == 0 else 'failed'
+        result = {
+            'tests': [
+                {
+                    'outcome': status,
+                    'test_index': 0,
+                    'name': test_name
+                }
+            ],
+            'summary': {
+                'duration': duration,
+                status: 1,
+                'num_tests': 1
+            }
+        }
+        self._merge_results(result)
+
     def _run_tests(self, tests, ssh_config):
         """Run the test suite on the image."""
         options = []
@@ -355,6 +374,12 @@ class IpaProvider(object):
             [self.results_dir, os.sep, self.time_stamp, '.results']
         )
         self.logger.debug('Created results file %s' % self.results_file)
+
+        # Add log file handler
+        file_handler = logging.FileHandler(self.log_file)
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(logging.Formatter('\n%(message)s\n'))
+        self.logger.addHandler(file_handler)
 
     def _start_instance(self):
         """Start the instance."""
@@ -595,6 +620,9 @@ class IpaProvider(object):
             for item in self.test_files:
                 if item == 'test_hard_reboot':
                     self.logger.info('Testing hard reboot')
+                    start = time.time()
+                    result = 1
+
                     try:
                         self.hard_reboot_instance()
                         client = self._get_ssh_client()
@@ -602,18 +630,31 @@ class IpaProvider(object):
                         if self.host_key_fingerprint != \
                                 ipa_utils.get_host_key_fingerprint(client):
                             raise Exception('Host key has changed.')
+
+                        result = 0
                     except IpaSSHException as error:
-                        raise IpaProviderException(
+                        self.logger.error(
                             'Unable to connect to instance after '
                             'hard reboot: %s' % error
                         )
+                        break
                     except Exception as error:
-                        raise IpaProviderException(
+                        self.logger.error(
                             'Instance failed hard reboot: %s' % error
                         )
+                        break
+                    finally:
+                        duration = time.time() - start
+                        self._process_sync_test_results(
+                            duration, 'test_hard_reboot', result
+                        )
+                        status = status or result
 
                 elif item == 'test_soft_reboot':
                     self.logger.info('Testing soft reboot')
+                    start = time.time()
+                    result = 1
+
                     try:
                         self.distro.reboot(self._get_ssh_client())
                         client = self._get_ssh_client()
@@ -621,26 +662,46 @@ class IpaProvider(object):
                         if self.host_key_fingerprint != \
                                 ipa_utils.get_host_key_fingerprint(client):
                             raise Exception('Host key has changed.')
+
+                        result = 0
                     except IpaSSHException as error:
-                        raise IpaProviderException(
+                        self.logger.error(
                             'Unable to connect to instance after '
                             'soft reboot: %s' % error
                         )
+                        break
                     except Exception as error:
-                        raise IpaProviderException(
+                        self.logger.error(
                             'Instance failed soft reboot: %s' % error
                         )
+                        break
+                    finally:
+                        duration = time.time() - start
+                        self._process_sync_test_results(
+                            duration, 'test_soft_reboot', result
+                        )
+                        status = status or result
 
                 elif item == 'test_update':
                     self.logger.info('Testing update')
+                    start = time.time()
+                    result = 1
+
                     try:
                         out = self.distro.update(self._get_ssh_client())
+                        result = 0
                     except Exception as error:
-                        raise IpaProviderException(
-                            'Instance failed to update: %s' % error
+                        self.logger.error('Instance failed to update')
+                        self.logger.debug(error)
+                    else:
+                        with open(self.log_file, 'a') as log_file:
+                            log_file.write(out)
+                    finally:
+                        duration = time.time() - start
+                        self._process_sync_test_results(
+                            duration, 'test_update', result
                         )
-                    with open(self.log_file, 'a') as log_file:
-                        log_file.write(out)
+                        status = status or result
 
                 elif isinstance(item, set):
                     self.logger.info('Running tests %s' % ' '.join(item))
@@ -651,7 +712,7 @@ class IpaProvider(object):
                             status = status or result
 
                 else:
-                    raise IpaProviderException(
+                    self.log.error(
                         'Invalid test item in list: %s' % item
                     )
 
