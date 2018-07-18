@@ -77,13 +77,41 @@ located at ~/.ec2utils.conf. See
 link:https://github.com/SUSE/Enceladus/tree/master/ec2utils[ec2utils] for an
 example configuration file.
 
+
 === GCE
 
-GCE uses service accounts for authentication. See
-link:https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances[GCE docs]
-for more info on creating a service account json file. The file must include
-a key pair for proper authentication. Additional configuration options can
-be placed in the `gce` section of the `ipa` configuration file.
+GCE uses service accounts for authentication. The service account is required
+to have the following:
+
+* Compute Instance Admin (v1) Role (link:https://cloud.google.com/compute/docs/access/iam[roles/compute.instanceAdmin.v1])
+* Private key (JSON format)
+** Save this file in a secure location as it cannot be recovered.
+
+The path to the JSON private key can be added to IPA configuration:
+
+.example.ipa.config
+[source,ini]
+----
+[ipa]
+
+[gce]
+service_account_file = /path/to/service-account.json
+----
+
+NOTE: Additional configuration options can be placed in the
+`gce` section of the `ipa` configuration file.
+
+To create a service account and generate the proper JSON file follow the
+link:http://libcloud.readthedocs.io/en/latest/compute/drivers/gce.html#service-account[Libcloud docs]
+or
+link:https://cloud.google.com/iam/docs/creating-managing-service-accounts[Google docs].
+
+For more information on updating an existing service account:
+
+* Create a new JSON private key:
+link:https://cloud.google.com/iam/docs/creating-managing-service-account-keys[creating-managing-service-account-keys]
+* Granting roles:
+link:https://cloud.google.com/iam/docs/granting-roles-to-service-accounts[granting-roles-to-service-accounts]
 
 === Provider Configuration location
 

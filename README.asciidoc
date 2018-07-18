@@ -67,28 +67,11 @@ results=~/ipa/results/
 region=us-west-1
 ----
 
-=== Azure Configuration
+=== link:docs/start.asciidoc#_azure[Azure Configuration]
 
-Azure uses service principals for authentication. See
-link:https://docs.microsoft.com/en-us/python/azure/python-sdk-azure-authenticate?view=azure-python#mgmt-auth-file[Azure docs]
-for more info on creating a service principal json file. Additional
-configuration options can be placed in the `azure` section of the
-`ipa` configuration file.
+=== link:docs/start.asciidoc#_ec2[EC2 Configuration]
 
-=== EC2 Configuration
-
-For testing EC2 instances *ipa* will use the ec2utils configuration file
-located at ~/.ec2utils.conf. See
-link:https://github.com/SUSE/Enceladus/tree/master/ec2utils[ec2utils] for an
-example configuration file.
-
-=== GCE Configuration
-
-GCE uses service accounts for authentication. See
-link:https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances[GCE docs]
-for more info on creating a service account json file. The file must include
-a key pair for proper authentication. Additional configuration options can
-be placed in the `gce` section of the `ipa` configuration file.
+=== link:docs/start.asciidoc#_gce[GCE Configuration]
 
 == Tests
 
