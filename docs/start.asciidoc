@@ -39,6 +39,7 @@ See
 link:https://pip.pypa.io/en/stable/reference/pip_install/#vcs-support[PyPi docs]
 for more information on vcs support.
 
+[[Configuration]]
 == Configuration
 
 The framework configuration file is ini format ~/.config/ipa/config. Anything

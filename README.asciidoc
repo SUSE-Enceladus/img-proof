@@ -51,21 +51,7 @@ zypper in python3-ipa
 * PyYaml
 * testinfra
 
-== Configuration
-
-The framework configuration is ini format ~/.config/ipa/config. Anything
-specific to the test framework can be found in this file. Thus anything
-that is cloud framework independent such as the test dir and results dir.
-
-[source,ini]
-----
-[ipa]
-tests=~/ipa/tests/
-results=~/ipa/results/
-
-[ec2]
-region=us-west-1
-----
+=== link:docs/start.asciidoc#Configuration[Configuration]
 
 === link:docs/start.asciidoc#Azure[Azure Configuration]
 
