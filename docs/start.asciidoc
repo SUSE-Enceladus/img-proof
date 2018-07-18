@@ -61,6 +61,7 @@ results=~/ipa/results/
 region=us-west-1
 ----
 
+[[Azure]]
 === Azure
 
 Azure uses service principals for authentication. See
@@ -70,6 +71,7 @@ configuration options can be placed in the `azure` section of the
 `ipa` configuration file.
 
 
+[[EC2]]
 === EC2
 
 For testing EC2 instances *ipa* will use the ec2utils configuration file
@@ -78,6 +80,7 @@ link:https://github.com/SUSE/Enceladus/tree/master/ec2utils[ec2utils] for an
 example configuration file.
 
 
+[[GCE]]
 === GCE
 
 GCE uses service accounts for authentication. The service account is required

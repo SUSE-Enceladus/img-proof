@@ -67,11 +67,11 @@ results=~/ipa/results/
 region=us-west-1
 ----
 
-=== link:docs/start.asciidoc#_azure[Azure Configuration]
+=== link:docs/start.asciidoc#Azure[Azure Configuration]
 
-=== link:docs/start.asciidoc#_ec2[EC2 Configuration]
+=== link:docs/start.asciidoc#EC2[EC2 Configuration]
 
-=== link:docs/start.asciidoc#_gce[GCE Configuration]
+=== link:docs/start.asciidoc#GCE[GCE Configuration]
 
 == Tests
 
