@@ -53,12 +53,6 @@ zypper in python3-ipa
 
 === link:docs/start.asciidoc#Configuration[Configuration]
 
-=== link:docs/start.asciidoc#Azure[Azure Configuration]
-
-=== link:docs/start.asciidoc#EC2[EC2 Configuration]
-
-=== link:docs/start.asciidoc#GCE[GCE Configuration]
-
 == Tests
 
 *ipa* uses the Testinfra package for writing unit tests. Testinfra leverages
