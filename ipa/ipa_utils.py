@@ -322,9 +322,7 @@ def get_test_files(test_dirs):
     descriptions = {}
     for test_dir in test_dirs:
         if not os.path.exists(test_dir):
-            raise IpaUtilsException(
-                'Test directory: %s not found.' % test_dir
-            )
+            continue
 
         for root, dirs, files in os.walk(test_dir):
             test_files = fnmatch.filter(files, 'test_*.py')
