@@ -86,6 +86,29 @@ class TestGCEProvider(object):
         assert provider.service_account_project == 'test'
 
     @patch.object(GCEProvider, '_get_ssh_public_key')
+    @patch.object(GCEProvider, '_get_driver')
+    def test_gce_get_service_account_info_invalid(
+        self,
+        mock_get_driver,
+        mock_get_ssh_key
+    ):
+        """Test get service account info method."""
+        mock_get_driver.return_value = None
+        mock_get_ssh_key.return_value = None
+        provider = GCEProvider(**self.kwargs)
+
+        provider.service_account_file = \
+            'tests/gce/invalid-service-account.json'
+
+        with pytest.raises(GCEProviderException) as error:
+            provider._get_service_account_info()
+
+        msg = 'Service account JSON file is invalid for GCE. ' \
+            'client_email key is expected. See getting started ' \
+            'docs for information on GCE configuration.'
+        assert str(error.value) == msg
+
+    @patch.object(GCEProvider, '_get_ssh_public_key')
     @patch('libcloud.compute.drivers.gce.GCENodeDriver')
     def test_gce_get_driver(self,
                             mock_node_driver,
