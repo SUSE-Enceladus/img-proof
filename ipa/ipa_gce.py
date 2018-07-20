@@ -133,8 +133,21 @@ class GCEProvider(LibcloudProvider):
         with open(self.service_account_file, 'r') as f:
             info = json.load(f)
 
-        self.service_account_email = info['client_email']
-        self.service_account_project = info['project_id']
+        self.service_account_email = info.get('client_email')
+        if not self.service_account_email:
+            raise GCEProviderException(
+                'Service account JSON file is invalid for GCE. '
+                'client_email key is expected. See getting started '
+                'docs for information on GCE configuration.'
+            )
+
+        self.service_account_project = info.get('project_id')
+        if not self.service_account_project:
+            raise GCEProviderException(
+                'Service account JSON file is invalid for GCE. '
+                'project_id key is expected. See getting started '
+                'docs for information on GCE configuration.'
+            )
 
     def _get_driver(self):
         """Get authenticated GCE driver."""
