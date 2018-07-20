@@ -30,10 +30,10 @@ with open('requirements.txt') as req_file:
     requirements = req_file.read().splitlines()
 
 with open('requirements-test.txt') as req_file:
-    test_requirements = req_file.read().splitlines()
+    test_requirements = req_file.read().splitlines()[2:]
 
 with open('requirements-dev.txt') as req_file:
-    dev_requirements = req_file.read().splitlines()
+    dev_requirements = req_file.read().splitlines()[2:]
 
 tox_requirements = [
     'tox',
