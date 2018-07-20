@@ -27,13 +27,13 @@ with open('README.asciidoc') as readme_file:
     readme = readme_file.read()
 
 with open('requirements.txt') as req_file:
-    requirements = f.read().splitlines()
+    requirements = req_file.read().splitlines()
 
 with open('requirements-test.txt') as req_file:
-    test_requirements = f.read().splitlines()
+    test_requirements = req_file.read().splitlines()
 
 with open('requirements-dev.txt') as req_file:
-    dev_requirements = f.read().splitlines()
+    dev_requirements = req_file.read().splitlines()
 
 tox_requirements = [
     'tox',
