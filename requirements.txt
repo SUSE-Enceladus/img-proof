@@ -1,0 +1,12 @@
+apache-libcloud
+azure-common
+azure-mgmt-compute
+azure-mgmt-network
+azure-mgmt-resource
+Click
+cryptography
+paramiko
+pycrypto
+pytest
+PyYAML
+testinfra

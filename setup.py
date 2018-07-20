@@ -26,36 +26,19 @@ from setuptools import find_packages, setup
 with open('README.asciidoc') as readme_file:
     readme = readme_file.read()
 
-requirements = [
-    'apache-libcloud',
-    'azure-common',
-    'azure-mgmt-compute',
-    'azure-mgmt-network',
-    'azure-mgmt-resource',
-    'Click',
-    'cryptography',
-    'paramiko',
-    'pycrypto',
-    'pytest',
-    'PyYAML',
-    'testinfra',
-]
+with open('requirements.txt') as req_file:
+    requirements = f.read().splitlines()
 
-test_requirements = [
-    'coverage',
-    'flake8',
-    'pytest-cov'
-]
+with open('requirements-test.txt') as req_file:
+    test_requirements = f.read().splitlines()
+
+with open('requirements-dev.txt') as req_file:
+    dev_requirements = f.read().splitlines()
 
 tox_requirements = [
     'tox',
     'tox-pyenv'
 ]
-
-dev_requirements = [
-    'bumpversion',
-    'pip>=7.0.0',
-] + test_requirements
 
 
 setup(

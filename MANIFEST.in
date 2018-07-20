@@ -5,6 +5,9 @@ include README.asciidoc
 include tox.ini
 include ipa-complete.sh
 include package/python3-ipa.spec
+include requirements.txt
+include requirements-test.txt
+include requirements-dev.txt
 
 recursive-include tests *
 recursive-include usr *.py

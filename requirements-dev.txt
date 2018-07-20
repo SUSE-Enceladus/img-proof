@@ -1,0 +1,4 @@
+-r requirements-test.txt
+
+bumpversion
+pip>=7.0.0
