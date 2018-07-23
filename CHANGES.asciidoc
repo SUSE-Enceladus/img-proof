@@ -1,5 +1,24 @@
 = Changelog
 
+== v1.3.0 (2018-07-23)
+
+* Add ec2 tests to check billing code in metadata.
+  link:https://github.com/SUSE/ipa/pull/81[#81]
+* Using token normalize breaks region shortcode. Remove
+  region shortcode which overlaps running instance id.
+  link:https://github.com/SUSE/ipa/pull/92[#92]
+* Allow new paths for history log option. when testing.
+  link:https://github.com/SUSE/ipa/pull/95[#95]
+* If a test dir does not exist just continue.
+  link:https://github.com/SUSE/ipa/pull/104[#104]
+* Update GCE setup/configuration docs.
+* Move requirements to txt files.
+* Raise useful exception msg if GCE service account file
+  is invalid.
+  link:https://github.com/SUSE/ipa/pull/106[#106]
+* Add certifi requirement for Libcloud GCE driver.
+* Update pycrypto requirement to pycryptodome.
+
 == v1.2.0 (2018-06-14)
 
 * Add SLES test to ensure root user has no password.
