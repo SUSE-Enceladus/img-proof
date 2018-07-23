@@ -1,6 +1,6 @@
 = ipa
 
-image:https://travis-ci.org/SUSE/ipa.svg?branch=master["Build Status", link="https://travis-ci.org/SUSE/ipa"]
+image:https://travis-ci.com/SUSE-Enceladus/ipa.svg?branch=master["Build Status", link="https://travis-ci.com/SUSE-Enceladus/ipa"]
 
 *IPA* (Image Proofing App)
 
