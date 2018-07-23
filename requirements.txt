@@ -3,10 +3,11 @@ azure-common
 azure-mgmt-compute
 azure-mgmt-network
 azure-mgmt-resource
+certifi
 Click
 cryptography
 paramiko
-pycrypto
+pycryptodome
 pytest
 PyYAML
 testinfra

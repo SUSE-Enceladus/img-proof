@@ -4,11 +4,15 @@
 === Requirements
 
 * apache-libcloud
-* azurectl
+* azure-common
+* azure-mgmt-compute
+* azure-mgmt-network
+* azure-mgmt-resource
+* certifi
 * Click
 * cryptography
 * paramiko
-* pycrypto
+* pycryptodome
 * pytest
 * PyYaml
 * testinfra
