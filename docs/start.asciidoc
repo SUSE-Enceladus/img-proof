@@ -92,6 +92,7 @@ GCE uses service accounts for authentication. The service account is required
 to have the following:
 
 * Compute Instance Admin (v1) Role (link:https://cloud.google.com/compute/docs/access/iam[roles/compute.instanceAdmin.v1])
+* Service Account User Role (link:https://cloud.google.com/compute/docs/access/iam[roles/iam.serviceAccountUser])
 * Private key (JSON format)
 ** Save this file in a secure location as it cannot be recovered.
 
