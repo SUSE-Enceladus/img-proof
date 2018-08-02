@@ -23,6 +23,7 @@
 
 import io
 import pytest
+import os
 
 from ipa import ipa_utils
 from ipa.ipa_distro import Distro
@@ -30,6 +31,7 @@ from ipa.ipa_exceptions import IpaProviderException, IpaSSHException
 from ipa.ipa_provider import IpaProvider
 
 from unittest.mock import call, MagicMock, patch
+from tempfile import TemporaryDirectory
 
 args = ['ec2']
 
@@ -49,15 +51,25 @@ NOT_IMPL_METHODS = [
 class TestIpaProvider(object):
     """Ipa Provider test class."""
 
+    @classmethod
+    def setup_class(cls):
+        """Set up temp results directory."""
+        cls.results_dir = TemporaryDirectory()
+
+    @classmethod
+    def teardown_class(cls):
+        """Cleanup results."""
+        cls.results_dir.cleanup()
+
     def setup_method(self, method):
         """Set up kwargs dict."""
         self.kwargs = {
             'config': 'tests/data/config',
             'distro_name': 'SLES',
-            'history_log': 'tests/data/results/.history',
+            'history_log': os.path.join(self.results_dir.name, '.history'),
             'image_id': 'fakeimage',
             'no_default_test_dirs': True,
-            'results_dir': 'tests/data/results',
+            'results_dir': self.results_dir.name,
             'test_dirs': 'tests/data/tests',
             'test_files': ['test_image']
         }
@@ -416,7 +428,9 @@ class TestIpaProvider(object):
 
         assert mock_get_ssh_client.call_count > 0
         assert mock_hard_reboot.call_count == 1
+
         mock_hard_reboot.reset_mock()
+        provider.results_dir = self.results_dir.name
 
         mock_get_ssh_client.side_effect = [None, Exception('ERROR!')]
         with pytest.raises(IpaProviderException) as error:
@@ -466,7 +480,9 @@ class TestIpaProvider(object):
 
         assert mock_get_ssh_client.call_count > 0
         assert mock_soft_reboot.call_count == 1
+
         mock_soft_reboot.reset_mock()
+        provider.results_dir = self.results_dir.name
 
         mock_get_ssh_client.side_effect = [None, None, Exception('ERROR!')]
         with pytest.raises(IpaProviderException) as error:
