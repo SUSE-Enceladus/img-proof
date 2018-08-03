@@ -23,7 +23,7 @@
 
 from setuptools import find_packages, setup
 
-with open('README.asciidoc') as readme_file:
+with open('README.md') as readme_file:
     readme = readme_file.read()
 
 with open('requirements.txt') as req_file:
@@ -46,6 +46,7 @@ setup(
     version='1.3.0',
     description="Package for automated testing of cloud images.",
     long_description=readme,
+    long_description_content_type="text/markdown",
     author="SUSE",
     author_email='public-cloud-dev@susecloud.net',
     url='https://github.com/SUSE/pubcloud/ipa',

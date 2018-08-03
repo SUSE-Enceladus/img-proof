@@ -1,7 +1,0 @@
-= *ipa* Docs
-
-== Contents
-
-* link:start.asciidoc[Getting Started]
-* link:tests.asciidoc[Writing Tests]
-* link:source.asciidoc[Source Overview]

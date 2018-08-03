@@ -1,7 +1,7 @@
-include CHANGES.asciidoc
-include CONTRIBUTING.asciidoc
+include CHANGES.md
+include CONTRIBUTING.md
 include LICENSE
-include README.asciidoc
+include README.md
 include tox.ini
 include ipa-complete.sh
 include package/python3-ipa.spec
@@ -13,7 +13,7 @@ recursive-include tests *
 recursive-include usr *.py
 recursive-include usr *.yaml
 recursive-include man *.1
-recursive-include docs *.asciidoc 
+recursive-include docs *.md 
 recursive-exclude * __pycache__
 recursive-exclude * *.coverage
 recursive-exclude * *.py[co]

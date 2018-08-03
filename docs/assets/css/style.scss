@@ -1,0 +1,22 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+a.active {
+  color: #675C5C;
+  font-weight: bold;
+}
+
+li a {
+  padding: 8px 8px;
+}
+
+header li, header ul li + li + li {
+  width: 24%;
+  border-right: 1px solid #e0e0e0;
+}
+
+header ul li + li + li + li {
+  border-right: none;
+}

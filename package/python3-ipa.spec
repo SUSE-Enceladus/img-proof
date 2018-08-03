@@ -95,7 +95,7 @@ python3 -m pytest --cov=ipa --ignore=tests/data --ignore=usr
 
 %files
 %defattr(-,root,root)
-%doc CHANGES.asciidoc CONTRIBUTING.asciidoc LICENSE README.asciidoc
+%doc CHANGES.md CONTRIBUTING.md LICENSE README.md
 %doc %{_mandir}/man1/*
 %{_bindir}/ipa
 %{python3_sitelib}/*
