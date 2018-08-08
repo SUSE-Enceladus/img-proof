@@ -2,6 +2,7 @@ import shlex
 
 
 def test_sles_switch_smt(get_smt_server_name,
+                         determine_provider,
                          get_smt_servers,
                          host,
                          request):
@@ -10,7 +11,7 @@ def test_sles_switch_smt(get_smt_server_name,
 
     It is cast as a test to be easily included in test suite.
     """
-    provider = request.config.getoption('provider')
+    provider = determine_provider()
     region = request.config.getoption('region')
 
     result = host.run(

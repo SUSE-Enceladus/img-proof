@@ -5,7 +5,6 @@ from susepubliccloudinfoclient import infoserverrequests
 
 
 def pytest_addoption(parser):
-    parser.addoption('--provider', action='store', help='ipa provider')
     parser.addoption('--region', action='store', help='ipa region')
 
 
@@ -36,6 +35,23 @@ def check_zypper_repo(host):
     def f(repo):
         repo = host.file('/etc/zypp/repos.d/' + repo + '.repo')
         return repo.exists
+    return f
+
+
+@pytest.fixture()
+def determine_provider(host):
+    def f():
+        result = host.run('sudo dmidecode -t system')
+        output = result.stdout.lower()
+        if 'amazon' in output:
+            provider = 'ec2'
+        elif 'microsoft' in output:
+            provider = 'azure'
+        elif 'google' in output:
+            provider = 'gce'
+        else:
+            raise Exception('Provider not found.')
+        return provider
     return f
 
 

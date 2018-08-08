@@ -4,11 +4,12 @@ from distutils.version import StrictVersion
 
 
 def test_sles_force_new_smt_reg(check_cloud_register,
+                                determine_provider,
                                 get_smt_servers,
                                 host,
                                 request):
     certs_dir = '/var/lib/regionService/certs/'
-    provider = request.config.getoption('provider')
+    provider = determine_provider()
     region = request.config.getoption('region')
 
     result = host.run('zypper if cloud-regionsrv-client | grep Version')

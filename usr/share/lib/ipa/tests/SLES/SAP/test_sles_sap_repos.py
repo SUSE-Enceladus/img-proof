@@ -1,10 +1,10 @@
 
 
 def test_sles_sap_repos(check_zypper_repo,
+                        determine_provider,
                         get_release_value,
-                        get_sles_repos,
-                        request):
-    provider = request.config.getoption('provider')
+                        get_sles_repos):
+    provider = determine_provider()
     version = get_release_value('VERSION')
 
     for repo in get_sles_repos('%s-SAP' % version):
