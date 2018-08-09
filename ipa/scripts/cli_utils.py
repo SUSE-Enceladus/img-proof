@@ -20,13 +20,57 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import shlex
+import shutil
 import sys
 
 import click
 
 from ipa.ipa_controller import collect_results
-from ipa.ipa_utils import parse_test_name
+from ipa.ipa_utils import parse_test_name, update_history_log
+
+
+def archive_history_item(item, destination, no_color):
+    """
+    Archive the log and results file for the given history item.
+
+    Copy the files and update the results file in destination directory.
+    """
+    log_src, description = split_history_item(item.strip())
+
+    # Get relative path for log:
+    # {provider}/{image}/{instance}/{timestamp}.log
+    log_dest = os.path.sep.join(log_src.rsplit(os.path.sep, 4)[1:])
+
+    # Get results src and destination based on log paths.
+    results_src = log_src.rsplit('.', 1)[0] + '.results'
+    results_dest = log_dest.rsplit('.', 1)[0] + '.results'
+
+    destination_path = os.path.join(destination, log_dest)
+    log_dir = os.path.dirname(destination_path)
+
+    try:
+        if not os.path.isdir(log_dir):
+            os.makedirs(log_dir)
+
+        # Copy results and log files to archive directory.
+        shutil.copyfile(log_src, destination_path)
+        shutil.copyfile(results_src, os.path.join(destination, results_dest))
+    except Exception as error:
+        echo_style(
+            'Unable to archive history item: %s' % error,
+            no_color,
+            fg='red'
+        )
+        sys.exit(1)
+    else:
+        # Only update the archive results log if no error occur.
+        update_history_log(
+            os.path.join(destination, '.history'),
+            description=description,
+            test_log=log_dest
+        )
 
 
 def echo_log(log_file, no_color):
@@ -161,3 +205,16 @@ def results_history(history_log, no_color):
     for item in lines:
         click.echo('{} {}'.format(index, item), nl=False)
         index -= 1
+
+
+def split_history_item(history):
+    """
+    Return the log file and optional description for item.
+    """
+    try:
+        log_file, description = shlex.split(history)
+    except ValueError:
+        log_file = history.strip()
+        description = None
+
+    return log_file, description

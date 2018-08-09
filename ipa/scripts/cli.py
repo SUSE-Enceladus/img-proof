@@ -23,6 +23,8 @@
 import logging
 import os
 import sys
+import tarfile
+import tempfile
 
 import click
 
@@ -34,6 +36,7 @@ from ipa.ipa_constants import (
 from ipa import ipa_utils
 from ipa.ipa_controller import collect_tests, test_image
 from ipa.scripts.cli_utils import (
+    archive_history_item,
     echo_log,
     echo_results,
     echo_results_file,
@@ -325,6 +328,81 @@ def results(context, history_log):
 
 
 @click.command()
+@click.option(
+    '-c',
+    '--clear-log',
+    help='Clear the history log after archiving.',
+    is_flag=True
+)
+@click.option(
+    '-i',
+    '--items',
+    help='List of history items to archive. Must be a comma separated list.',
+    type=click.STRING
+)
+@click.argument(
+    'path',
+    type=click.Path(exists=True),
+)
+@click.argument(
+    'name',
+    type=click.STRING
+)
+@click.pass_context
+def archive(context, clear_log, items, path, name):
+    """
+    Archive the history log and all results/log files.
+
+    After archive is created optionally clear the history log.
+    """
+    history_log = context.obj['history_log']
+    no_color = context.obj['no_color']
+
+    with open(history_log, 'r') as f:
+        # Get history items
+        history_items = f.readlines()
+
+    if items:
+        # Split comma separated list and cast indices to integer.
+        items = [int(item) for item in items.split(',')]
+
+        lines = []
+        for index in items:
+            lines.append(history_items[len(history_items) - index])
+        history_items = lines
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        for item in history_items:
+            # Copy log and results file,
+            # update results file with relative path.
+            archive_history_item(item, temp_dir, no_color)
+
+        file_name = ''.join([name, '.tar.gz'])
+        archive_path = os.path.join(path, file_name)
+
+        with tarfile.open(archive_path, "w:gz") as tar:
+            # Create tar archive
+            tar.add(temp_dir, arcname='results')
+
+    if clear_log:
+        if items:
+            # Remove duplicates to prevent unwanted deletion.
+            items = list(set(items))
+
+            # Must delete items from bottom to top of history file
+            # to preserve indices. (Index 0 is last item in file)
+            items.sort()
+            for index in items:
+                context.invoke(delete, item=index)
+        else:
+            context.invoke(clear)
+
+    click.echo(
+        'Exported results history to archive: {0}'.format(archive_path)
+    )
+
+
+@click.command()
 @click.pass_context
 def clear(context):
     """
@@ -528,6 +606,7 @@ def list_tests(context, verbose, test_dirs):
 
 
 main.add_command(list_tests)
+results.add_command(archive)
 results.add_command(clear)
 results.add_command(delete)
 results.add_command(list_results)
