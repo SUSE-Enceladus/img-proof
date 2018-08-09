@@ -4,11 +4,6 @@ import pytest
 from susepubliccloudinfoclient import infoserverrequests
 
 
-def pytest_addoption(parser):
-    parser.addoption('--provider', action='store', help='ipa provider')
-    parser.addoption('--region', action='store', help='ipa region')
-
-
 @pytest.fixture()
 def check_cloud_register(host):
     def f():
@@ -36,6 +31,43 @@ def check_zypper_repo(host):
     def f(repo):
         repo = host.file('/etc/zypp/repos.d/' + repo + '.repo')
         return repo.exists
+    return f
+
+
+@pytest.fixture()
+def determine_provider(host):
+    def f():
+        result = host.run('sudo dmidecode -t system')
+        output = result.stdout.lower()
+        if 'amazon' in output:
+            provider = 'ec2'
+        elif 'microsoft' in output:
+            provider = 'azure'
+        elif 'google' in output:
+            provider = 'gce'
+        else:
+            raise Exception('Provider not found.')
+        return provider
+    return f
+
+
+@pytest.fixture()
+def determine_region(host):
+    def f(provider):
+        if provider == 'ec2':
+            result = host.run('ec2metadata --availability-zone')
+            region = result.stdout.strip()[:-1]
+        elif provider == 'gce':
+            result = host.run('gcemetadata --query instance --zone')
+            region = result.stdout.strip().rsplit('/', maxsplit=1)[-1]
+        elif provider == 'azure':
+            result = host.run(
+                'curl -H Metadata:true '
+                '"http://169.254.169.254/metadata/instance'
+                '?api-version=2017-12-01"'
+            )
+            region = json.loads(result.stdout)['compute']['location']
+        return region
     return f
 
 

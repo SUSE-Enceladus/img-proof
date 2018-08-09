@@ -300,13 +300,10 @@ class IpaProvider(object):
         if self.early_exit:
             options.append('-x')
 
-        args = '-v {} --ssh-config={} --hosts={} --provider={} ' \
-            '--region="{}" {}'.format(
+        args = '-v {} --ssh-config={} --hosts={} {}'.format(
                 ' '.join(options),
                 ssh_config,
                 self.instance_ip,
-                self.results['info']['platform'].lower(),
-                self.results['info']['region'],
                 ' '.join(tests)
             )
 
