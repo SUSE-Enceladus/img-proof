@@ -1,0 +1,3 @@
+tests:
+  - test_sles_ec2_services
+  - test_sles_ec2_uuid

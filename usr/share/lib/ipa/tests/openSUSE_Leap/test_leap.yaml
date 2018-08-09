@@ -1,2 +1,5 @@
 tests:
+  - test_soft_reboot
   - test_leap_license
+  - test_update
+  - test_hard_reboot
