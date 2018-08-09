@@ -30,6 +30,7 @@ from ipa.ipa_constants import TEST_PATHS
 from ipa.ipa_ec2 import EC2Provider
 from ipa.ipa_exceptions import IpaControllerException
 from ipa.ipa_gce import GCEProvider
+from ipa.ipa_ssh import SSHProvider
 from ipa.ipa_utils import get_test_files
 
 
@@ -71,6 +72,8 @@ def test_image(provider_name,
         provider_class = EC2Provider
     elif provider_name == 'gce':
         provider_class = GCEProvider
+    elif provider_name == 'ssh':
+        provider_class = SSHProvider
     else:
         raise IpaControllerException(
             'Provider: %s unavailable.' % provider_name
