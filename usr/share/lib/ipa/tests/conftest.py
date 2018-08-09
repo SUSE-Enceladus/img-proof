@@ -4,10 +4,6 @@ import pytest
 from susepubliccloudinfoclient import infoserverrequests
 
 
-def pytest_addoption(parser):
-    parser.addoption('--region', action='store', help='ipa region')
-
-
 @pytest.fixture()
 def check_cloud_register(host):
     def f():
@@ -52,6 +48,26 @@ def determine_provider(host):
         else:
             raise Exception('Provider not found.')
         return provider
+    return f
+
+
+@pytest.fixture()
+def determine_region(host):
+    def f(provider):
+        if provider == 'ec2':
+            result = host.run('ec2metadata --availability-zone')
+            region = result.stdout.strip()[:-1]
+        elif provider == 'gce':
+            result = host.run('gcemetadata --query instance --zone')
+            region = result.stdout.strip().rsplit('/', maxsplit=1)[-1]
+        elif provider == 'azure':
+            result = host.run(
+                'curl -H Metadata:true '
+                '"http://169.254.169.254/metadata/instance'
+                '?api-version=2017-12-01"'
+            )
+            region = json.loads(result.stdout)['compute']['location']
+        return region
     return f
 
 

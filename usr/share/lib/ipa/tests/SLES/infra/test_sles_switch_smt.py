@@ -3,16 +3,16 @@ import shlex
 
 def test_sles_switch_smt(get_smt_server_name,
                          determine_provider,
+                         determine_region,
                          get_smt_servers,
-                         host,
-                         request):
+                         host):
     """
     This is a helper function for SMT failover test.
 
     It is cast as a test to be easily included in test suite.
     """
     provider = determine_provider()
-    region = request.config.getoption('region')
+    region = determine_region(provider)
 
     result = host.run(
         'cat /etc/hosts | grep %s' % get_smt_server_name(provider)

@@ -3,12 +3,12 @@ import shlex
 
 def test_sles_smt_reg(check_cloud_register,
                       determine_provider,
+                      determine_region,
                       get_smt_server_name,
                       get_smt_servers,
-                      host,
-                      request):
+                      host):
     provider = determine_provider()
-    region = request.config.getoption('region')
+    region = determine_region(provider)
 
     assert check_cloud_register()
 
