@@ -65,7 +65,7 @@ To override the default configuration location the CLI option `-C` or
 
 The following is an example configuration file. The ipa section is
 required and the provider sections are optional and can be \[ec2\],
-\[gce\] or \[azure\].
+\[gce\], \[azure\] or \[ssh\].
 
 ```ini
 [ipa]
@@ -133,6 +133,11 @@ For more information on updating an existing service account:
 - Granting roles:
   [granting-roles-to-service-accounts](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts)
 
+SSH
+---
+Requires no provider credentials to test instances. SSH user, SSH private key can
+be placed in ssh section of config. The instance to be tested must be running.
+
 Provider Configuration location
 -------------------------------
 
@@ -189,6 +194,17 @@ $ ipa test -i {image-id} \
   gce test_image
 
 Starting instance
+Running tests /home/{user}/ipa/tests/test_image.py
+PASSED tests=1|pass=1|fail=0|error=0
+```
+
+#### Testing an image in SSH
+
+```shell
+$ ipa test -ip-address 10.0.0.1 \
+  -d openSUSE_Leap \
+  ssh test_image
+
 Running tests /home/{user}/ipa/tests/test_image.py
 PASSED tests=1|pass=1|fail=0|error=0
 ```
