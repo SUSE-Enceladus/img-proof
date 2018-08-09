@@ -216,6 +216,10 @@ class GCEProvider(LibcloudProvider):
         kwargs = {
             'location': self.region,
             'ex_metadata': metadata,
+            'ex_service_accounts': [{
+                'email': self.service_account_email,
+                'scopes': ['storage-ro']
+            }]
         }
 
         if self.subnet_id:
