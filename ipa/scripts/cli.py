@@ -140,6 +140,10 @@ def main(context, no_color):
     help='Instance type to use for launching machine.'
 )
 @click.option(
+    '--ip-address',
+    help='IP address for the test instance (only used by SSH provider).'
+)
+@click.option(
     '--debug',
     'log_level',
     flag_value=logging.DEBUG,
@@ -248,6 +252,7 @@ def test(context,
          image_id,
          inject,
          instance_type,
+         ip_address,
          log_level,
          no_default_test_dirs,
          provider_config,
@@ -292,6 +297,7 @@ def test(context,
             image_id,
             inject,
             instance_type,
+            ip_address,
             log_level,
             no_default_test_dirs,
             provider_config,
