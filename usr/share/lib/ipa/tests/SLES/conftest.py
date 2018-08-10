@@ -154,7 +154,10 @@ SLE_15_BASE = [
     'SLE-Module-Basesystem15-Debuginfo-Pool',
     'SLE-Module-Basesystem15-Debuginfo-Updates',
     'SLE-Module-Basesystem15-Pool',
-    'SLE-Module-Basesystem15-Updates',
+    'SLE-Module-Basesystem15-Updates'
+]
+
+SLE_15_PRODUCTS = [
     'SLE-Product-SLES15-Pool',
     'SLE-Product-SLES15-Updates'
 ]
@@ -212,15 +215,15 @@ SLE_15_SAP = [
 SLES_REPOS = {
     '11.4': SLE_11_SP4_BASE + SLE_11_SP4_MODULES,
     '12': SLE_12_BASE + SLE_12_MODULES,
-    '12-SAP': SLE_12_SAP,
+    '12-SAP': SLE_12_SAP + SLE_12_BASE + SLE_12_MODULES,
     '12-SP1': SLE_12_SP1_BASE + SLE_12_SP1_MODULES,
-    '12-SP1-SAP': SLE_12_SP1_SAP,
+    '12-SP1-SAP': SLE_12_SP1_SAP + SLE_12_SP1_BASE + SLE_12_SP1_MODULES,
     '12-SP2': SLE_12_SP2_BASE + SLE_12_SP2_MODULES,
-    '12-SP2-SAP': SLE_12_SP2_SAP,
+    '12-SP2-SAP': SLE_12_SP2_SAP + SLE_12_SP2_BASE + SLE_12_SP2_MODULES,
     '12-SP3': SLE_12_SP3_BASE + SLE_12_SP3_MODULES,
-    '12-SP3-SAP': SLE_12_SP3_SAP,
-    '15': SLE_15_BASE + SLE_15_MODULES,
-    '15-SAP': SLE_15_SAP
+    '12-SP3-SAP': SLE_12_SP3_SAP + SLE_12_SP3_BASE + SLE_12_SP3_MODULES,
+    '15': SLE_15_BASE + SLE_15_MODULES + SLE_15_PRODUCTS,
+    '15-SAP': SLE_15_SAP + SLE_15_BASE + SLE_15_MODULES
 }
 
 
@@ -228,4 +231,21 @@ SLES_REPOS = {
 def get_sles_repos():
     def f(version):
         return SLES_REPOS[version]
+    return f
+
+
+@pytest.fixture()
+def is_sles_sap(host):
+    def f():
+        license_dir = '/etc/YaST2/licenses/ha'
+        lic_dir = host.file(license_dir)
+        try:
+            assert lic_dir.exists
+            assert lic_dir.is_directory
+        except AssertionError:
+            # SLE15 dir changed
+            license_dir = '/etc/YaST2/licenses/SLES_SAP'
+            lic_dir = host.file(license_dir)
+            return lic_dir.exists and lic_dir.is_directory
+        return True
     return f
