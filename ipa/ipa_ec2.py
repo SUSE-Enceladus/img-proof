@@ -59,7 +59,7 @@ class EC2Provider(LibcloudProvider):
                  secret_access_key=None,
                  service_account_file=None,  # Not used in EC2
                  ssh_key_name=None,
-                 ssh_private_key=None,
+                 ssh_private_key_file=None,
                  ssh_user=None,
                  subnet_id=None,
                  test_dirs=None,
@@ -126,10 +126,12 @@ class EC2Provider(LibcloudProvider):
             ssh_key_name or
             self._get_from_ec2_config('ssh_key_name')
         )
-        self.ssh_private_key = (
-            ssh_private_key or
+        self.ssh_private_key_file = (
+            ssh_private_key_file or
             self._get_from_ec2_config('ssh_private_key') or
-            self._get_value(ssh_private_key, config_key='ssh_private_key')
+            self._get_value(
+                ssh_private_key_file, config_key='ssh_private_key_file'
+            )
         )
         self.ssh_user = (
             ssh_user or
@@ -138,7 +140,7 @@ class EC2Provider(LibcloudProvider):
         )
         self.subnet_id = subnet_id
 
-        if not self.ssh_private_key:
+        if not self.ssh_private_key_file:
             raise EC2ProviderException(
                 'SSH private key file is required to connect to instance.'
             )
@@ -243,7 +245,9 @@ class EC2Provider(LibcloudProvider):
         The public ssh key is added by cloud init to the instance based on
         the ssh user and private key file.
         """
-        key = ipa_utils.generate_public_ssh_key(self.ssh_private_key).decode()
+        key = ipa_utils.generate_public_ssh_key(
+            self.ssh_private_key_file
+        ).decode()
         script = BASH_SSH_SCRIPT.format(user=self.ssh_user, key=key)
         return script
 

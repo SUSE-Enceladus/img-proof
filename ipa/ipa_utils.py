@@ -59,7 +59,7 @@ def clear_cache(ip=None):
 
 
 def establish_ssh_connection(ip,
-                             ssh_private_key,
+                             ssh_private_key_file,
                              ssh_user,
                              port,
                              attempts=5,
@@ -80,7 +80,7 @@ def establish_ssh_connection(ip,
                 ip,
                 port=port,
                 username=ssh_user,
-                key_filename=ssh_private_key,
+                key_filename=ssh_private_key_file,
                 timeout=timeout
             )
         except:  # noqa: E722
@@ -193,14 +193,14 @@ def generate_instance_name(name):
     return '%s-%s' % (name, get_random_string(length=5))
 
 
-def generate_public_ssh_key(ssh_private_key):
+def generate_public_ssh_key(ssh_private_key_file):
     """Generate SSH public key from private key file."""
     try:
-        with open(ssh_private_key, "rb") as key_file:
+        with open(ssh_private_key_file, "rb") as key_file:
             key = key_file.read()
     except FileNotFoundError:
         raise IpaUtilsException(
-            'SSH private key file: %s cannot be found.' % ssh_private_key
+            'SSH private key file: %s cannot be found.' % ssh_private_key_file
         )
 
     try:
@@ -212,7 +212,7 @@ def generate_public_ssh_key(ssh_private_key):
     except ValueError:
         raise IpaUtilsException(
             'SSH private key file: %s is not a valid key file.'
-            % ssh_private_key
+            % ssh_private_key_file
         )
 
     return private_key.public_key().public_bytes(
@@ -270,7 +270,7 @@ def get_random_string(length=12):
 
 
 def get_ssh_client(ip,
-                   ssh_private_key,
+                   ssh_private_key_file,
                    ssh_user='root',
                    port=22,
                    timeout=600,
@@ -287,7 +287,7 @@ def get_ssh_client(ip,
         try:
             client = establish_ssh_connection(
                 ip,
-                ssh_private_key,
+                ssh_private_key_file,
                 ssh_user,
                 port,
                 timeout=wait_period
@@ -505,12 +505,12 @@ def redirect_output(fileobj):
 
 
 @contextmanager
-def ssh_config(ssh_user, ssh_private_key):
+def ssh_config(ssh_user, ssh_private_key_file):
     """Create temporary ssh config file."""
     try:
         ssh_file = NamedTemporaryFile(delete=False, mode='w+')
         ssh_file.write('Host *\n')
-        ssh_file.write('    IdentityFile %s\n' % ssh_private_key)
+        ssh_file.write('    IdentityFile %s\n' % ssh_private_key_file)
         ssh_file.write('    User %s' % ssh_user)
         ssh_file.close()
         yield ssh_file.name

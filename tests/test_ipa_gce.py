@@ -42,14 +42,14 @@ class TestGCEProvider(object):
             'image_id': 'fakeimage',
             'no_default_test_dirs': True,
             'service_account_file': 'tests/gce/service-account.json',
-            'ssh_private_key': 'tests/data/ida_test',
+            'ssh_private_key_file': 'tests/data/ida_test',
             'test_files': ['test_image']
         }
 
     def test_gce_exception_required_args(self):
         """Test an exception is raised if required args missing."""
         self.kwargs['service_account_file'] = None
-        self.kwargs['ssh_private_key'] = None
+        self.kwargs['ssh_private_key_file'] = None
 
         # Test service account file required
         with pytest.raises(GCEProviderException) as error:
@@ -67,7 +67,7 @@ class TestGCEProvider(object):
         assert str(error.value) == \
             'SSH private key file is required to connect to instance.'
 
-        self.kwargs['ssh_private_key'] = 'tests/data/ida_test'
+        self.kwargs['ssh_private_key_file'] = 'tests/data/ida_test'
 
     @patch.object(GCEProvider, '_get_ssh_public_key')
     @patch.object(GCEProvider, '_get_driver')

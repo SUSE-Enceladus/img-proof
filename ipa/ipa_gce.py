@@ -60,7 +60,7 @@ class GCEProvider(LibcloudProvider):
                  secret_access_key=None,  # Not used in GCE
                  service_account_file=None,
                  ssh_key_name=None,  # Not used in GCE
-                 ssh_private_key=None,
+                 ssh_private_key_file=None,
                  ssh_user=None,
                  subnet_id=None,
                  test_dirs=None,
@@ -104,17 +104,19 @@ class GCEProvider(LibcloudProvider):
                 self.service_account_file
             )
 
-        self.ssh_private_key = (
-            ssh_private_key or
-            self._get_value(ssh_private_key, config_key='ssh_private_key')
+        self.ssh_private_key_file = (
+            ssh_private_key_file or
+            self._get_value(
+                ssh_private_key_file, config_key='ssh_private_key_file'
+            )
         )
-        if not self.ssh_private_key:
+        if not self.ssh_private_key_file:
             raise GCEProviderException(
                 'SSH private key file is required to connect to instance.'
             )
         else:
-            self.ssh_private_key = os.path.expanduser(
-                self.ssh_private_key
+            self.ssh_private_key_file = os.path.expanduser(
+                self.ssh_private_key_file
             )
 
         self.ssh_user = (
@@ -176,7 +178,7 @@ class GCEProvider(LibcloudProvider):
 
     def _get_ssh_public_key(self):
         """Generate SSH public key from private key."""
-        key = ipa_utils.generate_public_ssh_key(self.ssh_private_key)
+        key = ipa_utils.generate_public_ssh_key(self.ssh_private_key_file)
         return '{user}:{key} {user}'.format(
             user=self.ssh_user,
             key=key.decode()

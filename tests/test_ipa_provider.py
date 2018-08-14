@@ -114,7 +114,7 @@ class TestIpaProvider(object):
 
         provider.instance_ip = '127.0.0.1'
         provider.ssh_user = 'ec2-user'
-        provider.ssh_private_key = 'tests/data/ida_test'
+        provider.ssh_private_key_file = 'tests/data/ida_test'
 
         client = MagicMock()
         mock_get_ssh_client.return_value = client
@@ -430,7 +430,7 @@ class TestIpaProvider(object):
         self.kwargs['test_files'] = ['test_hard_reboot']
 
         provider = IpaProvider(*args, **self.kwargs)
-        provider.ssh_private_key = 'tests/data/ida_test'
+        provider.ssh_private_key_file = 'tests/data/ida_test'
         provider.ssh_user = 'root'
         provider.logger = MagicMock()
 
@@ -485,7 +485,7 @@ class TestIpaProvider(object):
         self.kwargs['test_files'] = ['test_soft_reboot']
 
         provider = IpaProvider(*args, **self.kwargs)
-        provider.ssh_private_key = 'tests/data/ida_test'
+        provider.ssh_private_key_file = 'tests/data/ida_test'
         provider.ssh_user = 'root'
         provider.logger = MagicMock()
 
@@ -539,7 +539,7 @@ class TestIpaProvider(object):
         self.kwargs['test_files'] = ['test_update']
 
         provider = IpaProvider(*args, **self.kwargs)
-        provider.ssh_private_key = 'tests/data/ida_test'
+        provider.ssh_private_key_file = 'tests/data/ida_test'
         provider.ssh_user = 'root'
 
         status, results = provider.test_image()
@@ -570,7 +570,7 @@ class TestIpaProvider(object):
         self.kwargs['early_exit'] = True
 
         provider = IpaProvider(*args, **self.kwargs)
-        provider.ssh_private_key = 'tests/data/ida_test'
+        provider.ssh_private_key_file = 'tests/data/ida_test'
         provider.ssh_user = 'root'
 
         status, results = provider.test_image()

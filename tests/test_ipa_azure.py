@@ -44,7 +44,7 @@ class TestAzureProvider(object):
             'no_default_test_dirs': True,
             'running_instance_id': 'fakeinstance',
             'service_account_file': 'tests/azure/test-sa.json',
-            'ssh_private_key': 'tests/data/ida_test',
+            'ssh_private_key_file': 'tests/data/ida_test',
             'test_dirs': 'tests/data/tests',
             'test_files': ['test_image']
         }
@@ -57,7 +57,7 @@ class TestAzureProvider(object):
 
     def test_azure_exception_required_args(self):
         """Test an exception is raised if required args missing."""
-        self.kwargs['ssh_private_key'] = None
+        self.kwargs['ssh_private_key_file'] = None
         msg = 'SSH private key file is required to connect to instance.'
 
         # Test ssh private key file required

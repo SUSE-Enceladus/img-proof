@@ -172,7 +172,7 @@ class IpaProvider(object):
         """Return a new or existing SSH client for given ip."""
         return ipa_utils.get_ssh_client(
             self.instance_ip,
-            self.ssh_private_key,
+            self.ssh_private_key_file,
             self.ssh_user,
             timeout=self.timeout
         )
@@ -612,7 +612,7 @@ class IpaProvider(object):
             self.process_injection_file(self._get_ssh_client())
 
         status = 0
-        with ipa_utils.ssh_config(self.ssh_user, self.ssh_private_key)\
+        with ipa_utils.ssh_config(self.ssh_user, self.ssh_private_key_file)\
                 as ssh_config:
             for item in self.test_files:
                 if item == 'test_hard_reboot':

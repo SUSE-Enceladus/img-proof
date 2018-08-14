@@ -57,7 +57,7 @@ class AzureProvider(IpaProvider):
                  secret_access_key=None,  # Not used in Azure
                  service_account_file=None,
                  ssh_key_name=None,  # Not used in Azure
-                 ssh_private_key=None,
+                 ssh_private_key_file=None,
                  ssh_user=None,
                  subnet_id=None,
                  test_dirs=None,
@@ -108,17 +108,19 @@ class AzureProvider(IpaProvider):
                 self.service_account_file
             )
 
-        self.ssh_private_key = (
-            ssh_private_key or
-            self._get_value(ssh_private_key, config_key='ssh_private_key')
+        self.ssh_private_key_file = (
+            ssh_private_key_file or
+            self._get_value(
+                ssh_private_key_file, config_key='ssh_private_key_file'
+            )
         )
-        if not self.ssh_private_key:
+        if not self.ssh_private_key_file:
             raise AzureProviderException(
                 'SSH private key file is required to connect to instance.'
             )
         else:
-            self.ssh_private_key = os.path.expanduser(
-                self.ssh_private_key
+            self.ssh_private_key_file = os.path.expanduser(
+                self.ssh_private_key_file
             )
 
         self.ssh_user = ssh_user or AZURE_DEFAULT_USER
@@ -399,7 +401,7 @@ class AzureProvider(IpaProvider):
         """
         Generate SSH public key from private key.
         """
-        key = ipa_utils.generate_public_ssh_key(self.ssh_private_key)
+        key = ipa_utils.generate_public_ssh_key(self.ssh_private_key_file)
         return key.decode()
 
     def _is_instance_running(self):
