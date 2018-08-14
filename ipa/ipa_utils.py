@@ -468,13 +468,16 @@ def parse_sync_points(names, tests):
 def parse_test_name(name):
     """Parse and return formatted pytest test name string."""
     test_class = None
-    try:
-        path, test_class, parens, test_case = name.split('::')
-    except ValueError:
-        path, test_case = name.split('::')
+    if '::' in name:
+        try:
+            path, test_class, parens, test_case = name.split('::')
+        except ValueError:
+            path, test_case = name.split('::')
 
-    test_file = path.split(os.sep)[-1].replace('.py', '')
-    return '::'.join(filter(None, [test_file, test_class, test_case]))
+        test_file = path.split(os.sep)[-1].replace('.py', '')
+        return '::'.join(filter(None, [test_file, test_class, test_case]))
+    else:
+        return name
 
 
 def put_file(client, source_file, destination_file):
