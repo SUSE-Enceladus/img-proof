@@ -150,16 +150,80 @@ SLE_12_SP3_SAP = [
     'SLE-HA12-SP3-Updates'
 ]
 
+SLE_15_BASE = [
+    'SLE-Module-Basesystem15-Debuginfo-Pool',
+    'SLE-Module-Basesystem15-Debuginfo-Updates',
+    'SLE-Module-Basesystem15-Pool',
+    'SLE-Module-Basesystem15-Updates'
+]
+
+SLE_15_PRODUCTS = [
+    'SLE-Product-SLES15-Pool',
+    'SLE-Product-SLES15-Updates'
+]
+
+SLE_15_MODULES = [
+    'SLE-Module-CAP-Tools15-Debuginfo-Pool',
+    'SLE-Module-CAP-Tools15-Debuginfo-Updates',
+    'SLE-Module-CAP-Tools15-Pool',
+    'SLE-Module-CAP-Tools15-Updates',
+    'SLE-Module-Containers15-Debuginfo-Pool',
+    'SLE-Module-Containers15-Debuginfo-Updates',
+    'SLE-Module-Containers15-Pool',
+    'SLE-Module-Containers15-Updates',
+    'SLE-Module-Desktop-Applications15-Debuginfo-Pool',
+    'SLE-Module-Desktop-Applications15-Debuginfo-Updates',
+    'SLE-Module-Desktop-Applications15-Pool',
+    'SLE-Module-Desktop-Applications15-Updates',
+    'SLE-Module-DevTools15-Debuginfo-Pool',
+    'SLE-Module-DevTools15-Debuginfo-Updates',
+    'SLE-Module-DevTools15-Pool',
+    'SLE-Module-DevTools15-Updates',
+    'SLE-Module-Legacy15-Debuginfo-Pool',
+    'SLE-Module-Legacy15-Debuginfo-Updates',
+    'SLE-Module-Legacy15-Pool',
+    'SLE-Module-Legacy15-Updates',
+    'SLE-Module-Public-Cloud15-Debuginfo-Pool',
+    'SLE-Module-Public-Cloud15-Debuginfo-Updates',
+    'SLE-Module-Public-Cloud15-Pool',
+    'SLE-Module-Public-Cloud15-Updates',
+    'SLE-Module-Server-Applications15-Debuginfo-Pool',
+    'SLE-Module-Server-Applications15-Debuginfo-Updates',
+    'SLE-Module-Server-Applications15-Pool',
+    'SLE-Module-Server-Applications15-Updates',
+    'SLE-Module-Web-Scripting15-Debuginfo-Pool',
+    'SLE-Module-Web-Scripting15-Debuginfo-Updates',
+    'SLE-Module-Web-Scripting15-Pool',
+    'SLE-Module-Web-Scripting15-Updates'
+]
+
+SLE_15_SAP = [
+    'SLE-Module-SAP-Applications15-Debuginfo-Pool',
+    'SLE-Module-SAP-Applications15-Debuginfo-Updates',
+    'SLE-Module-SAP-Applications15-Pool',
+    'SLE-Module-SAP-Applications15-Updates',
+    'SLE-Product-HA15-Debuginfo-Pool',
+    'SLE-Product-HA15-Debuginfo-Updates',
+    'SLE-Product-HA15-Pool',
+    'SLE-Product-HA15-Updates',
+    'SLE-Product-SLES_SAP15-Debuginfo-Pool',
+    'SLE-Product-SLES_SAP15-Debuginfo-Updates',
+    'SLE-Product-SLES_SAP15-Pool',
+    'SLE-Product-SLES_SAP15-Updates'
+]
+
 SLES_REPOS = {
     '11.4': SLE_11_SP4_BASE + SLE_11_SP4_MODULES,
     '12': SLE_12_BASE + SLE_12_MODULES,
-    '12-SAP': SLE_12_SAP,
+    '12-SAP': SLE_12_SAP + SLE_12_BASE + SLE_12_MODULES,
     '12-SP1': SLE_12_SP1_BASE + SLE_12_SP1_MODULES,
-    '12-SP1-SAP': SLE_12_SP1_SAP,
+    '12-SP1-SAP': SLE_12_SP1_SAP + SLE_12_SP1_BASE + SLE_12_SP1_MODULES,
     '12-SP2': SLE_12_SP2_BASE + SLE_12_SP2_MODULES,
-    '12-SP2-SAP': SLE_12_SP2_SAP,
+    '12-SP2-SAP': SLE_12_SP2_SAP + SLE_12_SP2_BASE + SLE_12_SP2_MODULES,
     '12-SP3': SLE_12_SP3_BASE + SLE_12_SP3_MODULES,
-    '12-SP3-SAP': SLE_12_SP3_SAP
+    '12-SP3-SAP': SLE_12_SP3_SAP + SLE_12_SP3_BASE + SLE_12_SP3_MODULES,
+    '15': SLE_15_BASE + SLE_15_MODULES + SLE_15_PRODUCTS,
+    '15-SAP': SLE_15_SAP + SLE_15_BASE + SLE_15_MODULES
 }
 
 
@@ -167,4 +231,21 @@ SLES_REPOS = {
 def get_sles_repos():
     def f(version):
         return SLES_REPOS[version]
+    return f
+
+
+@pytest.fixture()
+def is_sles_sap(host):
+    def f():
+        license_dir = '/etc/YaST2/licenses/ha'
+        lic_dir = host.file(license_dir)
+        try:
+            assert lic_dir.exists
+            assert lic_dir.is_directory
+        except AssertionError:
+            # SLE15 dir changed
+            license_dir = '/etc/YaST2/licenses/SLES_SAP'
+            lic_dir = host.file(license_dir)
+            return lic_dir.exists and lic_dir.is_directory
+        return True
     return f

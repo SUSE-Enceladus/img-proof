@@ -13,4 +13,10 @@ def test_sles_license(host):
     license = host.file(license_dir + '/license.txt')
     assert license.exists
     assert license.is_file
-    assert license.contains(license_content)
+
+    try:
+        assert license.contains(license_content)
+    except Exception:
+        # SLE15 license text changed
+        license_content = 'SUSE(R) Linux Enterprise End User License Agreement'
+        assert license.contains(license_content)
