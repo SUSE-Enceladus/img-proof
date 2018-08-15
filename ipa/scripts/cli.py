@@ -199,6 +199,11 @@ def main(context, no_color):
     help='SSH private key file for accessing instance.'
 )
 @click.option(
+    '--ssh-private-key-file',
+    type=click.Path(exists=True),
+    help='SSH private key file for accessing instance.'
+)
+@click.option(
     '-u',
     '--ssh-user',
     help='SSH user for accessing instance.'
@@ -253,6 +258,7 @@ def test(context,
          service_account_file,
          ssh_key_name,
          ssh_private_key,
+         ssh_private_key_file,
          ssh_user,
          subnet_id,
          test_dirs,
@@ -264,6 +270,15 @@ def test(context,
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
     try:
+        if ssh_private_key:
+            echo_style(
+                '--ssh-private-key option is deprecated and renamed to '
+                '--ssh-private-key-file. --ssh-private-key will be removed'
+                ' in a future release.',
+                no_color,
+                fg='red'
+            )
+
         status, results = test_image(
             provider,
             access_key_id,
@@ -286,7 +301,7 @@ def test(context,
             secret_access_key,
             service_account_file,
             ssh_key_name,
-            ssh_private_key,
+            ssh_private_key_file or ssh_private_key,
             ssh_user,
             subnet_id,
             test_dirs,
