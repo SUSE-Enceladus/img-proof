@@ -1,7 +1,7 @@
 #
 # spec file for package python3-ipa
 #
-# Copyright (c) 2017 SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) 2018 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -15,18 +15,34 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
+
 %bcond_without test
 Name:           python3-ipa
 Version:        1.4.0
 Release:        0
 Summary:        Command line and API for testing custom images
-License:        GPL-3.0+
+License:        GPL-3.0-or-later
 Group:          Development/Languages/Python
-Url:            https://github.com/SUSE/ipa
-Source:         ipa-%{version}.tar.gz
+URL:            https://github.com/SUSE/ipa
+Source:         https://files.pythonhosted.org/packages/source/p/python3-ipa/%{name}-%{version}.tar.gz
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+Requires:       python3-PyYAML
+Requires:       python3-apache-libcloud
+Requires:       python3-azure-common
+Requires:       python3-azure-mgmt-compute
+Requires:       python3-azure-mgmt-network
+Requires:       python3-azure-mgmt-resource
+Requires:       python3-certifi
+Requires:       python3-click
+Requires:       python3-cryptography
+Requires:       python3-paramiko
+Requires:       python3-pycryptodome
+Requires:       python3-pytest
+Requires:       python3-testinfra
+BuildArch:      noarch
 %if %{with test}
+BuildRequires:  python3-PyYAML
 BuildRequires:  python3-apache-libcloud
 BuildRequires:  python3-azure-common
 BuildRequires:  python3-azure-mgmt-compute
@@ -40,24 +56,8 @@ BuildRequires:  python3-paramiko
 BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pytest-cov
-BuildRequires:  python3-PyYAML
 BuildRequires:  python3-testinfra
 %endif
-Requires:       python3-apache-libcloud
-Requires:       python3-azure-common
-Requires:       python3-azure-mgmt-compute
-Requires:       python3-azure-mgmt-network
-Requires:       python3-azure-mgmt-resource
-Requires:       python3-certifi
-Requires:       python3-click
-Requires:       python3-cryptography
-Requires:       python3-paramiko
-Requires:       python3-pycryptodome
-Requires:       python3-pytest
-Requires:       python3-PyYAML
-Requires:       python3-testinfra
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildArch:      noarch
 
 %description
 ipa provides a command line utility to test images in
@@ -66,14 +66,14 @@ the Public Cloud (AWS, Azure, GCE, etc.).
 %package tests
 Summary:        Infrastructure tests for ipa
 Group:          Development/Languages/Python
-PreReq:         python3-ipa = %{version}
 Requires:       python3-susepubliccloudinfo
+PreReq:         python3-ipa = %{version}
 
 %description tests
 Directory of infrastructure tests for testing images.
 
 %prep
-%setup -q -n ipa-%{version}
+%setup -q
 
 %build
 python3 setup.py build
@@ -83,8 +83,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/*.1 %{buildroot}/%{_mandir}/man1
 
-install -d -m 755 %{buildroot}/usr
-cp -r usr/* %{buildroot}/usr/
+install -d -m 755 %{buildroot}%{_prefix}
+cp -r usr/* %{buildroot}%{_prefix}/
 
 %check
 %if %{with test}
@@ -95,15 +95,16 @@ python3 -m pytest --cov=ipa --ignore=tests/data --ignore=usr
 
 %files
 %defattr(-,root,root)
-%doc CHANGES.md CONTRIBUTING.md LICENSE README.md
-%doc %{_mandir}/man1/*
+%license LICENSE
+%doc CHANGES.md CONTRIBUTING.md README.md
+%{_mandir}/man1/*
 %{_bindir}/ipa
 %{python3_sitelib}/*
 
 %files tests
 %defattr(-,root,root)
-%dir /usr/share/lib
-%dir /usr/share/lib/ipa
-/usr/share/lib/ipa/*
+%dir %{_datadir}/lib
+%dir %{_datadir}/lib/ipa
+%{_datadir}/lib/ipa/*
 
 %changelog
