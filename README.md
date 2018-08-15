@@ -118,7 +118,7 @@ for info on getting started.
 License
 =======
 
-Copyright (c) 2017 SUSE LLC.
+Copyright (c) 2018 SUSE LLC.
 
 Distributed under the terms of GPL-3.0+ license, see
 [LICENSE](https://github.com/SUSE/ipa/blob/master/LICENSE)
