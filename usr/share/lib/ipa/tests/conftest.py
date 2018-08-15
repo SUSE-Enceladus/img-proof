@@ -59,7 +59,10 @@ def determine_region(host):
             region = result.stdout.strip()[:-1]
         elif provider == 'gce':
             result = host.run('gcemetadata --query instance --zone')
+            # returns zone like: us-west1-a
             region = result.stdout.strip().rsplit('/', maxsplit=1)[-1]
+            # returns region: us-west1
+            region = region.rsplit('-', maxsplit=1)[0]
         elif provider == 'azure':
             result = host.run(
                 'curl -H Metadata:true '
