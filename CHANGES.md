@@ -1,3 +1,35 @@
+v1.4.0 (2018-08-15)
+===================
+
+- Add archive management option to CLI.
+  [\#83](https://github.com/SUSE/ipa/pull/83)
+- openSUSE Leap requires auto import of repo keys.
+  [\#98](https://github.com/SUSE/ipa/pull/98)
+- Update Leap test description.
+  [\#99](https://github.com/SUSE/ipa/pull/99)
+- Sync tests should not raise exception.
+  [\#100](https://github.com/SUSE/ipa/pull/100)
+- Use the GCE service account in the launched instance.
+  [\#107](https://github.com/SUSE/ipa/pull/107)
+- Add serviceAccountUser role requirement for GCE.
+- Rename pretty\_name to be generic value.
+  [\#108](https://github.com/SUSE/ipa/pull/108)
+- Use temp directory for results in tests.
+  [\#109](https://github.com/SUSE/ipa/pull/109)
+- Move docs to markdown for better support.
+  [\#110](https://github.com/SUSE/ipa/pull/110)
+- Determine provider and region from instance.
+  [\#113](https://github.com/SUSE/ipa/pull/113)
+- Add SLE\_15 repos.
+  [\#116](https://github.com/SUSE/ipa/pull/116)
+- Update GCE services test.
+  [\#117](https://github.com/SUSE/ipa/pull/117)
+- Rename `--ssh-private-key` option.
+  [\#119](https://github.com/SUSE/ipa/pull/119)
+- Add ip address option for SSH testing.
+- Add SSH provider.
+  [\#115](https://github.com/SUSE/ipa/pull/115)
+
 v1.3.0 (2018-07-23)
 ===================
 
