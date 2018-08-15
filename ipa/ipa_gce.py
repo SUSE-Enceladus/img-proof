@@ -51,6 +51,7 @@ class GCEProvider(LibcloudProvider):
                  image_id=None,
                  inject=None,
                  instance_type=None,
+                 ip_address=None,  # Not used in GCE
                  log_level=30,
                  no_default_test_dirs=False,
                  provider_config=None,

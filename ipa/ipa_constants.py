@@ -26,7 +26,7 @@ import os
 HOME = os.path.expanduser('~')
 NOT_IMPLEMENTED = 'Implement method in child classes.'
 SUPPORTED_DISTROS = ('opensuse_leap', 'sles')
-SUPPORTED_PROVIDERS = ('azure', 'ec2', 'gce')
+SUPPORTED_PROVIDERS = ('azure', 'ec2', 'gce', 'ssh')
 
 AZURE_DEFAULT_TYPE = 'Standard_B1ms'
 AZURE_DEFAULT_USER = 'azureuser'

@@ -155,10 +155,11 @@ class IpaProvider(object):
         else:
             self.distro_name = self.distro_name.lower()
 
-        if not self.image_id and not self.running_instance_id:
-            raise IpaProviderException(
-                'Image ID or running instance is required.'
-            )
+        if self.provider != 'ssh':
+            if not self.image_id and not self.running_instance_id:
+                raise IpaProviderException(
+                    'Image ID or running instance is required.'
+                )
 
         self._parse_test_files(test_dirs, no_default_test_dirs)
 
@@ -203,16 +204,26 @@ class IpaProvider(object):
 
     def _log_info(self):
         """Output test run information to top of log file."""
-        self.results['info'] = {
-            'platform': self.provider,
-            'region': self.region,
-            'distro': self.distro_name,
-            'image': self.image_id,
-            'instance': self.running_instance_id,
-            'timestamp': self.time_stamp,
-            'log_file': self.log_file,
-            'results_file': self.results_file
-        }
+        if self.provider == 'ssh':
+            self.results['info'] = {
+                'platform': self.provider,
+                'distro': self.distro_name,
+                'image': self.instance_ip,
+                'timestamp': self.time_stamp,
+                'log_file': self.log_file,
+                'results_file': self.results_file
+            }
+        else:
+            self.results['info'] = {
+                'platform': self.provider,
+                'region': self.region,
+                'distro': self.distro_name,
+                'image': self.image_id,
+                'instance': self.running_instance_id,
+                'timestamp': self.time_stamp,
+                'log_file': self.log_file,
+                'results_file': self.results_file
+            }
 
         with open(self.log_file, 'a') as log_file:
             log_file.write(
@@ -346,12 +357,19 @@ class IpaProvider(object):
 
     def _set_results_dir(self):
         """Create results directory if not exists."""
-        self.results_dir = os.path.join(
-            self.results_dir,
-            self.provider,
-            self.image_id,
-            self.running_instance_id
-        )
+        if self.running_instance_id:
+            self.results_dir = os.path.join(
+                self.results_dir,
+                self.provider,
+                self.image_id,
+                self.running_instance_id
+            )
+        else:
+            self.results_dir = os.path.join(
+                self.results_dir,
+                self.provider,
+                self.instance_ip
+            )
 
         try:
             os.makedirs(self.results_dir)
@@ -575,7 +593,10 @@ class IpaProvider(object):
         Returns:
             A tuple with the exit code and results json.
         """
-        if self.running_instance_id:
+        if self.provider == 'ssh':
+            # SSH provider: instance must be running
+            pass
+        elif self.running_instance_id:
             # Use existing instance
             self._start_instance_if_stopped()
             self._set_image_id()
@@ -585,8 +606,9 @@ class IpaProvider(object):
             self._launch_instance()
             self.logger.debug('ID of instance: %s' % self.running_instance_id)
 
-        self._set_instance_ip()
-        self.logger.debug('IP of instance: %s' % self.instance_ip)
+        if not self.instance_ip:
+            self._set_instance_ip()
+            self.logger.debug('IP of instance: %s' % self.instance_ip)
 
         try:
             # Ensure instance running and SSH connection
@@ -615,7 +637,7 @@ class IpaProvider(object):
         with ipa_utils.ssh_config(self.ssh_user, self.ssh_private_key_file)\
                 as ssh_config:
             for item in self.test_files:
-                if item == 'test_hard_reboot':
+                if item == 'test_hard_reboot' and self.provider != 'ssh':
                     self.logger.info('Testing hard reboot')
                     start = time.time()
                     result = 1
@@ -709,7 +731,7 @@ class IpaProvider(object):
                             status = status or result
 
                 else:
-                    self.log.error(
+                    self.logger.error(
                         'Invalid test item in list: %s' % item
                     )
 
