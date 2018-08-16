@@ -1,3 +1,9 @@
+v2.0.0 (2018-08-15)
+===================
+
+- Remove deprecated --ssh-private-key option.
+  Option was renamed to --ssh-private-key-file.
+
 v1.4.0 (2018-08-15)
 ===================
 
