@@ -70,7 +70,7 @@ setup(
     zip_safe=False,
     keywords='ipa',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Testing',
