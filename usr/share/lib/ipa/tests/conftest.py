@@ -1,5 +1,6 @@
 import json
 import pytest
+import shlex
 
 from susepubliccloudinfoclient import infoserverrequests
 
@@ -18,10 +19,35 @@ def check_cloud_register(host):
 @pytest.fixture()
 def check_service(host):
     def f(service_name, running=True, enabled=True):
-        service = host.service(service_name)
+        is_running = None
+        is_enabled = None
+
+        if host.exists('systemctl'):
+            service = host.service(service_name)
+
+            if running is not None:
+                is_running = service.is_running
+
+            if enabled is not None:
+                is_enabled = service.is_enabled
+        else:
+            # SystemV Init
+            if running is not None:
+                is_running = host.run_expect(
+                    [0, 1, 3],
+                    'sudo /sbin/service {0} status'.format(service_name)
+                ).rc == 0
+
+            if enabled is not None:
+                is_enabled = bool(host.check_output(
+                    'find -L /etc/init.d/rc?.d/ -name S??{0}'.format(
+                        service_name
+                    ),
+                ))
+
         return all([
-            service.is_running == running,
-            service.is_enabled == enabled
+            is_running == running,
+            is_enabled == enabled
         ])
     return f
 
