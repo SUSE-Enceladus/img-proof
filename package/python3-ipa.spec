@@ -23,7 +23,7 @@ Release:        0
 Summary:        Command line and API for testing custom images
 License:        GPL-3.0-or-later
 Group:          Development/Languages/Python
-URL:            https://github.com/SUSE/ipa
+URL:            https://github.com/SUSE-Enceladus/ipa
 Source:         https://files.pythonhosted.org/packages/source/p/python3-ipa/%{name}-%{version}.tar.gz
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools

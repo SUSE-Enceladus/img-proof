@@ -42,10 +42,10 @@ Or you can install the latest development version from github:
 
 ```shell
 # latest source
-$ pip install git+https://github.com/SUSE/ipa.git
+$ pip install git+https://github.com/SUSE-Enceladus/ipa.git
 
 # specific branch or release
-$ pip install git+https://github.com/SUSE/ipa.git@{branch/release}
+$ pip install git+https://github.com/SUSE-Enceladus/ipa.git@{branch/release}
 ```
 
 See [PyPi
@@ -90,7 +90,7 @@ EC2
 
 For testing EC2 instances **ipa** will use the ec2utils configuration
 file located at \~/.ec2utils.conf. See
-[ec2utils](https://github.com/SUSE/Enceladus/tree/master/ec2utils) for
+[ec2utils](https://github.com/SUSE-Enceladus/Enceladus/tree/master/ec2utils) for
 an example configuration file.
 
 GCE
