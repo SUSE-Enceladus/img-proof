@@ -50,10 +50,10 @@ Or you can install the latest development version from github:
 
 ```shell
 # latest source
-$ pip install git+https://github.com/SUSE/ipa.git
+$ pip install git+https://github.com/SUSE-Enceladus/ipa.git
 
 # specific branch or release
-$ pip install git+https://github.com/SUSE/ipa.git@{branch/release}
+$ pip install git+https://github.com/SUSE-Enceladus/ipa.git@{branch/release}
 ```
 
 See [PyPi

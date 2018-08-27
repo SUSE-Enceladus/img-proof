@@ -49,7 +49,7 @@ setup(
     long_description_content_type="text/markdown",
     author="SUSE",
     author_email='public-cloud-dev@susecloud.net',
-    url='https://github.com/SUSE/pubcloud/ipa',
+    url='https://github.com/SUSE-Enceladus/ipa',
     packages=find_packages(),
     package_dir={'ipa':
                  'ipa'},

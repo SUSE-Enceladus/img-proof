@@ -67,7 +67,7 @@ on writing infrastructure tests.
 > **ipa** currently passes the Pytest option `-x` (stop on first
 > failure) through as `--early-exit`. If there's an interest or need for
 > any other options/args please submit an issue to
-> [Github](https://github.com/SUSE/ipa/issues).
+> [Github](https://github.com/SUSE-Enceladus/ipa/issues).
 
 CLI Overview
 ============
@@ -106,13 +106,13 @@ Issues/Enhancements
 ===================
 
 Please submit issues and requests to
-[Github](https://github.com/SUSE/ipa/issues).
+[Github](https://github.com/SUSE-Enceladus/ipa/issues).
 
 Contributing
 ============
 
 Contributions to **ipa** are welcome and encouraged. See
-[CONTRIBUTING](https://github.com/SUSE/ipa/blob/master/CONTRIBUTING.md)
+[CONTRIBUTING](https://github.com/SUSE-Enceladus/ipa/blob/master/CONTRIBUTING.md)
 for info on getting started.
 
 License
@@ -121,5 +121,5 @@ License
 Copyright (c) 2018 SUSE LLC.
 
 Distributed under the terms of GPL-3.0+ license, see
-[LICENSE](https://github.com/SUSE/ipa/blob/master/LICENSE)
+[LICENSE](https://github.com/SUSE-Enceladus/ipa/blob/master/LICENSE)
 for details.

@@ -2,7 +2,7 @@ Installation
 ============
 
 ```shell
-$ git clone https://github.com/SUSE/ipa.git
+$ git clone https://github.com/SUSE-Enceladus/ipa.git
 $ cd ipa
 
 # Activate virtual Environment then install
