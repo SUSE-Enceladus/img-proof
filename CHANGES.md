@@ -1,3 +1,16 @@
+v2.0.1 (2018-09-12)
+===================
+
+- Update project status to stable.
+- Update root pass test to work with SLE11.
+  [\#125](https://github.com/SUSE-Enceladus/ipa/pull/125)
+- Account for sysvinit in SLE11.
+  [\#126](https://github.com/SUSE-Enceladus/ipa/pull/126)
+- Convert azure regions from id to display format.
+  [\#127](https://github.com/SUSE-Enceladus/ipa/pull/127)
+- Update repo URL to correct org.
+  [\#128](https://github.com/SUSE-Enceladus/ipa/pull/128)
+
 v2.0.0 (2018-08-15)
 ===================
 
