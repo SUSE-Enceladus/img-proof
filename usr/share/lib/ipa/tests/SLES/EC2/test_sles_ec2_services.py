@@ -7,5 +7,12 @@ import pytest
     ('cloud-config'),
     ('cloud-final')
 ])
-def test_sles_ec2_services(check_service, name):
-    assert check_service(name)
+def test_sles_ec2_services(check_service, host, name):
+    assert check_service(name, running=None)
+
+    if host.exists('systemctl'):
+        # No clear way to check a service exited successfully using sysvinit
+        output = host.run(
+            "systemctl show -p Result {0} | sed 's/Result=//g'".format(name)
+        )
+        assert output.stdout.strip() == 'success'
