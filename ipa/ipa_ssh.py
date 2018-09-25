@@ -30,6 +30,7 @@ class SSHProvider(IpaProvider):
     """Class for testing instances in Azure."""
 
     def __init__(self,
+                 accelerated_networking=None,  # Not used in SSH
                  access_key_id=None,  # Not used in SSH
                  account_name=None,  # Not used in SSH
                  cleanup=None,

@@ -40,6 +40,7 @@ class GCEProvider(LibcloudProvider):
     """Provider class for testing Google Compute Engine (GCE) images."""
 
     def __init__(self,
+                 accelerated_networking=None,  # Not used in GCE
                  access_key_id=None,  # Not used in GCE
                  account_name=None,  # Not used in GCE
                  cleanup=None,
