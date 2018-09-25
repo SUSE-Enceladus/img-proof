@@ -1,12 +1,12 @@
 [![Build Status](https://travis-ci.com/SUSE-Enceladus/ipa.svg?branch=master)](https://travis-ci.com/SUSE-Enceladus/ipa)
 
-**IPA** (Image Proofing App)
+![IPA](https://raw.githubusercontent.com/SUSE-Enceladus/ipa/master/docs/assets/images/ipa-logo.png "IPA Logo")
 
 overview
 ========
 
-**IPA** provides a command line utility to test images in the Public
-Cloud (AWS, Azure, GCE, etc.).
+**IPA** (Image Proofing App) provides a command line utility to test
+images in the Public Cloud (AWS, Azure, GCE, etc.).
 
 With **IPA** you can now test custom images in a provider agnostic way
 with one tool and one API. In the first release, **IPA** supports the
