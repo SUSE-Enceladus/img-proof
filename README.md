@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/SUSE-Enceladus/ipa.svg?branch=master)](https://travis-ci.com/SUSE-Enceladus/ipa)
 
-![IPA](https://raw.githubusercontent.com/SUSE-Enceladus/ipa/master/docs/assets/images/ipa-logo.png "IPA Logo")
+[![IPA](https://raw.githubusercontent.com/SUSE-Enceladus/ipa/master/docs/assets/images/ipa-logo.png "IPA Logo")](https://github.com/SUSE-Enceladus/ipa)
 
 overview
 ========
