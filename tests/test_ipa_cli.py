@@ -62,7 +62,7 @@ def test_cli_provider_missing():
     runner = CliRunner()
     result = runner.invoke(main, ['test'])
     assert result.exit_code != 0
-    assert 'Error: Missing argument "provider"' in result.output
+    assert 'Error: Missing argument' in result.output
 
 
 def test_cli_invalid_provider():
@@ -70,7 +70,7 @@ def test_cli_invalid_provider():
     runner = CliRunner()
     result = runner.invoke(main, ['test', 'Provider'])
     assert result.exit_code != 0
-    assert 'Error: Invalid value for "provider"' in result.output
+    assert 'Error: Invalid value for' in result.output
 
 
 def test_cli_invalid_distro():
