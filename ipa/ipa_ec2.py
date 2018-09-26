@@ -39,6 +39,7 @@ class EC2Provider(LibcloudProvider):
     """Provider class for testing AWS EC2 images."""
 
     def __init__(self,
+                 accelerated_networking=None,  # Not used in EC2
                  access_key_id=None,
                  account_name=None,
                  cleanup=None,

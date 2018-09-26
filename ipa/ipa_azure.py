@@ -37,6 +37,7 @@ class AzureProvider(IpaProvider):
     """Class for testing instances in Azure."""
 
     def __init__(self,
+                 accelerated_networking=False,
                  access_key_id=None,  # Not used in Azure
                  account_name=None,
                  cleanup=None,
@@ -124,6 +125,7 @@ class AzureProvider(IpaProvider):
                 self.ssh_private_key_file
             )
 
+        self.accelerated_networking = accelerated_networking
         self.ssh_user = ssh_user or AZURE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
         self.subnet_id = subnet_id
@@ -139,7 +141,7 @@ class AzureProvider(IpaProvider):
 
     def _create_network_interface(
         self, ip_config_name, nic_name, public_ip, region,
-        resource_group_name, subnet
+        resource_group_name, subnet, accelerated_networking=False
     ):
         """
         Create a network interface in the resource group.
@@ -159,6 +161,9 @@ class AzureProvider(IpaProvider):
                 },
             }]
         }
+
+        if accelerated_networking:
+            nic_config['enable_accelerated_networking'] = True
 
         try:
             nic_setup = self.network.network_interfaces.create_or_update(
@@ -447,7 +452,7 @@ class AzureProvider(IpaProvider):
             )
             interface = self._create_network_interface(
                 self.ip_config_name, self.nic_name, public_ip, self.region,
-                self.running_instance_id, subnet
+                self.running_instance_id, subnet, self.accelerated_networking
             )
 
             # Get dictionary of VM parameters and create instance.

@@ -82,6 +82,11 @@ def main(context, no_color):
 
 @click.command(context_settings=dict(token_normalize_func=str.lower))
 @click.option(
+    '--accelerated-networking',
+    is_flag=True,
+    help='Enable accelerated networking in Azure instance network interface.'
+)
+@click.option(
     '--access-key-id',
     help='EC2 access key ID for login credentials.'
 )
@@ -236,6 +241,7 @@ def main(context, no_color):
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
+         accelerated_networking,
          access_key_id,
          account,
          cleanup,
@@ -271,6 +277,7 @@ def test(context,
     try:
         status, results = test_image(
             provider,
+            accelerated_networking,
             access_key_id,
             account,
             cleanup,

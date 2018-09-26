@@ -35,6 +35,7 @@ from ipa.ipa_utils import get_test_files
 
 
 def test_image(provider_name,
+               accelerated_networking=None,
                access_key_id=None,
                account=None,
                cleanup=None,
@@ -80,6 +81,7 @@ def test_image(provider_name,
         )
 
     provider = provider_class(
+        accelerated_networking=accelerated_networking,
         access_key_id=access_key_id,
         account_name=account,
         cleanup=cleanup,
