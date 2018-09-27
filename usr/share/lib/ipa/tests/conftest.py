@@ -129,10 +129,16 @@ def determine_provider(host):
 def determine_region(host):
     def f(provider):
         if provider == 'ec2':
-            result = host.run('ec2metadata --availability-zone')
+            result = host.run(
+                'curl http://169.254.169.254/latest/meta-data/placement/'
+                'availability-zone'
+            )
             region = result.stdout.strip()[:-1]
         elif provider == 'gce':
-            result = host.run('gcemetadata --query instance --zone')
+            result = host.run(
+                'curl "http://metadata.google.internal/computeMetadata/v1/'
+                'instance/zone" -H "Metadata-Flavor: Google"'
+            )
             # returns zone like: us-west1-a
             region = result.stdout.strip().rsplit('/', maxsplit=1)[-1]
             # returns region: us-west1
