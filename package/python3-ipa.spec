@@ -18,7 +18,7 @@
 
 %bcond_without test
 Name:           python3-ipa
-Version:        2.0.1
+Version:        2.1.0
 Release:        0
 Summary:        Command line and API for testing custom images
 License:        GPL-3.0-or-later
