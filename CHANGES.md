@@ -1,3 +1,15 @@
+v2.1.0 (2018-10-01)
+===================
+
+- Add IPA logo.
+- Cloud init services are one-shot in EC2.
+  [\#131](https://github.com/SUSE-Enceladus/ipa/pull/131)
+- Add azure accelerated networking option.
+  [\#132](https://github.com/SUSE-Enceladus/ipa/pull/132)
+- Curl directly for placement in metadata when determining
+  region.
+  [\#133](https://github.com/SUSE-Enceladus/ipa/pull/133)
+
 v2.0.1 (2018-09-12)
 ===================
 
