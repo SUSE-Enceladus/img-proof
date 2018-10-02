@@ -20,3 +20,11 @@ header li, header ul li + li + li {
 header ul li + li + li + li {
   border-right: none;
 }
+
+.logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  padding-bottom: 20px;
+}
