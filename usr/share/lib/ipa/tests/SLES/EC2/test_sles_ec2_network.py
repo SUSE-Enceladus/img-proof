@@ -2,15 +2,22 @@ import pytest
 
 
 types = {
-    'c5d.large': 15.0,
-    'd2.xlarge': 15.0,
-    'i3.8xlarge': 15.0,
-    'i3.metal': 15.0,
-    'm5.large': 15.0,
-    'm5d.large': 15.0,
-    'r5.24xlarge': 15.0,
-    't3.small': 15.0
+    'c5d.large': 15,
+    'd2.xlarge': 15,
+    'i3.8xlarge': 15,
+    'i3.metal': 15,
+    'm5.large': 15,
+    'm5d.large': 15,
+    'r5.24xlarge': 15,
+    't3.small': 15
 }
+
+special_regions = [
+    'ap-northeast-3',
+    'cn-north-1',
+    'cn-northwest-1',
+    'us-gov-west-1'
+]
 
 
 def test_sles_ec2_network(determine_region, host):
@@ -33,19 +40,23 @@ def test_sles_ec2_network(determine_region, host):
 
     region = determine_region('ec2')
 
+    if region in special_regions:
+        pytest.skip(
+            'Skipped special region: {0}'.format(region)
+        )
+
     url = 'https://suse-download-test-{0}.s3.amazonaws.com/' \
           'SLE-15-Installer-DVD-x86_64-GM-DVD2.iso'.format(
               region
           )
 
     dl_result = host.run(
-        'curl -o /dev/null -skw "%{{time_total}} %{{size_download}}"'
-        ' {0}'.format(url)
+        'curl -o /dev/null --max-time {0} --silent '
+        '--write-out "%{{size_download}}" {1}'.format(
+            types[instance_type], url
+        )
     )
 
-    dl_time, size = dl_result.stdout.strip().split(' ')
+    size = dl_result.stdout.strip()
     if size != '1214599168':
         raise Exception('Download failed!')
-
-    if float(dl_time) > types[instance_type]:
-        raise Exception('Download took too long!')
