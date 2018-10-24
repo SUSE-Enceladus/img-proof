@@ -338,7 +338,7 @@ def test_cli_clear_history():
     with runner.isolated_filesystem():
         try:
             os.makedirs('test')
-        except OSError as error:
+        except OSError:
             pass
 
         with open('test/.history', 'w') as history_log:
@@ -368,7 +368,7 @@ def test_cli_delete_history_item():
     with runner.isolated_filesystem():
         try:
             os.makedirs('test')
-        except OSError as error:
+        except OSError:
             pass
 
         with open('test/.history', 'w') as history_log:
