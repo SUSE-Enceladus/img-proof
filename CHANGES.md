@@ -1,3 +1,17 @@
+v2.2.0 (2018-10-31)
+===================
+
+- Add network test for sles in ec2.
+  [\#134](https://github.com/SUSE-Enceladus/ipa/pull/134)
+- Remove azure billing tag test.
+  [\#136](https://github.com/SUSE-Enceladus/ipa/pull/136)
+- Fix typo in azure services test name.
+  [\#138](https://github.com/SUSE-Enceladus/ipa/pull/138)
+- Add python3.7 to CI testing.
+  [\#140](https://github.com/SUSE-Enceladus/ipa/pull/140)
+- Add repos for 12SP4 in conftest
+  [\#143](https://github.com/SUSE-Enceladus/ipa/pull/143)
+
 v2.1.0 (2018-10-01)
 ===================
 
