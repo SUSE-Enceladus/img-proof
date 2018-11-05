@@ -42,6 +42,7 @@ from ipa.ipa_constants import (
 from ipa.ipa_opensuse_leap import openSUSE_Leap
 from ipa.ipa_sles import SLES
 from ipa.ipa_exceptions import (
+    IpaException,
     IpaProviderException,
     IpaSSHException,
     IpaUtilsException
@@ -92,8 +93,13 @@ class IpaProvider(object):
 
         # Get ipa ini config file
         self.config = config or IPA_CONFIG_FILE
-        self.ipa_config = ipa_utils.get_config(self.config)
-        self.logger.debug('Using ipa config file: %s' % self.config)
+
+        try:
+            self.ipa_config = ipa_utils.get_config(self.config)
+            self.logger.debug('Using ipa config file: %s' % self.config)
+        except IpaException:
+            self.ipa_config = None
+            self.logger.debug('IPA config file not found: %s' % self.config)
 
         self.description = description
         self.host_key_fingerprint = None
@@ -185,7 +191,7 @@ class IpaProvider(object):
         if arg or arg is False:
             value = arg
 
-        elif config_key:
+        elif config_key and self.ipa_config:
             with ipa_utils.ignored(IpaUtilsException):
                 value = ipa_utils.get_from_config(
                     self.ipa_config,
@@ -254,16 +260,17 @@ class IpaProvider(object):
             self.test_dirs.update(test_dirs.split(','))
 
         with ipa_utils.ignored(IpaUtilsException):
-            # ipa config arg
-            test_dirs = ipa_utils.get_from_config(
-                self.ipa_config,
-                self.provider,
-                'ipa',
-                'test_dirs'
-            )
+            if self.ipa_config:
+                # ipa config arg
+                test_dirs = ipa_utils.get_from_config(
+                    self.ipa_config,
+                    self.provider,
+                    'ipa',
+                    'test_dirs'
+                )
 
-            if test_dirs:
-                self.test_dirs.update(test_dirs.split(','))
+                if test_dirs:
+                    self.test_dirs.update(test_dirs.split(','))
 
         if not no_default_test_dirs:
             self.test_dirs.update(TEST_PATHS)
