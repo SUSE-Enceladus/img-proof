@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.com/SUSE-Enceladus/ipa.svg?branch=master)](https://travis-ci.com/SUSE-Enceladus/ipa)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/845fb1620f334ae09488e8137dd6d256)](https://www.codacy.com/app/default-org/ipa?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=SUSE-Enceladus/ipa&amp;utm_campaign=Badge_Grade)
+[![Documentation Status](https://readthedocs.org/projects/ipa/badge/?version=latest)](https://ipa.readthedocs.io/en/latest/?badge=latest)
 [![Py Versions](https://img.shields.io/pypi/pyversions/python3-ipa.svg)](https://pypi.org/project/python3-ipa/)
 [![License](https://img.shields.io/pypi/l/python3-ipa.svg)](https://pypi.org/project/python3-ipa/)
 
