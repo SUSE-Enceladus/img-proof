@@ -56,7 +56,7 @@ Requirements
 -   PyYaml
 -   testinfra
 
-# [Docs](https://suse-enceladus.github.io/ipa/)
+# [Docs](https://ipa.readthedocs.io/en/latest/)
 
 Tests
 =====
