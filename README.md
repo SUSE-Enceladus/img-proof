@@ -3,7 +3,7 @@
 [![Py Versions](https://img.shields.io/pypi/pyversions/python3-ipa.svg)](https://pypi.org/project/python3-ipa/)
 [![License](https://img.shields.io/pypi/l/python3-ipa.svg)](https://pypi.org/project/python3-ipa/)
 
-[![IPA](https://raw.githubusercontent.com/SUSE-Enceladus/ipa/master/docs/assets/images/ipa-logo.png "IPA Logo")](https://github.com/SUSE-Enceladus/ipa)
+[![IPA](https://raw.githubusercontent.com/SUSE-Enceladus/ipa/master/docs/source/_images/logo.png "IPA Logo")](https://github.com/SUSE-Enceladus/ipa)
 
 overview
 ========
