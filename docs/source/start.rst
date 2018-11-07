@@ -152,7 +152,7 @@ The following command will generate the necessary json file:
 
 .. code-block:: console
     
-   $ az ad sp create-for-rbac --sdk-auth > mycredentials.json
+   $ az ad sp create-for-rbac --sdk-auth --name "{name}" > mycredentials.json
 
 See `Azure docs`_ for more info on creating a service principal json file.
 
