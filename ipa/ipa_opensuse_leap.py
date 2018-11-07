@@ -2,7 +2,7 @@
 
 """openSUSE Leap distro module and sync points."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2018 SUSE LLC
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -25,7 +25,3 @@ from ipa.ipa_sles import SLES
 
 class openSUSE_Leap(SLES):
     """openSUSE Leap distro class."""
-
-    def get_refresh_repo_cmd(self):
-        """Return refresh repo command for SLES."""
-        return 'zypper -n --gpg-auto-import-keys refresh'
