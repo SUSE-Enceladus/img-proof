@@ -69,11 +69,13 @@ class TestGCEProvider(object):
 
         self.kwargs['ssh_private_key_file'] = 'tests/data/ida_test'
 
+    @patch.object(GCEProvider, '_validate_region')
     @patch.object(GCEProvider, '_get_ssh_public_key')
     @patch.object(GCEProvider, '_get_driver')
     def test_gce_get_service_account_info(self,
                                           mock_get_driver,
-                                          mock_get_ssh_key):
+                                          mock_get_ssh_key,
+                                          mock_validate_region):
         """Test get service account info method."""
         mock_get_driver.return_value = None
         mock_get_ssh_key.return_value = None
@@ -85,12 +87,14 @@ class TestGCEProvider(object):
             'test@test.iam.gserviceaccount.com'
         assert provider.service_account_project == 'test'
 
+    @patch.object(GCEProvider, '_validate_region')
     @patch.object(GCEProvider, '_get_ssh_public_key')
     @patch.object(GCEProvider, '_get_driver')
     def test_gce_get_service_account_info_invalid(
         self,
         mock_get_driver,
-        mock_get_ssh_key
+        mock_get_ssh_key,
+        mock_validate_region
     ):
         """Test get service account info method."""
         mock_get_driver.return_value = None
@@ -108,11 +112,13 @@ class TestGCEProvider(object):
             'docs for information on GCE configuration.'
         assert str(error.value) == msg
 
+    @patch.object(GCEProvider, '_validate_region')
     @patch.object(GCEProvider, '_get_ssh_public_key')
     @patch('libcloud.compute.drivers.gce.GCENodeDriver')
     def test_gce_get_driver(self,
                             mock_node_driver,
-                            mock_get_ssh_key):
+                            mock_get_ssh_key,
+                            mock_validate_region):
         """Test gce get driver method."""
         driver = MagicMock()
 
@@ -122,11 +128,13 @@ class TestGCEProvider(object):
         provider = GCEProvider(**self.kwargs)
         assert driver == provider.compute_driver
 
+    @patch.object(GCEProvider, '_validate_region')
     @patch.object(GCEProvider, '_get_ssh_public_key')
     @patch.object(GCEProvider, '_get_driver')
     def test_gce_get_instance(self,
                               mock_get_driver,
-                              mock_get_ssh_key):
+                              mock_get_ssh_key,
+                              mock_validate_region):
         """Test gce get instance method."""
         instance = MagicMock()
         driver = MagicMock()
@@ -154,16 +162,26 @@ class TestGCEProvider(object):
         assert str(error.value) == "Instance with id: test-instance cannot" \
             " be found: 'Broken'"
 
+    @patch.object(GCEProvider, '_validate_region')
     @patch.object(GCEProvider, '_get_driver')
-    def test_gce_get_ssh_public_key(self, mock_get_driver):
+    def test_gce_get_ssh_public_key(
+        self,
+        mock_get_driver,
+        mock_validate_region
+    ):
         """Test GCE get instance method."""
         mock_get_driver.return_value = None
 
         provider = GCEProvider(**self.kwargs)
         assert provider.ssh_public_key
 
+    @patch.object(GCEProvider, '_validate_region')
     @patch.object(GCEProvider, '_get_driver')
-    def test_gce_get_subnet(self, mock_get_driver):
+    def test_gce_get_subnet(
+        self,
+        mock_get_driver,
+        mock_validate_region
+    ):
         """Test GCE get subnetwork method."""
         subnetwork = MagicMock()
         driver = MagicMock()
@@ -176,8 +194,13 @@ class TestGCEProvider(object):
 
         assert result == subnetwork
 
+    @patch.object(GCEProvider, '_validate_region')
     @patch.object(GCEProvider, '_get_driver')
-    def test_gce_get_subnet_exception(self, mock_get_driver):
+    def test_gce_get_subnet_exception(
+        self,
+        mock_get_driver,
+        mock_validate_region
+    ):
         """Test GCE get subnetwork method."""
         driver = MagicMock()
         driver.ex_get_subnetwork.side_effect = Exception('Cannot find subnet!')
@@ -192,13 +215,15 @@ class TestGCEProvider(object):
 
         assert msg == str(error.value)
 
+    @patch.object(GCEProvider, '_validate_region')
     @patch.object(GCEProvider, '_get_subnet')
     @patch('ipa.ipa_utils.generate_instance_name')
     @patch.object(GCEProvider, '_get_driver')
     def test_gce_launch_instance(self,
                                  mock_get_driver,
                                  mock_generate_instance_name,
-                                 mock_get_subnet):
+                                 mock_get_subnet,
+                                 mock_validate_region):
         """Test GCE launch instance method."""
         driver = MagicMock()
         instance = MagicMock()
@@ -209,14 +234,6 @@ class TestGCEProvider(object):
         mock_generate_instance_name.return_value = 'test-instance'
 
         provider = GCEProvider(**self.kwargs)
-        provider.region = None
-
-        with pytest.raises(GCEProviderException) as error:
-            provider._launch_instance()
-
-        assert str(error.value) == \
-            'Zone is required to launch a new GCE instance. ' \
-            'Example: us-west1-a'
 
         provider.region = 'us-west1-a'
         provider.subnet_id = 'test-subnet'
@@ -230,13 +247,15 @@ class TestGCEProvider(object):
 
         assert provider.running_instance_id == 'test-instance'
 
+    @patch.object(GCEProvider, '_validate_region')
     @patch.object(GCEProvider, '_get_ssh_public_key')
     @patch.object(GCEProvider, '_get_driver')
     @patch.object(GCEProvider, '_get_instance')
     def test_gce_set_image_id(self,
                               mock_get_instance,
                               mock_get_driver,
-                              mock_get_ssh_key):
+                              mock_get_ssh_key,
+                              mock_validate_region):
         """Test ec2 provider set image id method."""
         instance = MagicMock()
         instance.image = 'test-image'
@@ -249,3 +268,26 @@ class TestGCEProvider(object):
 
         assert provider.image_id == instance.image
         assert mock_get_instance.call_count == 1
+
+    @patch.object(GCEProvider, '_get_driver')
+    def test_gce_validate_region(self, mock_get_driver):
+        """Test ec2 provider set image id method."""
+        driver = MagicMock()
+        driver.ex_get_zone.return_value = None
+        mock_get_driver.return_value = driver
+
+        with pytest.raises(GCEProviderException) as error:
+            GCEProvider(**self.kwargs)
+
+        assert str(error.value) == \
+            'Zone is required for GCE provider: Example: us-west1-a'
+
+        self.kwargs['region'] = 'fake'
+
+        with pytest.raises(GCEProviderException) as error:
+            GCEProvider(**self.kwargs)
+
+        driver.ex_get_zone.assert_called_once_with('fake')
+
+        assert str(error.value) == \
+            'fake is not a valid GCE zone. Example: us-west1-a'

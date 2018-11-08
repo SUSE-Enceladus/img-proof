@@ -132,6 +132,8 @@ class GCEProvider(LibcloudProvider):
         self._get_service_account_info()
         self.compute_driver = self._get_driver()
 
+        self._validate_region()
+
     def _get_service_account_info(self):
         """Retrieve json dict from service account file."""
         with open(self.service_account_file, 'r') as f:
@@ -206,12 +208,6 @@ class GCEProvider(LibcloudProvider):
 
     def _launch_instance(self):
         """Launch an instance of the given image."""
-        if not self.region:
-            raise GCEProviderException(
-                'Zone is required to launch a new GCE instance. '
-                'Example: us-west1-a'
-            )
-
         metadata = {'key': 'ssh-keys', 'value': self.ssh_public_key}
         self.running_instance_id = ipa_utils.generate_instance_name(
             'gce-ipa-test'
@@ -258,3 +254,24 @@ class GCEProvider(LibcloudProvider):
         """If existing image used get image id."""
         instance = self._get_instance()
         self.image_id = instance.image
+
+    def _validate_region(self):
+        """Validate region was passed in and is a valid GCE zone."""
+        if not self.region:
+            raise GCEProviderException(
+                'Zone is required for GCE provider: '
+                'Example: us-west1-a'
+            )
+
+        try:
+            zone = self.compute_driver.ex_get_zone(self.region)
+        except Exception:
+            zone = None
+
+        if not zone:
+            raise GCEProviderException(
+                '{region} is not a valid GCE zone. '
+                'Example: us-west1-a'.format(
+                    region=self.region
+                )
+            )
