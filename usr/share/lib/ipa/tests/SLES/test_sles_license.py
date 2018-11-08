@@ -1,22 +1,15 @@
-def test_sles_license(host):
-    license_dir = '/etc/YaST2/licenses/base'
-    license_content = 'SUSE End User License Agreement'
+import pytest
 
-    lic_dir = host.file(license_dir)
-    if not lic_dir.exists:
-        license_dir = '/etc/YaST2/licenses/SLES'
-        lic_dir = host.file(license_dir)
 
-    assert lic_dir.exists
-    assert lic_dir.is_directory
+def test_sles_license(host, confirm_sles_license_content):
+    license_dirs = [
+        '/etc/YaST2/licenses/base/',
+        '/etc/YaST2/licenses/SLES/'
+    ]
+    result = confirm_sles_license_content(license_dirs)
 
-    license = host.file(license_dir + '/license.txt')
-    assert license.exists
-    assert license.is_file
-
-    try:
-        assert license.contains(license_content)
-    except Exception:
-        # SLE15 license text changed
-        license_content = 'SUSE(R) Linux Enterprise End User License Agreement'
-        assert license.contains(license_content)
+    if result is False:
+        pytest.fail(
+            'SUSE End User License Agreement not found '
+            'or license has incorrect content.'
+        )

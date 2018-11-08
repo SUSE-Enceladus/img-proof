@@ -265,15 +265,30 @@ def get_sles_repos():
 @pytest.fixture()
 def is_sles_sap(host):
     def f():
-        license_dir = '/etc/YaST2/licenses/ha'
-        lic_dir = host.file(license_dir)
-        try:
-            assert lic_dir.exists
-            assert lic_dir.is_directory
-        except AssertionError:
-            # SLE15 dir changed
-            license_dir = '/etc/YaST2/licenses/SLES_SAP'
+        sap = host.file('/etc/products.d/SLES_SAP.prod')
+        return sap.exists and sap.is_file
+    return f
+
+
+@pytest.fixture()
+def confirm_sles_license_content(host):
+    def f(license_dirs):
+        license_content = [
+            'SUSE End User License Agreement',
+            'SUSE(R) Linux Enterprise End User License Agreement',
+            'SUSE® Linux Enterprise End User License Agreement'
+        ]
+
+        for license_dir in license_dirs:
             lic_dir = host.file(license_dir)
-            return lic_dir.exists and lic_dir.is_directory
-        return True
+
+            if lic_dir.exists and lic_dir.is_directory:
+                lic = host.file(license_dir + 'license.txt')
+                return all([
+                    lic.exists,
+                    lic.is_file,
+                    any(lic.contains(content) for content in license_content)
+                ])
+
+        return False
     return f
