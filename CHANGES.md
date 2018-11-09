@@ -1,3 +1,21 @@
+v2.3.0 (2018-11-09)
+===================
+
+- Move docs to sphinx.
+  [\#141](https://github.com/SUSE-Enceladus/ipa/pull/141)
+- Update python version support.
+  [\#142](https://github.com/SUSE-Enceladus/ipa/pull/142)
+- Allow ipa to run without config file.
+  [\#137](https://github.com/SUSE-Enceladus/ipa/pull/137)
+- No need for gpg auto import keys.
+  [\#144](https://github.com/SUSE-Enceladus/ipa/pull/144)
+- Add --name option to az creds example.
+  [\#145](https://github.com/SUSE-Enceladus/ipa/pull/145)
+- Explicit validation of GCE region input.
+  [\#146](https://github.com/SUSE-Enceladus/ipa/pull/146)
+- Update license tests for content changes.
+  [\#147](https://github.com/SUSE-Enceladus/ipa/pull/147)
+
 v2.2.0 (2018-10-31)
 ===================
 
