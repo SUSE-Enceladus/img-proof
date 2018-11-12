@@ -15,3 +15,10 @@ script:
   - pytest --cov=ipa
   - flake8 ipa
   - flake8 tests --exclude=data
+deploy:
+  provider: pypi
+  user: suse-pub-cloud-dev
+  password:
+    secure: "W4RFQBaN4dELJFYl3MP58ybI3GEdKOuN7SfWbHHmaBHp863hUMUzWiQpMHStDDgvSq+nFtsKEPD+XFQc6+AL+ttIvRVBj6qXbAfWCAG1xEFl0LPzBCKVr9xVw2QAVPtNXfxurVIE0U/zEN3OcNTEAadE2cDdHFj2XnxyaVRVfPwOzwIpSIjfnYI2ZiiEMlsouTdc+j8mUo5UawoXwj9BpjDRA3K8i6/HIMhH/EBN6urOpSg5AzFhSKQIdXlPu0civ3B1/5/D6GXxedqJ8zMIBMWXIIGbs5IKAsWOsswApofDjeT2kWBMEIz1fGupYQlfDOps2tgnExORYuuSEkW9r5Jy2hst+sZXDgFaLUZo3i3UHckZRaMHNZlW8jieoIfNDUD1r3Vf4r0wrq9Ptbkxuo6D7AeJsgOhKnJRPlniLZTmlix2kUQtyfzF8ZHNiZIzQDmgqWruOh4xLKAM5KXTWR1hY6x0IScDj3fEIGOsqclwGozZn37KJE87DUskHvdNKOO9TrNX8YQEy8q2V0SWqlbRldWJ6A6kcBL2mri9aWg85uF+9yOVerzckIWfkqN6nuYEJ0x7sFvLyBzIaXEpVV9zASSv5iiuBpkKTSIJQr/NGwgDwu2Al/E4N82eFjt+2zmfn9mxdHPQvUV59Yn2VTm42dnvgu8+oZZTcTCTP9E="
+    on:
+      tags: true
