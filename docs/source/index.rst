@@ -20,6 +20,7 @@ IPA Documentation
 
    Getting Started <start>
    Usage <usage>
+   examples
    tests
    API <api>
    Modules <modules/ipa>
