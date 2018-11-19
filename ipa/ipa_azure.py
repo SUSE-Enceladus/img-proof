@@ -66,7 +66,8 @@ class AzureProvider(IpaProvider):
                  test_files=None,
                  timeout=None,
                  vnet_name=None,
-                 vnet_resource_group=None):
+                 vnet_resource_group=None,
+                 collect_vm_info=None):
         """Initialize Azure Provider class."""
         super(AzureProvider, self).__init__('azure',
                                             cleanup,
@@ -86,7 +87,8 @@ class AzureProvider(IpaProvider):
                                             running_instance_id,
                                             test_dirs,
                                             test_files,
-                                            timeout)
+                                            timeout,
+                                            collect_vm_info)
 
         if subnet_id and not (vnet_name and vnet_resource_group):
             raise AzureProviderException(
