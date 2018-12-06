@@ -59,6 +59,7 @@ class EC2Provider(LibcloudProvider):
                  results_dir=None,
                  running_instance_id=None,
                  secret_access_key=None,
+                 security_group_id=None,
                  service_account_file=None,  # Not used in EC2
                  ssh_key_name=None,
                  ssh_private_key_file=None,
@@ -123,6 +124,10 @@ class EC2Provider(LibcloudProvider):
         self.secret_access_key = (
             secret_access_key or
             self._get_from_ec2_config('secret_access_key')
+        )
+        self.security_group_id = (
+            security_group_id or
+            self._get_value('security_group_id')
         )
         self.ssh_key_name = (
             ssh_key_name or
@@ -268,6 +273,9 @@ class EC2Provider(LibcloudProvider):
 
         if self.subnet_id:
             kwargs['ex_subnet'] = self._get_subnet(self.subnet_id)
+
+        if self.security_group_id:
+            kwargs['ex_security_group_ids'] = [self.security_group_id]
 
         instance = self.compute_driver.create_node(**kwargs)
 

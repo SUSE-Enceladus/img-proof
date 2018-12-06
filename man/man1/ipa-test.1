@@ -1,4 +1,4 @@
-.TH "IPA TEST" "1" "15-Aug-2018" "" "ipa test Manual"
+.TH "IPA TEST" "1" "06-Dec-2018" "2.3.0" "ipa test Manual"
 .SH NAME
 ipa\-test \- Test image in the given framework using the...
 .SH SYNOPSIS
@@ -7,6 +7,9 @@ ipa\-test \- Test image in the given framework using the...
 .SH DESCRIPTION
 Test image in the given framework using the supplied test files.
 .SH OPTIONS
+.TP
+\fB\-\-accelerated\-networking\fP
+Enable accelerated networking in Azure instance network interface.
 .TP
 \fB\-\-access\-key\-id\fP TEXT
 EC2 access key ID for login credentials.
@@ -70,6 +73,9 @@ The ID or Name of running instance to test.
 .TP
 \fB\-\-secret\-access\-key\fP TEXT
 EC2 secret access key for login credentials.
+.TP
+\fB\-\-security\-group\-id\fP TEXT
+EC2 security group id to assign to instances VPC.
 .TP
 \fB\-\-service\-account\-file\fP TEXT
 GCE service account file for login credentials.
