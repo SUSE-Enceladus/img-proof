@@ -57,6 +57,7 @@ class AzureProvider(IpaProvider):
                  results_dir=None,
                  running_instance_id=None,
                  secret_access_key=None,  # Not used in Azure
+                 security_group_id=None,  # Not used in Azure
                  service_account_file=None,
                  ssh_key_name=None,  # Not used in Azure
                  ssh_private_key_file=None,

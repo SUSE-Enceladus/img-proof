@@ -195,6 +195,10 @@ def main(context, no_color):
     help='EC2 secret access key for login credentials.'
 )
 @click.option(
+    '--security-group-id',
+    help='EC2 security group id to assign to instances VPC.'
+)
+@click.option(
     '--service-account-file',
     help='GCE service account file for login credentials.'
 )
@@ -261,6 +265,7 @@ def test(context,
          results_dir,
          running_instance_id,
          secret_access_key,
+         security_group_id,
          service_account_file,
          ssh_key_name,
          ssh_private_key_file,
@@ -297,6 +302,7 @@ def test(context,
             results_dir,
             running_instance_id,
             secret_access_key,
+            security_group_id,
             service_account_file,
             ssh_key_name,
             ssh_private_key_file,
