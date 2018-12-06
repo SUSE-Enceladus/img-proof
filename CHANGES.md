@@ -1,3 +1,11 @@
+v2.4.0 (2018-12-06)
+===================
+
+- Auto deploy IPA package in pypi on new tag release.
+  [\#139](https://github.com/SUSE-Enceladus/ipa/pull/139)
+- Add security-group-id option for ec2 provider.
+  [\#151](https://github.com/SUSE-Enceladus/ipa/pull/151)
+
 v2.3.0 (2018-11-09)
 ===================
 
