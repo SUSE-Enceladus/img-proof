@@ -17,9 +17,8 @@ script:
   - flake8 tests --exclude=data
 deploy:
   provider: pypi
-  user: suse-pub-cloud-dev
-  password:
-    secure: "dnanyPXD4YND8lgEUyWUSqgbsGEAwjnskxRaqT7EydKH/aelQ0wpIzq4PrNRAYIzfPYuhL78IKJc0RFkkV/bZ8sfbUuha4AWR+PUFn8HjJYhV2EXxT+LDNBh+kOgCkdCFWsAoK8ccrEgdlQB6FcY9djkUTr3CZB6nlPNRxOPTNbxzPiEGt+hb8ogXkBlWlKiZnbp+Nhk3TP4e/s40UIzgmQXEOIQoIt7a19/WMKvfGehucBgmDr00r+HDVEhbr9qoTgDijl3wOeeAQXBDBTWypYqfNl6oxNo2T6LSdV/fwawJc9Jn2hK60BA3tNGxtfof5AsWl8IvgU74lncp+74ix8mcgYpMC2UDQz+8h15IOcWIos6KWelJzhKrA6HBLxn4GknovAswsuawT8DOlNJlnL5QUJFEM8W9kbmvzkLCu55gO1uvYen7jkgT9rOSzYzGXdZzsVBLZ7xTQlQE2g8oZDs7/kjedT+bqR2vnovLKEGRw/1AV2WJ0BaxjBRTUfY1lzwoEKR0agauVJSlFZ9NypI51eYVSQiFGIKXxxAB1yoDj42xIXTr1VeCiXlEHApGm7EMWOI2+kHjRzMcQCSIm9E0rVF9jQyEp2kD76sbgOJWfJpx5iIykJAoKwY6OEa4njalreFWLneptA5jsziJ08v0Zzr+xScehl/SQFPJHA="
+  user: "suse-pub-cloud-dev"
+  password: $PYPI_PASS
   on:
     tags: true
   skip_existing: true
