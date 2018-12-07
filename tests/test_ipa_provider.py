@@ -537,6 +537,7 @@ class TestIpaProvider(object):
         mock_set_instance_ip.return_value = None
         self.kwargs['running_instance_id'] = 'fakeinstance'
         self.kwargs['test_files'] = ['test_update']
+        self.kwargs['cleanup'] = True
 
         provider = IpaProvider(*args, **self.kwargs)
         provider.ssh_private_key_file = 'tests/data/ida_test'
@@ -545,6 +546,7 @@ class TestIpaProvider(object):
         status, results = provider.test_image()
         assert status == 0
         assert mock_distro_update.call_count == 1
+        self.kwargs['cleanup'] = None
 
     @patch.object(IpaProvider, '_set_instance_ip')
     @patch.object(IpaProvider, '_set_image_id')
