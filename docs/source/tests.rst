@@ -7,6 +7,21 @@ Tests are developed using the
 extends Pytest and provides a framework for writing Python tests to
 verify the actual state of systems.
 
+SLES Test Suite
+===============
+
+There is a suite of tests for SLES and openSUSE_Leap. It can be found
+in the `GitHub repository
+<https://github.com/SUSE-Enceladus/ipa/tree/master/usr/share/lib/ipa/tests>`__.
+
+They are also packaged in the Open Build Service for openSUSE:
+
+.. code-block:: console
+
+   $ zypper ar http://download.opensuse.org/repositories/Cloud:/Tools/<distribution>
+   $ zypper refresh
+   $ zypper in python3-ipa-tests
+
 Test directories
 ================
 
