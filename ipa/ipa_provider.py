@@ -431,17 +431,14 @@ class IpaProvider(object):
         """
         Gather basic info about VM
         """
-        try:
-            self.logger.info('Collecting basic info about VM')
-            client = self._get_ssh_client()
-            self.logger.info('systemd-analyze :')
-            self.execute_ssh_command(client, 'systemd-analyze')
-            self.logger.info('systemd-analyze blame')
-            self.execute_ssh_command(client, 'systemd-analyze blame')
-            self.logger.info('journalctl -b : ')
-            self.execute_ssh_command(client, 'sudo journalctl -b')
-        except Exception as error:
-            self.logger.info('Fail to collect VM info : {0}.'.format(error))
+        self.logger.info('Collecting basic info about VM')
+        client = self._get_ssh_client()
+
+        out = self.distro.get_vm_info(client)
+
+        with open(self.log_file, 'a') as log_file:
+            log_file.write('\n')
+            log_file.write(out)
 
     def _update_history(self):
         """Save the current test information to history json."""
@@ -766,9 +763,11 @@ class IpaProvider(object):
 
                 if status and self.early_exit:
                     break
+
         # flag set to collect VM info
         if self.collect_vm_info:
             self._collect_vm_info()
+
         # If tests pass and cleanup flag is none, or
         # cleanup flag is true, terminate instance.
         if status == 0 and self.cleanup is None or self.cleanup:

@@ -66,3 +66,15 @@ def test_distro_get_commands():
     distro = Distro()
     assert distro.get_reboot_cmd() == 'shutdown -r now'
     assert distro.get_sudo_exec_wrapper() == 'sudo sh -c'
+
+
+def test_distro_get_vm_info():
+    """Test distro get vm info method."""
+    distro = Distro()
+    client = MagicMock()
+
+    pytest.raises(
+        NotImplementedError,
+        getattr(distro, 'get_vm_info'),
+        client
+    )

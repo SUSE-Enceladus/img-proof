@@ -590,16 +590,32 @@ class TestIpaProvider(object):
         provider._wait_on_instance('Stopped')
         assert mock_get_instance_state.call_count == 1
 
-    @patch.object(IpaProvider, 'execute_ssh_command')
     @patch.object(IpaProvider, '_get_ssh_client')
-    def test_collect_vm_info(self,
-                             mock_get_ssh_client,
-                             mock_execute_ssh_command):
+    def test_collect_vm_info(self, mock_get_ssh_client):
         """Test collect_vm_info method. """
-        mock_get_ssh_client.return_value = MagicMock()
-        mock_execute_ssh_command.return_value = None
+        distro = MagicMock()
+        client = MagicMock()
+        distro.get_vm_info.return_value = \
+            'Failed to collect VM info: Does not exist.'
+        mock_get_ssh_client.return_value = client
+
         provider = IpaProvider(*args, **self.kwargs)
-        provider.logger.info = MagicMock()
-        provider._collect_vm_info()
+        provider.distro = distro
+        provider.log_file = 'fake_file.name'
+        provider.logger = MagicMock()
+
+        with patch('builtins.open', create=True) as mock_open:
+            mock_open.return_value = MagicMock(spec=io.IOBase)
+            file_handle = mock_open.return_value.__enter__.return_value
+
+            provider._collect_vm_info()
+
+            file_handle.write.assert_has_calls([
+                call('\n'),
+                call('Failed to collect VM info: Does not exist.')
+            ])
+
+        provider.logger.info.assert_called_once_with(
+            'Collecting basic info about VM'
+        )
         assert mock_get_ssh_client.call_count == 1
-        assert mock_execute_ssh_command.call_count == 3

@@ -26,7 +26,7 @@ import pytest
 from ipa.ipa_exceptions import IpaDistroException, IpaSLESException
 from ipa.ipa_sles import SLES
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import call, MagicMock, patch
 
 
 def test_sles_set_init_system_exception():
@@ -60,6 +60,23 @@ def test_sles_get_stop_ssh_cmd():
         sles.get_stop_ssh_service_cmd()
     assert str(error.value) == \
         'The init system for SUSE distribution cannot be determined.'
+
+
+def test_sles_get_vm_info():
+    """Test SLES get vm info method."""
+    client = MagicMock()
+    sles = SLES()
+    sles.init_system = 'systemd'
+
+    with patch('ipa.ipa_utils.execute_ssh_command',
+               MagicMock(return_value='')) as mocked:
+        sles.get_vm_info(client)
+
+    mocked.assert_has_calls([
+        call(client, 'systemd-analyze'),
+        call(client, 'systemd-analyze blame'),
+        call(client, 'sudo journalctl -b')
+    ])
 
 
 def test_sles_install_package():

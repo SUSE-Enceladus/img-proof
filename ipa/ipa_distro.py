@@ -61,6 +61,10 @@ class Distro(object):
         """Return command to update instance."""
         raise NotImplementedError(NOT_IMPLEMENTED)
 
+    def get_vm_info(self, client):
+        """Return vm info."""
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
     def install_package(self, client, package):
         """Install package on instance."""
         install_cmd = "{sudo} '{install} {package}'".format(

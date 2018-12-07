@@ -69,3 +69,34 @@ class SLES(Distro):
     def get_update_cmd(self):
         """Return command to update SLES instance."""
         return 'zypper -n up --auto-agree-with-licenses --force-resolution'
+
+    def get_vm_info(self, client):
+        """Return vm info."""
+        out = ''
+
+        if not self.init_system:
+            self._set_init_system(client)
+
+        if self.init_system == 'systemd':
+            try:
+                out += 'systemd-analyze:\n\n'
+                out += ipa_utils.execute_ssh_command(
+                    client,
+                    'systemd-analyze'
+                )
+
+                out += 'systemd-analyze blame:\n\n'
+                out += ipa_utils.execute_ssh_command(
+                    client,
+                    'systemd-analyze blame'
+                )
+
+                out += 'journalctl -b:\n\n'
+                out += ipa_utils.execute_ssh_command(
+                    client,
+                    'sudo journalctl -b'
+                )
+            except Exception as error:
+                out = 'Failed to collect VM info: {0}.'.format(error)
+
+        return out
