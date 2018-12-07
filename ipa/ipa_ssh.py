@@ -59,8 +59,8 @@ class SSHProvider(IpaProvider):
                  test_files=None,
                  timeout=None,
                  vnet_name=None,  # Not used in SSH
-                 vnet_resource_group=None  # Not used in SSH
-                 ):
+                 vnet_resource_group=None,  # Not used in SSH
+                 collect_vm_info=None):
         """Initialize Azure Provider class."""
         super(SSHProvider, self).__init__('ssh',
                                           cleanup,
@@ -80,7 +80,8 @@ class SSHProvider(IpaProvider):
                                           running_instance_id,
                                           test_dirs,
                                           test_files,
-                                          timeout)
+                                          timeout,
+                                          collect_vm_info)
 
         # Cannot cleanup SSH instance
         self.cleanup = False

@@ -65,7 +65,8 @@ def test_image(provider_name,
                tests=None,
                timeout=None,
                vnet_name=None,
-               vnet_resource_group=None):
+               vnet_resource_group=None,
+               collect_vm_info=None):
     """Creates a cloud provider instance and initiates testing."""
     provider_name = provider_name.lower()
     if provider_name == 'azure':
@@ -112,7 +113,8 @@ def test_image(provider_name,
         test_files=tests,
         timeout=timeout,
         vnet_name=vnet_name,
-        vnet_resource_group=vnet_resource_group
+        vnet_resource_group=vnet_resource_group,
+        collect_vm_info=collect_vm_info
     )
 
     return provider.test_image()

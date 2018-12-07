@@ -589,3 +589,17 @@ class TestIpaProvider(object):
         provider = IpaProvider(*args, **self.kwargs)
         provider._wait_on_instance('Stopped')
         assert mock_get_instance_state.call_count == 1
+
+    @patch.object(IpaProvider, 'execute_ssh_command')
+    @patch.object(IpaProvider, '_get_ssh_client')
+    def test_collect_vm_info(self,
+                             mock_get_ssh_client,
+                             mock_execute_ssh_command):
+        """Test collect_vm_info method. """
+        mock_get_ssh_client.return_value = MagicMock()
+        mock_execute_ssh_command.return_value = None
+        provider = IpaProvider(*args, **self.kwargs)
+        provider.logger.info = MagicMock()
+        provider._collect_vm_info()
+        assert mock_get_ssh_client.call_count == 1
+        assert mock_execute_ssh_command.call_count == 3

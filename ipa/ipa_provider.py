@@ -78,7 +78,8 @@ class IpaProvider(object):
                  running_instance_id=None,
                  test_dirs=None,
                  test_files=None,
-                 timeout=None):
+                 timeout=None,
+                 collect_vm_info=None):
         """Initialize base provider class."""
         super(IpaProvider, self).__init__()
         log_level = log_level or logging.INFO
@@ -105,6 +106,11 @@ class IpaProvider(object):
         self.host_key_fingerprint = None
         self.instance_ip = None
         self.provider = provider
+        self.collect_vm_info = self._get_value(
+            collect_vm_info,
+            config_key='collect_vm_info',
+            default=False
+        )
 
         self.cleanup = self._get_value(cleanup)
         self.distro_name = self._get_value(distro_name)
@@ -420,6 +426,22 @@ class IpaProvider(object):
     def _terminate_instance(self):
         """Terminate the instance."""
         raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def _collect_vm_info(self):
+        """
+        Gather basic info about VM
+        """
+        try:
+            self.logger.info('Collecting basic info about VM')
+            client = self._get_ssh_client()
+            self.logger.info('systemd-analyze :')
+            self.execute_ssh_command(client, 'systemd-analyze')
+            self.logger.info('systemd-analyze blame')
+            self.execute_ssh_command(client, 'systemd-analyze blame')
+            self.logger.info('journalctl -b : ')
+            self.execute_ssh_command(client, 'sudo journalctl -b')
+        except Exception as error:
+            self.logger.info('Fail to collect VM info : {0}.'.format(error))
 
     def _update_history(self):
         """Save the current test information to history json."""
@@ -744,7 +766,9 @@ class IpaProvider(object):
 
                 if status and self.early_exit:
                     break
-
+        # flag set to collect VM info
+        if self.collect_vm_info:
+            self._collect_vm_info()
         # If tests pass and cleanup flag is none, or
         # cleanup flag is true, terminate instance.
         if status == 0 and self.cleanup is None or self.cleanup:

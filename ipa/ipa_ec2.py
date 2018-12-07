@@ -69,8 +69,8 @@ class EC2Provider(LibcloudProvider):
                  test_files=None,
                  timeout=None,
                  vnet_name=None,  # Not used in EC2
-                 vnet_resource_group=None  # Not used in EC2
-                 ):
+                 vnet_resource_group=None,  # Not used in EC2
+                 collect_vm_info=None):
         """Initialize EC2 provider class."""
         super(EC2Provider, self).__init__('ec2',
                                           cleanup,
@@ -90,7 +90,8 @@ class EC2Provider(LibcloudProvider):
                                           running_instance_id,
                                           test_dirs,
                                           test_files,
-                                          timeout)
+                                          timeout,
+                                          collect_vm_info)
         self.account_name = account_name
 
         if not self.account_name:

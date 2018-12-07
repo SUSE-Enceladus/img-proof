@@ -238,6 +238,11 @@ def main(context, no_color):
     '--vnet-resource-group',
     help='Azure resource group name where virtual network is found.'
 )
+@click.option(
+    '--collect-vm-info',
+    is_flag=True,
+    help='Controls whether general info about VM in cloud should be collected'
+)
 @click.argument(
     'provider',
     type=click.Choice(SUPPORTED_PROVIDERS)
@@ -275,6 +280,7 @@ def test(context,
          timeout,
          vnet_name,
          vnet_resource_group,
+         collect_vm_info,
          provider,
          tests):
     """Test image in the given framework using the supplied test files."""
@@ -312,7 +318,8 @@ def test(context,
             tests,
             timeout,
             vnet_name,
-            vnet_resource_group
+            vnet_resource_group,
+            collect_vm_info
         )
         echo_results(results, no_color)
         sys.exit(status)

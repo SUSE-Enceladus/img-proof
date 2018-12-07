@@ -70,8 +70,8 @@ class GCEProvider(LibcloudProvider):
                  test_files=None,
                  timeout=None,
                  vnet_name=None,  # Not used in GCE
-                 vnet_resource_group=None  # Not used in GCE
-                 ):
+                 vnet_resource_group=None,  # Not used in GCE
+                 collect_vm_info=None):
         super(GCEProvider, self).__init__('gce',
                                           cleanup,
                                           config,
