@@ -188,9 +188,9 @@ class TestIpaProvider(object):
         for key, val in results['tests'][0].items():
             assert provider.results['tests'][0][key] == val
 
-    def test_process_sync_test_results(self):
+    def test_process_test_results(self):
         provider = IpaProvider(*args, **self.kwargs)
-        provider._process_sync_test_results(5.0, 'test_test')
+        provider._process_test_results(5.0, 'test_test')
 
         assert provider.results['summary']['duration'] == 5.0
         assert provider.results['summary']['num_tests'] == 1
