@@ -12,14 +12,14 @@ Launch & Test a new instance
 To launch and test a new instance of an image provide the `--image-id` or
 `-i` option.
 
-The image ID will look different for all cloud providers. See the examples
+The image ID will look different for all cloud frameworks. See the examples
 below for the three supported clouds:
 
 - Azure: SUSE:SLES:12-SP3:latest
 - EC2:   ami-0f7c9a39e20a9adea
 - GCE:   sles-12-sp3-v20180814
 
-To see what tests modules are available there is an `ipa list` command. You
+To see what test modules are available there is an `ipa list` command. You
 can invoke the command with `-v` option to see a verbose list of all tests
 within each module.
 
@@ -67,8 +67,10 @@ Test an existing instance
 =========================
 
 If you want to run tests on an existing instance you can provide the
-`--running-instance-id` or '-r'. All options and tests that are available
-for a new instance can be run against an existing one.
+`--running-instance-id` or `-r` option. All options and tests that are
+available for a new instance can be run against an existing one. When
+testing a running instance the instance will not be terminated when the
+tests pass.
 
 .. code-block:: console
 
