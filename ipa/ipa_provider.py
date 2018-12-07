@@ -629,6 +629,11 @@ class IpaProvider(object):
             # Use existing instance
             self._start_instance_if_stopped()
             self._set_image_id()
+
+            # With a running instance default to no cleanup
+            # if a value has not been provided.
+            if self.cleanup is None:
+                self.cleanup = False
         else:
             # Launch new instance
             self.logger.info('Launching new instance')
