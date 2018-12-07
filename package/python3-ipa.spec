@@ -28,6 +28,7 @@ Source:         https://files.pythonhosted.org/packages/source/p/python3-ipa/%{n
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 Requires:       python3-PyYAML
+Requires:       python3-boto3
 Requires:       python3-apache-libcloud
 Requires:       python3-azure-common
 Requires:       python3-azure-mgmt-compute
@@ -43,6 +44,7 @@ Requires:       python3-testinfra
 BuildArch:      noarch
 %if %{with test}
 BuildRequires:  python3-PyYAML
+BuildRequires:  python3-boto3
 BuildRequires:  python3-apache-libcloud
 BuildRequires:  python3-azure-common
 BuildRequires:  python3-azure-mgmt-compute

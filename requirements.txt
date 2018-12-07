@@ -1,3 +1,4 @@
+boto3
 apache-libcloud
 azure-common
 azure-mgmt-compute
