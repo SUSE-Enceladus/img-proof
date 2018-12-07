@@ -20,28 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ipa import ipa_utils
 from ipa.ipa_distro import Distro
 from ipa.ipa_exceptions import IpaSLESException
 
 
 class SLES(Distro):
     """SLES distro class."""
-
-    def _set_init_system(self, client):
-        """Determine the init system of distribution."""
-        try:
-            out = ipa_utils.execute_ssh_command(
-                client,
-                'ps -p 1 -o comm='
-            )
-        except Exception as e:
-            raise IpaSLESException(
-                'An error occurred while retrieving'
-                ' the distro init system: %s' % e
-            )
-        if out:
-            self.init_system = out.strip()
 
     def get_install_cmd(self):
         """Return install package command for SLES."""
@@ -69,34 +53,3 @@ class SLES(Distro):
     def get_update_cmd(self):
         """Return command to update SLES instance."""
         return 'zypper -n up --auto-agree-with-licenses --force-resolution'
-
-    def get_vm_info(self, client):
-        """Return vm info."""
-        out = ''
-
-        if not self.init_system:
-            self._set_init_system(client)
-
-        if self.init_system == 'systemd':
-            try:
-                out += 'systemd-analyze:\n\n'
-                out += ipa_utils.execute_ssh_command(
-                    client,
-                    'systemd-analyze'
-                )
-
-                out += 'systemd-analyze blame:\n\n'
-                out += ipa_utils.execute_ssh_command(
-                    client,
-                    'systemd-analyze blame'
-                )
-
-                out += 'journalctl -b:\n\n'
-                out += ipa_utils.execute_ssh_command(
-                    client,
-                    'sudo journalctl -b'
-                )
-            except Exception as error:
-                out = 'Failed to collect VM info: {0}.'.format(error)
-
-        return out

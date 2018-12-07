@@ -22,8 +22,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ipa.ipa_distro import Distro
+from ipa.ipa_exceptions import IpaDistroException
 
-from unittest.mock import MagicMock
+from unittest.mock import call, MagicMock, patch
 
 import pytest
 
@@ -49,16 +50,20 @@ def test_distro_not_implemented_methods(method):
     )
 
 
-def test_distro_set_init_system():
-    """Test set init system raises not implemented exception."""
-    distro = Distro()
+def test_distro_set_init_system_exception():
+    """Test distro set init system method exception."""
     client = MagicMock()
+    distro = Distro()
 
-    pytest.raises(
-        NotImplementedError,
-        getattr(distro, '_set_init_system'),
-        client
-    )
+    with patch('ipa.ipa_utils.execute_ssh_command', MagicMock(
+               side_effect=Exception('ERROR!'))) as mocked:
+        pytest.raises(
+            IpaDistroException,
+            distro._set_init_system,
+            client
+        )
+
+    mocked.assert_called_once_with(client, 'ps -p 1 -o comm=')
 
 
 def test_distro_get_commands():
@@ -70,11 +75,16 @@ def test_distro_get_commands():
 
 def test_distro_get_vm_info():
     """Test distro get vm info method."""
-    distro = Distro()
     client = MagicMock()
+    distro = Distro()
+    distro.init_system = 'systemd'
 
-    pytest.raises(
-        NotImplementedError,
-        getattr(distro, 'get_vm_info'),
-        client
-    )
+    with patch('ipa.ipa_utils.execute_ssh_command',
+               MagicMock(return_value='')) as mocked:
+        distro.get_vm_info(client)
+
+    mocked.assert_has_calls([
+        call(client, 'systemd-analyze'),
+        call(client, 'systemd-analyze blame'),
+        call(client, 'sudo journalctl -b')
+    ])
