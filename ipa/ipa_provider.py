@@ -299,7 +299,7 @@ class IpaProvider(object):
             self.test_files
         )
 
-    def _process_sync_test_results(self, duration, test_name, success=0):
+    def _process_test_results(self, duration, test_name, success=0):
         """Create result dict for sync test and merge with overall results."""
         status = 'passed' if success == 0 else 'failed'
         result = {
@@ -342,7 +342,14 @@ class IpaProvider(object):
         cmds = shlex.split(args)
         plugin = Report()
         result = pytest.main(cmds, plugins=[plugin])
-        self._merge_results(plugin.report)
+
+        # If pytest has an error there will be no report but
+        # we still want to process the error as a failure.
+        # https://docs.pytest.org/en/latest/usage.html#possible-exit-codes
+        if result in (2, 3, 4):
+            self._process_test_results(0, 'pytest_error', 1)
+        else:
+            self._merge_results(plugin.report)
 
         return result
 
@@ -695,7 +702,7 @@ class IpaProvider(object):
                         break
                     finally:
                         duration = time.time() - start
-                        self._process_sync_test_results(
+                        self._process_test_results(
                             duration, 'test_hard_reboot', result
                         )
                         status = status or result
@@ -727,7 +734,7 @@ class IpaProvider(object):
                         break
                     finally:
                         duration = time.time() - start
-                        self._process_sync_test_results(
+                        self._process_test_results(
                             duration, 'test_soft_reboot', result
                         )
                         status = status or result
@@ -748,7 +755,7 @@ class IpaProvider(object):
                             log_file.write(out)
                     finally:
                         duration = time.time() - start
-                        self._process_sync_test_results(
+                        self._process_test_results(
                             duration, 'test_update', result
                         )
                         status = status or result
