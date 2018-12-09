@@ -35,7 +35,19 @@ class Distro(object):
 
     def _set_init_system(self, client):
         """Determine the init system of distribution."""
-        raise NotImplementedError(NOT_IMPLEMENTED)
+        if not self.init_system:
+            try:
+                out = ipa_utils.execute_ssh_command(
+                    client,
+                    'ps -p 1 -o comm='
+                )
+            except Exception as e:
+                raise IpaDistroException(
+                    'An error occurred while retrieving'
+                    ' the distro init system: %s' % e
+                )
+            if out:
+                self.init_system = out.strip()
 
     def get_install_cmd(self):
         """Return install package command for distribution."""
@@ -60,6 +72,35 @@ class Distro(object):
     def get_update_cmd(self):
         """Return command to update instance."""
         raise NotImplementedError(NOT_IMPLEMENTED)
+
+    def get_vm_info(self, client):
+        """Return vm info."""
+        out = ''
+        self._set_init_system(client)
+
+        if self.init_system == 'systemd':
+            try:
+                out += 'systemd-analyze:\n\n'
+                out += ipa_utils.execute_ssh_command(
+                    client,
+                    'systemd-analyze'
+                )
+
+                out += 'systemd-analyze blame:\n\n'
+                out += ipa_utils.execute_ssh_command(
+                    client,
+                    'systemd-analyze blame'
+                )
+
+                out += 'journalctl -b:\n\n'
+                out += ipa_utils.execute_ssh_command(
+                    client,
+                    'sudo journalctl -b'
+                )
+            except Exception as error:
+                out = 'Failed to collect VM info: {0}.'.format(error)
+
+        return out
 
     def install_package(self, client, package):
         """Install package on instance."""
@@ -87,8 +128,7 @@ class Distro(object):
 
     def reboot(self, client):
         """Execute reboot command on instance."""
-        if not self.init_system:
-            self._set_init_system(client)
+        self._set_init_system(client)
 
         reboot_cmd = "{sudo} '{stop_ssh};{reboot}'".format(
             sudo=self.get_sudo_exec_wrapper(),

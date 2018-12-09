@@ -20,28 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ipa import ipa_utils
 from ipa.ipa_distro import Distro
 from ipa.ipa_exceptions import IpaSLESException
 
 
 class SLES(Distro):
     """SLES distro class."""
-
-    def _set_init_system(self, client):
-        """Determine the init system of distribution."""
-        try:
-            out = ipa_utils.execute_ssh_command(
-                client,
-                'ps -p 1 -o comm='
-            )
-        except Exception as e:
-            raise IpaSLESException(
-                'An error occurred while retrieving'
-                ' the distro init system: %s' % e
-            )
-        if out:
-            self.init_system = out.strip()
 
     def get_install_cmd(self):
         """Return install package command for SLES."""

@@ -29,22 +29,6 @@ from ipa.ipa_sles import SLES
 from unittest.mock import MagicMock, patch
 
 
-def test_sles_set_init_system_exception():
-    """Test SLES set init system method exception."""
-    client = MagicMock()
-    sles = SLES()
-
-    with patch('ipa.ipa_utils.execute_ssh_command', MagicMock(
-               side_effect=Exception('ERROR!'))) as mocked:
-        pytest.raises(
-            IpaSLESException,
-            sles._set_init_system,
-            client
-        )
-
-    mocked.assert_called_once_with(client, 'ps -p 1 -o comm=')
-
-
 def test_sles_get_stop_ssh_cmd():
     """Test SLES get stop ssh cmd method."""
     sles = SLES()
