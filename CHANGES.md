@@ -1,3 +1,19 @@
+v2.5.0 (2018-12-11)
+===================
+
+- Add note on installing SLES test suite.
+  [\#148](https://github.com/SUSE-Enceladus/ipa/pull/148)
+- Add option allowing collect info about VM in cloud.
+  [\#149](https://github.com/SUSE-Enceladus/ipa/pull/149)
+- With running instance don't cleanup.
+  [\#152](https://github.com/SUSE-Enceladus/ipa/pull/152)
+- Systemd cleanup in distro.
+  [\#153](https://github.com/SUSE-Enceladus/ipa/pull/153)
+- Process pytest errors in results.
+  [\#154](https://github.com/SUSE-Enceladus/ipa/pull/154)
+- Switch EC2 provider back to boto3.
+  [\#155](https://github.com/SUSE-Enceladus/ipa/pull/155)
+
 v2.4.0 (2018-12-06)
 ===================
 
