@@ -237,13 +237,18 @@ class IpaProvider(object):
                 'results_file': self.results_file
             }
 
-        with open(self.log_file, 'a') as log_file:
-            log_file.write(
-                '\n'.join(
-                    '%s: %s' % (key, val) for key, val
-                    in self.results['info'].items()
-                )
+        self._write_to_log(
+            '\n'.join(
+                '%s: %s' % (key, val) for key, val
+                in self.results['info'].items()
             )
+        )
+
+    def _write_to_log(self, output):
+        """Write the output string to the log file."""
+        with open(self.log_file, 'a') as log_file:
+            log_file.write('\n')
+            log_file.write(output)
             log_file.write('\n')
 
     def _merge_results(self, results):
@@ -442,10 +447,7 @@ class IpaProvider(object):
         client = self._get_ssh_client()
 
         out = self.distro.get_vm_info(client)
-
-        with open(self.log_file, 'a') as log_file:
-            log_file.write('\n')
-            log_file.write(out)
+        self._write_to_log(out)
 
     def _update_history(self):
         """Save the current test information to history json."""
@@ -486,9 +488,7 @@ class IpaProvider(object):
                 )
             )
         else:
-            with open(self.log_file, 'a') as log_file:
-                log_file.write('\n')
-                log_file.write(out)
+            self._write_to_log(out)
 
     def extract_archive(self, client, archive_path, extract_path=None):
         """Extract the archive files using the client in the current path."""
@@ -502,9 +502,7 @@ class IpaProvider(object):
             )
 
         else:
-            with open(self.log_file, 'a') as log_file:
-                log_file.write('\n')
-                log_file.write(out)
+            self._write_to_log(out)
 
     def hard_reboot_instance(self):
         """Stop then start the instance."""
@@ -527,9 +525,7 @@ class IpaProvider(object):
                 )
             )
         else:
-            with open(self.log_file, 'a') as log_file:
-                log_file.write('\n')
-                log_file.write(out)
+            self._write_to_log(out)
 
     def process_injection_file(self, client):
         """
@@ -751,8 +747,7 @@ class IpaProvider(object):
                         self.logger.error('Instance failed to update')
                         self.logger.debug(error)
                     else:
-                        with open(self.log_file, 'a') as log_file:
-                            log_file.write(out)
+                        self._write_to_log(out)
                     finally:
                         duration = time.time() - start
                         self._process_test_results(
