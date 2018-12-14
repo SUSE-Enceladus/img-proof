@@ -91,10 +91,11 @@ class AzureProvider(IpaProvider):
                                             timeout,
                                             collect_vm_info)
 
-        if subnet_id and not (vnet_name and vnet_resource_group):
+        subnet_args = [subnet_id, vnet_name, vnet_resource_group]
+        if any(subnet_args) and not all(subnet_args):
             raise AzureProviderException(
-                'If subnet_id is provided vnet_resource_group and vnet_name'
-                ' are also required.'
+                'subnet_id, vnet_resource_group and vnet_name'
+                ' are all required to use an existing subnet.'
             )
 
         self.service_account_file = (
@@ -250,7 +251,7 @@ class AzureProvider(IpaProvider):
 
         return storage_profile
 
-    def _create_subnet(self, resource_group_name, subnet_name, vnet_name):
+    def _create_subnet(self, resource_group_name, subnet_id, vnet_name):
         """
         Create a subnet in the provided vnet and resource group.
         """
@@ -258,7 +259,7 @@ class AzureProvider(IpaProvider):
 
         try:
             subnet_setup = self.network.subnets.create_or_update(
-                resource_group_name, vnet_name, subnet_name, subnet_config
+                resource_group_name, vnet_name, subnet_id, subnet_config
             )
         except Exception as error:
             raise AzureProviderException(
@@ -441,12 +442,17 @@ class AzureProvider(IpaProvider):
                     self.vnet_resource_group, self.vnet_name, self.subnet_id
                 )
             else:
-                # Create new vnet/subnet.
+                self.subnet_id = ''.join([self.running_instance_id, '-subnet'])
+                self.vnet_name = ''.join([self.running_instance_id, '-vnet'])
+
+                # Create new vnet
                 self._create_virtual_network(
                     self.region, self.running_instance_id, self.vnet_name
                 )
+
+                # Create new subnet in new vnet
                 subnet = self._create_subnet(
-                    self.running_instance_id, self.subnet_name, self.vnet_name
+                    self.running_instance_id, self.subnet_id, self.vnet_name
                 )
 
             # Setup interface and public ip in resource group.
@@ -498,8 +504,6 @@ class AzureProvider(IpaProvider):
             self.running_instance_id, '-ip-config'
         ])
         self.nic_name = ''.join([self.running_instance_id, '-nic'])
-        self.subnet_name = ''.join([self.running_instance_id, '-subnet'])
-        self.vnet_name = ''.join([self.running_instance_id, '-vnet'])
         self.public_ip_name = ''.join([self.running_instance_id, '-public-ip'])
 
     def _set_image_id(self):
