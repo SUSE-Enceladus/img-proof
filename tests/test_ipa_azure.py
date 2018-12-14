@@ -203,8 +203,6 @@ class TestAzureProvider(object):
 
         assert provider.ip_config_name == 'fakeinstance-ip-config'
         assert provider.nic_name == 'fakeinstance-nic'
-        assert provider.subnet_name == 'fakeinstance-subnet'
-        assert provider.vnet_name == 'fakeinstance-vnet'
         assert provider.public_ip_name == 'fakeinstance-public-ip'
 
     @patch.object(AzureProvider, '_get_instance')
