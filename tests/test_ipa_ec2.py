@@ -163,8 +163,9 @@ class TestEC2Provider(object):
         assert result == '#!/bin/bash\n' \
             'echo testkey12345 >> /home/ec2-user/.ssh/authorized_keys\n'
 
+    @patch.object(EC2Provider, '_wait_on_instance')
     @patch.object(EC2Provider, '_connect')
-    def test_ec2_launch_instance(self, mock_connect):
+    def test_ec2_launch_instance(self, mock_connect, mock_wait_on_instance):
         """Test ec2 provider launch instance method."""
         instance = MagicMock()
         instance.instance_id = 'i-123456789'
@@ -180,6 +181,7 @@ class TestEC2Provider(object):
         provider.security_group_id = 'sg-123456789'
         provider._launch_instance()
 
+        mock_wait_on_instance.assert_called_once_with('running', 600)
         assert instance.instance_id == provider.running_instance_id
         assert resource.create_instances.call_count == 1
 
@@ -237,8 +239,11 @@ class TestEC2Provider(object):
         assert provider.instance_ip == '127.0.0.3'
         assert mock_get_instance.call_count == 1
 
+    @patch.object(EC2Provider, '_wait_on_instance')
     @patch.object(EC2Provider, '_get_instance')
-    def test_ec2_start_instance(self, mock_get_instance):
+    def test_ec2_start_instance(
+        self, mock_get_instance, mock_wait_on_instance
+    ):
         """Test ec2 start instance method."""
         instance = MagicMock()
         instance.start.return_value = None
@@ -247,10 +252,15 @@ class TestEC2Provider(object):
 
         provider = EC2Provider(**self.kwargs)
         provider._start_instance()
+
+        mock_wait_on_instance.assert_called_once_with('running', 600)
         assert mock_get_instance.call_count == 1
 
+    @patch.object(EC2Provider, '_wait_on_instance')
     @patch.object(EC2Provider, '_get_instance')
-    def test_ec2_stop_instance(self, mock_get_instance):
+    def test_ec2_stop_instance(
+        self, mock_get_instance, mock_wait_on_instance
+    ):
         """Test ec2 stop instance method."""
         instance = MagicMock()
         instance.stop.return_value = None
@@ -259,6 +269,8 @@ class TestEC2Provider(object):
 
         provider = EC2Provider(**self.kwargs)
         provider._stop_instance()
+
+        mock_wait_on_instance.assert_called_once_with('stopped', 600)
         assert mock_get_instance.call_count == 1
 
     @patch.object(EC2Provider, '_get_instance')

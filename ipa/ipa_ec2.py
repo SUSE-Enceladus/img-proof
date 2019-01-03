@@ -278,8 +278,8 @@ class EC2Provider(IpaProvider):
                 'Unable to create instance: {0}.'.format(error)
             )
 
-        instances[0].wait_until_running()
         self.running_instance_id = instances[0].instance_id
+        self._wait_on_instance('running', self.timeout)
 
     def _set_image_id(self):
         """If existing image used get image id."""
@@ -312,13 +312,13 @@ class EC2Provider(IpaProvider):
         """Start the instance."""
         instance = self._get_instance()
         instance.start()
-        instance.wait_until_running()
+        self._wait_on_instance('running', self.timeout)
 
     def _stop_instance(self):
         """Stop the instance."""
         instance = self._get_instance()
         instance.stop()
-        instance.wait_until_stopped()
+        self._wait_on_instance('stopped', self.timeout)
 
     def _terminate_instance(self):
         """Terminate the instance."""
