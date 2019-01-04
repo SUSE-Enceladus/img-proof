@@ -1,3 +1,15 @@
+v2.6.0 (2019-01-04)
+===================
+
+- Remove duplication when logging.
+  [\#156](https://github.com/SUSE-Enceladus/ipa/pull/156)
+- Allow azure instance to start in existing subnet.
+  [\#158](https://github.com/SUSE-Enceladus/ipa/pull/158)
+- Treat uuid always lowercase.
+  [\#159](https://github.com/SUSE-Enceladus/ipa/pull/159)
+- Use base provider waiter method.
+  [\#160](https://github.com/SUSE-Enceladus/ipa/pull/160)
+
 v2.5.0 (2018-12-11)
 ===================
 
