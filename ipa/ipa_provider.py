@@ -44,8 +44,7 @@ from ipa.ipa_sles import SLES
 from ipa.ipa_exceptions import (
     IpaException,
     IpaProviderException,
-    IpaSSHException,
-    IpaUtilsException
+    IpaSSHException
 )
 from ipa.results_plugin import Report
 

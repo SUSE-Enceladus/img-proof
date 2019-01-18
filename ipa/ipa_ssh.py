@@ -20,8 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 from ipa.ipa_exceptions import SSHProviderException
 from ipa.ipa_provider import IpaProvider
 

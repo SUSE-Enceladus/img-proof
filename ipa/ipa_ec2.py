@@ -32,7 +32,7 @@ from ipa.ipa_constants import (
     EC2_DEFAULT_TYPE,
     EC2_DEFAULT_USER
 )
-from ipa.ipa_exceptions import IpaException, EC2ProviderException
+from ipa.ipa_exceptions import EC2ProviderException
 from ipa.ipa_provider import IpaProvider
 
 
