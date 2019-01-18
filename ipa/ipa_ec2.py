@@ -23,6 +23,8 @@
 import boto3
 import os
 
+from collections import defaultdict
+
 from ipa import ipa_utils
 from ipa.ipa_constants import (
     BASH_SSH_SCRIPT,
@@ -108,44 +110,45 @@ class EC2Provider(IpaProvider):
                 'Region is required to connect to EC2.'
             )
 
+        data = {}
         try:
-            self.ec2_config = ipa_utils.get_config(config_file)
+            data = ipa_utils.get_config_values(
+                config_file,
+                ''.join(['region-', self.region]),
+                ''.join(['account-', self.account_name])
+            )
             self.logger.debug(
                 'Using EC2 config file: %s' % config_file
             )
-        except IpaException:
-            self.ec2_config = None
+        except Exception:
             self.logger.debug(
                 'EC2 config file not found: %s' % config_file
             )
+        finally:
+            self.ec2_config = defaultdict(lambda: None, data)
 
         self.access_key_id = (
-            access_key_id or
-            self._get_from_ec2_config('access_key_id')
+            self._get_value(access_key_id, 'access_key_id') or
+            self.ec2_config['access_key_id']
         )
         self.secret_access_key = (
-            secret_access_key or
-            self._get_from_ec2_config('secret_access_key')
+            self._get_value(secret_access_key, 'secret_access_key') or
+            self.ec2_config['secret_access_key']
         )
-        self.security_group_id = (
-            security_group_id or
-            self._get_value(
-                security_group_id, 'security_group_id'
-            )
+        self.security_group_id = self._get_value(
+            security_group_id, 'security_group_id'
         )
         self.ssh_key_name = (
-            ssh_key_name or
-            self._get_from_ec2_config('ssh_key_name')
+            self._get_value(ssh_key_name, 'ssh_key_name') or
+            self.ec2_config['ssh_key_name']
         )
         self.ssh_private_key_file = (
-            ssh_private_key_file or
-            self._get_from_ec2_config('ssh_private_key') or
-            self.ssh_private_key_file
+            self.ssh_private_key_file or
+            self.ec2_config['ssh_private_key']
         )
         self.ssh_user = (
-            ssh_user or
-            self._get_from_ec2_config('user') or
             self.ssh_user or
+            self.ec2_config['user'] or
             EC2_DEFAULT_USER
         )
         self.subnet_id = subnet_id
@@ -176,18 +179,6 @@ class EC2Provider(IpaProvider):
                 'Could not connect to region: %s' % self.region
             )
         return resource
-
-    def _get_from_ec2_config(self, entry):
-        """Get config entry from ec2utils config file."""
-        if self.ec2_config and self.account_name:
-            return ipa_utils.get_from_config(
-                self.ec2_config,
-                ''.join(['region-', self.region]),
-                ''.join(['account-', self.account_name]),
-                entry
-            )
-        else:
-            return None
 
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
