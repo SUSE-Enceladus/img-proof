@@ -130,30 +130,9 @@ class TestIpaProvider(object):
         provider = IpaProvider(*args, **self.kwargs)
         # Assert arg takes precedence
         val = provider._get_value(
-            'us-east-1',
-            config_key='region',
-            default='us-east-2'
+            'us-east-1', 'region'
         )
         assert val == 'us-east-1'
-
-        # With no arg default value is returned
-        val = provider._get_value(None, default='us-east-2')
-        assert val == 'us-east-2'
-
-        # No arg and config value exists, config value returned
-        val = provider._get_value(
-            None,
-            config_key='region',
-            default='us-east-2'
-        )
-        assert val == 'us-west-1'
-
-        # Assert default of none if no arg, config value or default supplied
-        provider.ipa_config = ipa_utils.get_config(
-            'tests/data/config.noregion'
-        )
-        val = provider._get_value(None, config_key='region')
-        assert val is None
 
     def test_provider_merge_results(self):
         """Test merge results output."""

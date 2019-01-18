@@ -249,6 +249,31 @@ def test_utils_get_config_exceptions():
         'Error parsing config file: tests/data/ida_test'
 
 
+def test_get_config_values():
+    """Test utils get config values function."""
+    data = ipa_utils.get_config_values(
+        'tests/data/config',
+        'ec2',
+        'ipa'
+    )
+
+    assert data['region'] == 'us-west-1'
+    assert data['test_dirs'] == 'tests/data/tests'
+
+
+def test_utils_get_config_values_exceptions():
+    """Test utils get config values function invalid path."""
+    with pytest.raises(IpaUtilsException) as error:
+        ipa_utils.get_config_values(
+            'tests/data/fake.config',
+            'ec2',
+            'ipa'
+        )
+
+    assert str(error.value) == \
+        'Config file not found: tests/data/fake.config'
+
+
 def test_utils_get_from_config():
     """Test utils config functions."""
     config = ipa_utils.get_config('tests/data/config')

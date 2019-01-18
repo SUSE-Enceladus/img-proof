@@ -102,7 +102,7 @@ class AzureProvider(IpaProvider):
             service_account_file or
             self._get_value(
                 service_account_file,
-                config_key='service_account_file'
+                'service_account_file'
             )
         )
         if not self.service_account_file:
@@ -117,7 +117,7 @@ class AzureProvider(IpaProvider):
         self.ssh_private_key_file = (
             ssh_private_key_file or
             self._get_value(
-                ssh_private_key_file, config_key='ssh_private_key_file'
+                ssh_private_key_file, 'ssh_private_key_file'
             )
         )
         if not self.ssh_private_key_file:

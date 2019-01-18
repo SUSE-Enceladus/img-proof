@@ -90,7 +90,7 @@ class SSHProvider(IpaProvider):
         self.ssh_private_key_file = (
             ssh_private_key_file or
             self._get_value(
-                ssh_private_key_file, config_key='ssh_private_key_file'
+                ssh_private_key_file, 'ssh_private_key_file'
             )
         )
         if not self.ssh_private_key_file:
@@ -111,7 +111,7 @@ class SSHProvider(IpaProvider):
 
         self.ssh_user = (
             ssh_user or
-            self._get_value(ssh_user, config_key='ssh_user')
+            self._get_value(ssh_user, 'ssh_user')
         )
         if not self.ssh_user:
             raise SSHProviderException(

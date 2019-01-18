@@ -127,7 +127,7 @@ class EC2Provider(IpaProvider):
         self.security_group_id = (
             security_group_id or
             self._get_value(
-                security_group_id, config_key='security_group_id'
+                security_group_id, 'security_group_id'
             )
         )
         self.ssh_key_name = (
@@ -138,7 +138,7 @@ class EC2Provider(IpaProvider):
             ssh_private_key_file or
             self._get_from_ec2_config('ssh_private_key') or
             self._get_value(
-                ssh_private_key_file, config_key='ssh_private_key_file'
+                ssh_private_key_file, 'ssh_private_key_file'
             )
         )
         self.ssh_user = (
