@@ -94,12 +94,8 @@ class GCEProvider(LibcloudProvider):
                                           collect_vm_info,
                                           ssh_private_key_file,
                                           ssh_user)
-        self.service_account_file = (
-            service_account_file or
-            self._get_value(
-                service_account_file,
-                'service_account_file'
-            )
+        self.service_account_file = self._get_value(
+            service_account_file, 'service_account_file'
         )
         if not self.service_account_file:
             raise GCEProviderException(

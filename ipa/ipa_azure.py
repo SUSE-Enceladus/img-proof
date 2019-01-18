@@ -100,12 +100,8 @@ class AzureProvider(IpaProvider):
                 ' are all required to use an existing subnet.'
             )
 
-        self.service_account_file = (
-            service_account_file or
-            self._get_value(
-                service_account_file,
-                'service_account_file'
-            )
+        self.service_account_file = self._get_value(
+            service_account_file, 'service_account_file'
         )
         if not self.service_account_file:
             raise AzureProviderException(
