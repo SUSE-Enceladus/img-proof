@@ -50,6 +50,7 @@ class SSHProvider(IpaProvider):
                  results_dir=None,
                  running_instance_id=None,  # Not used in SSH
                  secret_access_key=None,  # Not used in SSH
+                 security_group_id=None,  # Not used in SSH
                  service_account_file=None,  # Not used in SSH
                  ssh_key_name=None,  # Not used in SSH
                  ssh_private_key_file=None,
