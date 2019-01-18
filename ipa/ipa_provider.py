@@ -89,7 +89,8 @@ class IpaProvider(object):
                  test_dirs=None,
                  test_files=None,
                  timeout=None,
-                 collect_vm_info=None):
+                 collect_vm_info=None,
+                 ssh_private_key_file=None):
         """Initialize base provider class."""
         super(IpaProvider, self).__init__()
         self.provider = provider
@@ -139,7 +140,8 @@ class IpaProvider(object):
             'collect_vm_info',
             'provider_config',
             'running_instance_id',
-            'results_dir'
+            'results_dir',
+            'ssh_private_key_file'
         ]
 
         local_values = locals()
@@ -154,13 +156,10 @@ class IpaProvider(object):
         if self.provider_config:
             self.provider_config = os.path.expanduser(self.provider_config)
 
-        self.results = {
-            "tests": [],
-            "summary": defaultdict(
-                int,
-                {"duration": 0, "passed": 0, "num_tests": 0}
+        if self.ssh_private_key_file:
+            self.ssh_private_key_file = os.path.expanduser(
+                self.ssh_private_key_file
             )
-        }
 
         if not self.distro_name:
             raise IpaProviderException(
@@ -174,6 +173,14 @@ class IpaProvider(object):
                 raise IpaProviderException(
                     'Image ID or running instance is required.'
                 )
+
+        self.results = {
+            "tests": [],
+            "summary": defaultdict(
+                int,
+                {"duration": 0, "passed": 0, "num_tests": 0}
+            )
+        }
 
         self._parse_test_files(test_dirs, no_default_test_dirs)
 

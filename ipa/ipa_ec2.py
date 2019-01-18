@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import boto3
+import os
 
 from ipa import ipa_utils
 from ipa.ipa_constants import (
@@ -89,7 +90,8 @@ class EC2Provider(IpaProvider):
                                           test_dirs,
                                           test_files,
                                           timeout,
-                                          collect_vm_info)
+                                          collect_vm_info,
+                                          ssh_private_key_file)
         self.account_name = account_name
 
         if not self.account_name:
@@ -137,9 +139,7 @@ class EC2Provider(IpaProvider):
         self.ssh_private_key_file = (
             ssh_private_key_file or
             self._get_from_ec2_config('ssh_private_key') or
-            self._get_value(
-                ssh_private_key_file, 'ssh_private_key_file'
-            )
+            self.ssh_private_key_file
         )
         self.ssh_user = (
             ssh_user or
@@ -151,6 +151,10 @@ class EC2Provider(IpaProvider):
         if not self.ssh_private_key_file:
             raise EC2ProviderException(
                 'SSH private key file is required to connect to instance.'
+            )
+        else:
+            self.ssh_private_key_file = os.path.expanduser(
+                self.ssh_private_key_file
             )
 
     def _connect(self):

@@ -91,7 +91,8 @@ class GCEProvider(LibcloudProvider):
                                           test_dirs,
                                           test_files,
                                           timeout,
-                                          collect_vm_info)
+                                          collect_vm_info,
+                                          ssh_private_key_file)
         self.service_account_file = (
             service_account_file or
             self._get_value(
@@ -108,19 +109,9 @@ class GCEProvider(LibcloudProvider):
                 self.service_account_file
             )
 
-        self.ssh_private_key_file = (
-            ssh_private_key_file or
-            self._get_value(
-                ssh_private_key_file, 'ssh_private_key_file'
-            )
-        )
         if not self.ssh_private_key_file:
             raise GCEProviderException(
                 'SSH private key file is required to connect to instance.'
-            )
-        else:
-            self.ssh_private_key_file = os.path.expanduser(
-                self.ssh_private_key_file
             )
 
         self.ssh_user = (

@@ -82,25 +82,11 @@ class SSHProvider(IpaProvider):
                                           test_dirs,
                                           test_files,
                                           timeout,
-                                          collect_vm_info)
+                                          collect_vm_info,
+                                          ssh_private_key_file)
 
         # Cannot cleanup SSH instance
         self.cleanup = False
-
-        self.ssh_private_key_file = (
-            ssh_private_key_file or
-            self._get_value(
-                ssh_private_key_file, 'ssh_private_key_file'
-            )
-        )
-        if not self.ssh_private_key_file:
-            raise SSHProviderException(
-                'SSH private key file is required to connect to instance.'
-            )
-        else:
-            self.ssh_private_key_file = os.path.expanduser(
-                self.ssh_private_key_file
-            )
 
         if not ip_address:
             raise SSHProviderException(
@@ -113,6 +99,12 @@ class SSHProvider(IpaProvider):
             ssh_user or
             self._get_value(ssh_user, 'ssh_user')
         )
+
+        if not self.ssh_private_key_file:
+            raise SSHProviderException(
+                'SSH private key file is required to connect to instance.'
+            )
+
         if not self.ssh_user:
             raise SSHProviderException(
                 'SSH user is required to connect to instance.'
