@@ -91,7 +91,8 @@ class EC2Provider(IpaProvider):
                                           test_files,
                                           timeout,
                                           collect_vm_info,
-                                          ssh_private_key_file)
+                                          ssh_private_key_file,
+                                          ssh_user)
         self.account_name = account_name
 
         if not self.account_name:
@@ -144,6 +145,7 @@ class EC2Provider(IpaProvider):
         self.ssh_user = (
             ssh_user or
             self._get_from_ec2_config('user') or
+            self.ssh_user or
             EC2_DEFAULT_USER
         )
         self.subnet_id = subnet_id

@@ -90,7 +90,8 @@ class AzureProvider(IpaProvider):
                                             test_files,
                                             timeout,
                                             collect_vm_info,
-                                            ssh_private_key_file)
+                                            ssh_private_key_file,
+                                            ssh_user)
 
         subnet_args = [subnet_id, vnet_name, vnet_resource_group]
         if any(subnet_args) and not all(subnet_args):
@@ -121,7 +122,7 @@ class AzureProvider(IpaProvider):
             )
 
         self.accelerated_networking = accelerated_networking
-        self.ssh_user = ssh_user or AZURE_DEFAULT_USER
+        self.ssh_user = self.ssh_user or AZURE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
         self.subnet_id = subnet_id
         self.vnet_resource_group = vnet_resource_group

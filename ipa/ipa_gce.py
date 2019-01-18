@@ -92,7 +92,8 @@ class GCEProvider(LibcloudProvider):
                                           test_files,
                                           timeout,
                                           collect_vm_info,
-                                          ssh_private_key_file)
+                                          ssh_private_key_file,
+                                          ssh_user)
         self.service_account_file = (
             service_account_file or
             self._get_value(
@@ -114,11 +115,7 @@ class GCEProvider(LibcloudProvider):
                 'SSH private key file is required to connect to instance.'
             )
 
-        self.ssh_user = (
-            ssh_user or
-            GCE_DEFAULT_USER
-        )
-
+        self.ssh_user = self.ssh_user or GCE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
         self.subnet_id = subnet_id
 

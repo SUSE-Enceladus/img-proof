@@ -83,7 +83,8 @@ class SSHProvider(IpaProvider):
                                           test_files,
                                           timeout,
                                           collect_vm_info,
-                                          ssh_private_key_file)
+                                          ssh_private_key_file,
+                                          ssh_user)
 
         # Cannot cleanup SSH instance
         self.cleanup = False
@@ -94,11 +95,6 @@ class SSHProvider(IpaProvider):
             )
         else:
             self.instance_ip = ip_address
-
-        self.ssh_user = (
-            ssh_user or
-            self._get_value(ssh_user, 'ssh_user')
-        )
 
         if not self.ssh_private_key_file:
             raise SSHProviderException(

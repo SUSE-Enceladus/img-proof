@@ -90,7 +90,8 @@ class IpaProvider(object):
                  test_files=None,
                  timeout=None,
                  collect_vm_info=None,
-                 ssh_private_key_file=None):
+                 ssh_private_key_file=None,
+                 ssh_user=None):
         """Initialize base provider class."""
         super(IpaProvider, self).__init__()
         self.provider = provider
@@ -141,7 +142,8 @@ class IpaProvider(object):
             'provider_config',
             'running_instance_id',
             'results_dir',
-            'ssh_private_key_file'
+            'ssh_private_key_file',
+            'ssh_user'
         ]
 
         local_values = locals()
