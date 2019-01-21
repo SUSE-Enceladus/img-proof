@@ -90,7 +90,8 @@ class GCEProvider(LibcloudProvider):
                                           running_instance_id,
                                           test_dirs,
                                           test_files,
-                                          timeout)
+                                          timeout,
+                                          collect_vm_info)
         self.service_account_file = (
             service_account_file or
             self._get_value(
