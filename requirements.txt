@@ -12,3 +12,4 @@ pycryptodome
 pytest
 PyYAML
 testinfra
+oci

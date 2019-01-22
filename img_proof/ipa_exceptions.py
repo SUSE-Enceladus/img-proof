@@ -45,6 +45,10 @@ class GCECloudRetryableError(GCECloudException):
     """GCE retryable error exception."""
 
 
+class OCICloudException(IpaCloudException):
+    """Generic OCI exception."""
+
+
 class IpaControllerException(IpaException):
     """Generic exception for img_proof controller module."""
 

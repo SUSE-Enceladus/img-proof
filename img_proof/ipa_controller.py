@@ -32,6 +32,7 @@ from img_proof.ipa_ec2 import EC2Cloud
 from img_proof.ipa_exceptions import IpaControllerException
 from img_proof.ipa_gce import GCECloud
 from img_proof.ipa_ssh import SSHCloud
+from img_proof.ipa_oci import OCICloud
 from img_proof.ipa_utils import get_test_files
 
 
@@ -68,7 +69,13 @@ def test_image(
     timeout=None,
     vnet_name=None,
     vnet_resource_group=None,
-    collect_vm_info=None
+    collect_vm_info=None,
+    compartment_id=None,
+    availability_domain=None,
+    signing_key_fingerprint=None,
+    signing_key_file=None,
+    tenancy=None,
+    oci_user_id=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -122,6 +129,16 @@ def test_image(
     elif cloud_name == 'ssh':
         cloud = SSHCloud(
             ip_address=ip_address,
+            **kwargs
+        )
+    elif cloud_name == 'oci':
+        cloud = OCICloud(
+            compartment_id=compartment_id,
+            availability_domain=availability_domain,
+            signing_key_fingerprint=signing_key_fingerprint,
+            signing_key_file=signing_key_file,
+            tenancy=tenancy,
+            oci_user_id=oci_user_id,
             **kwargs
         )
     else:
