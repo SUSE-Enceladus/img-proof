@@ -28,7 +28,7 @@ import time
 
 import pytest
 
-from collections import defaultdict
+from collections import ChainMap, defaultdict
 from datetime import datetime
 
 from ipa import ipa_utils
@@ -44,10 +44,19 @@ from ipa.ipa_sles import SLES
 from ipa.ipa_exceptions import (
     IpaException,
     IpaProviderException,
-    IpaSSHException,
-    IpaUtilsException
+    IpaSSHException
 )
 from ipa.results_plugin import Report
+
+default_values = {
+    'collect_vm_info': False,
+    'config': IPA_CONFIG_FILE,
+    'history_log': IPA_HISTORY_FILE,
+    'log_level': logging.INFO,
+    'results_dir': IPA_RESULTS_PATH,
+    'test_files': set(),
+    'timeout': 600
+}
 
 
 class IpaProvider(object):
@@ -79,10 +88,18 @@ class IpaProvider(object):
                  test_dirs=None,
                  test_files=None,
                  timeout=None,
-                 collect_vm_info=None):
+                 collect_vm_info=None,
+                 ssh_private_key_file=None,
+                 ssh_user=None):
         """Initialize base provider class."""
         super(IpaProvider, self).__init__()
-        log_level = log_level or logging.INFO
+        self.provider = provider
+        self.host_key_fingerprint = None
+        self.instance_ip = None
+
+        self.config = config or default_values['config']
+        log_level = log_level or default_values['log_level']
+
         self.logger = logging.getLogger('ipa')
         self.logger.setLevel(log_level)
 
@@ -92,73 +109,58 @@ class IpaProvider(object):
 
         self.logger.addHandler(console_handler)
 
-        # Get ipa ini config file
-        self.config = config or IPA_CONFIG_FILE
-
         try:
-            self.ipa_config = ipa_utils.get_config(self.config)
+            self.ipa_config = ipa_utils.get_config_values(
+                self.config,
+                self.provider,
+                'ipa'
+            )
             self.logger.debug('Using ipa config file: %s' % self.config)
         except IpaException:
-            self.ipa_config = None
+            self.ipa_config = {}
             self.logger.debug('IPA config file not found: %s' % self.config)
 
-        self.description = description
-        self.host_key_fingerprint = None
-        self.instance_ip = None
-        self.provider = provider
-        self.collect_vm_info = self._get_value(
-            collect_vm_info,
-            config_key='collect_vm_info',
-            default=False
+        self.ipa_config = defaultdict(
+            lambda: None,
+            ChainMap(self.ipa_config, default_values)
         )
 
-        self.cleanup = self._get_value(cleanup)
-        self.distro_name = self._get_value(distro_name)
-        self.early_exit = self._get_value(early_exit)
-        self.image_id = self._get_value(image_id)
-        self.inject = self._get_value(inject)
-        self.instance_type = self._get_value(instance_type)
-        self.running_instance_id = self._get_value(running_instance_id)
-        self.test_files = list(self._get_value(test_files, default=[]))
-        self.timeout = self._get_value(
-            timeout,
-            config_key='timeout',
-            default=600
-        )
+        options = [
+            'description',
+            'cleanup',
+            'distro_name',
+            'early_exit',
+            'image_id',
+            'inject',
+            'instance_type',
+            'test_files',
+            'timeout',
+            'history_log',
+            'region',
+            'collect_vm_info',
+            'provider_config',
+            'running_instance_id',
+            'results_dir',
+            'ssh_private_key_file',
+            'ssh_user'
+        ]
 
-        self.history_log = self._get_value(
-            history_log,
-            config_key='history_log',
-            default=IPA_HISTORY_FILE
-        )
+        local_values = locals()
+        for option in options:
+            setattr(
+                self, option, self._get_value(local_values[option], option)
+            )
 
-        self.provider_config = self._get_value(
-            provider_config,
-            config_key='provider_config'
-        )
+        self.test_files = list(self.test_files)
+        self.results_dir = os.path.expanduser(self.results_dir)
+
         if self.provider_config:
             self.provider_config = os.path.expanduser(self.provider_config)
 
-        self.region = self._get_value(
-            region,
-            config_key='region'
-        )
-
-        self.results = {
-            "tests": [],
-            "summary": defaultdict(
-                int,
-                {"duration": 0, "passed": 0, "num_tests": 0}
+        if self.ssh_private_key_file:
+            self.ssh_private_key_file = os.path.expanduser(
+                self.ssh_private_key_file
             )
-        }
-
-        self.results_dir = os.path.expanduser(
-            self._get_value(
-                results_dir,
-                config_key='results_dir',
-                default=IPA_RESULTS_PATH
-            )
-        )
 
         if not self.distro_name:
             raise IpaProviderException(
@@ -172,6 +174,14 @@ class IpaProvider(object):
                 raise IpaProviderException(
                     'Image ID or running instance is required.'
                 )
+
+        self.results = {
+            "tests": [],
+            "summary": defaultdict(
+                int,
+                {"duration": 0, "passed": 0, "num_tests": 0}
+            )
+        }
 
         self._parse_test_files(test_dirs, no_default_test_dirs)
 
@@ -190,21 +200,12 @@ class IpaProvider(object):
             timeout=self.timeout
         )
 
-    def _get_value(self, arg, config_key=None, default=None):
+    def _get_value(self, arg, config_key):
         """Return the correct value for the given arg."""
-        value = default
-
         if arg or arg is False:
             value = arg
-
-        elif config_key and self.ipa_config:
-            with ipa_utils.ignored(IpaUtilsException):
-                value = ipa_utils.get_from_config(
-                    self.ipa_config,
-                    self.provider,
-                    'ipa',
-                    config_key
-                )
+        else:
+            value = self.ipa_config[config_key]
 
         return value
 
@@ -270,18 +271,8 @@ class IpaProvider(object):
             # Command line arg
             self.test_dirs.update(test_dirs.split(','))
 
-        with ipa_utils.ignored(IpaUtilsException):
-            if self.ipa_config:
-                # ipa config arg
-                test_dirs = ipa_utils.get_from_config(
-                    self.ipa_config,
-                    self.provider,
-                    'ipa',
-                    'test_dirs'
-                )
-
-                if test_dirs:
-                    self.test_dirs.update(test_dirs.split(','))
+        if 'test_dirs' in self.ipa_config:
+            self.test_dirs.update(self.ipa_config['test_dirs'].split(','))
 
         if not no_default_test_dirs:
             self.test_dirs.update(TEST_PATHS)

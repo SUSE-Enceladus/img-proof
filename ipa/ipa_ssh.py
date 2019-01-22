@@ -20,8 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 from ipa.ipa_exceptions import SSHProviderException
 from ipa.ipa_provider import IpaProvider
 
@@ -82,25 +80,12 @@ class SSHProvider(IpaProvider):
                                           test_dirs,
                                           test_files,
                                           timeout,
-                                          collect_vm_info)
+                                          collect_vm_info,
+                                          ssh_private_key_file,
+                                          ssh_user)
 
         # Cannot cleanup SSH instance
         self.cleanup = False
-
-        self.ssh_private_key_file = (
-            ssh_private_key_file or
-            self._get_value(
-                ssh_private_key_file, config_key='ssh_private_key_file'
-            )
-        )
-        if not self.ssh_private_key_file:
-            raise SSHProviderException(
-                'SSH private key file is required to connect to instance.'
-            )
-        else:
-            self.ssh_private_key_file = os.path.expanduser(
-                self.ssh_private_key_file
-            )
 
         if not ip_address:
             raise SSHProviderException(
@@ -109,10 +94,11 @@ class SSHProvider(IpaProvider):
         else:
             self.instance_ip = ip_address
 
-        self.ssh_user = (
-            ssh_user or
-            self._get_value(ssh_user, config_key='ssh_user')
-        )
+        if not self.ssh_private_key_file:
+            raise SSHProviderException(
+                'SSH private key file is required to connect to instance.'
+            )
+
         if not self.ssh_user:
             raise SSHProviderException(
                 'SSH user is required to connect to instance.'

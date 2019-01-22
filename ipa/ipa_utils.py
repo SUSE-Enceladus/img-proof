@@ -221,40 +221,39 @@ def generate_public_ssh_key(ssh_private_key_file):
     )
 
 
-def get_config(config_path):
-    """Parse ini config file."""
+def get_config_values(config_path, section, default='default'):
+    """
+    Parse ini config file and return a dict of values.
+
+    The provided section overrides any values in default section.
+    """
+    values = {}
+
     if not os.path.isfile(config_path):
         raise IpaUtilsException(
             'Config file not found: %s' % config_path
         )
 
     config = configparser.ConfigParser()
+
     try:
-        result = config.read(config_path)
-        if not result:
-            raise Exception('Empty result.')
+        config.read(config_path)
     except Exception:
         raise IpaUtilsException(
-            'Error parsing config file: %s' % config_path
+            'Config file format invalid.'
         )
 
-    return config
+    try:
+        values.update(config.items(default))
+    except Exception:
+        pass
 
+    try:
+        values.update(config.items(section))
+    except Exception:
+        pass
 
-def get_from_config(config, section, default_section, entry):
-    """Retrieve an entry from the configuration."""
-    value = None
-    with ignored(configparser.Error):
-        value = config.get(section, entry)
-
-    if not value:
-        try:
-            value = config.get(default_section, entry)
-        except configparser.Error:
-            raise IpaUtilsException(
-                'Unable to get %s value from config.' % entry
-            )
-    return value
+    return values
 
 
 def get_host_key_fingerprint(client):

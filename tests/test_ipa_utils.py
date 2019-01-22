@@ -234,32 +234,29 @@ def test_utils_duplicate_test_description():
     )
 
 
-def test_utils_get_config_exceptions():
-    """Test utils get config function exception cases."""
+def test_get_config_values():
+    """Test utils get config values function."""
+    data = ipa_utils.get_config_values(
+        'tests/data/config',
+        'ec2',
+        'ipa'
+    )
+
+    assert data['region'] == 'us-west-1'
+    assert data['test_dirs'] == 'tests/data/tests'
+
+
+def test_utils_get_config_values_exceptions():
+    """Test utils get config values function invalid path."""
     with pytest.raises(IpaUtilsException) as error:
-        ipa_utils.get_config('tests/data/fake.config')
+        ipa_utils.get_config_values(
+            'tests/data/fake.config',
+            'ec2',
+            'ipa'
+        )
 
     assert str(error.value) == \
         'Config file not found: tests/data/fake.config'
-
-    with pytest.raises(IpaUtilsException) as error:
-        ipa_utils.get_config('tests/data/ida_test')
-
-    assert str(error.value) == \
-        'Error parsing config file: tests/data/ida_test'
-
-
-def test_utils_get_from_config():
-    """Test utils config functions."""
-    config = ipa_utils.get_config('tests/data/config')
-
-    with pytest.raises(IpaUtilsException) as error:
-        ipa_utils.get_from_config(config, 'ec2', 'ipa', 'fakevalue')
-
-    assert str(error.value) == 'Unable to get fakevalue value from config.'
-
-    val = ipa_utils.get_from_config(config, 'ec2', 'ipa', 'region')
-    assert val == 'us-west-1'
 
 
 def test_utils_get_host_key_fingerprint():

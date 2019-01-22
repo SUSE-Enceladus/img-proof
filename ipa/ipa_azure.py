@@ -89,7 +89,9 @@ class AzureProvider(IpaProvider):
                                             test_dirs,
                                             test_files,
                                             timeout,
-                                            collect_vm_info)
+                                            collect_vm_info,
+                                            ssh_private_key_file,
+                                            ssh_user)
 
         subnet_args = [subnet_id, vnet_name, vnet_resource_group]
         if any(subnet_args) and not all(subnet_args):
@@ -98,12 +100,8 @@ class AzureProvider(IpaProvider):
                 ' are all required to use an existing subnet.'
             )
 
-        self.service_account_file = (
-            service_account_file or
-            self._get_value(
-                service_account_file,
-                config_key='service_account_file'
-            )
+        self.service_account_file = self._get_value(
+            service_account_file, 'service_account_file'
         )
         if not self.service_account_file:
             raise AzureProviderException(
@@ -114,23 +112,13 @@ class AzureProvider(IpaProvider):
                 self.service_account_file
             )
 
-        self.ssh_private_key_file = (
-            ssh_private_key_file or
-            self._get_value(
-                ssh_private_key_file, config_key='ssh_private_key_file'
-            )
-        )
         if not self.ssh_private_key_file:
             raise AzureProviderException(
                 'SSH private key file is required to connect to instance.'
             )
-        else:
-            self.ssh_private_key_file = os.path.expanduser(
-                self.ssh_private_key_file
-            )
 
         self.accelerated_networking = accelerated_networking
-        self.ssh_user = ssh_user or AZURE_DEFAULT_USER
+        self.ssh_user = self.ssh_user or AZURE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
         self.subnet_id = subnet_id
         self.vnet_resource_group = vnet_resource_group
