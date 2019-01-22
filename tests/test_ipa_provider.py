@@ -125,14 +125,16 @@ class TestIpaProvider(object):
 
         ipa_utils.clear_cache()
 
-    def test_provider_get_value(self):
-        """Test provider get value method."""
+    def test_provider_get_non_null_values(self):
+        """Test provider get non null values method."""
         provider = IpaProvider(*args, **self.kwargs)
+
+        data = {'region': 'us-east-1', 'type': None}
+
         # Assert arg takes precedence
-        val = provider._get_value(
-            'us-east-1', 'region'
-        )
-        assert val == 'us-east-1'
+        val = provider._get_non_null_values(data)
+        assert 'type' not in val
+        assert val['region'] == 'us-east-1'
 
     def test_provider_merge_results(self):
         """Test merge results output."""

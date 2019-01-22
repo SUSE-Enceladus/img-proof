@@ -94,8 +94,8 @@ class GCEProvider(LibcloudProvider):
                                           collect_vm_info,
                                           ssh_private_key_file,
                                           ssh_user)
-        self.service_account_file = self._get_value(
-            service_account_file, 'service_account_file'
+        self.service_account_file = (
+            service_account_file or self.ipa_config['service_account_file']
         )
         if not self.service_account_file:
             raise GCEProviderException(
@@ -113,7 +113,7 @@ class GCEProvider(LibcloudProvider):
 
         self.ssh_user = self.ssh_user or GCE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
-        self.subnet_id = subnet_id
+        self.subnet_id = subnet_id or self.ipa_config['subnet_id']
 
         self._get_service_account_info()
         self.compute_driver = self._get_driver()
