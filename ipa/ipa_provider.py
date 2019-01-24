@@ -457,7 +457,7 @@ class IpaProvider(object):
         while time.time() < end:
             current_state = self._get_instance_state()
 
-            if state == current_state:
+            if state.lower() == current_state.lower():
                 return
 
             time.sleep(wait_period)
