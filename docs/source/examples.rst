@@ -113,7 +113,7 @@ Testing with SSH only
 
 If you have a running instance that has an accessible IP address you can run
 ipa tests without the use of a cloud provider framework. This means the
-instance must have an SSH key pair setup. Without cloud provider credentials
+instance must have an SSH key pair setup. Without cloud framework credentials
 the instance cannot be terminated after tests and must be running.
 
 Instead of providing the image `--image-id` or instance

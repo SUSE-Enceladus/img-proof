@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-"""Base provider class for testing cloud images."""
+"""Base cloud framework class for testing cloud images."""
 
-# Copyright (c) 2019 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -43,7 +43,7 @@ from ipa.ipa_opensuse_leap import openSUSE_Leap
 from ipa.ipa_sles import SLES
 from ipa.ipa_exceptions import (
     IpaException,
-    IpaProviderException,
+    IpaCloudException,
     IpaSSHException
 )
 from ipa.results_plugin import Report
@@ -59,17 +59,17 @@ default_values = {
 }
 
 
-class IpaProvider(object):
+class IpaCloud(object):
     """
-    Base provider class.
+    Base cloud framework class.
 
-    Provides methods for testing images. Cloud provider
+    Provides methods for testing images. Cloud framework
     modules extend the base class and implement cloud
     specific methods for launching and managing instances.
     """
 
     def __init__(self,
-                 provider,
+                 cloud,
                  cleanup=None,
                  config=None,
                  description=None,
@@ -81,7 +81,7 @@ class IpaProvider(object):
                  instance_type=None,
                  log_level=None,
                  no_default_test_dirs=False,
-                 provider_config=None,
+                 cloud_config=None,
                  region=None,
                  results_dir=None,
                  running_instance_id=None,
@@ -91,12 +91,12 @@ class IpaProvider(object):
                  collect_vm_info=None,
                  ssh_private_key_file=None,
                  ssh_user=None):
-        """Initialize base provider class."""
-        super(IpaProvider, self).__init__()
+        """Initialize base cloud framework class."""
+        super(IpaCloud, self).__init__()
         # Get command line values that are not None
         cmd_line_values = self._get_non_null_values(locals())
 
-        self.provider = provider
+        self.cloud = cloud
         self.host_key_fingerprint = None
         self.instance_ip = None
 
@@ -115,7 +115,7 @@ class IpaProvider(object):
         try:
             self.ipa_config = ipa_utils.get_config_values(
                 self.config,
-                self.provider,
+                self.cloud,
                 'ipa'
             )
             self.logger.debug('Using ipa config file: %s' % self.config)
@@ -141,14 +141,14 @@ class IpaProvider(object):
         self.history_log = self.ipa_config['history_log']
         self.region = self.ipa_config['region']
         self.collect_vm_info = self.ipa_config['collect_vm_info']
-        self.provider_config = self.ipa_config['provider_config']
+        self.cloud_config = self.ipa_config['cloud_config']
         self.running_instance_id = self.ipa_config['running_instance_id']
         self.results_dir = os.path.expanduser(self.ipa_config['results_dir'])
         self.ssh_private_key_file = self.ipa_config['ssh_private_key_file']
         self.ssh_user = self.ipa_config['ssh_user']
 
-        if self.provider_config:
-            self.provider_config = os.path.expanduser(self.provider_config)
+        if self.cloud_config:
+            self.cloud_config = os.path.expanduser(self.cloud_config)
 
         if self.ssh_private_key_file:
             self.ssh_private_key_file = os.path.expanduser(
@@ -156,15 +156,15 @@ class IpaProvider(object):
             )
 
         if not self.distro_name:
-            raise IpaProviderException(
+            raise IpaCloudException(
                 'Distro name is required.'
             )
         else:
             self.distro_name = self.distro_name.lower()
 
-        if self.provider != 'ssh':
+        if self.cloud != 'ssh':
             if not self.image_id and not self.running_instance_id:
-                raise IpaProviderException(
+                raise IpaCloudException(
                     'Image ID or running instance is required.'
                 )
 
@@ -207,9 +207,9 @@ class IpaProvider(object):
 
     def _log_info(self):
         """Output test run information to top of log file."""
-        if self.provider == 'ssh':
+        if self.cloud == 'ssh':
             self.results['info'] = {
-                'platform': self.provider,
+                'platform': self.cloud,
                 'distro': self.distro_name,
                 'image': self.instance_ip,
                 'timestamp': self.time_stamp,
@@ -218,7 +218,7 @@ class IpaProvider(object):
             }
         else:
             self.results['info'] = {
-                'platform': self.provider,
+                'platform': self.cloud,
                 'region': self.region,
                 'distro': self.distro_name,
                 'image': self.image_id,
@@ -276,7 +276,7 @@ class IpaProvider(object):
         )
 
         if not self.test_dirs:
-            raise IpaProviderException(
+            raise IpaCloudException(
                 'At least one test directory is required.'
             )
 
@@ -351,7 +351,7 @@ class IpaProvider(object):
         elif self.distro_name == 'opensuse_leap':
             self.distro = openSUSE_Leap()
         else:
-            raise IpaProviderException(
+            raise IpaCloudException(
                 'Distribution: %s, not supported.' % self.distro_name
             )
 
@@ -366,14 +366,14 @@ class IpaProvider(object):
         if self.running_instance_id:
             self.results_dir = os.path.join(
                 self.results_dir,
-                self.provider,
+                self.cloud,
                 self.image_id,
                 self.running_instance_id
             )
         else:
             self.results_dir = os.path.join(
                 self.results_dir,
-                self.provider,
+                self.cloud,
                 self.instance_ip
             )
 
@@ -381,7 +381,7 @@ class IpaProvider(object):
             os.makedirs(self.results_dir)
         except OSError as error:
             if not os.path.isdir(self.results_dir):
-                raise IpaProviderException(
+                raise IpaCloudException(
                     'Unable to create ipa results directory: %s' % error
                 )
 
@@ -452,7 +452,7 @@ class IpaProvider(object):
 
             time.sleep(wait_period)
 
-        raise IpaProviderException(
+        raise IpaCloudException(
             'Instance has not arrived at the given state: {state}'.format(
                 state=state
             )
@@ -463,7 +463,7 @@ class IpaProvider(object):
         try:
             out = ipa_utils.execute_ssh_command(client, command)
         except Exception as error:
-            raise IpaProviderException(
+            raise IpaCloudException(
                 'Command: "{0}", failed execution: {1}.'.format(
                     command, error
                 )
@@ -476,7 +476,7 @@ class IpaProvider(object):
         try:
             out = ipa_utils.extract_archive(client, archive_path, extract_path)
         except Exception as error:
-            raise IpaProviderException(
+            raise IpaCloudException(
                 'Failed to extract archive, "{0}": {1}.'.format(
                     archive_path, error
                 )
@@ -500,7 +500,7 @@ class IpaProvider(object):
         try:
             out = self.distro.install_package(client, package)
         except Exception as error:
-            raise IpaProviderException(
+            raise IpaCloudException(
                 'Failed installing package, "{0}"; {1}.'.format(
                     package, error
                 )
@@ -584,7 +584,7 @@ class IpaProvider(object):
             file_name = os.path.basename(source_file)
             ipa_utils.put_file(client, source_file, file_name)
         except Exception as error:
-            raise IpaProviderException(
+            raise IpaCloudException(
                 'Failed copying file, "{0}"; {1}.'.format(
                     source_file, error
                 )
@@ -603,8 +603,8 @@ class IpaProvider(object):
         Returns:
             A tuple with the exit code and results json.
         """
-        if self.provider == 'ssh':
-            # SSH provider: instance must be running
+        if self.cloud == 'ssh':
+            # SSH cloud framework: instance must be running
             pass
         elif self.running_instance_id:
             # Use existing instance
@@ -633,11 +633,11 @@ class IpaProvider(object):
                 client
             )
         except IpaSSHException as error:
-            raise IpaProviderException(
+            raise IpaCloudException(
                 'Unable to connect to instance: %s' % error
             )
         except Exception as error:
-            raise IpaProviderException(
+            raise IpaCloudException(
                 'An error occurred retrieving host key: %s' % error
             )
 
@@ -652,7 +652,7 @@ class IpaProvider(object):
         with ipa_utils.ssh_config(self.ssh_user, self.ssh_private_key_file)\
                 as ssh_config:
             for item in self.test_files:
-                if item == 'test_hard_reboot' and self.provider != 'ssh':
+                if item == 'test_hard_reboot' and self.cloud != 'ssh':
                     self.logger.info('Testing hard reboot')
                     start = time.time()
                     result = 1

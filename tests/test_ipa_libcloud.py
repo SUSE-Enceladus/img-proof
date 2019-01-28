@@ -23,8 +23,8 @@
 
 import pytest
 
-from ipa.ipa_exceptions import LibcloudProviderException
-from ipa.ipa_libcloud import LibcloudProvider
+from ipa.ipa_exceptions import LibcloudException
+from ipa.ipa_libcloud import LibcloudCloud
 
 from unittest.mock import MagicMock, patch
 
@@ -47,7 +47,7 @@ class TestLibcloudProvider(object):
             'test_files': ['test_image']
         }
 
-    @patch.object(LibcloudProvider, '_get_instance')
+    @patch.object(LibcloudCloud, '_get_instance')
     def test_libcloud_get_instance_state(self, mock_get_instance):
         """Test libcloud get instance method."""
         instance = MagicMock()
@@ -55,29 +55,29 @@ class TestLibcloudProvider(object):
 
         mock_get_instance.return_value = instance
 
-        provider = LibcloudProvider(*args, **self.kwargs)
+        provider = LibcloudCloud(*args, **self.kwargs)
         val = provider._get_instance_state()
 
         assert val == 'running'
         assert mock_get_instance.call_count == 1
 
-    @patch.object(LibcloudProvider, '_get_instance_state')
+    @patch.object(LibcloudCloud, '_get_instance_state')
     def test_libcloud_is_instance_running(self, mock_get_instance_state):
         """Test libcloud provider is instance runnning method."""
         mock_get_instance_state.return_value = 'running'
 
-        provider = LibcloudProvider(*args, **self.kwargs)
+        provider = LibcloudCloud(*args, **self.kwargs)
         assert provider._is_instance_running()
         assert mock_get_instance_state.call_count == 1
 
         mock_get_instance_state.return_value = 'stopped'
         mock_get_instance_state.reset_mock()
 
-        provider = LibcloudProvider(*args, **self.kwargs)
+        provider = LibcloudCloud(*args, **self.kwargs)
         assert not provider._is_instance_running()
         assert mock_get_instance_state.call_count == 1
 
-    @patch.object(LibcloudProvider, '_get_instance')
+    @patch.object(LibcloudCloud, '_get_instance')
     def test_libcloud_set_instance_ip(self, mock_get_instance):
         """Test libcloud provider set instance ip method."""
         instance = MagicMock()
@@ -86,10 +86,10 @@ class TestLibcloudProvider(object):
 
         mock_get_instance.return_value = instance
 
-        provider = LibcloudProvider(*args, **self.kwargs)
+        provider = LibcloudCloud(*args, **self.kwargs)
         provider.running_instance_id = 'test'
 
-        with pytest.raises(LibcloudProviderException) as error:
+        with pytest.raises(LibcloudException) as error:
             provider._set_instance_ip()
 
         assert str(error.value) == \
@@ -104,13 +104,13 @@ class TestLibcloudProvider(object):
         assert provider.instance_ip == '127.0.0.1'
         assert mock_get_instance.call_count == 1
 
-    @patch.object(LibcloudProvider, '_get_instance')
+    @patch.object(LibcloudCloud, '_get_instance')
     def test_libcloud_start_instance(self, mock_get_instance):
         """Test libcloud start instance method."""
         instance = MagicMock()
         mock_get_instance.return_value = instance
 
-        provider = LibcloudProvider(*args, **self.kwargs)
+        provider = LibcloudCloud(*args, **self.kwargs)
 
         driver = MagicMock()
         driver.ex_start_node.return_value = None
@@ -123,8 +123,8 @@ class TestLibcloudProvider(object):
         assert driver.ex_start_node.call_count == 1
         assert driver.wait_until_running.call_count == 1
 
-    @patch.object(LibcloudProvider, '_wait_on_instance')
-    @patch.object(LibcloudProvider, '_get_instance')
+    @patch.object(LibcloudCloud, '_wait_on_instance')
+    @patch.object(LibcloudCloud, '_get_instance')
     def test_libcloud_stop_instance(self,
                                     mock_get_instance,
                                     mock_wait_on_instance):
@@ -134,7 +134,7 @@ class TestLibcloudProvider(object):
 
         mock_wait_on_instance.return_value = None
 
-        provider = LibcloudProvider(*args, **self.kwargs)
+        provider = LibcloudCloud(*args, **self.kwargs)
 
         driver = MagicMock()
         driver.ex_stop_node.return_value = None
@@ -145,14 +145,14 @@ class TestLibcloudProvider(object):
         assert mock_get_instance.call_count == 1
         assert driver.ex_stop_node.call_count == 1
 
-    @patch.object(LibcloudProvider, '_get_instance')
+    @patch.object(LibcloudCloud, '_get_instance')
     def test_libcloud_terminate_instance(self, mock_get_instance):
         """Test libcloud terminate instance method."""
         instance = MagicMock()
         instance.destroy.return_value = None
         mock_get_instance.return_value = instance
 
-        provider = LibcloudProvider(*args, **self.kwargs)
+        provider = LibcloudCloud(*args, **self.kwargs)
 
         driver = MagicMock()
         provider.compute_driver = driver

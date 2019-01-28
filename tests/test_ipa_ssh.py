@@ -23,8 +23,8 @@
 
 import pytest
 
-from ipa.ipa_exceptions import SSHProviderException
-from ipa.ipa_ssh import SSHProvider
+from ipa.ipa_exceptions import SSHCloudException
+from ipa.ipa_ssh import SSHCloud
 
 
 class TestSSHProvider(object):
@@ -54,8 +54,8 @@ class TestSSHProvider(object):
     def test_required_args(self, name, msg):
         self.kwargs[name] = None
 
-        with pytest.raises(SSHProviderException) as error:
-            SSHProvider(**self.kwargs)
+        with pytest.raises(SSHCloudException) as error:
+            SSHCloud(**self.kwargs)
 
         assert str(error.value) == msg
 
@@ -66,25 +66,25 @@ class TestSSHProvider(object):
     ])
     def test_ssh_empty_methods(self, name, result):
         """Test empty methods."""
-        provider = SSHProvider(**self.kwargs)
+        provider = SSHCloud(**self.kwargs)
         output = getattr(provider, name)()
 
         assert output == result
 
     @pytest.mark.parametrize('name,msg', [
-        ('_launch_instance', 'SSH provider cannot launch instances.'),
-        ('_set_image_id', 'SSH provider has no access to cloud API.'),
-        ('_set_instance_ip', 'SSH provider has no access to cloud API.'),
-        ('_start_instance', 'SSH provider has no access to cloud API.'),
-        ('_stop_instance', 'SSH provider has no access to cloud API.'),
-        ('_terminate_instance', 'SSH provider has no access to cloud API.')
+        ('_launch_instance', 'SSH class cannot launch instances.'),
+        ('_set_image_id', 'SSH class has no access to cloud API.'),
+        ('_set_instance_ip', 'SSH class has no access to cloud API.'),
+        ('_start_instance', 'SSH class has no access to cloud API.'),
+        ('_stop_instance', 'SSH class has no access to cloud API.'),
+        ('_terminate_instance', 'SSH class has no access to cloud API.')
     ])
     def test_ssh_not_implemented_methods(self, name, msg):
         """Test an exception is raised for methods that are not implemeted."""
-        provider = SSHProvider(**self.kwargs)
+        provider = SSHCloud(**self.kwargs)
 
         # Assert exception is raised
-        with pytest.raises(SSHProviderException) as error:
+        with pytest.raises(SSHCloudException) as error:
             getattr(provider, name)()
 
         assert str(error.value) == msg

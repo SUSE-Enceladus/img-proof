@@ -23,8 +23,8 @@
 
 import pytest
 
-from ipa.ipa_azure import AzureProvider
-from ipa.ipa_exceptions import AzureProviderException
+from ipa.ipa_azure import AzureCloud
+from ipa.ipa_exceptions import AzureCloudException
 
 from unittest.mock import MagicMock, patch
 
@@ -49,11 +49,11 @@ class TestAzureProvider(object):
             'test_files': ['test_image']
         }
 
-    @patch.object(AzureProvider, '_get_management_client')
-    @patch.object(AzureProvider, '_get_ssh_public_key')
+    @patch.object(AzureCloud, '_get_management_client')
+    @patch.object(AzureCloud, '_get_ssh_public_key')
     def helper_get_provider(self, mock_get_ssh_pub_key, mock_get_client):
         mock_get_client.return_value = self.client
-        return AzureProvider(**self.kwargs)
+        return AzureCloud(**self.kwargs)
 
     def test_azure_exception_required_args(self):
         """Test an exception is raised if required args missing."""
@@ -61,8 +61,8 @@ class TestAzureProvider(object):
         msg = 'SSH private key file is required to connect to instance.'
 
         # Test ssh private key file required
-        with pytest.raises(AzureProviderException) as error:
-            AzureProvider(**self.kwargs)
+        with pytest.raises(AzureCloudException) as error:
+            AzureCloud(**self.kwargs)
 
         assert str(error.value) == msg
 
@@ -87,7 +87,7 @@ class TestAzureProvider(object):
 
         provider = self.helper_get_provider()
 
-        with pytest.raises(AzureProviderException) as error:
+        with pytest.raises(AzureCloudException) as error:
             provider._get_management_client(client_class)
 
         assert str(error.value) == 'Service account file format is invalid: ' \
@@ -100,7 +100,7 @@ class TestAzureProvider(object):
 
         provider = self.helper_get_provider()
 
-        with pytest.raises(AzureProviderException) as error:
+        with pytest.raises(AzureCloudException) as error:
             provider._get_management_client(client_class)
 
         assert str(error.value) == "Service account file missing key: " \
@@ -113,7 +113,7 @@ class TestAzureProvider(object):
 
         provider = self.helper_get_provider()
 
-        with pytest.raises(AzureProviderException) as error:
+        with pytest.raises(AzureCloudException) as error:
             provider._get_management_client(client_class)
 
         assert str(error.value) == 'Unable to create resource management ' \
@@ -140,7 +140,7 @@ class TestAzureProvider(object):
         provider = self.helper_get_provider()
         assert provider._is_instance_running()
 
-    @patch.object(AzureProvider, '_wait_on_instance')
+    @patch.object(AzureCloud, '_wait_on_instance')
     @patch('ipa.ipa_utils.generate_instance_name')
     def test_azure_launch_instance(
         self, mock_generate_instance_name, mock_wait_on_instance
@@ -159,7 +159,7 @@ class TestAzureProvider(object):
         assert self.client.virtual_networks.create_or_update.call_count == 1
         assert provider.running_instance_id == 'azure-test-instance'
 
-    @patch.object(AzureProvider, '_wait_on_instance')
+    @patch.object(AzureCloud, '_wait_on_instance')
     @patch('ipa.ipa_utils.generate_instance_name')
     def test_create_storage_profile(
             self, mock_generate_instance_name, mock_wait_on_instance
@@ -205,7 +205,7 @@ class TestAzureProvider(object):
         assert provider.nic_name == 'fakeinstance-nic'
         assert provider.public_ip_name == 'fakeinstance-public-ip'
 
-    @patch.object(AzureProvider, '_get_instance')
+    @patch.object(AzureCloud, '_get_instance')
     def test_azure_set_image_id(self, mock_get_instance):
         """Test set image id method."""
         self.kwargs['image_id'] = None
@@ -241,7 +241,7 @@ class TestAzureProvider(object):
             'IP not found'
         )
 
-        with pytest.raises(AzureProviderException) as error:
+        with pytest.raises(AzureCloudException) as error:
             provider._set_instance_ip()
 
         assert str(error.value) == \
@@ -275,7 +275,7 @@ class TestAzureProvider(object):
             'Instance not found'
         )
 
-        with pytest.raises(AzureProviderException) as error:
+        with pytest.raises(AzureCloudException) as error:
             provider._start_instance()
 
         assert str(error.value) == 'Unable to start instance: ' \
@@ -296,7 +296,7 @@ class TestAzureProvider(object):
             'Instance not found'
         )
 
-        with pytest.raises(AzureProviderException) as error:
+        with pytest.raises(AzureCloudException) as error:
             provider._stop_instance()
 
         assert str(error.value) == 'Unable to stop instance: ' \
@@ -317,7 +317,7 @@ class TestAzureProvider(object):
             'Instance not found'
         )
 
-        with pytest.raises(AzureProviderException) as error:
+        with pytest.raises(AzureCloudException) as error:
             provider._terminate_instance()
 
         assert str(error.value) == 'Unable to terminate resource group: ' \

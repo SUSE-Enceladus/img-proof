@@ -2,7 +2,7 @@
 
 """Module for testing instances in Azure."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -29,11 +29,11 @@ from azure.mgmt.compute import ComputeManagementClient
 
 from ipa import ipa_utils
 from ipa.ipa_constants import AZURE_DEFAULT_TYPE, AZURE_DEFAULT_USER
-from ipa.ipa_exceptions import AzureProviderException
-from ipa.ipa_provider import IpaProvider
+from ipa.ipa_exceptions import AzureCloudException
+from ipa.ipa_cloud import IpaCloud
 
 
-class AzureProvider(IpaProvider):
+class AzureCloud(IpaCloud):
     """Class for testing instances in Azure."""
 
     def __init__(self,
@@ -52,7 +52,7 @@ class AzureProvider(IpaProvider):
                  ip_address=None,  # Not used in Azure
                  log_level=30,
                  no_default_test_dirs=False,
-                 provider_config=None,
+                 cloud_config=None,
                  region=None,
                  results_dir=None,
                  running_instance_id=None,
@@ -69,29 +69,29 @@ class AzureProvider(IpaProvider):
                  vnet_name=None,
                  vnet_resource_group=None,
                  collect_vm_info=None):
-        """Initialize Azure Provider class."""
-        super(AzureProvider, self).__init__('azure',
-                                            cleanup,
-                                            config,
-                                            description,
-                                            distro_name,
-                                            early_exit,
-                                            history_log,
-                                            image_id,
-                                            inject,
-                                            instance_type,
-                                            log_level,
-                                            no_default_test_dirs,
-                                            provider_config,
-                                            region,
-                                            results_dir,
-                                            running_instance_id,
-                                            test_dirs,
-                                            test_files,
-                                            timeout,
-                                            collect_vm_info,
-                                            ssh_private_key_file,
-                                            ssh_user)
+        """Initialize Azure Cloud class."""
+        super(AzureCloud, self).__init__('azure',
+                                         cleanup,
+                                         config,
+                                         description,
+                                         distro_name,
+                                         early_exit,
+                                         history_log,
+                                         image_id,
+                                         inject,
+                                         instance_type,
+                                         log_level,
+                                         no_default_test_dirs,
+                                         cloud_config,
+                                         region,
+                                         results_dir,
+                                         running_instance_id,
+                                         test_dirs,
+                                         test_files,
+                                         timeout,
+                                         collect_vm_info,
+                                         ssh_private_key_file,
+                                         ssh_user)
 
         self.subnet_id = subnet_id or self.ipa_config['subnet_id']
         self.vnet_name = vnet_name or self.ipa_config['vnet_name']
@@ -103,7 +103,7 @@ class AzureProvider(IpaProvider):
             self.subnet_id, self.vnet_name, self.vnet_resource_group
         ]
         if any(subnet_args) and not all(subnet_args):
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'subnet_id, vnet_resource_group and vnet_name'
                 ' are all required to use an existing subnet.'
             )
@@ -112,7 +112,7 @@ class AzureProvider(IpaProvider):
             service_account_file or self.ipa_config['service_account_file']
         )
         if not self.service_account_file:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Service account file is required to connect to Azure.'
             )
         else:
@@ -121,7 +121,7 @@ class AzureProvider(IpaProvider):
             )
 
         if not self.ssh_private_key_file:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'SSH private key file is required to connect to instance.'
             )
 
@@ -170,7 +170,7 @@ class AzureProvider(IpaProvider):
                 resource_group_name, nic_name, nic_config
             )
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Unable to create network interface: {0}.'.format(
                     error
                 )
@@ -193,7 +193,7 @@ class AzureProvider(IpaProvider):
                     resource_group_name, public_ip_name, public_ip_config
                 )
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Unable to create public IP: {0}.'.format(error)
             )
 
@@ -210,7 +210,7 @@ class AzureProvider(IpaProvider):
                 resource_group_name, resource_group_config
             )
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Unable to create resource group: {0}.'.format(error)
             )
 
@@ -235,7 +235,7 @@ class AzureProvider(IpaProvider):
                     image_id = image.id
                     break
             else:
-                raise AzureProviderException(
+                raise AzureCloudException(
                     'Image with name {0} not found.'.format(self.image_id)
                 )
 
@@ -258,7 +258,7 @@ class AzureProvider(IpaProvider):
                 resource_group_name, vnet_name, subnet_id, subnet_config
             )
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Unable to create subnet: {0}.'.format(error)
             )
 
@@ -280,7 +280,7 @@ class AzureProvider(IpaProvider):
                 resource_group_name, vnet_name, vnet_config
             )
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Unable to create vnet: {0}.'.format(error)
             )
 
@@ -296,7 +296,7 @@ class AzureProvider(IpaProvider):
                 vm_config
             )
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'An exception occurred creating virtual machine: {0}'.format(
                     error
                 )
@@ -362,7 +362,7 @@ class AzureProvider(IpaProvider):
                 expand='instanceView'
             )
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Unable to retrieve instance: {0}'.format(error)
             )
 
@@ -388,15 +388,15 @@ class AzureProvider(IpaProvider):
                 client_class, auth_path=self.service_account_file
             )
         except ValueError as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Service account file format is invalid: {0}.'.format(error)
             )
         except KeyError as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Service account file missing key: {0}.'.format(error)
             )
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Unable to create resource management client: '
                 '{0}.'.format(error)
             )
@@ -533,7 +533,7 @@ class AzureProvider(IpaProvider):
                     self.running_instance_id, self.nic_name
                 ).ip_configurations[0].private_ip_address
             except Exception as error:
-                raise AzureProviderException(
+                raise AzureCloudException(
                     'Unable to retrieve instance IP address: {0}.'.format(
                         error
                     )
@@ -550,7 +550,7 @@ class AzureProvider(IpaProvider):
                 self.running_instance_id, self.running_instance_id
             )
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Unable to start instance: {0}.'.format(error)
             )
 
@@ -565,7 +565,7 @@ class AzureProvider(IpaProvider):
                 self.running_instance_id, self.running_instance_id
             )
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Unable to stop instance: {0}.'.format(error)
             )
 
@@ -578,6 +578,6 @@ class AzureProvider(IpaProvider):
         try:
             self.resource.resource_groups.delete(self.running_instance_id)
         except Exception as error:
-            raise AzureProviderException(
+            raise AzureCloudException(
                 'Unable to terminate resource group: {0}.'.format(error)
             )

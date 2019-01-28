@@ -147,7 +147,7 @@ imported as follows:
    from ipa.ipa_controller import test_image
 
    status, results = test_image(
-       provider,
+       cloud_framework,
        access_key_id,
        ...
        storage_container,

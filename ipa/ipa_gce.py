@@ -28,15 +28,15 @@ from ipa.ipa_constants import (
     GCE_DEFAULT_TYPE,
     GCE_DEFAULT_USER
 )
-from ipa.ipa_exceptions import GCEProviderException
-from ipa.ipa_libcloud import LibcloudProvider
+from ipa.ipa_exceptions import GCECloudException
+from ipa.ipa_libcloud import LibcloudCloud
 
 from libcloud.common.google import ResourceNotFoundError
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 
 
-class GCEProvider(LibcloudProvider):
+class GCEProvider(LibcloudCloud):
     """Provider class for testing Google Compute Engine (GCE) images."""
 
     def __init__(self,
@@ -55,7 +55,7 @@ class GCEProvider(LibcloudProvider):
                  ip_address=None,  # Not used in GCE
                  log_level=30,
                  no_default_test_dirs=False,
-                 provider_config=None,
+                 cloud_config=None,
                  region=None,
                  results_dir=None,
                  running_instance_id=None,
@@ -84,7 +84,7 @@ class GCEProvider(LibcloudProvider):
                                           instance_type,
                                           log_level,
                                           no_default_test_dirs,
-                                          provider_config,
+                                          cloud_config,
                                           region,
                                           results_dir,
                                           running_instance_id,
@@ -98,7 +98,7 @@ class GCEProvider(LibcloudProvider):
             service_account_file or self.ipa_config['service_account_file']
         )
         if not self.service_account_file:
-            raise GCEProviderException(
+            raise GCECloudException(
                 'Service account file is required to connect to GCE.'
             )
         else:
@@ -107,7 +107,7 @@ class GCEProvider(LibcloudProvider):
             )
 
         if not self.ssh_private_key_file:
-            raise GCEProviderException(
+            raise GCECloudException(
                 'SSH private key file is required to connect to instance.'
             )
 
@@ -127,7 +127,7 @@ class GCEProvider(LibcloudProvider):
 
         self.service_account_email = info.get('client_email')
         if not self.service_account_email:
-            raise GCEProviderException(
+            raise GCECloudException(
                 'Service account JSON file is invalid for GCE. '
                 'client_email key is expected. See getting started '
                 'docs for information on GCE configuration.'
@@ -135,7 +135,7 @@ class GCEProvider(LibcloudProvider):
 
         self.service_account_project = info.get('project_id')
         if not self.service_account_project:
-            raise GCEProviderException(
+            raise GCECloudException(
                 'Service account JSON file is invalid for GCE. '
                 'project_id key is expected. See getting started '
                 'docs for information on GCE configuration.'
@@ -158,7 +158,7 @@ class GCEProvider(LibcloudProvider):
                 zone=self.region
             )
         except ResourceNotFoundError as e:
-            raise GCEProviderException(
+            raise GCECloudException(
                 'Instance with id: {id} cannot be found: {error}'.format(
                     id=self.running_instance_id, error=e
                 )
@@ -184,7 +184,7 @@ class GCEProvider(LibcloudProvider):
                 subnet_id, region=region
             )
         except Exception:
-            raise GCEProviderException(
+            raise GCECloudException(
                 'GCE subnet: {subnet_id} not found.'.format(
                     subnet_id=subnet_id
                 )
@@ -225,7 +225,7 @@ class GCEProvider(LibcloudProvider):
             except TypeError:
                 message = error
 
-            raise GCEProviderException(
+            raise GCECloudException(
                 'An error occurred launching instance: {message}.'.format(
                     message=message
                 )
@@ -244,7 +244,7 @@ class GCEProvider(LibcloudProvider):
     def _validate_region(self):
         """Validate region was passed in and is a valid GCE zone."""
         if not self.region:
-            raise GCEProviderException(
+            raise GCECloudException(
                 'Zone is required for GCE provider: '
                 'Example: us-west1-a'
             )
@@ -255,7 +255,7 @@ class GCEProvider(LibcloudProvider):
             zone = None
 
         if not zone:
-            raise GCEProviderException(
+            raise GCECloudException(
                 '{region} is not a valid GCE zone. '
                 'Example: us-west1-a'.format(
                     region=self.region

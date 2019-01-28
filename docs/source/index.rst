@@ -33,10 +33,10 @@ Cloud (AWS, Azure, GCE, etc.).
 About
 -----
 
-With **IPA** you can now test custom images in a provider agnostic way
+With **IPA** you can now test custom images in a cloud framework agnostic way
 with one tool and one API. In the first release, **IPA** supports the
 openSUSE and SLES distributions. It also supports the three largest
-cloud providers (AWS, Azure and GCE). However, it is intended to be
+cloud frameworks (AWS, Azure and GCE). However, it is intended to be
 distribution agnostic and framework transparent so both are easily
 extensible.
 
@@ -73,7 +73,7 @@ IPA
 ~~~
 
 **IPA** leverages Testinfra as a unit test framework. It also provides
-distribution classes and provider classes.
+distribution classes and cloud framework classes.
 
 Distribution Classes
 ^^^^^^^^^^^^^^^^^^^^
@@ -106,13 +106,13 @@ Soft reboot, ['test_sles'], update, hard reboot, ['test_sles_ec2']
 The order of tests is guaranteed and the results will be agregated to
 determine the status of a test run.
 
-Provider Classes
+Cloud Framework Classes
 ^^^^^^^^^^^^^^^^
 
-The provider classes contain methods necessary to interact with
-instances/images in a given cloud service provider.
+The cloud framework classes contain methods necessary to interact with
+instances/images in a given cloud framework.
 
-Some of the required methods for provider classes include:
+Some of the required methods for cloud framework classes include:
 
 * Launch instances
 * Terminate instances
@@ -130,11 +130,11 @@ The current supported CSPs are:
 * GCE
 * SSH
 
-The SSH provider is generic and can be used for any accessible instance
+The SSH class is generic and can be used for any accessible instance
 that is running. There are no credentials required except the instance
 needs the proper SSH User and SSH Key configured for access.
 
-The SSH provider cannot be used to test hard reboot (framework reboot) or
+The SSH class cannot be used to test hard reboot (framework reboot) or
 to launch/start/stop/terminate instances.
 
 Contributing

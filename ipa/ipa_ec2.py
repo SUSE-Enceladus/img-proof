@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-"""Provider module for testing AWS EC2 images."""
+"""Cloud framework module for testing AWS EC2 images."""
 
-# Copyright (c) 2018 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -32,12 +32,12 @@ from ipa.ipa_constants import (
     EC2_DEFAULT_TYPE,
     EC2_DEFAULT_USER
 )
-from ipa.ipa_exceptions import EC2ProviderException
-from ipa.ipa_provider import IpaProvider
+from ipa.ipa_exceptions import EC2CloudException
+from ipa.ipa_cloud import IpaCloud
 
 
-class EC2Provider(IpaProvider):
-    """Provider class for testing AWS EC2 images."""
+class EC2Cloud(IpaCloud):
+    """Cloud framework class for testing AWS EC2 images."""
 
     def __init__(self,
                  accelerated_networking=None,  # Not used in EC2
@@ -55,7 +55,7 @@ class EC2Provider(IpaProvider):
                  ip_address=None,  # Not used in EC2
                  log_level=30,
                  no_default_test_dirs=False,
-                 provider_config=None,
+                 cloud_config=None,
                  region=None,
                  results_dir=None,
                  running_instance_id=None,
@@ -72,29 +72,29 @@ class EC2Provider(IpaProvider):
                  vnet_name=None,  # Not used in EC2
                  vnet_resource_group=None,  # Not used in EC2
                  collect_vm_info=None):
-        """Initialize EC2 provider class."""
-        super(EC2Provider, self).__init__('ec2',
-                                          cleanup,
-                                          config,
-                                          description,
-                                          distro_name,
-                                          early_exit,
-                                          history_log,
-                                          image_id,
-                                          inject,
-                                          instance_type,
-                                          log_level,
-                                          no_default_test_dirs,
-                                          provider_config,
-                                          region,
-                                          results_dir,
-                                          running_instance_id,
-                                          test_dirs,
-                                          test_files,
-                                          timeout,
-                                          collect_vm_info,
-                                          ssh_private_key_file,
-                                          ssh_user)
+        """Initialize EC2 cloud framework class."""
+        super(EC2Cloud, self).__init__('ec2',
+                                       cleanup,
+                                       config,
+                                       description,
+                                       distro_name,
+                                       early_exit,
+                                       history_log,
+                                       image_id,
+                                       inject,
+                                       instance_type,
+                                       log_level,
+                                       no_default_test_dirs,
+                                       cloud_config,
+                                       region,
+                                       results_dir,
+                                       running_instance_id,
+                                       test_dirs,
+                                       test_files,
+                                       timeout,
+                                       collect_vm_info,
+                                       ssh_private_key_file,
+                                       ssh_user)
         # Get command line values that are not None
         cmd_line_values = self._get_non_null_values(locals())
 
@@ -106,11 +106,11 @@ class EC2Provider(IpaProvider):
             )
 
         if not self.region:
-            raise EC2ProviderException(
+            raise EC2CloudException(
                 'Region is required to connect to EC2.'
             )
 
-        config_file = self.provider_config or EC2_CONFIG_FILE
+        config_file = self.cloud_config or EC2_CONFIG_FILE
 
         ec2_config = {}
         try:
@@ -141,7 +141,7 @@ class EC2Provider(IpaProvider):
         self.subnet_id = self.ec2_config['subnet_id']
 
         if not self.ssh_private_key_file:
-            raise EC2ProviderException(
+            raise EC2CloudException(
                 'SSH private key file is required to connect to instance.'
             )
         else:
@@ -162,7 +162,7 @@ class EC2Provider(IpaProvider):
             # boto3 resource is lazy so attempt method to test connection
             resource.meta.client.describe_account_attributes()
         except Exception:
-            raise EC2ProviderException(
+            raise EC2CloudException(
                 'Could not connect to region: %s' % self.region
             )
         return resource
@@ -174,7 +174,7 @@ class EC2Provider(IpaProvider):
         try:
             instance = resource.Instance(self.running_instance_id)
         except Exception:
-            raise EC2ProviderException(
+            raise EC2CloudException(
                 'Instance with ID: {instance_id} not found.'.format(
                     instance_id=self.running_instance_id
                 )
@@ -185,7 +185,7 @@ class EC2Provider(IpaProvider):
         """
         Attempt to retrieve the state of the instance.
          Raises:
-            EC2ProviderException: If the instance cannot be found.
+            EC2CloudException: If the instance cannot be found.
         """
         instance = self._get_instance()
         state = None
@@ -193,7 +193,7 @@ class EC2Provider(IpaProvider):
         try:
             state = instance.state['Name']
         except Exception:
-            raise EC2ProviderException(
+            raise EC2CloudException(
                 'Instance with id: {instance_id}, '
                 'cannot be found.'.format(
                     instance_id=self.running_instance_id
@@ -258,7 +258,7 @@ class EC2Provider(IpaProvider):
         try:
             instances = resource.create_instances(**kwargs)
         except Exception as error:
-            raise EC2ProviderException(
+            raise EC2CloudException(
                 'Unable to create instance: {0}.'.format(error)
             )
 
@@ -288,7 +288,7 @@ class EC2Provider(IpaProvider):
             ipv6 or instance.private_ip_address
 
         if not self.instance_ip:
-            raise EC2ProviderException(
+            raise EC2CloudException(
                 'IP address for instance cannot be found.'
             )
 

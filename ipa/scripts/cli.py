@@ -2,7 +2,7 @@
 
 """Ipa CLI endpoints using click library."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -31,7 +31,7 @@ import click
 from ipa.ipa_constants import (
     IPA_HISTORY_FILE,
     SUPPORTED_DISTROS,
-    SUPPORTED_PROVIDERS
+    SUPPORTED_CLOUDS
 )
 from ipa import ipa_utils
 from ipa.ipa_controller import collect_tests, test_image
@@ -146,7 +146,7 @@ def main(context, no_color):
 )
 @click.option(
     '--ip-address',
-    help='IP address for the test instance (only used by SSH provider).'
+    help='IP address for the test instance (only used by SSH cloud).'
 )
 @click.option(
     '--debug',
@@ -174,12 +174,12 @@ def main(context, no_color):
     help='Do not include default test directories in search for tests.'
 )
 @click.option(
-    '--provider-config',
-    help='The provider specific config file location.'
+    '--cloud-config',
+    help='The cloud specific config file location.'
 )
 @click.option(
     '--region',
-    help='Cloud provider region to test image.'
+    help='Cloud region to test image.'
 )
 @click.option(
     '--results-dir',
@@ -244,8 +244,8 @@ def main(context, no_color):
     help='Controls whether general info about VM in cloud should be collected'
 )
 @click.argument(
-    'provider',
-    type=click.Choice(SUPPORTED_PROVIDERS)
+    'cloud',
+    type=click.Choice(SUPPORTED_CLOUDS)
 )
 @click.argument('tests', nargs=-1)
 @click.pass_context
@@ -265,7 +265,7 @@ def test(context,
          ip_address,
          log_level,
          no_default_test_dirs,
-         provider_config,
+         cloud_config,
          region,
          results_dir,
          running_instance_id,
@@ -281,13 +281,13 @@ def test(context,
          vnet_name,
          vnet_resource_group,
          collect_vm_info,
-         provider,
+         cloud,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
     try:
         status, results = test_image(
-            provider,
+            cloud,
             accelerated_networking,
             access_key_id,
             account,
@@ -303,7 +303,7 @@ def test(context,
             ip_address,
             log_level,
             no_default_test_dirs,
-            provider_config,
+            cloud_config,
             region,
             results_dir,
             running_instance_id,
