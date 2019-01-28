@@ -2,7 +2,7 @@
 
 """Base provider class for testing cloud images."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -93,6 +93,9 @@ class IpaProvider(object):
                  ssh_user=None):
         """Initialize base provider class."""
         super(IpaProvider, self).__init__()
+        # Get command line values that are not None
+        cmd_line_values = self._get_non_null_values(locals())
+
         self.provider = provider
         self.host_key_fingerprint = None
         self.instance_ip = None
@@ -120,39 +123,29 @@ class IpaProvider(object):
             self.ipa_config = {}
             self.logger.debug('IPA config file not found: %s' % self.config)
 
+        # Chain map options in order: cmdline -> config -> defaults
         self.ipa_config = defaultdict(
             lambda: None,
-            ChainMap(self.ipa_config, default_values)
+            ChainMap(cmd_line_values, self.ipa_config, default_values)
         )
 
-        options = [
-            'description',
-            'cleanup',
-            'distro_name',
-            'early_exit',
-            'image_id',
-            'inject',
-            'instance_type',
-            'test_files',
-            'timeout',
-            'history_log',
-            'region',
-            'collect_vm_info',
-            'provider_config',
-            'running_instance_id',
-            'results_dir',
-            'ssh_private_key_file',
-            'ssh_user'
-        ]
-
-        local_values = locals()
-        for option in options:
-            setattr(
-                self, option, self._get_value(local_values[option], option)
-            )
-
-        self.test_files = list(self.test_files)
-        self.results_dir = os.path.expanduser(self.results_dir)
+        self.description = self.ipa_config['description']
+        self.cleanup = self.ipa_config['cleanup']
+        self.distro_name = self.ipa_config['distro_name']
+        self.early_exit = self.ipa_config['early_exit']
+        self.image_id = self.ipa_config['image_id']
+        self.inject = self.ipa_config['inject']
+        self.instance_type = self.ipa_config['instance_type']
+        self.test_files = list(self.ipa_config['test_files'])
+        self.timeout = self.ipa_config['timeout']
+        self.history_log = self.ipa_config['history_log']
+        self.region = self.ipa_config['region']
+        self.collect_vm_info = self.ipa_config['collect_vm_info']
+        self.provider_config = self.ipa_config['provider_config']
+        self.running_instance_id = self.ipa_config['running_instance_id']
+        self.results_dir = os.path.expanduser(self.ipa_config['results_dir'])
+        self.ssh_private_key_file = self.ipa_config['ssh_private_key_file']
+        self.ssh_user = self.ipa_config['ssh_user']
 
         if self.provider_config:
             self.provider_config = os.path.expanduser(self.provider_config)
@@ -191,6 +184,12 @@ class IpaProvider(object):
     def _get_instance_state(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
 
+    def _get_non_null_values(self, data):
+        return {
+            key: value for key, value in data.items() if value is not None
+            and key not in ('self', '__class__')
+        }
+
     def _get_ssh_client(self):
         """Return a new or existing SSH client for given ip."""
         return ipa_utils.get_ssh_client(
@@ -199,15 +198,6 @@ class IpaProvider(object):
             self.ssh_user,
             timeout=self.timeout
         )
-
-    def _get_value(self, arg, config_key):
-        """Return the correct value for the given arg."""
-        if arg or arg is False:
-            value = arg
-        else:
-            value = self.ipa_config[config_key]
-
-        return value
 
     def _is_instance_running(self):
         raise NotImplementedError(NOT_IMPLEMENTED)

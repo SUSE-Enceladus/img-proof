@@ -23,7 +23,7 @@
 import boto3
 import os
 
-from collections import defaultdict
+from collections import ChainMap, defaultdict
 
 from ipa import ipa_utils
 from ipa.ipa_constants import (
@@ -95,24 +95,26 @@ class EC2Provider(IpaProvider):
                                           collect_vm_info,
                                           ssh_private_key_file,
                                           ssh_user)
-        self.account_name = account_name
+        # Get command line values that are not None
+        cmd_line_values = self._get_non_null_values(locals())
 
+        self.account_name = account_name
         if not self.account_name:
             self.logger.debug(
                 'No account provided. To use the EC2 config file an '
                 'account name is required.'
             )
 
-        config_file = self.provider_config or EC2_CONFIG_FILE
-
         if not self.region:
             raise EC2ProviderException(
                 'Region is required to connect to EC2.'
             )
 
-        data = {}
+        config_file = self.provider_config or EC2_CONFIG_FILE
+
+        ec2_config = {}
         try:
-            data = ipa_utils.get_config_values(
+            ec2_config = ipa_utils.get_config_values(
                 config_file,
                 ''.join(['region-', self.region]),
                 ''.join(['account-', self.account_name])
@@ -124,34 +126,19 @@ class EC2Provider(IpaProvider):
             self.logger.debug(
                 'EC2 config file not found: %s' % config_file
             )
-        finally:
-            self.ec2_config = defaultdict(lambda: None, data)
 
-        self.access_key_id = (
-            self._get_value(access_key_id, 'access_key_id') or
-            self.ec2_config['access_key_id']
+        self.ec2_config = defaultdict(
+            lambda: None,
+            ChainMap(cmd_line_values, ec2_config, self.ipa_config)
         )
-        self.secret_access_key = (
-            self._get_value(secret_access_key, 'secret_access_key') or
-            self.ec2_config['secret_access_key']
-        )
-        self.security_group_id = self._get_value(
-            security_group_id, 'security_group_id'
-        )
-        self.ssh_key_name = (
-            self._get_value(ssh_key_name, 'ssh_key_name') or
-            self.ec2_config['ssh_key_name']
-        )
-        self.ssh_private_key_file = (
-            self.ssh_private_key_file or
-            self.ec2_config['ssh_private_key']
-        )
-        self.ssh_user = (
-            self.ssh_user or
-            self.ec2_config['user'] or
-            EC2_DEFAULT_USER
-        )
-        self.subnet_id = subnet_id
+
+        self.access_key_id = self.ec2_config['access_key_id']
+        self.secret_access_key = self.ec2_config['secret_access_key']
+        self.security_group_id = self.ec2_config['security_group_id']
+        self.ssh_key_name = self.ec2_config['ssh_key_name']
+        self.ssh_private_key_file = self.ec2_config['ssh_private_key']
+        self.ssh_user = self.ec2_config['ssh_user'] or EC2_DEFAULT_USER
+        self.subnet_id = self.ec2_config['subnet_id']
 
         if not self.ssh_private_key_file:
             raise EC2ProviderException(

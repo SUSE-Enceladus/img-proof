@@ -93,15 +93,23 @@ class AzureProvider(IpaProvider):
                                             ssh_private_key_file,
                                             ssh_user)
 
-        subnet_args = [subnet_id, vnet_name, vnet_resource_group]
+        self.subnet_id = subnet_id or self.ipa_config['subnet_id']
+        self.vnet_name = vnet_name or self.ipa_config['vnet_name']
+        self.vnet_resource_group = (
+                vnet_resource_group or self.ipa_config['vnet_resource_group']
+        )
+
+        subnet_args = [
+            self.subnet_id, self.vnet_name, self.vnet_resource_group
+        ]
         if any(subnet_args) and not all(subnet_args):
             raise AzureProviderException(
                 'subnet_id, vnet_resource_group and vnet_name'
                 ' are all required to use an existing subnet.'
             )
 
-        self.service_account_file = self._get_value(
-            service_account_file, 'service_account_file'
+        self.service_account_file = (
+            service_account_file or self.ipa_config['service_account_file']
         )
         if not self.service_account_file:
             raise AzureProviderException(
@@ -117,12 +125,12 @@ class AzureProvider(IpaProvider):
                 'SSH private key file is required to connect to instance.'
             )
 
-        self.accelerated_networking = accelerated_networking
+        self.accelerated_networking = (
+            accelerated_networking or
+            self.ipa_config['accelerated_networking']
+        )
         self.ssh_user = self.ssh_user or AZURE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
-        self.subnet_id = subnet_id
-        self.vnet_resource_group = vnet_resource_group
-        self.vnet_name = vnet_name
 
         self.compute = self._get_management_client(ComputeManagementClient)
         self.network = self._get_management_client(NetworkManagementClient)
