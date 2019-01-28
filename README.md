@@ -12,10 +12,10 @@ overview
 **IPA** (Image Proofing App) provides a command line utility to test
 images in the Public Cloud (AWS, Azure, GCE, etc.).
 
-With **IPA** you can now test custom images in a provider agnostic way
+With **IPA** you can now test custom images in a cloud framework agnostic way
 with one tool and one API. In the first release, **IPA** supports the
 openSUSE and SLES distributions. It also supports the three largest
-cloud providers (AWS, Azure and GCE). However, it is intended to be
+cloud frameworks (AWS, Azure and GCE). However, it is intended to be
 distribution agnostic and framework transparent so both are easily
 extensible.
 

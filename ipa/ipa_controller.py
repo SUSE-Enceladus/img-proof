@@ -2,7 +2,7 @@
 
 """Controller class for ipa endpoints."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -25,16 +25,16 @@ import pytest
 import shlex
 
 from ipa.collect_items import CollectItemsPlugin
-from ipa.ipa_azure import AzureProvider
+from ipa.ipa_azure import AzureCloud
 from ipa.ipa_constants import TEST_PATHS
-from ipa.ipa_ec2 import EC2Provider
+from ipa.ipa_ec2 import EC2Cloud
 from ipa.ipa_exceptions import IpaControllerException
 from ipa.ipa_gce import GCEProvider
-from ipa.ipa_ssh import SSHProvider
+from ipa.ipa_ssh import SSHCloud
 from ipa.ipa_utils import get_test_files
 
 
-def test_image(provider_name,
+def test_image(cloud_name,
                accelerated_networking=None,
                access_key_id=None,
                account=None,
@@ -50,7 +50,7 @@ def test_image(provider_name,
                ip_address=None,
                log_level=None,
                no_default_test_dirs=None,
-               provider_config=None,
+               cloud_config=None,
                region=None,
                results_dir=None,
                running_instance_id=None,
@@ -67,22 +67,22 @@ def test_image(provider_name,
                vnet_name=None,
                vnet_resource_group=None,
                collect_vm_info=None):
-    """Creates a cloud provider instance and initiates testing."""
-    provider_name = provider_name.lower()
-    if provider_name == 'azure':
-        provider_class = AzureProvider
-    elif provider_name == 'ec2':
-        provider_class = EC2Provider
-    elif provider_name == 'gce':
-        provider_class = GCEProvider
-    elif provider_name == 'ssh':
-        provider_class = SSHProvider
+    """Creates a cloud framework instance and initiates testing."""
+    cloud_name = cloud_name.lower()
+    if cloud_name == 'azure':
+        cloud_class = AzureCloud
+    elif cloud_name == 'ec2':
+        cloud_class = EC2Cloud
+    elif cloud_name == 'gce':
+        cloud_class = GCEProvider
+    elif cloud_name == 'ssh':
+        cloud_class = SSHCloud
     else:
         raise IpaControllerException(
-            'Provider: %s unavailable.' % provider_name
+            'Cloud framework: %s unavailable.' % cloud_name
         )
 
-    provider = provider_class(
+    cloud = cloud_class(
         accelerated_networking=accelerated_networking,
         access_key_id=access_key_id,
         account_name=account,
@@ -98,7 +98,7 @@ def test_image(provider_name,
         ip_address=ip_address,
         log_level=log_level,
         no_default_test_dirs=no_default_test_dirs,
-        provider_config=provider_config,
+        cloud_config=cloud_config,
         region=region,
         results_dir=results_dir,
         running_instance_id=running_instance_id,
@@ -117,7 +117,7 @@ def test_image(provider_name,
         collect_vm_info=collect_vm_info
     )
 
-    return provider.test_image()
+    return cloud.test_image()
 
 
 def collect_results(results_file):

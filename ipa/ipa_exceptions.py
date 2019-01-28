@@ -25,19 +25,19 @@ class IpaException(Exception):
     """Generic exception for the ipa package."""
 
 
-class IpaProviderException(IpaException):
-    """Generic exception for the ipa provider."""
+class IpaCloudException(IpaException):
+    """Generic exception for the ipa cloud framework."""
 
 
-class AzureProviderException(IpaProviderException):
+class AzureCloudException(IpaCloudException):
     """Generic Azure exception."""
 
 
-class EC2ProviderException(IpaProviderException):
+class EC2CloudException(IpaCloudException):
     """Generic EC2 exception."""
 
 
-class GCEProviderException(IpaProviderException):
+class GCECloudException(IpaCloudException):
     """Generic GCE exception."""
 
 
@@ -50,7 +50,7 @@ class IpaDistroException(IpaException):
 
 
 class IpaImageNotFoundException(IpaException):
-    """Exception for image not found on cloud provider."""
+    """Exception for image not found on cloud framework."""
 
 
 class IpaListTestsException(IpaException):
@@ -77,9 +77,9 @@ class IpaSSHException(IpaUtilsException):
     """Generic exception for ipa SSH methods."""
 
 
-class SSHProviderException(IpaUtilsException):
-    """Generic exception for SSH provider."""
+class SSHCloudException(IpaUtilsException):
+    """Generic exception for SSH class."""
 
 
-class LibcloudProviderException(IpaProviderException):
+class LibcloudException(IpaCloudException):
     """Generic libcloud exception."""

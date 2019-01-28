@@ -2,7 +2,7 @@
 
 """Utility functions."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -68,7 +68,7 @@ def establish_ssh_connection(ip,
     Establish ssh connection and return paramiko client.
 
     Raises:
-        IpaProviderException: If connection cannot be established
+        IpaSSHException: If connection cannot be established
             in given number of attempts.
     """
     client = paramiko.SSHClient()

@@ -2,7 +2,7 @@
 
 """ipa cli modules."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.

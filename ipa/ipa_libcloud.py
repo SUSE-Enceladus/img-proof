@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-"""Provider module for testing images with libcloud."""
+"""Cloud framework module for testing images with libcloud."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -20,12 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ipa.ipa_exceptions import LibcloudProviderException
-from ipa.ipa_provider import IpaProvider
+from ipa.ipa_exceptions import LibcloudException
+from ipa.ipa_cloud import IpaCloud
 
 
-class LibcloudProvider(IpaProvider):
-    """Provider class for testing images with libcloud."""
+class LibcloudCloud(IpaCloud):
+    """Cloud framework class for testing images with libcloud."""
 
     def _get_instance_state(self):
         """Attempt to retrieve the state of the instance."""
@@ -45,7 +45,7 @@ class LibcloudProvider(IpaProvider):
         elif instance.private_ips:
             self.instance_ip = instance.private_ips[0]
         else:
-            raise LibcloudProviderException(
+            raise LibcloudException(
                 'IP address for instance: %s cannot be found.'
                 % self.running_instance_id
             )

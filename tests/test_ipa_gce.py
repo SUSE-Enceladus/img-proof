@@ -24,7 +24,7 @@
 import pytest
 
 from ipa.ipa_gce import GCEProvider
-from ipa.ipa_exceptions import GCEProviderException
+from ipa.ipa_exceptions import GCECloudException
 
 from unittest.mock import MagicMock, patch
 
@@ -52,7 +52,7 @@ class TestGCEProvider(object):
         self.kwargs['ssh_private_key_file'] = None
 
         # Test service account file required
-        with pytest.raises(GCEProviderException) as error:
+        with pytest.raises(GCECloudException) as error:
             GCEProvider(**self.kwargs)
 
         assert str(error.value) == \
@@ -61,7 +61,7 @@ class TestGCEProvider(object):
         self.kwargs['service_account_file'] = 'tests/gce/service-account.json'
 
         # Test ssh private key file required
-        with pytest.raises(GCEProviderException) as error:
+        with pytest.raises(GCECloudException) as error:
             GCEProvider(**self.kwargs)
 
         assert str(error.value) == \
@@ -104,7 +104,7 @@ class TestGCEProvider(object):
         provider.service_account_file = \
             'tests/gce/invalid-service-account.json'
 
-        with pytest.raises(GCEProviderException) as error:
+        with pytest.raises(GCECloudException) as error:
             provider._get_service_account_info()
 
         msg = 'Service account JSON file is invalid for GCE. ' \
@@ -156,7 +156,7 @@ class TestGCEProvider(object):
             'test'
         )
 
-        with pytest.raises(GCEProviderException) as error:
+        with pytest.raises(GCECloudException) as error:
             val = provider._get_instance()
 
         assert str(error.value) == "Instance with id: test-instance cannot" \
@@ -210,7 +210,7 @@ class TestGCEProvider(object):
         provider.region = 'us-west-1a'
 
         msg = 'GCE subnet: test-subnet not found.'
-        with pytest.raises(GCEProviderException) as error:
+        with pytest.raises(GCECloudException) as error:
             provider._get_subnet('test-subnet')
 
         assert msg == str(error.value)
@@ -276,7 +276,7 @@ class TestGCEProvider(object):
         driver.ex_get_zone.return_value = None
         mock_get_driver.return_value = driver
 
-        with pytest.raises(GCEProviderException) as error:
+        with pytest.raises(GCECloudException) as error:
             GCEProvider(**self.kwargs)
 
         assert str(error.value) == \
@@ -284,7 +284,7 @@ class TestGCEProvider(object):
 
         self.kwargs['region'] = 'fake'
 
-        with pytest.raises(GCEProviderException) as error:
+        with pytest.raises(GCECloudException) as error:
             GCEProvider(**self.kwargs)
 
         driver.ex_get_zone.assert_called_once_with('fake')

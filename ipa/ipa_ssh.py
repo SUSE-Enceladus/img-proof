@@ -20,11 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ipa.ipa_exceptions import SSHProviderException
-from ipa.ipa_provider import IpaProvider
+from ipa.ipa_exceptions import SSHCloudException
+from ipa.ipa_cloud import IpaCloud
 
 
-class SSHProvider(IpaProvider):
+class SSHCloud(IpaCloud):
     """Class for testing instances in Azure."""
 
     def __init__(self,
@@ -43,7 +43,7 @@ class SSHProvider(IpaProvider):
                  ip_address=None,
                  log_level=30,
                  no_default_test_dirs=False,
-                 provider_config=None,
+                 cloud_config=None,
                  region=None,  # Not used in SSH
                  results_dir=None,
                  running_instance_id=None,  # Not used in SSH
@@ -60,47 +60,47 @@ class SSHProvider(IpaProvider):
                  vnet_name=None,  # Not used in SSH
                  vnet_resource_group=None,  # Not used in SSH
                  collect_vm_info=None):
-        """Initialize Azure Provider class."""
-        super(SSHProvider, self).__init__('ssh',
-                                          cleanup,
-                                          config,
-                                          description,
-                                          distro_name,
-                                          early_exit,
-                                          history_log,
-                                          image_id,
-                                          inject,
-                                          instance_type,
-                                          log_level,
-                                          no_default_test_dirs,
-                                          provider_config,
-                                          region,
-                                          results_dir,
-                                          running_instance_id,
-                                          test_dirs,
-                                          test_files,
-                                          timeout,
-                                          collect_vm_info,
-                                          ssh_private_key_file,
-                                          ssh_user)
+        """Initialize Azure cloud class."""
+        super(SSHCloud, self).__init__('ssh',
+                                       cleanup,
+                                       config,
+                                       description,
+                                       distro_name,
+                                       early_exit,
+                                       history_log,
+                                       image_id,
+                                       inject,
+                                       instance_type,
+                                       log_level,
+                                       no_default_test_dirs,
+                                       cloud_config,
+                                       region,
+                                       results_dir,
+                                       running_instance_id,
+                                       test_dirs,
+                                       test_files,
+                                       timeout,
+                                       collect_vm_info,
+                                       ssh_private_key_file,
+                                       ssh_user)
 
         # Cannot cleanup SSH instance
         self.cleanup = False
 
         if not ip_address:
-            raise SSHProviderException(
+            raise SSHCloudException(
                 'IP address is required to connect to instance.'
             )
         else:
             self.instance_ip = ip_address
 
         if not self.ssh_private_key_file:
-            raise SSHProviderException(
+            raise SSHCloudException(
                 'SSH private key file is required to connect to instance.'
             )
 
         if not self.ssh_user:
-            raise SSHProviderException(
+            raise SSHCloudException(
                 'SSH user is required to connect to instance.'
             )
 
@@ -108,7 +108,7 @@ class SSHProvider(IpaProvider):
         """
         Return True.
 
-        Instance must be running with SSh provider.
+        Instance must be running with SSh cloud.
         """
         return True
 
@@ -130,46 +130,46 @@ class SSHProvider(IpaProvider):
 
         SSH instance must be running.
         """
-        raise SSHProviderException(
-            'SSH provider cannot launch instances.'
+        raise SSHCloudException(
+            'SSH class cannot launch instances.'
         )
 
     def _set_image_id(self):
         """
         Do nothing.
         """
-        raise SSHProviderException(
-            'SSH provider has no access to cloud API.'
+        raise SSHCloudException(
+            'SSH class has no access to cloud API.'
         )
 
     def _set_instance_ip(self):
         """
         Do nothing.
         """
-        raise SSHProviderException(
-            'SSH provider has no access to cloud API.'
+        raise SSHCloudException(
+            'SSH class has no access to cloud API.'
         )
 
     def _start_instance(self):
         """
         Do nothing.
         """
-        raise SSHProviderException(
-            'SSH provider has no access to cloud API.'
+        raise SSHCloudException(
+            'SSH class has no access to cloud API.'
         )
 
     def _stop_instance(self):
         """
         Do nothing.
         """
-        raise SSHProviderException(
-            'SSH provider has no access to cloud API.'
+        raise SSHCloudException(
+            'SSH class has no access to cloud API.'
         )
 
     def _terminate_instance(self):
         """
         Do nothing.
         """
-        raise SSHProviderException(
-            'SSH provider has no access to cloud API.'
+        raise SSHCloudException(
+            'SSH class has no access to cloud API.'
         )

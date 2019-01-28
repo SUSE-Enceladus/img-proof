@@ -27,8 +27,8 @@ import os
 
 from ipa import ipa_utils
 from ipa.ipa_distro import Distro
-from ipa.ipa_exceptions import IpaProviderException, IpaSSHException
-from ipa.ipa_provider import IpaProvider
+from ipa.ipa_exceptions import IpaCloudException, IpaSSHException
+from ipa.ipa_cloud import IpaCloud
 
 from unittest.mock import call, MagicMock, patch
 from tempfile import TemporaryDirectory
@@ -81,7 +81,7 @@ class TestIpaProvider(object):
     )
     def test_provider_not_implemented_methods(self, method):
         """Confirm methods raise not implemented exception."""
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
 
         with pytest.raises(NotImplementedError) as error:
             getattr(provider, method)()
@@ -89,16 +89,16 @@ class TestIpaProvider(object):
 
     def test_provider_distro_required(self):
         """Test exception raised if no distro provided."""
-        with pytest.raises(IpaProviderException) as error:
-            IpaProvider(*args, config='tests/data/config')
+        with pytest.raises(IpaCloudException) as error:
+            IpaCloud(*args, config='tests/data/config')
 
         assert str(error.value) == \
             'Distro name is required.'
 
     def test_provider_instance_image_required(self):
         """Test exception if no running instance or image id provided."""
-        with pytest.raises(IpaProviderException) as error:
-            IpaProvider(
+        with pytest.raises(IpaCloudException) as error:
+            IpaCloud(
                 *args,
                 config='tests/data/config',
                 distro_name='SLES'
@@ -110,7 +110,7 @@ class TestIpaProvider(object):
     @patch.object(ipa_utils, 'get_ssh_client')
     def test_provider_get_ssh_client(self, mock_get_ssh_client):
         """Test get ssh client method."""
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
 
         provider.instance_ip = '127.0.0.1'
         provider.ssh_user = 'ec2-user'
@@ -127,7 +127,7 @@ class TestIpaProvider(object):
 
     def test_provider_get_non_null_values(self):
         """Test provider get non null values method."""
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
 
         data = {'region': 'us-east-1', 'type': None}
 
@@ -138,7 +138,7 @@ class TestIpaProvider(object):
 
     def test_provider_merge_results(self):
         """Test merge results output."""
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
 
         results = {
             "tests": [
@@ -170,7 +170,7 @@ class TestIpaProvider(object):
             assert provider.results['tests'][0][key] == val
 
     def test_process_test_results(self):
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider._process_test_results(5.0, 'test_test')
 
         assert provider.results['summary']['duration'] == 5.0
@@ -181,14 +181,14 @@ class TestIpaProvider(object):
         assert test['outcome'] == 'passed'
         assert test['name'] == 'test_test'
 
-    @patch.object(IpaProvider, '_merge_results')
+    @patch.object(IpaCloud, '_merge_results')
     @patch.object(pytest, 'main')
     def test_provider_run_tests(self, mock_pytest, mock_merge_results):
         """Test run tests method."""
         mock_pytest.return_value = 0
         mock_merge_results.return_value = None
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
 
         provider.terminate = True
         provider.results['info'] = {
@@ -206,15 +206,15 @@ class TestIpaProvider(object):
 
     def test_provider_invalid_distro_name(self):
         """Test invalid distro name provided raises exception."""
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.distro_name = 'BadDistro'
 
-        with pytest.raises(IpaProviderException) as error:
+        with pytest.raises(IpaCloudException) as error:
             provider._set_distro()
         assert str(error.value) == 'Distribution: BadDistro, not supported.'
 
-    @patch.object(IpaProvider, '_is_instance_running')
-    @patch.object(IpaProvider, '_start_instance')
+    @patch.object(IpaCloud, '_is_instance_running')
+    @patch.object(IpaCloud, '_start_instance')
     def test_provider_start_if_stopped(self,
                                        mock_start_instance,
                                        mock_instance_running):
@@ -222,7 +222,7 @@ class TestIpaProvider(object):
         mock_instance_running.return_value = False
         mock_start_instance.return_value = None
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider._start_instance_if_stopped()
 
         assert mock_instance_running.call_count == 1
@@ -233,7 +233,7 @@ class TestIpaProvider(object):
         client = MagicMock()
         mock_exec_cmd.return_value = 'command executed successfully!'
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.log_file = 'fake_file.name'
 
         with patch('builtins.open', create=True) as mock_open:
@@ -253,7 +253,7 @@ class TestIpaProvider(object):
 
         mock_extract_archive.return_value = 'archive extracted successfully!'
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.log_file = 'fake_file.name'
 
         with patch('builtins.open', create=True) as mock_open:
@@ -271,9 +271,9 @@ class TestIpaProvider(object):
             client, 'archive.tar.xz', None
         )
 
-    @patch.object(IpaProvider, '_set_instance_ip')
-    @patch.object(IpaProvider, '_stop_instance')
-    @patch.object(IpaProvider, '_start_instance')
+    @patch.object(IpaCloud, '_set_instance_ip')
+    @patch.object(IpaCloud, '_stop_instance')
+    @patch.object(IpaCloud, '_start_instance')
     def test_provider_hard_reboot(self,
                                   mock_start_instance,
                                   mock_stop_instance,
@@ -283,7 +283,7 @@ class TestIpaProvider(object):
         mock_start_instance.return_value = None
         mock_set_instance_ip.return_value = None
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.instance_ip = '0.0.0.0'
         provider.hard_reboot_instance()
 
@@ -298,7 +298,7 @@ class TestIpaProvider(object):
         file_path = '/home/user/test.file'
         basename = 'test.file'
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         out = provider.put_file(client, file_path)
 
         assert out == basename
@@ -312,7 +312,7 @@ class TestIpaProvider(object):
         distro = MagicMock()
         distro.install_package.return_value = 'package install successful!'
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.log_file = 'fake_file.name'
         provider.distro = distro
 
@@ -327,10 +327,10 @@ class TestIpaProvider(object):
                 call('package install successful!')
             ])
 
-    @patch.object(IpaProvider, 'execute_ssh_command')
-    @patch.object(IpaProvider, 'extract_archive')
-    @patch.object(IpaProvider, 'install_package')
-    @patch.object(IpaProvider, 'put_file')
+    @patch.object(IpaCloud, 'execute_ssh_command')
+    @patch.object(IpaCloud, 'extract_archive')
+    @patch.object(IpaCloud, 'install_package')
+    @patch.object(IpaCloud, 'put_file')
     def test_process_injection_file(self,
                                     mock_put_file,
                                     mock_install_package,
@@ -341,7 +341,7 @@ class TestIpaProvider(object):
             'test.noarch.rpm', 'test.tar.xz', 'test.py'
         ]
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.inject = 'tests/data/injection/test_injection.yaml'
 
         provider.process_injection_file(client)
@@ -365,10 +365,10 @@ class TestIpaProvider(object):
             client, 'python test.py'
         )
 
-    @patch.object(IpaProvider, '_set_instance_ip')
-    @patch.object(IpaProvider, '_set_image_id')
-    @patch.object(IpaProvider, '_start_instance_if_stopped')
-    @patch.object(IpaProvider, '_get_ssh_client')
+    @patch.object(IpaCloud, '_set_instance_ip')
+    @patch.object(IpaCloud, '_set_image_id')
+    @patch.object(IpaCloud, '_start_instance_if_stopped')
+    @patch.object(IpaCloud, '_get_ssh_client')
     def test_provider_unable_connect_instance(self,
                                               mock_get_ssh_client,
                                               mock_start_instance,
@@ -381,18 +381,18 @@ class TestIpaProvider(object):
         mock_set_instance_ip.return_value = None
         self.kwargs['running_instance_id'] = 'fakeinstance'
 
-        provider = IpaProvider(*args, **self.kwargs)
-        with pytest.raises(IpaProviderException) as error:
+        provider = IpaCloud(*args, **self.kwargs)
+        with pytest.raises(IpaCloudException) as error:
             provider.test_image()
         assert str(error.value) == 'Unable to connect to instance: ERROR!'
         assert mock_get_ssh_client.call_count == 1
 
-    @patch.object(IpaProvider, '_set_instance_ip')
-    @patch.object(IpaProvider, '_set_image_id')
-    @patch.object(IpaProvider, '_start_instance_if_stopped')
-    @patch.object(IpaProvider, '_get_ssh_client')
+    @patch.object(IpaCloud, '_set_instance_ip')
+    @patch.object(IpaCloud, '_set_image_id')
+    @patch.object(IpaCloud, '_start_instance_if_stopped')
+    @patch.object(IpaCloud, '_get_ssh_client')
     @patch('ipa.ipa_utils.get_host_key_fingerprint')
-    @patch.object(IpaProvider, 'hard_reboot_instance')
+    @patch.object(IpaCloud, 'hard_reboot_instance')
     def test_provider_bad_connect_hard_reboot(self,
                                               mock_hard_reboot,
                                               mock_get_host_key,
@@ -410,7 +410,7 @@ class TestIpaProvider(object):
         self.kwargs['running_instance_id'] = 'fakeinstance'
         self.kwargs['test_files'] = ['test_hard_reboot']
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.ssh_private_key_file = 'tests/data/ida_test'
         provider.ssh_user = 'root'
         provider.logger = MagicMock()
@@ -438,10 +438,10 @@ class TestIpaProvider(object):
         assert mock_hard_reboot.call_count == 1
         mock_hard_reboot.reset_mock()
 
-    @patch.object(IpaProvider, '_set_instance_ip')
-    @patch.object(IpaProvider, '_set_image_id')
-    @patch.object(IpaProvider, '_start_instance_if_stopped')
-    @patch.object(IpaProvider, '_get_ssh_client')
+    @patch.object(IpaCloud, '_set_instance_ip')
+    @patch.object(IpaCloud, '_set_image_id')
+    @patch.object(IpaCloud, '_start_instance_if_stopped')
+    @patch.object(IpaCloud, '_get_ssh_client')
     @patch('ipa.ipa_utils.get_host_key_fingerprint')
     @patch.object(Distro, 'reboot')
     def test_provider_bad_connect_soft_reboot(self,
@@ -465,7 +465,7 @@ class TestIpaProvider(object):
         self.kwargs['running_instance_id'] = 'fakeinstance'
         self.kwargs['test_files'] = ['test_soft_reboot']
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.ssh_private_key_file = 'tests/data/ida_test'
         provider.ssh_user = 'root'
         provider.logger = MagicMock()
@@ -493,11 +493,11 @@ class TestIpaProvider(object):
         assert mock_soft_reboot.call_count == 1
         mock_soft_reboot.reset_mock()
 
-    @patch.object(IpaProvider, '_set_instance_ip')
-    @patch.object(IpaProvider, '_set_image_id')
-    @patch.object(IpaProvider, '_start_instance_if_stopped')
-    @patch.object(IpaProvider, '_get_ssh_client')
-    @patch.object(IpaProvider, '_terminate_instance')
+    @patch.object(IpaCloud, '_set_instance_ip')
+    @patch.object(IpaCloud, '_set_image_id')
+    @patch.object(IpaCloud, '_start_instance_if_stopped')
+    @patch.object(IpaCloud, '_get_ssh_client')
+    @patch.object(IpaCloud, '_terminate_instance')
     @patch('ipa.ipa_utils.get_host_key_fingerprint')
     @patch.object(Distro, 'update')
     def test_provider_distro_update(self,
@@ -520,7 +520,7 @@ class TestIpaProvider(object):
         self.kwargs['test_files'] = ['test_update']
         self.kwargs['cleanup'] = True
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.ssh_private_key_file = 'tests/data/ida_test'
         provider.ssh_user = 'root'
 
@@ -529,12 +529,12 @@ class TestIpaProvider(object):
         assert mock_distro_update.call_count == 1
         self.kwargs['cleanup'] = None
 
-    @patch.object(IpaProvider, '_set_instance_ip')
-    @patch.object(IpaProvider, '_set_image_id')
-    @patch.object(IpaProvider, '_start_instance_if_stopped')
-    @patch.object(IpaProvider, '_get_ssh_client')
+    @patch.object(IpaCloud, '_set_instance_ip')
+    @patch.object(IpaCloud, '_set_image_id')
+    @patch.object(IpaCloud, '_start_instance_if_stopped')
+    @patch.object(IpaCloud, '_get_ssh_client')
     @patch('ipa.ipa_utils.get_host_key_fingerprint')
-    @patch.object(IpaProvider, '_run_tests')
+    @patch.object(IpaCloud, '_run_tests')
     def test_provider_break_if_test_failure(self,
                                             mock_run_tests,
                                             mock_get_host_key,
@@ -552,7 +552,7 @@ class TestIpaProvider(object):
         self.kwargs['running_instance_id'] = 'fakeinstance'
         self.kwargs['early_exit'] = True
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.ssh_private_key_file = 'tests/data/ida_test'
         provider.ssh_user = 'root'
 
@@ -560,7 +560,7 @@ class TestIpaProvider(object):
         assert status == 1
         assert mock_run_tests.call_count == 1
 
-    @patch.object(IpaProvider, '_get_instance_state')
+    @patch.object(IpaCloud, '_get_instance_state')
     @patch('time.sleep')
     def test_azure_wait_on_instance(self,
                                     mock_sleep,
@@ -569,11 +569,11 @@ class TestIpaProvider(object):
         mock_get_instance_state.return_value = 'Stopped'
         mock_sleep.return_value = None
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider._wait_on_instance('Stopped')
         assert mock_get_instance_state.call_count == 1
 
-    @patch.object(IpaProvider, '_get_ssh_client')
+    @patch.object(IpaCloud, '_get_ssh_client')
     def test_collect_vm_info(self, mock_get_ssh_client):
         """Test collect_vm_info method. """
         distro = MagicMock()
@@ -582,7 +582,7 @@ class TestIpaProvider(object):
             'Failed to collect VM info: Does not exist.'
         mock_get_ssh_client.return_value = client
 
-        provider = IpaProvider(*args, **self.kwargs)
+        provider = IpaCloud(*args, **self.kwargs)
         provider.distro = distro
         provider.log_file = 'fake_file.name'
         provider.logger = MagicMock()

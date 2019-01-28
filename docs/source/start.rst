@@ -69,14 +69,15 @@ IPA Config
 ----------
 
 The **IPA** configuration file is ini format ~/.config/ipa/config.
-This can be used for any configuration value including provider specific
-values.
+This can be used for any configuration value including cloud framework
+specific values.
 
 To override the default configuration location the CLI option ``-C`` or
 ``--config`` is available.
 
-The ipa section is required. The provider sections are optional and would
-be [{provider}]. For example, the [ec2] section in the following file.
+The ipa section is required. The cloud framework sections are optional and
+would be [{cloud_framework}]. For example, the [ec2] section in the following
+file.
 
 .. code-block:: ini
 
@@ -89,7 +90,7 @@ be [{provider}]. For example, the [ec2] section in the following file.
 
 There are multiple ways to provide configuration values when using
 **IPA**. All options are available via command line and the configuration
-file. Also, for certain providers **IPA** will read provider specific
+file. Also, for certain clouds **IPA** will read cloud specific
 config files.
 
 All command line options which have a format such as ``--ssh-user`` can be
@@ -98,7 +99,7 @@ the config file.
 
 The precedence for values is as follows:
 
-command line -> provider config -> ipa config -> defaults
+command line -> cloud config -> ipa config -> defaults
 
 The command line arguments if provided will be used over all other values.
 
@@ -119,18 +120,18 @@ See
 for an example configuration file.
 
 To override the EC2 config location the CLI option,
-``--provider-config`` is available.
+``--cloud-config`` is available.
 
 GCE Config
 ----------
 
-The GCE  provider class has no additional config file. Options should be
+The GCE  cloud class has no additional config file. Options should be
 placed into the **IPA** config file.
 
 SSH Config
 ----------
 
-The SSH provider class has no additional config file. Options should be
+The SSH cloud class has no additional config file. Options should be
 placed into the **IPA** config file.
 
 Credentials
@@ -140,7 +141,7 @@ Azure
 -----
 
 Azure uses service principals for authentication. A service principal
-(service account) json file is required to use the Azure provider via
+(service account) json file is required to use the Azure cloud via
 file based authentication. It is critical the json file is generated with
 the endpoint URLs for SDK authentication.
 
@@ -198,6 +199,6 @@ For more information on updating an existing service account:
 SSH
 ---
 
-Requires no provider credentials to test instances. SSH user, SSH
+Requires no cloud credentials to test instances. SSH user, SSH
 private key can be placed in SSH section of config. The instance to be
 tested must be running.
