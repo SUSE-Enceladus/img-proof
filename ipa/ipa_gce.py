@@ -2,7 +2,7 @@
 
 """Provider module for testing Google Compute Engine (GCE) images."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -39,63 +39,61 @@ from libcloud.compute.providers import get_driver
 class GCEProvider(LibcloudCloud):
     """Provider class for testing Google Compute Engine (GCE) images."""
 
-    def __init__(self,
-                 accelerated_networking=None,  # Not used in GCE
-                 access_key_id=None,  # Not used in GCE
-                 account_name=None,  # Not used in GCE
-                 cleanup=None,
-                 config=None,
-                 description=None,
-                 distro_name=None,
-                 early_exit=None,
-                 history_log=None,
-                 image_id=None,
-                 inject=None,
-                 instance_type=None,
-                 ip_address=None,  # Not used in GCE
-                 log_level=30,
-                 no_default_test_dirs=False,
-                 cloud_config=None,
-                 region=None,
-                 results_dir=None,
-                 running_instance_id=None,
-                 secret_access_key=None,  # Not used in GCE
-                 security_group_id=None,  # Not used in GCE
-                 service_account_file=None,
-                 ssh_key_name=None,  # Not used in GCE
-                 ssh_private_key_file=None,
-                 ssh_user=None,
-                 subnet_id=None,
-                 test_dirs=None,
-                 test_files=None,
-                 timeout=None,
-                 vnet_name=None,  # Not used in GCE
-                 vnet_resource_group=None,  # Not used in GCE
-                 collect_vm_info=None):
-        super(GCEProvider, self).__init__('gce',
-                                          cleanup,
-                                          config,
-                                          description,
-                                          distro_name,
-                                          early_exit,
-                                          history_log,
-                                          image_id,
-                                          inject,
-                                          instance_type,
-                                          log_level,
-                                          no_default_test_dirs,
-                                          cloud_config,
-                                          region,
-                                          results_dir,
-                                          running_instance_id,
-                                          test_dirs,
-                                          test_files,
-                                          timeout,
-                                          collect_vm_info,
-                                          ssh_private_key_file,
-                                          ssh_user)
+    def __init__(
+        self,
+        cleanup=None,
+        config=None,
+        description=None,
+        distro_name=None,
+        early_exit=None,
+        history_log=None,
+        image_id=None,
+        inject=None,
+        instance_type=None,
+        log_level=30,
+        no_default_test_dirs=False,
+        cloud_config=None,
+        region=None,
+        results_dir=None,
+        running_instance_id=None,
+        service_account_file=None,
+        ssh_private_key_file=None,
+        ssh_user=None,
+        subnet_id=None,
+        test_dirs=None,
+        test_files=None,
+        timeout=None,
+        collect_vm_info=None
+    ):
+        super(GCEProvider, self).__init__(
+            'gce',
+            cleanup,
+            config,
+            description,
+            distro_name,
+            early_exit,
+            history_log,
+            image_id,
+            inject,
+            instance_type,
+            log_level,
+            no_default_test_dirs,
+            cloud_config,
+            region,
+            results_dir,
+            running_instance_id,
+            test_dirs,
+            test_files,
+            timeout,
+            collect_vm_info,
+            ssh_private_key_file,
+            ssh_user,
+            subnet_id
+        )
+
         self.service_account_file = (
-            service_account_file or self.ipa_config['service_account_file']
+            service_account_file or
+            self.ipa_config['service_account_file']
         )
         if not self.service_account_file:
             raise GCECloudException(
@@ -113,7 +111,6 @@ class GCEProvider(LibcloudCloud):
 
         self.ssh_user = self.ssh_user or GCE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
-        self.subnet_id = subnet_id or self.ipa_config['subnet_id']
 
         self._get_service_account_info()
         self.compute_driver = self._get_driver()
