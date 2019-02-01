@@ -36,64 +36,62 @@ from ipa.ipa_cloud import IpaCloud
 class AzureCloud(IpaCloud):
     """Class for testing instances in Azure."""
 
-    def __init__(self,
-                 accelerated_networking=False,
-                 access_key_id=None,  # Not used in Azure
-                 account_name=None,
-                 cleanup=None,
-                 config=None,
-                 description=None,
-                 distro_name=None,
-                 early_exit=None,
-                 history_log=None,
-                 image_id=None,
-                 inject=None,
-                 instance_type=None,
-                 ip_address=None,  # Not used in Azure
-                 log_level=30,
-                 no_default_test_dirs=False,
-                 cloud_config=None,
-                 region=None,
-                 results_dir=None,
-                 running_instance_id=None,
-                 secret_access_key=None,  # Not used in Azure
-                 security_group_id=None,  # Not used in Azure
-                 service_account_file=None,
-                 ssh_key_name=None,  # Not used in Azure
-                 ssh_private_key_file=None,
-                 ssh_user=None,
-                 subnet_id=None,
-                 test_dirs=None,
-                 test_files=None,
-                 timeout=None,
-                 vnet_name=None,
-                 vnet_resource_group=None,
-                 collect_vm_info=None):
+    def __init__(
+        self,
+        accelerated_networking=False,
+        cleanup=None,
+        config=None,
+        description=None,
+        distro_name=None,
+        early_exit=None,
+        history_log=None,
+        image_id=None,
+        inject=None,
+        instance_type=None,
+        log_level=30,
+        no_default_test_dirs=False,
+        cloud_config=None,
+        region=None,
+        results_dir=None,
+        running_instance_id=None,
+        service_account_file=None,
+        ssh_private_key_file=None,
+        ssh_user=None,
+        subnet_id=None,
+        test_dirs=None,
+        test_files=None,
+        timeout=None,
+        vnet_name=None,
+        vnet_resource_group=None,
+        collect_vm_info=None
+    ):
         """Initialize Azure Cloud class."""
-        super(AzureCloud, self).__init__('azure',
-                                         cleanup,
-                                         config,
-                                         description,
-                                         distro_name,
-                                         early_exit,
-                                         history_log,
-                                         image_id,
-                                         inject,
-                                         instance_type,
-                                         log_level,
-                                         no_default_test_dirs,
-                                         cloud_config,
-                                         region,
-                                         results_dir,
-                                         running_instance_id,
-                                         test_dirs,
-                                         test_files,
-                                         timeout,
-                                         collect_vm_info,
-                                         ssh_private_key_file,
-                                         ssh_user)
+        super(AzureCloud, self).__init__(
+            'azure',
+            cleanup,
+            config,
+            description,
+            distro_name,
+            early_exit,
+            history_log,
+            image_id,
+            inject,
+            instance_type,
+            log_level,
+            no_default_test_dirs,
+            cloud_config,
+            region,
+            results_dir,
+            running_instance_id,
+            test_dirs,
+            test_files,
+            timeout,
+            collect_vm_info,
+            ssh_private_key_file,
+            ssh_user,
+            subnet_id
+        )
 
-        self.subnet_id = subnet_id or self.ipa_config['subnet_id']
         self.vnet_name = vnet_name or self.ipa_config['vnet_name']
         self.vnet_resource_group = (
                 vnet_resource_group or self.ipa_config['vnet_resource_group']

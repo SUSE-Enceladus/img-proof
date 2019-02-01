@@ -2,7 +2,7 @@
 
 """Module for testing instances using SSH only."""
 
-# Copyright (c) 2018 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -27,62 +27,58 @@ from ipa.ipa_cloud import IpaCloud
 class SSHCloud(IpaCloud):
     """Class for testing instances in Azure."""
 
-    def __init__(self,
-                 accelerated_networking=None,  # Not used in SSH
-                 access_key_id=None,  # Not used in SSH
-                 account_name=None,  # Not used in SSH
-                 cleanup=None,
-                 config=None,
-                 description=None,
-                 distro_name=None,
-                 early_exit=None,
-                 history_log=None,
-                 image_id=None,  # Not used in SSH
-                 inject=None,
-                 instance_type=None,  # Not used in SSH
-                 ip_address=None,
-                 log_level=30,
-                 no_default_test_dirs=False,
-                 cloud_config=None,
-                 region=None,  # Not used in SSH
-                 results_dir=None,
-                 running_instance_id=None,  # Not used in SSH
-                 secret_access_key=None,  # Not used in SSH
-                 security_group_id=None,  # Not used in SSH
-                 service_account_file=None,  # Not used in SSH
-                 ssh_key_name=None,  # Not used in SSH
-                 ssh_private_key_file=None,
-                 ssh_user=None,
-                 subnet_id=None,  # Not used in SSH
-                 test_dirs=None,
-                 test_files=None,
-                 timeout=None,
-                 vnet_name=None,  # Not used in SSH
-                 vnet_resource_group=None,  # Not used in SSH
-                 collect_vm_info=None):
+    def __init__(
+        self,
+        cleanup=None,
+        config=None,
+        description=None,
+        distro_name=None,
+        early_exit=None,
+        history_log=None,
+        image_id=None,  # Not used in SSH
+        inject=None,
+        instance_type=None,  # Not used in SSH
+        ip_address=None,
+        log_level=30,
+        no_default_test_dirs=False,
+        cloud_config=None,
+        region=None,  # Not used in SSH
+        results_dir=None,
+        running_instance_id=None,  # Not used in SSH
+        ssh_private_key_file=None,
+        ssh_user=None,
+        subnet_id=None,  # Not used in SSH
+        test_dirs=None,
+        test_files=None,
+        timeout=None,
+        collect_vm_info=None
+    ):
         """Initialize Azure cloud class."""
-        super(SSHCloud, self).__init__('ssh',
-                                       cleanup,
-                                       config,
-                                       description,
-                                       distro_name,
-                                       early_exit,
-                                       history_log,
-                                       image_id,
-                                       inject,
-                                       instance_type,
-                                       log_level,
-                                       no_default_test_dirs,
-                                       cloud_config,
-                                       region,
-                                       results_dir,
-                                       running_instance_id,
-                                       test_dirs,
-                                       test_files,
-                                       timeout,
-                                       collect_vm_info,
-                                       ssh_private_key_file,
-                                       ssh_user)
+        super(SSHCloud, self).__init__(
+            'ssh',
+            cleanup,
+            config,
+            description,
+            distro_name,
+            early_exit,
+            history_log,
+            image_id,
+            inject,
+            instance_type,
+            log_level,
+            no_default_test_dirs,
+            cloud_config,
+            region,
+            results_dir,
+            running_instance_id,
+            test_dirs,
+            test_files,
+            timeout,
+            collect_vm_info,
+            ssh_private_key_file,
+            ssh_user,
+            subnet_id
+        )
 
         # Cannot cleanup SSH instance
         self.cleanup = False

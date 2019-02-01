@@ -34,88 +34,99 @@ from ipa.ipa_ssh import SSHCloud
 from ipa.ipa_utils import get_test_files
 
 
-def test_image(cloud_name,
-               accelerated_networking=None,
-               access_key_id=None,
-               account=None,
-               cleanup=None,
-               config=None,
-               description=None,
-               distro=None,
-               early_exit=None,
-               history_log=None,
-               image_id=None,
-               inject=None,
-               instance_type=None,
-               ip_address=None,
-               log_level=None,
-               no_default_test_dirs=None,
-               cloud_config=None,
-               region=None,
-               results_dir=None,
-               running_instance_id=None,
-               secret_access_key=None,
-               security_group_id=None,
-               service_account_file=None,
-               ssh_key_name=None,
-               ssh_private_key_file=None,
-               ssh_user=None,
-               subnet_id=None,
-               test_dirs=None,
-               tests=None,
-               timeout=None,
-               vnet_name=None,
-               vnet_resource_group=None,
-               collect_vm_info=None):
+def test_image(
+    cloud_name,
+    accelerated_networking=None,
+    access_key_id=None,
+    account=None,
+    cleanup=None,
+    config=None,
+    description=None,
+    distro=None,
+    early_exit=None,
+    history_log=None,
+    image_id=None,
+    inject=None,
+    instance_type=None,
+    ip_address=None,
+    log_level=None,
+    no_default_test_dirs=None,
+    cloud_config=None,
+    region=None,
+    results_dir=None,
+    running_instance_id=None,
+    secret_access_key=None,
+    security_group_id=None,
+    service_account_file=None,
+    ssh_key_name=None,
+    ssh_private_key_file=None,
+    ssh_user=None,
+    subnet_id=None,
+    test_dirs=None,
+    tests=None,
+    timeout=None,
+    vnet_name=None,
+    vnet_resource_group=None,
+    collect_vm_info=None
+):
     """Creates a cloud framework instance and initiates testing."""
+    kwargs = {
+        'cleanup': cleanup,
+        'config': config,
+        'description': description,
+        'distro_name': distro,
+        'early_exit': early_exit,
+        'history_log': history_log,
+        'image_id': image_id,
+        'inject': inject,
+        'instance_type': instance_type,
+        'log_level': log_level,
+        'no_default_test_dirs': no_default_test_dirs,
+        'cloud_config': cloud_config,
+        'region': region,
+        'results_dir': results_dir,
+        'running_instance_id': running_instance_id,
+        'ssh_private_key_file': ssh_private_key_file,
+        'ssh_user': ssh_user,
+        'subnet_id': subnet_id,
+        'test_dirs': test_dirs,
+        'test_files': tests,
+        'timeout': timeout,
+        'collect_vm_info': collect_vm_info
+    }
+
     cloud_name = cloud_name.lower()
     if cloud_name == 'azure':
-        cloud_class = AzureCloud
+        cloud = AzureCloud(
+            accelerated_networking=accelerated_networking,
+            service_account_file=service_account_file,
+            vnet_name=vnet_name,
+            vnet_resource_group=vnet_resource_group,
+            **kwargs
+        )
     elif cloud_name == 'ec2':
-        cloud_class = EC2Cloud
+        cloud = EC2Cloud(
+            access_key_id=access_key_id,
+            account_name=account,
+            secret_access_key=secret_access_key,
+            security_group_id=security_group_id,
+            ssh_key_name=ssh_key_name,
+            **kwargs
+        )
     elif cloud_name == 'gce':
-        cloud_class = GCEProvider
+        cloud = GCEProvider(
+            service_account_file=service_account_file,
+            **kwargs
+        )
     elif cloud_name == 'ssh':
-        cloud_class = SSHCloud
+        cloud = SSHCloud(
+            ip_address=ip_address,
+            **kwargs
+        )
     else:
         raise IpaControllerException(
             'Cloud framework: %s unavailable.' % cloud_name
         )
-
-    cloud = cloud_class(
-        accelerated_networking=accelerated_networking,
-        access_key_id=access_key_id,
-        account_name=account,
-        cleanup=cleanup,
-        config=config,
-        description=description,
-        distro_name=distro,
-        early_exit=early_exit,
-        history_log=history_log,
-        image_id=image_id,
-        inject=inject,
-        instance_type=instance_type,
-        ip_address=ip_address,
-        log_level=log_level,
-        no_default_test_dirs=no_default_test_dirs,
-        cloud_config=cloud_config,
-        region=region,
-        results_dir=results_dir,
-        running_instance_id=running_instance_id,
-        secret_access_key=secret_access_key,
-        security_group_id=security_group_id,
-        service_account_file=service_account_file,
-        ssh_key_name=ssh_key_name,
-        ssh_private_key_file=ssh_private_key_file,
-        ssh_user=ssh_user,
-        subnet_id=subnet_id,
-        test_dirs=test_dirs,
-        test_files=tests,
-        timeout=timeout,
-        vnet_name=vnet_name,
-        vnet_resource_group=vnet_resource_group,
-        collect_vm_info=collect_vm_info
-    )
 
     return cloud.test_image()
 

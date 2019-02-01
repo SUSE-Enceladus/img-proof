@@ -68,29 +68,32 @@ class IpaCloud(object):
     specific methods for launching and managing instances.
     """
 
-    def __init__(self,
-                 cloud,
-                 cleanup=None,
-                 config=None,
-                 description=None,
-                 distro_name=None,
-                 early_exit=None,
-                 history_log=None,
-                 image_id=None,
-                 inject=None,
-                 instance_type=None,
-                 log_level=None,
-                 no_default_test_dirs=False,
-                 cloud_config=None,
-                 region=None,
-                 results_dir=None,
-                 running_instance_id=None,
-                 test_dirs=None,
-                 test_files=None,
-                 timeout=None,
-                 collect_vm_info=None,
-                 ssh_private_key_file=None,
-                 ssh_user=None):
+    def __init__(
+        self,
+        cloud,
+        cleanup=None,
+        config=None,
+        description=None,
+        distro_name=None,
+        early_exit=None,
+        history_log=None,
+        image_id=None,
+        inject=None,
+        instance_type=None,
+        log_level=30,
+        no_default_test_dirs=False,
+        cloud_config=None,
+        region=None,
+        results_dir=None,
+        running_instance_id=None,
+        test_dirs=None,
+        test_files=None,
+        timeout=None,
+        collect_vm_info=None,
+        ssh_private_key_file=None,
+        ssh_user=None,
+        subnet_id=None
+    ):
         """Initialize base cloud framework class."""
         super(IpaCloud, self).__init__()
         # Get command line values that are not None
@@ -146,6 +149,7 @@ class IpaCloud(object):
         self.results_dir = os.path.expanduser(self.ipa_config['results_dir'])
         self.ssh_private_key_file = self.ipa_config['ssh_private_key_file']
         self.ssh_user = self.ipa_config['ssh_user']
+        self.subnet_id = self.ipa_config['subnet_id']
 
         if self.cloud_config:
             self.cloud_config = os.path.expanduser(self.cloud_config)
