@@ -1,3 +1,21 @@
+v3.0.0 (2019-02-04)
+===================
+
+- Add missing security group id to ssh class.
+  [\#161](https://github.com/SUSE-Enceladus/ipa/pull/161)
+- Add collect vm info to gce class super call.
+  [\#162](https://github.com/SUSE-Enceladus/ipa/pull/162)
+- Cleanup ini config handling.
+  [\#163](https://github.com/SUSE-Enceladus/ipa/pull/163)
+- Allow use of ipa config for provider options.
+  [\#164](https://github.com/SUSE-Enceladus/ipa/pull/164)
+- Compare wait on instance states as lowercase.
+  [\#165](https://github.com/SUSE-Enceladus/ipa/pull/165)
+- Remove references to provider with cloud, cloud frameworks.
+  [\#166](https://github.com/SUSE-Enceladus/ipa/pull/166)
+- Don't pass unused args to cloud classes.
+  [\#167](https://github.com/SUSE-Enceladus/ipa/pull/167)
+
 v2.6.0 (2019-01-04)
 ===================
 
