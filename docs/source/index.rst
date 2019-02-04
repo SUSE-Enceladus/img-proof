@@ -5,9 +5,6 @@ IPA Documentation
 .. image:: https://www.travis-ci.com/SUSE-Enceladus/ipa.svg?branch=master
    :target: https://www.travis-ci.com/SUSE-Enceladus/ipa
 
-.. image:: https://api.codacy.com/project/badge/Grade/845fb1620f334ae09488e8137dd6d256
-   :target: https://www.codacy.com/app/default-org/ipa?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=SUSE-Enceladus/ipa&amp;utm_campaign=Badge_Grade
-
 .. image:: https://img.shields.io/pypi/pyversions/python3-ipa.svg
    :target: https://pypi.org/project/python3-ipa/
 
