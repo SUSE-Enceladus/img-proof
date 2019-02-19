@@ -136,8 +136,14 @@ class EC2Cloud(IpaCloud):
         self.secret_access_key = self.ec2_config['secret_access_key']
         self.security_group_id = self.ec2_config['security_group_id']
         self.ssh_key_name = self.ec2_config['ssh_key_name']
-        self.ssh_user = self.ec2_config['ssh_user'] or EC2_DEFAULT_USER
         self.subnet_id = self.ec2_config['subnet_id']
+
+        self.ssh_user = (
+            cmd_line_values.get('ssh_user') or
+            ec2_config.get('user') or
+            self.ipa_config.get('ssh_user') or
+            EC2_DEFAULT_USER
+        )
 
         self.ssh_private_key_file = (
             cmd_line_values.get('ssh_private_key_file') or
