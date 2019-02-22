@@ -1,3 +1,15 @@
+v3.1.0 (2019-02-22)
+===================
+
+- Check for ssh key file separately in ec2.
+  [\#169](https://github.com/SUSE-Enceladus/ipa/pull/169)
+- Add specific commands for GCE credentials setup.
+  [\#170](https://github.com/SUSE-Enceladus/ipa/pull/170)
+- SSH user key in ec2utils config is user.
+  [\#171](https://github.com/SUSE-Enceladus/ipa/pull/171)
+- Accept availability zones as ec2 region.
+  [\#172](https://github.com/SUSE-Enceladus/ipa/pull/172)
+
 v3.0.0 (2019-02-04)
 ===================
 
