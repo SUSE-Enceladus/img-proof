@@ -98,7 +98,9 @@ class EC2Cloud(IpaCloud):
         # Get command line values that are not None
         cmd_line_values = self._get_non_null_values(locals())
 
+        self.zone = None
         self.account_name = account_name
+
         if not self.account_name:
             self.logger.debug(
                 'No account provided. To use the EC2 config file an '
@@ -109,6 +111,9 @@ class EC2Cloud(IpaCloud):
             raise EC2CloudException(
                 'Region is required to connect to EC2.'
             )
+        elif self.region[-1].isalpha():
+            self.zone = self.region
+            self.region = self.region[:-1]
 
         config_file = self.cloud_config or EC2_CONFIG_FILE
 
@@ -254,6 +259,9 @@ class EC2Cloud(IpaCloud):
                 }
             ]
         }
+
+        if self.zone:
+            kwargs['Placement'] = {'AvailabilityZone': self.zone}
 
         if self.ssh_key_name:
             kwargs['KeyName'] = self.ssh_key_name
