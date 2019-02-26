@@ -12,7 +12,8 @@ def test_sles_sap_license(
 
     license_dirs = [
         '/etc/YaST2/licenses/ha/',
-        '/etc/YaST2/licenses/SLES_SAP/'
+        '/etc/YaST2/licenses/SLES_SAP/',
+        '/usr/share/licenses/product/SLES_SAP/'
     ]
     result = confirm_sles_license_content(license_dirs)
 
