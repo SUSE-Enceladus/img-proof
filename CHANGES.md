@@ -1,3 +1,9 @@
+v3.1.1 (2019-02-28)
+===================
+
+- Add new license directories for SLES test.
+  [\#173](https://github.com/SUSE-Enceladus/ipa/pull/173)
+
 v3.1.0 (2019-02-22)
 ===================
 
