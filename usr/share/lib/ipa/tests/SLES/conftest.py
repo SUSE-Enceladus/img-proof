@@ -189,14 +189,6 @@ SLE_15_PRODUCTS = [
 ]
 
 SLE_15_MODULES = [
-    'SLE-Module-CAP-Tools15-Debuginfo-Pool',
-    'SLE-Module-CAP-Tools15-Debuginfo-Updates',
-    'SLE-Module-CAP-Tools15-Pool',
-    'SLE-Module-CAP-Tools15-Updates',
-    'SLE-Module-Containers15-Debuginfo-Pool',
-    'SLE-Module-Containers15-Debuginfo-Updates',
-    'SLE-Module-Containers15-Pool',
-    'SLE-Module-Containers15-Updates',
     'SLE-Module-Desktop-Applications15-Debuginfo-Pool',
     'SLE-Module-Desktop-Applications15-Debuginfo-Updates',
     'SLE-Module-Desktop-Applications15-Pool',
@@ -221,6 +213,17 @@ SLE_15_MODULES = [
     'SLE-Module-Web-Scripting15-Debuginfo-Updates',
     'SLE-Module-Web-Scripting15-Pool',
     'SLE-Module-Web-Scripting15-Updates'
+]
+
+SLE_15_X86_64_MODULES = [
+    'SLE-Module-CAP-Tools15-Debuginfo-Pool',
+    'SLE-Module-CAP-Tools15-Debuginfo-Updates',
+    'SLE-Module-CAP-Tools15-Pool',
+    'SLE-Module-CAP-Tools15-Updates',
+    'SLE-Module-Containers15-Debuginfo-Pool',
+    'SLE-Module-Containers15-Debuginfo-Updates',
+    'SLE-Module-Containers15-Pool',
+    'SLE-Module-Containers15-Updates'
 ]
 
 SLE_15_SAP = [
@@ -251,14 +254,6 @@ SLE_15_SP1_PRODUCTS = [
 ]
 
 SLE_15_SP1_MODULES = [
-    'SLE-Module-CAP-Tools15-SP1-Debuginfo-Pool',
-    'SLE-Module-CAP-Tools15-SP1-Debuginfo-Updates',
-    'SLE-Module-CAP-Tools15-SP1-Pool',
-    'SLE-Module-CAP-Tools15-SP1-Updates',
-    'SLE-Module-Containers15-SP1-Debuginfo-Pool',
-    'SLE-Module-Containers15-SP1-Debuginfo-Updates',
-    'SLE-Module-Containers15-SP1-Pool',
-    'SLE-Module-Containers15-SP1-Updates',
     'SLE-Module-Desktop-Applications15-SP1-Debuginfo-Pool',
     'SLE-Module-Desktop-Applications15-SP1-Debuginfo-Updates',
     'SLE-Module-Desktop-Applications15-SP1-Pool',
@@ -287,6 +282,17 @@ SLE_15_SP1_MODULES = [
     'SLE-Module-Web-Scripting15-SP1-Updates'
 ]
 
+SLE_15_SP1_X86_64_MODULES = [
+    'SLE-Module-CAP-Tools15-SP1-Debuginfo-Pool',
+    'SLE-Module-CAP-Tools15-SP1-Debuginfo-Updates',
+    'SLE-Module-CAP-Tools15-SP1-Pool',
+    'SLE-Module-CAP-Tools15-SP1-Updates',
+    'SLE-Module-Containers15-SP1-Debuginfo-Pool',
+    'SLE-Module-Containers15-SP1-Debuginfo-Updates',
+    'SLE-Module-Containers15-SP1-Pool',
+    'SLE-Module-Containers15-SP1-Updates'
+]
+
 SLE_15_SP1_SAP = [
     'SLE-Module-SAP-Applications15-SP1-Debuginfo-Pool',
     'SLE-Module-SAP-Applications15-SP1-Debuginfo-Updates',
@@ -302,22 +308,35 @@ SLE_15_SP1_SAP = [
     'SLE-Product-SLES_SAP15-SP1-Updates'
 ]
 
+BASE_15 = SLE_15_BASE + SLE_15_MODULES + SLE_15_PRODUCTS
+BASE_15_SAP = SLE_15_SAP + SLE_15_BASE + SLE_15_MODULES
+BASE_15_SP1 = SLE_15_SP1_BASE + SLE_15_SP1_MODULES + SLE_15_SP1_PRODUCTS
+BASE_15_SP1_SAP = SLE_15_SP1_SAP + SLE_15_SP1_BASE + SLE_15_SP1_MODULES
+
 SLES_REPOS = {
-    '11.4': SLE_11_SP4_BASE + SLE_11_SP4_MODULES,
-    '12': SLE_12_BASE + SLE_12_MODULES,
-    '12-SAP': SLE_12_SAP + SLE_12_BASE + SLE_12_MODULES,
-    '12-SP1': SLE_12_SP1_BASE + SLE_12_SP1_MODULES,
-    '12-SP1-SAP': SLE_12_SP1_SAP + SLE_12_SP1_BASE + SLE_12_SP1_MODULES,
-    '12-SP2': SLE_12_SP2_BASE + SLE_12_SP2_MODULES,
-    '12-SP2-SAP': SLE_12_SP2_SAP + SLE_12_SP2_BASE + SLE_12_SP2_MODULES,
-    '12-SP3': SLE_12_SP3_BASE + SLE_12_SP3_MODULES,
-    '12-SP3-SAP': SLE_12_SP3_SAP + SLE_12_SP3_BASE + SLE_12_SP3_MODULES,
-    '12-SP4': SLE_12_SP4_BASE + SLE_12_SP4_MODULES,
-    '12-SP4-SAP': SLE_12_SP4_SAP + SLE_12_SP4_BASE + SLE_12_SP4_MODULES,
-    '15': SLE_15_BASE + SLE_15_MODULES + SLE_15_PRODUCTS,
-    '15-SAP': SLE_15_SAP + SLE_15_BASE + SLE_15_MODULES,
-    '15-SP1': SLE_15_SP1_BASE + SLE_15_SP1_MODULES + SLE_15_SP1_PRODUCTS,
-    '15-SP1-SAP': SLE_15_SP1_SAP + SLE_15_SP1_BASE + SLE_15_SP1_MODULES
+    '11.4-X86_64': SLE_11_SP4_BASE + SLE_11_SP4_MODULES,
+    '12-X86_64': SLE_12_BASE + SLE_12_MODULES,
+    '12-X86_64-SAP': SLE_12_SAP + SLE_12_BASE + SLE_12_MODULES,
+    '12-SP1-X86_64': SLE_12_SP1_BASE + SLE_12_SP1_MODULES,
+    '12-SP1-X86_64-SAP':
+        SLE_12_SP1_SAP + SLE_12_SP1_BASE + SLE_12_SP1_MODULES,
+    '12-SP2-X86_64': SLE_12_SP2_BASE + SLE_12_SP2_MODULES,
+    '12-SP2-X86_64-SAP':
+        SLE_12_SP2_SAP + SLE_12_SP2_BASE + SLE_12_SP2_MODULES,
+    '12-SP3-X86_64': SLE_12_SP3_BASE + SLE_12_SP3_MODULES,
+    '12-SP3-X86_64-SAP':
+        SLE_12_SP3_SAP + SLE_12_SP3_BASE + SLE_12_SP3_MODULES,
+    '12-SP4-X86_64': SLE_12_SP4_BASE + SLE_12_SP4_MODULES,
+    '12-SP4-X86_64-SAP':
+        SLE_12_SP4_SAP + SLE_12_SP4_BASE + SLE_12_SP4_MODULES,
+    '15-AARCH64': BASE_15,
+    '15-AARCH64-SAP': BASE_15_SAP,
+    '15-X86_64': BASE_15 + SLE_15_X86_64_MODULES,
+    '15-X86_64-SAP': BASE_15_SAP + SLE_15_X86_64_MODULES,
+    '15-SP1-AARCH64': BASE_15_SP1,
+    '15-SP1-AARCH64-SAP': BASE_15_SP1_SAP,
+    '15-SP1-X86_64': BASE_15_SP1 + SLE_15_SP1_X86_64_MODULES,
+    '15-SP1-X86_64-SAP': BASE_15_SP1_SAP + SLE_15_SP1_X86_64_MODULES,
 }
 
 
