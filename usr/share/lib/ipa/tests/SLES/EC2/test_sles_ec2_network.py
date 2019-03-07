@@ -59,4 +59,4 @@ def test_sles_ec2_network(determine_region, host):
 
     size = dl_result.stdout.strip()
     if size != '1214599168':
-        raise Exception('Download failed!')
+        pytest.fail('Download failed!')

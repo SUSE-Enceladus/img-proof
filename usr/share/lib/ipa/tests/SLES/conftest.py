@@ -324,7 +324,7 @@ SLES_REPOS = {
 @pytest.fixture()
 def get_sles_repos():
     def f(version):
-        return SLES_REPOS[version]
+        return SLES_REPOS.get(version)
     return f
 
 
