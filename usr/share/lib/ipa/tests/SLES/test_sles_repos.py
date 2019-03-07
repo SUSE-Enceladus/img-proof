@@ -1,3 +1,4 @@
+import pytest
 
 
 def test_sles_repos(check_zypper_repo,
@@ -13,7 +14,14 @@ def test_sles_repos(check_zypper_repo,
         version += '-SAP'
 
     missing_repos = []
-    for repo in get_sles_repos(version):
+    repos = get_sles_repos(version)
+
+    if not repos:
+        pytest.fail(
+            'No repos found for version {0}'.format(version)
+        )
+
+    for repo in repos:
         result = check_zypper_repo(
             ''.join([
                 'SMT-http_smt-{provider}_susecloud_net:'.format(
@@ -33,6 +41,6 @@ def test_sles_repos(check_zypper_repo,
             )
 
     if missing_repos:
-        raise Exception(
+        pytest.fail(
             'Missing Repos: \n{0}'.format('\n'.join(missing_repos))
         )

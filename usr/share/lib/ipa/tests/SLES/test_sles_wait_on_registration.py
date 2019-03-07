@@ -1,3 +1,4 @@
+import pytest
 import time
 
 
@@ -13,6 +14,6 @@ def test_sles_wait_on_registration(host):
         else:
             time.sleep(10)
     else:
-        raise Exception(
+        pytest.fail(
             'Registration did not finish properly for on-demand instance.'
         )
