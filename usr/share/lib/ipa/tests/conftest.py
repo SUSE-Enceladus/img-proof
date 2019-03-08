@@ -109,6 +109,14 @@ def check_zypper_repo(host):
 
 
 @pytest.fixture()
+def determine_architecture(host):
+    def f():
+        result = host.run('uname --m')
+        return result.stdout.strip().upper()
+    return f
+
+
+@pytest.fixture()
 def determine_provider(host):
     def f():
         result = host.run('sudo dmidecode -t system')
