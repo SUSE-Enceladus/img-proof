@@ -52,11 +52,14 @@ def test_sles_ec2_network(determine_region, host):
 
     dl_result = host.run(
         'curl -o /dev/null --max-time {0} --silent '
-        '--write-out "%{{size_download}}" {1}'.format(
+        '--write-out "%{{size_download}}|%{{http_code}}" {1}'.format(
             types[instance_type], url
         )
     )
 
-    size = dl_result.stdout.strip()
-    if size != '1214599168':
-        pytest.fail('Download failed!')
+    size, code = dl_result.stdout.strip().split('|')
+
+    if code != '200':
+        pytest.fail('Image ISO not found for region: {0}'.format(region))
+    elif size != '1214599168':
+        pytest.fail('Download failed. Size: {0}'.format(str(size)))
