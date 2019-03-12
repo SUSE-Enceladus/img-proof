@@ -11,6 +11,7 @@ def test_sles_sap_license(
         pytest.skip('SLES12-SP4 has combined license.')
 
     license_dirs = [
+        '/etc/YaST2/licenses/base/',
         '/etc/YaST2/licenses/ha/',
         '/etc/YaST2/licenses/SLES_SAP/',
         '/usr/share/licenses/product/SLES_SAP/'
