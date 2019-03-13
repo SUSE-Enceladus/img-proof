@@ -106,9 +106,9 @@ def execute_ssh_command(client, cmd):
     try:
         stdin, stdout, stderr = client.exec_command(cmd)
         err = stderr.read()
-        if err:
-            raise IpaSSHException(err.decode())
         out = stdout.read()
+        if err:
+            raise IpaSSHException(out.decode() + err.decode())
     except:  # noqa: E722
         raise
     return out.decode()
