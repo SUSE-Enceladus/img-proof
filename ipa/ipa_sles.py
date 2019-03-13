@@ -53,3 +53,16 @@ class SLES(Distro):
     def get_update_cmd(self):
         """Return command to update SLES instance."""
         return 'zypper -n up --auto-agree-with-licenses --force-resolution'
+
+    def update(self, client):
+        """Handle distinct zypper error codes and allow them as pass
+           8 - File conflicts"""
+
+        zypper_msg = super().update(client)
+        if (
+                zypper_msg and
+                'File conflicts happen when ' in zypper_msg
+        ):
+            zypper_msg = ''
+
+        return zypper_msg

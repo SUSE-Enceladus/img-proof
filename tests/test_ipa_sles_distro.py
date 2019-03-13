@@ -132,3 +132,41 @@ def test_sles_update_exception():
         "sudo sh -c 'zypper -n refresh;zypper -n up "
         "--auto-agree-with-licenses --force-resolution'"
     )
+
+
+def test_sles_update_file_conflict():
+    """Test update method when update has file conflicts."""
+    client = MagicMock()
+    sles = SLES()
+
+    file_conf_msg = (
+        'error\nDetected 3 file conflicts:\n\nFile '
+        '/etc/issue\n  from install of\n     '
+        'SLES_SAP-release-12.1-2.1.x86_64 (SLE-12-SP1-SAP-Updates)\r\n  '
+        'conflicts with file from package\n     '
+        'sles-release-12.1-1.331.x86_64 (@System)\n\nFile /etc/issue.net'
+        '\n  from install of\n     SLES_SAP-release-12.1-2.1.x86_64 '
+        '(SLE-12-SP1-SAP-Updates)\n  conflicts with file from package'
+        '\n     sles-release-12.1-1.331.x86_64 (@System)\n\nFile /etc/'
+        'os-release\n  from install of\n     '
+        'SLES_SAP-release-12.1-2.1.x86_64 (SLE-12-SP1-SAP-Updates)\n  '
+        'conflicts with file from package\n     '
+        'sles-release-12.1-1.331.x86_64 (@System)\n\nFile conflicts '
+        'happen when two packages attempt to install '
+        'files with the same name but different contents. If you continue, '
+        'conflicting files will be replaced losing the previous content.\n'
+        'Continue? [yes/no] (no): \n\n'
+        'Problem occured during or after installation or '
+        'removal of packages:\nInstallation aborted by user\n\n'
+        'Please see the above error message for a hint.\n'
+    )
+    with patch('ipa.ipa_utils.execute_ssh_command', MagicMock(
+            return_value=file_conf_msg)) as mocked:
+        output = sles.update(client)
+
+    mocked.assert_called_once_with(
+        client,
+        "sudo sh -c 'zypper -n refresh;zypper -n up "
+        "--auto-agree-with-licenses --force-resolution'"
+    )
+    assert output == ''
