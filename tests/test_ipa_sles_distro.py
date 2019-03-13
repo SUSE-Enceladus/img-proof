@@ -109,7 +109,7 @@ def test_sles_update():
     mocked.assert_called_once_with(
         client,
         "sudo sh -c 'zypper -n refresh;zypper -n up "
-        "--auto-agree-with-licenses --force-resolution'"
+        "--auto-agree-with-licenses --force-resolution --replacefiles'"
     )
     assert output == 'Update finished!'
 
@@ -130,5 +130,5 @@ def test_sles_update_exception():
     mocked.assert_called_once_with(
         client,
         "sudo sh -c 'zypper -n refresh;zypper -n up "
-        "--auto-agree-with-licenses --force-resolution'"
+        "--auto-agree-with-licenses --force-resolution --replacefiles'"
     )

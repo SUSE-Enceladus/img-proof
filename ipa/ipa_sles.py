@@ -52,4 +52,5 @@ class SLES(Distro):
 
     def get_update_cmd(self):
         """Return command to update SLES instance."""
-        return 'zypper -n up --auto-agree-with-licenses --force-resolution'
+        return 'zypper -n up --auto-agree-with-licenses ' \
+               '--force-resolution --replacefiles'

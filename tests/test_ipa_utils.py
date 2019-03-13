@@ -117,10 +117,13 @@ def test_utils_ssh_exec_command():
 
 def test_utils_ssh_exec_command_exception():
     """Test error in ssh exec command raises exception."""
-    stdin = stdout = MagicMock()
+    stdin = MagicMock()
 
     stderr = MagicMock()
     stderr.read.return_value = b'Exception: ls is not allowed!'
+
+    stdout = MagicMock()
+    stdout.read.return_value = b'Other information\n'
 
     client = MagicMock()
     client.exec_command.return_value = (stdin, stdout, stderr)
@@ -128,7 +131,8 @@ def test_utils_ssh_exec_command_exception():
     with pytest.raises(IpaSSHException) as error:
         ipa_utils.execute_ssh_command(client, 'ls')
 
-    assert str(error.value) == 'Exception: ls is not allowed!'
+    msg = 'Other information\nException: ls is not allowed!'
+    assert str(error.value) == msg
 
 
 def test_utils_expand_test_files():
