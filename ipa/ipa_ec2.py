@@ -300,7 +300,7 @@ class EC2Cloud(IpaCloud):
         # ipv6
         try:
             ipv6 = instance.network_interfaces[0].ipv6_addresses[0]
-        except IndexError:
+        except (IndexError, TypeError):
             ipv6 = None
 
         self.instance_ip = instance.public_ip_address or \
