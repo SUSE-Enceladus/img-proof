@@ -1,3 +1,17 @@
+v3.2.0 (2019-03-14)
+===================
+
+- Add repos for 15sp1.
+  [\#174](https://github.com/SUSE-Enceladus/ipa/pull/174)
+- Use pytest fail instead of raise exception.
+  [\#175](https://github.com/SUSE-Enceladus/ipa/pull/175)
+- Make ec2 network test more expressive.
+  [\#177](https://github.com/SUSE-Enceladus/ipa/pull/177)
+- Add replacefiles option to zypper update.
+  [\#181](https://github.com/SUSE-Enceladus/ipa/pull/181)
+- Use format string for motd check.
+  [\#182](https://github.com/SUSE-Enceladus/ipa/pull/182)
+
 v3.1.1 (2019-02-28)
 ===================
 
