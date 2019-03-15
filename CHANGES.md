@@ -1,3 +1,9 @@
+v3.2.1 (2019-03-15)
+===================
+
+- EC2 instances may have ipv6 addresses set to None.
+  [\#183](https://github.com/SUSE-Enceladus/ipa/pull/183)
+
 v3.2.0 (2019-03-14)
 ===================
 
