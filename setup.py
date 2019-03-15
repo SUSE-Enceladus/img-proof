@@ -43,7 +43,7 @@ tox_requirements = [
 
 setup(
     name='python3-ipa',
-    version='3.2.0',
+    version='3.2.1',
     description="Package for automated testing of cloud images.",
     long_description=readme,
     long_description_content_type="text/markdown",
