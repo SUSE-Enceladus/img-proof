@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Provider module for testing Google Compute Engine (GCE) images."""
+"""Cloud framework module for testing Google Compute Engine (GCE) images."""
 
 # Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
@@ -29,15 +29,17 @@ from ipa.ipa_constants import (
     GCE_DEFAULT_USER
 )
 from ipa.ipa_exceptions import GCECloudException
-from ipa.ipa_libcloud import LibcloudCloud
+from ipa.ipa_cloud import IpaCloud
 
 from libcloud.common.google import ResourceNotFoundError
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 
 
-class GCEProvider(LibcloudCloud):
-    """Provider class for testing Google Compute Engine (GCE) images."""
+class GCECloud(IpaCloud):
+    """
+    Cloud framework class for testing Google Compute Engine (GCE) images.
+    """
 
     def __init__(
         self,
@@ -65,7 +67,7 @@ class GCEProvider(LibcloudCloud):
         timeout=None,
         collect_vm_info=None
     ):
-        super(GCEProvider, self).__init__(
+        super(GCECloud, self).__init__(
             'gce',
             cleanup,
             config,
@@ -242,7 +244,7 @@ class GCEProvider(LibcloudCloud):
         """Validate region was passed in and is a valid GCE zone."""
         if not self.region:
             raise GCECloudException(
-                'Zone is required for GCE provider: '
+                'Zone is required for GCE cloud framework: '
                 'Example: us-west1-a'
             )
 
@@ -258,3 +260,46 @@ class GCEProvider(LibcloudCloud):
                     region=self.region
                 )
             )
+
+    def _get_instance_state(self):
+        """Attempt to retrieve the state of the instance."""
+        instance = self._get_instance()
+        return instance.state
+
+    def _is_instance_running(self):
+        """Return True if instance is in running state."""
+        return self._get_instance_state() == 'running'
+
+    def _set_instance_ip(self):
+        """Retrieve and set the instance ip address."""
+        instance = self._get_instance()
+
+        if instance.public_ips:
+            self.instance_ip = instance.public_ips[0]
+        elif instance.private_ips:
+            self.instance_ip = instance.private_ips[0]
+        else:
+            raise GCECloudException(
+                'IP address for instance: %s cannot be found.'
+                % self.running_instance_id
+            )
+
+    def _start_instance(self):
+        """Start the instance."""
+        instance = self._get_instance()
+        self.compute_driver.ex_start_node(instance)
+        self.compute_driver.wait_until_running(
+            [instance],
+            timeout=self.timeout
+        )
+
+    def _stop_instance(self):
+        """Stop the instance."""
+        instance = self._get_instance()
+        self.compute_driver.ex_stop_node(instance)
+        self._wait_on_instance('stopped', timeout=self.timeout)
+
+    def _terminate_instance(self):
+        """Terminate the instance."""
+        instance = self._get_instance()
+        instance.destroy()

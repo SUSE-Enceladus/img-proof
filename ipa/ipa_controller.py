@@ -29,7 +29,7 @@ from ipa.ipa_azure import AzureCloud
 from ipa.ipa_constants import TEST_PATHS
 from ipa.ipa_ec2 import EC2Cloud
 from ipa.ipa_exceptions import IpaControllerException
-from ipa.ipa_gce import GCEProvider
+from ipa.ipa_gce import GCECloud
 from ipa.ipa_ssh import SSHCloud
 from ipa.ipa_utils import get_test_files
 
@@ -114,7 +114,7 @@ def test_image(
             **kwargs
         )
     elif cloud_name == 'gce':
-        cloud = GCEProvider(
+        cloud = GCECloud(
             service_account_file=service_account_file,
             **kwargs
         )
