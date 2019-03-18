@@ -140,7 +140,7 @@ class IpaCloud(object):
         self.inject = self.ipa_config['inject']
         self.instance_type = self.ipa_config['instance_type']
         self.test_files = list(self.ipa_config['test_files'])
-        self.timeout = self.ipa_config['timeout']
+        self.timeout = int(self.ipa_config['timeout'])
         self.history_log = self.ipa_config['history_log']
         self.region = self.ipa_config['region']
         self.collect_vm_info = self.ipa_config['collect_vm_info']
@@ -623,7 +623,6 @@ class IpaCloud(object):
             # Launch new instance
             self.logger.info('Launching new instance')
             self._launch_instance()
-            self.logger.debug('ID of instance: %s' % self.running_instance_id)
 
         if not self.instance_ip:
             self._set_instance_ip()

@@ -282,6 +282,7 @@ class EC2Cloud(IpaCloud):
             )
 
         self.running_instance_id = instances[0].instance_id
+        self.logger.debug('ID of instance: %s' % self.running_instance_id)
         self._wait_on_instance('running', self.timeout)
 
     def _set_image_id(self):
