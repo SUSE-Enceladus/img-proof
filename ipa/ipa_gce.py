@@ -197,6 +197,7 @@ class GCECloud(IpaCloud):
         self.running_instance_id = ipa_utils.generate_instance_name(
             'gce-ipa-test'
         )
+        self.logger.debug('ID of instance: %s' % self.running_instance_id)
 
         kwargs = {
             'location': self.region,

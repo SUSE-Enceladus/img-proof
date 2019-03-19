@@ -421,6 +421,7 @@ class AzureCloud(IpaCloud):
         self.running_instance_id = ipa_utils.generate_instance_name(
             'azure-ipa-test'
         )
+        self.logger.debug('ID of instance: %s' % self.running_instance_id)
         self._set_default_resource_names()
 
         try:
