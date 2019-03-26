@@ -1,3 +1,17 @@
+v3.3.0 (2019-03-26)
+===================
+
+- Cast timeout to integer.
+  [\#184](https://github.com/SUSE-Enceladus/ipa/pull/184)
+- Fix Azure service test on SLES 11.
+  [\#185](https://github.com/SUSE-Enceladus/ipa/pull/185)
+- Combine libcloud class with GCE.
+  [\#186](https://github.com/SUSE-Enceladus/ipa/pull/186)
+- Cleanup gce tests.
+  [\#187](https://github.com/SUSE-Enceladus/ipa/pull/187)
+- Rename ipa cloud test module.
+  [\#188](https://github.com/SUSE-Enceladus/ipa/pull/188)
+
 v3.2.1 (2019-03-15)
 ===================
 
