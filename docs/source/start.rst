@@ -8,11 +8,19 @@ Installation
 openSUSE package
 ----------------
 
-Perform the following commands as root:
+Perform the following commands as root for development version:
 
 .. code-block:: console
 
    $ zypper ar http://download.opensuse.org/repositories/Cloud:/Tools/<distribution>
+   $ zypper refresh
+   $ zypper in python3-ipa
+
+Perform the following commands as root for stable release:
+
+.. code-block:: console
+
+   $ zypper ar http://download.opensuse.org/repositories/Cloud:/Tools:/CI/<distribution>
    $ zypper refresh
    $ zypper in python3-ipa
 
