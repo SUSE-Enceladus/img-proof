@@ -34,6 +34,7 @@ from ipa.ipa_constants import (
     SUPPORTED_CLOUDS
 )
 from ipa import ipa_utils
+from ipa.ipa_constants import TEST_PATHS
 from ipa.ipa_controller import collect_tests, test_image
 from ipa.scripts.cli_utils import (
     archive_history_item,
@@ -605,6 +606,8 @@ def list_tests(context, verbose, test_dirs):
     tests otherwise the default test directories are used.
     """
     no_color = context.obj['no_color']
+    test_dirs = test_dirs or TEST_PATHS
+
     try:
         results = collect_tests(test_dirs, verbose)
     except Exception as error:

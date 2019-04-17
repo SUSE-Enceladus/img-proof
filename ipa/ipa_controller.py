@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
+import os
 import pytest
 import shlex
 
@@ -138,10 +139,17 @@ def collect_results(results_file):
     return data
 
 
-def collect_tests(test_dirs, verbose=False):
+def collect_tests(test_dirs=TEST_PATHS, verbose=False):
     """Return a list of test files and/or tests cases."""
+    if test_dirs:
+        test_dirs = [
+            test_dir for test_dir in test_dirs if os.path.exists(test_dir)
+        ]
+
     if not test_dirs:
-        test_dirs = TEST_PATHS
+        raise IpaControllerException(
+            'No test directories found.'
+        )
 
     if verbose:
         plugin = CollectItemsPlugin()
