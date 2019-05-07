@@ -1,3 +1,13 @@
+v3.3.1 (2019-05-07)
+===================
+
+- Add stable release repository for ipa.
+  [\#189](https://github.com/SUSE-Enceladus/ipa/pull/189)
+- Check default dirs exist in ipa list.
+  [\#191](https://github.com/SUSE-Enceladus/ipa/pull/191)
+- Add retry on ec2 image download.
+  [\#192](https://github.com/SUSE-Enceladus/ipa/pull/192)
+
 v3.3.0 (2019-03-26)
 ===================
 
