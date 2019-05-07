@@ -1,16 +1,16 @@
 import pytest
 
 
-types = {
-    'c5d.large': 15,
-    'd2.xlarge': 15,
-    'i3.8xlarge': 15,
-    'i3.metal': 15,
-    'm5.large': 15,
-    'm5d.large': 15,
-    'r5.24xlarge': 15,
-    't3.small': 15
-}
+types = (
+    'c5d.large',
+    'd2.xlarge',
+    'i3.8xlarge',
+    'i3.metal',
+    'm5.large',
+    'm5d.large',
+    'r5.24xlarge',
+    't3.small'
+)
 
 special_regions = [
     'ap-northeast-3',
@@ -18,6 +18,8 @@ special_regions = [
     'cn-northwest-1',
     'us-gov-west-1'
 ]
+
+dl_time = 15
 
 
 def test_sles_ec2_network(determine_region, host):
@@ -50,14 +52,19 @@ def test_sles_ec2_network(determine_region, host):
               region
           )
 
-    dl_result = host.run(
-        'curl -o /dev/null --max-time {0} --silent '
-        '--write-out "%{{size_download}}|%{{http_code}}" {1}'.format(
-            types[instance_type], url
+    for i in range(3):
+        dl_result = host.run(
+            'curl -o /dev/null --max-time {0} --silent '
+            '--write-out "%{{size_download}}|%{{http_code}}" {1}'.format(
+                dl_time,
+                url
+            )
         )
-    )
 
-    size, code = dl_result.stdout.strip().split('|')
+        size, code = dl_result.stdout.strip().split('|')
+
+        if code == '200' and size == '1214599168':
+            return
 
     if code != '200':
         pytest.fail('Image ISO not found for region: {0}'.format(region))
