@@ -38,7 +38,8 @@ from unittest.mock import MagicMock, patch
 LOCALHOST = '127.0.0.1'
 
 
-def test_utils_clear_cache():
+@patch('ipa.ipa_utils.execute_ssh_command')
+def test_utils_clear_cache(mock_exec_cmd):
     """Test ipa utils client cache and clear specific ip."""
     client = MagicMock()
     ipa_utils.CLIENT_CACHE[LOCALHOST] = client

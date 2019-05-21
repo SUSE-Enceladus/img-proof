@@ -99,6 +99,8 @@ class IpaCloud(object):
         # Get command line values that are not None
         cmd_line_values = self._get_non_null_values(locals())
 
+        ipa_utils.clear_cache()
+
         self.cloud = cloud
         self.host_key_fingerprint = None
         self.instance_ip = None
