@@ -275,8 +275,13 @@ def get_ssh_client(ip,
                    timeout=600,
                    wait_period=10):
     """Attempt to establish and test ssh connection."""
-    if ip in CLIENT_CACHE:
-        return CLIENT_CACHE[ip]
+    if CLIENT_CACHE.get(ip):
+        try:
+            execute_ssh_command(CLIENT_CACHE[ip], 'ls')
+        except Exception:
+            clear_cache(ip)
+        else:
+            return CLIENT_CACHE[ip]
 
     start = time.time()
     end = start + timeout
