@@ -577,7 +577,8 @@ def show(context,
 
     elif log:
         # Log file provided
-        echo_log(results_file, no_color)
+        log_file = results_file.rsplit('.', 1)[0] + '.log'
+        echo_log(log_file, no_color)
     else:
         # Results file provided
         echo_results_file(results_file, no_color, verbose)
