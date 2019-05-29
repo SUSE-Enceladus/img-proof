@@ -609,6 +609,8 @@ class IpaCloud(object):
         Returns:
             A tuple with the exit code and results json.
         """
+        self._set_distro()
+
         if self.cloud == 'ssh':
             # SSH cloud framework: instance must be running
             pass
@@ -647,7 +649,6 @@ class IpaCloud(object):
             )
 
         self._set_results_dir()
-        self._set_distro()
         self._log_info()
 
         if self.inject:
