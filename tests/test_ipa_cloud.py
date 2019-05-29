@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa cloud unit tests."""
+"""img_proof cloud unit tests."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,10 +25,10 @@ import io
 import pytest
 import os
 
-from ipa import ipa_utils
-from ipa.ipa_distro import Distro
-from ipa.ipa_exceptions import IpaCloudException, IpaSSHException
-from ipa.ipa_cloud import IpaCloud
+from img_proof import ipa_utils
+from img_proof.ipa_distro import Distro
+from img_proof.ipa_exceptions import IpaCloudException, IpaSSHException
+from img_proof.ipa_cloud import IpaCloud
 
 from unittest.mock import call, MagicMock, patch
 from tempfile import TemporaryDirectory
@@ -49,7 +49,7 @@ NOT_IMPL_METHODS = [
 
 
 class TestIpaCloud(object):
-    """Ipa cloud test class."""
+    """img_proof cloud test class."""
 
     @classmethod
     def setup_class(cls):
@@ -142,7 +142,7 @@ class TestIpaCloud(object):
 
         results = {
             "tests": [
-                {"name": "ipa/tests/test_sles.py::test_sles",
+                {"name": "img_proof/tests/test_sles.py::test_sles",
                  "teardown": {"duration": 4.792213439941406e-05,
                               "outcome": "passed",
                               "name": "teardown"},
@@ -230,7 +230,7 @@ class TestIpaCloud(object):
         assert mock_instance_running.call_count == 1
         assert mock_start_instance.call_count == 1
 
-    @patch('ipa.ipa_utils.execute_ssh_command')
+    @patch('img_proof.ipa_utils.execute_ssh_command')
     def test_cloud_execute_ssh_command(self, mock_exec_cmd):
         client = MagicMock()
         mock_exec_cmd.return_value = 'command executed successfully!'
@@ -249,7 +249,7 @@ class TestIpaCloud(object):
                 call('command executed successfully!')
             ])
 
-    @patch('ipa.ipa_utils.extract_archive')
+    @patch('img_proof.ipa_utils.extract_archive')
     def test_cloud_extract_archive(self, mock_extract_archive):
         client = MagicMock()
 
@@ -295,7 +295,7 @@ class TestIpaCloud(object):
         assert mock_start_instance.call_count == 1
         assert mock_set_instance_ip.call_count == 1
 
-    @patch('ipa.ipa_utils.put_file')
+    @patch('img_proof.ipa_utils.put_file')
     def test_cloud_put_file(self, mock_put_file):
         client = MagicMock()
 
@@ -399,7 +399,7 @@ class TestIpaCloud(object):
     @patch.object(IpaCloud, '_set_image_id')
     @patch.object(IpaCloud, '_start_instance_if_stopped')
     @patch.object(IpaCloud, '_get_ssh_client')
-    @patch('ipa.ipa_utils.get_host_key_fingerprint')
+    @patch('img_proof.ipa_utils.get_host_key_fingerprint')
     @patch.object(IpaCloud, 'hard_reboot_instance')
     def test_cloud_bad_connect_hard_reboot(
         self,
@@ -452,7 +452,7 @@ class TestIpaCloud(object):
     @patch.object(IpaCloud, '_set_image_id')
     @patch.object(IpaCloud, '_start_instance_if_stopped')
     @patch.object(IpaCloud, '_get_ssh_client')
-    @patch('ipa.ipa_utils.get_host_key_fingerprint')
+    @patch('img_proof.ipa_utils.get_host_key_fingerprint')
     @patch.object(Distro, 'reboot')
     def test_cloud_bad_connect_soft_reboot(
         self,
@@ -510,7 +510,7 @@ class TestIpaCloud(object):
     @patch.object(IpaCloud, '_start_instance_if_stopped')
     @patch.object(IpaCloud, '_get_ssh_client')
     @patch.object(IpaCloud, '_terminate_instance')
-    @patch('ipa.ipa_utils.get_host_key_fingerprint')
+    @patch('img_proof.ipa_utils.get_host_key_fingerprint')
     @patch.object(Distro, 'update')
     def test_cloud_distro_update(
         self,
@@ -547,7 +547,7 @@ class TestIpaCloud(object):
     @patch.object(IpaCloud, '_set_image_id')
     @patch.object(IpaCloud, '_start_instance_if_stopped')
     @patch.object(IpaCloud, '_get_ssh_client')
-    @patch('ipa.ipa_utils.get_host_key_fingerprint')
+    @patch('img_proof.ipa_utils.get_host_key_fingerprint')
     @patch.object(IpaCloud, '_run_tests')
     def test_cloud_break_if_test_failure(
         self,

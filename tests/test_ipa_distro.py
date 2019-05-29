@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa distro unit tests."""
+"""img_proof distro unit tests."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ipa.ipa_distro import Distro
-from ipa.ipa_exceptions import IpaDistroException
+from img_proof.ipa_distro import Distro
+from img_proof.ipa_exceptions import IpaDistroException
 
 from unittest.mock import call, MagicMock, patch
 
@@ -55,7 +55,7 @@ def test_distro_set_init_system_exception():
     client = MagicMock()
     distro = Distro()
 
-    with patch('ipa.ipa_utils.execute_ssh_command', MagicMock(
+    with patch('img_proof.ipa_utils.execute_ssh_command', MagicMock(
                side_effect=Exception('ERROR!'))) as mocked:
         pytest.raises(
             IpaDistroException,
@@ -79,7 +79,7 @@ def test_distro_get_vm_info():
     distro = Distro()
     distro.init_system = 'systemd'
 
-    with patch('ipa.ipa_utils.execute_ssh_command',
+    with patch('img_proof.ipa_utils.execute_ssh_command',
                MagicMock(return_value='')) as mocked:
         distro.get_vm_info(client)
 

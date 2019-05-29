@@ -1,15 +1,15 @@
-=================
-IPA Documentation
-=================
+=======================
+img-proof Documentation
+=======================
 
-.. image:: https://www.travis-ci.com/SUSE-Enceladus/ipa.svg?branch=master
-   :target: https://www.travis-ci.com/SUSE-Enceladus/ipa
+.. image:: https://www.travis-ci.com/SUSE-Enceladus/img-proof.svg?branch=master
+   :target: https://www.travis-ci.com/SUSE-Enceladus/img-proof
 
-.. image:: https://img.shields.io/pypi/pyversions/python3-ipa.svg
-   :target: https://pypi.org/project/python3-ipa/
+.. image:: https://img.shields.io/pypi/pyversions/img-proof.svg
+   :target: https://pypi.org/project/img-proof/
 
-.. image:: https://img.shields.io/pypi/l/python3-ipa.svg
-   :target: https://pypi.org/project/python3-ipa/
+.. image:: https://img.shields.io/pypi/l/img-proof.svg
+   :target: https://pypi.org/project/img-proof/
 
 .. toctree::
    :maxdepth: 3
@@ -20,18 +20,18 @@ IPA Documentation
    examples
    tests
    API <api>
-   Modules <modules/ipa>
+   Modules <modules/img_proof>
 
 .. image:: /_images/logo.png
 
-**IPA** provides a command line utility to test images in the Public
+**img-proof** (IPA) provides a command line utility to test images in the Public
 Cloud (AWS, Azure, GCE, etc.).
 
 About
 -----
 
-With **IPA** you can now test custom images in a cloud framework agnostic way
-with one tool and one API. In the first release, **IPA** supports the
+With **img-proof** you can now test custom images in a cloud framework agnostic way
+with one tool and one API. In the first release, **img-proof** supports the
 openSUSE and SLES distributions. It also supports the three largest
 cloud frameworks (AWS, Azure and GCE). However, it is intended to be
 distribution agnostic and framework transparent so both are easily
@@ -40,7 +40,7 @@ extensible.
 Overview
 --------
 
-The goal of **IPA** is to provide a unit test framework that can be used
+The goal of **img-proof** is to provide a unit test framework that can be used
 to verify the actual state of custom public cloud images. To do this it
 leverages two packages.
 
@@ -66,10 +66,10 @@ Puppet, Chef and so on.
 
 .. _Testinfra: https://testinfra.readthedocs.io/en/latest/
 
-IPA
-~~~
+img-proof
+~~~~~~~~~
 
-**IPA** leverages Testinfra as a unit test framework. It also provides
+**img-proof** leverages Testinfra as a unit test framework. It also provides
 distribution classes and cloud framework classes.
 
 Distribution Classes
@@ -104,7 +104,7 @@ The order of tests is guaranteed and the results will be agregated to
 determine the status of a test run.
 
 Cloud Framework Classes
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The cloud framework classes contain methods necessary to interact with
 instances/images in a given cloud framework.
@@ -137,23 +137,23 @@ to launch/start/stop/terminate instances.
 Contributing
 ------------
 
-Contributions to **IPA** are welcome and encouraged. See `CONTRIBUTING`_ for
+Contributions to **img-proof** are welcome and encouraged. See `CONTRIBUTING`_ for
 info on getting started.
 
-.. _CONTRIBUTING: https://github.com/SUSE-Enceladus/ipa/blob/master/CONTRIBUTING.md
+.. _CONTRIBUTING: https://github.com/SUSE-Enceladus/img-proof/blob/master/CONTRIBUTING.md
 
 Issues/Enhancements
 -------------------
 
 Please submit issues and requests to `Github`_.
 
-.. _Github: https://github.com/SUSE-Enceladus/ipa/issues
+.. _Github: https://github.com/SUSE-Enceladus/img-proof/issues
 
 License
 -------
 
-Copyright (c) 2018 SUSE LLC.
+Copyright (c) 2019 SUSE LLC.
 
 Distributed under the terms of GPL-3.0+ license, see `LICENSE`_ for details.
 
-.. _LICENSE: https://github.com/SUSE-Enceladus/ipa/blob/master/LICENSE
+.. _LICENSE: https://github.com/SUSE-Enceladus/img-proof/blob/master/LICENSE

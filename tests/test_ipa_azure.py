@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa azure provider unit tests."""
+"""img_proof azure provider unit tests."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 
 import pytest
 
-from ipa.ipa_azure import AzureCloud
-from ipa.ipa_exceptions import AzureCloudException
+from img_proof.ipa_azure import AzureCloud
+from img_proof.ipa_exceptions import AzureCloudException
 
 from unittest.mock import MagicMock, patch
 
@@ -66,7 +66,7 @@ class TestAzureProvider(object):
 
         assert str(error.value) == msg
 
-    @patch('ipa.ipa_azure.get_client_from_auth_file')
+    @patch('img_proof.ipa_azure.get_client_from_auth_file')
     def test_get_management_client(self, mock_get_client):
         client = MagicMock()
         mock_get_client.return_value = client
@@ -78,7 +78,7 @@ class TestAzureProvider(object):
 
         assert result == client
 
-    @patch('ipa.ipa_azure.get_client_from_auth_file')
+    @patch('img_proof.ipa_azure.get_client_from_auth_file')
     def test_get_management_client_json_error(self, mock_get_client):
         client_class = MagicMock()
         mock_get_client.side_effect = ValueError(
@@ -93,7 +93,7 @@ class TestAzureProvider(object):
         assert str(error.value) == 'Service account file format is invalid: ' \
             'Not valid.'
 
-    @patch('ipa.ipa_azure.get_client_from_auth_file')
+    @patch('img_proof.ipa_azure.get_client_from_auth_file')
     def test_get_management_client_key_error(self, mock_get_client):
         client_class = MagicMock()
         mock_get_client.side_effect = KeyError('subscriptionId')
@@ -106,7 +106,7 @@ class TestAzureProvider(object):
         assert str(error.value) == "Service account file missing key: " \
             "'subscriptionId'."
 
-    @patch('ipa.ipa_azure.get_client_from_auth_file')
+    @patch('img_proof.ipa_azure.get_client_from_auth_file')
     def test_get_management_client_exception(self, mock_get_client):
         client_class = MagicMock()
         mock_get_client.side_effect = Exception('Not valid')
@@ -119,7 +119,7 @@ class TestAzureProvider(object):
         assert str(error.value) == 'Unable to create resource management ' \
             'client: Not valid.'
 
-    @patch('ipa.ipa_azure.ipa_utils.generate_public_ssh_key')
+    @patch('img_proof.ipa_azure.ipa_utils.generate_public_ssh_key')
     def test_get_ssh_public_key(self, mock_generate_pub_key):
         mock_generate_pub_key.return_value = b'pub-key'
         provider = self.helper_get_provider()
@@ -141,7 +141,7 @@ class TestAzureProvider(object):
         assert provider._is_instance_running()
 
     @patch.object(AzureCloud, '_wait_on_instance')
-    @patch('ipa.ipa_utils.generate_instance_name')
+    @patch('img_proof.ipa_utils.generate_instance_name')
     def test_azure_launch_instance(
         self, mock_generate_instance_name, mock_wait_on_instance
     ):
@@ -160,7 +160,7 @@ class TestAzureProvider(object):
         assert provider.running_instance_id == 'azure-test-instance'
 
     @patch.object(AzureCloud, '_wait_on_instance')
-    @patch('ipa.ipa_utils.generate_instance_name')
+    @patch('img_proof.ipa_utils.generate_instance_name')
     def test_create_storage_profile(
             self, mock_generate_instance_name, mock_wait_on_instance
     ):
@@ -226,7 +226,7 @@ class TestAzureProvider(object):
 
         assert provider.image_id == 'another:fake:image:id'
 
-    @patch('ipa.ipa_utils.generate_instance_name')
+    @patch('img_proof.ipa_utils.generate_instance_name')
     def test_azure_set_instance_ip_exception(
         self, mock_generate_instance_name
     ):
@@ -247,7 +247,7 @@ class TestAzureProvider(object):
         assert str(error.value) == \
             'Unable to retrieve instance IP address: IP not found.'
 
-    @patch('ipa.ipa_utils.generate_instance_name')
+    @patch('img_proof.ipa_utils.generate_instance_name')
     def test_azure_set_instance_ip(self, mock_generate_instance_name):
         """Test set instance ip method."""
         mock_generate_instance_name.return_value = 'azure-test-instance'
@@ -263,11 +263,11 @@ class TestAzureProvider(object):
     def test_azure_start_instance(self):
         """Test start instance method."""
         provider = self.helper_get_provider()
-        provider.running_instance_id = 'ipa-test-instance'
+        provider.running_instance_id = 'img_proof-test-instance'
 
         provider._start_instance()
         self.client.virtual_machines.start.assert_called_once_with(
-            'ipa-test-instance', 'ipa-test-instance'
+            'img_proof-test-instance', 'img_proof-test-instance'
         )
 
         # Test exception
@@ -284,11 +284,11 @@ class TestAzureProvider(object):
     def test_azure_stop_instance(self):
         """Test stop instance method."""
         provider = self.helper_get_provider()
-        provider.running_instance_id = 'ipa-test-instance'
+        provider.running_instance_id = 'img_proof-test-instance'
 
         provider._stop_instance()
         self.client.virtual_machines.power_off.assert_called_once_with(
-            'ipa-test-instance', 'ipa-test-instance'
+            'img_proof-test-instance', 'img_proof-test-instance'
         )
 
         # Test exception
@@ -305,11 +305,11 @@ class TestAzureProvider(object):
     def test_azure_terminate_instance(self):
         """Test terminate instance method."""
         provider = self.helper_get_provider()
-        provider.running_instance_id = 'ipa-test-instance'
+        provider.running_instance_id = 'img_proof-test-instance'
 
         provider._terminate_instance()
         self.client.resource_groups.delete.assert_called_once_with(
-            'ipa-test-instance'
+            'img_proof-test-instance'
         )
 
         # Test exception

@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa GCE cloud unit tests."""
+"""img_proof GCE cloud unit tests."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 
 import pytest
 
-from ipa.ipa_gce import GCECloud
-from ipa.ipa_exceptions import GCECloudException
+from img_proof.ipa_gce import GCECloud
+from img_proof.ipa_exceptions import GCECloudException
 
 from unittest.mock import MagicMock, patch
 
@@ -149,7 +149,7 @@ class TestGCECloud(object):
         assert msg == str(error.value)
 
     @patch.object(GCECloud, '_get_subnet')
-    @patch('ipa.ipa_utils.generate_instance_name')
+    @patch('img_proof.ipa_utils.generate_instance_name')
     def test_gce_launch_instance(
         self,
         mock_generate_instance_name,

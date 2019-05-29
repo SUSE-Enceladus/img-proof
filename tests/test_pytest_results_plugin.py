@@ -3,9 +3,9 @@
 
 """Pytest results plugin tests."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import shlex
 
 import pytest
 
-from ipa.results_plugin import Report
+from img_proof.results_plugin import Report
 
 
 def test_pytest_json_results():

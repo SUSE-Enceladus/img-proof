@@ -12,8 +12,8 @@ python:
 install:
   - pip install -e .[dev]
 script:
-  - pytest --cov=ipa
-  - flake8 ipa
+  - pytest --cov=img_proof
+  - flake8 img_proof
   - flake8 tests --exclude=data
 deploy:
   provider: pypi

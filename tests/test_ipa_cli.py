@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa CLI unit tests."""
+"""img_proof CLI unit tests."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 import os
 
-from ipa.scripts.cli import main
+from img_proof.scripts.cli import main
 
 from click.testing import CliRunner
 
@@ -31,11 +31,11 @@ import pytest
 
 
 def test_cli_ipa_help():
-    """Confirm ipa --help is successful."""
+    """Confirm img_proof --help is successful."""
     runner = CliRunner()
     result = runner.invoke(main, ['--help'])
     assert result.exit_code == 0
-    assert 'Ipa provides a Python API and command line utility' \
+    assert 'img-proof provides a Python API and cmd line utility' \
            ' for testing images.' in result.output
 
 
@@ -47,10 +47,10 @@ def test_cli_ipa_help():
       'Process provided history log and results files.'),
      ('test',
       'Test image in the given framework using the supplied test files.')],
-    ids=['ipa-list', 'ipa-results', 'ipa-test']
+    ids=['img_proof-list', 'img_proof-results', 'img_proof-test']
 )
 def test_cli_help(endpoint, value):
-    """Confirm ipa list --help is successful."""
+    """Confirm img_proof list --help is successful."""
     runner = CliRunner()
     result = runner.invoke(main, [endpoint, '--help'])
     assert result.exit_code == 0
@@ -93,21 +93,21 @@ def test_cli_test_image_exception():
 
 
 def test_cli_list():
-    """Test ipa list endpoint."""
+    """Test img_proof list endpoint."""
     runner = CliRunner()
     result = runner.invoke(main, ['list', 'tests/data/tests'])
     assert result.exit_code == 0
 
 
 def test_cli_list_verbose():
-    """Test ipa list endpoint."""
+    """Test img_proof list endpoint."""
     runner = CliRunner()
     result = runner.invoke(main, ['list', '-v', 'tests/data/tests'])
     assert result.exit_code == 0
 
 
 def test_cli_results():
-    """Test ipa results endpoint."""
+    """Test img_proof results endpoint."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -121,7 +121,7 @@ def test_cli_results():
 
 
 def test_cli_archive():
-    """Test ipa archive history sub command."""
+    """Test img_proof archive history sub command."""
     with open('tests/data/history.log') as f:
         log_file = f.readlines()
 
@@ -176,7 +176,7 @@ def test_cli_archive():
 
 
 def test_cli_archive_item():
-    """Test ipa archive specific history item."""
+    """Test img_proof archive specific history item."""
     with open('tests/data/history.log') as f:
         log_file = f.readlines()
 
@@ -222,7 +222,7 @@ def test_cli_archive_item():
 
 
 def test_cli_archive_missing_item():
-    """Test ipa archive missing history item."""
+    """Test img_proof archive missing history item."""
     runner = CliRunner()
     with runner.isolated_filesystem():
         base_path = 'tests/data/ec2/ami-859bd1e5/i-44444444444444444/'
@@ -249,7 +249,7 @@ def test_cli_archive_missing_item():
 
 
 def test_cli_results_log():
-    """Test ipa results log display."""
+    """Test img_proof results log display."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -263,7 +263,7 @@ def test_cli_results_log():
 
 
 def test_cli_results_show_exception():
-    """Test ipa results show handles exception."""
+    """Test img_proof results show handles exception."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -274,7 +274,7 @@ def test_cli_results_show_exception():
 
 
 def test_cli_results_history():
-    """Test ipa results history."""
+    """Test img_proof results history."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -284,7 +284,7 @@ def test_cli_results_history():
 
 
 def test_cli_results_history_exception():
-    """Test ipa results history handles exception if file missing."""
+    """Test img_proof results history handles exception if file missing."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -295,7 +295,7 @@ def test_cli_results_history_exception():
 
 
 def test_cli_results_history_log_exception():
-    """Test ipa results history handles exception if key missing."""
+    """Test img_proof results history handles exception if key missing."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -309,7 +309,7 @@ def test_cli_results_history_log_exception():
 
 
 def test_cli_results_history_log():
-    """Test ipa results history."""
+    """Test img_proof results history."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -319,7 +319,7 @@ def test_cli_results_history_log():
 
 
 def test_cli_history():
-    """Test ipa list history sub command."""
+    """Test img_proof list history sub command."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -329,7 +329,7 @@ def test_cli_history():
 
 
 def test_cli_clear_history():
-    """Test ipa clear history sub command."""
+    """Test img_proof clear history sub command."""
     lines = ''
     with open('tests/data/.history') as history_log:
         lines = history_log.readlines()
@@ -358,7 +358,7 @@ def test_cli_clear_history():
 
 
 def test_cli_delete_history_item():
-    """Test ipa delete history item at given index."""
+    """Test img_proof delete history item at given index."""
     lines = []
     with open('tests/data/.history') as history_log:
         lines = history_log.readlines()
@@ -386,7 +386,7 @@ def test_cli_delete_history_item():
 
 
 def test_cli_history_empty():
-    """Test ipa history endpoint with empty history log."""
+    """Test img_proof history endpoint with empty history log."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -396,7 +396,7 @@ def test_cli_history_empty():
 
 
 def test_cli_results_non_json():
-    """Test ipa results non json file provided."""
+    """Test img_proof results non json file provided."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -412,7 +412,7 @@ def test_cli_results_non_json():
 
 
 def test_cli_results_missing_key():
-    """Test ipa results json file missing key."""
+    """Test img_proof results json file missing key."""
     runner = CliRunner()
     result = runner.invoke(
         main,
@@ -428,7 +428,7 @@ def test_cli_results_missing_key():
 
 
 def test_cli_license():
-    """Test ipa cli license."""
+    """Test img_proof cli license."""
     runner = CliRunner()
     result = runner.invoke(
         main,

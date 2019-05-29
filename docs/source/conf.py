@@ -19,8 +19,8 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'IPA'
-copyright = '2018, SUSE LLC'
+project = 'img-proof'
+copyright = '2019, SUSE LLC'
 author = 'SUSE'
 
 # The short X.Y version
@@ -86,8 +86,8 @@ html_theme = 'alabaster'
 html_theme_options = {
     'description': 'Image Proofing App',
     'github_user': 'SUSE-Enceladus',
-    'github_repo': 'ipa',
-    'sidebar_header': 'IPA',
+    'github_repo': 'img-proof',
+    'sidebar_header': 'img-proof',
     'show_powered_by': 'false'
 }
 
@@ -117,7 +117,7 @@ html_favicon = 'favicon.ico'
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'IPAdoc'
+htmlhelp_basename = 'img-proof-doc'
 html_favicon = '_images/favicon.ico'
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -144,7 +144,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'IPA.tex', 'IPA Documentation',
+    (master_doc, 'img-proof.tex', 'img-proof Documentation',
      'SUSE', 'manual'),
 ]
 
@@ -154,7 +154,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'ipa', 'IPA Documentation',
+    (master_doc, 'img_proof', 'img-proof Documentation',
      [author], 1)
 ]
 
@@ -165,8 +165,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'IPA', 'IPA Documentation',
-     author, 'IPA', 'One line description of project.',
+    (master_doc, 'img-proof', 'img-proof Documentation',
+     author, 'img-proof', 'One line description of project.',
      'Miscellaneous'),
 ]
 

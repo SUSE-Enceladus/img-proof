@@ -2,7 +2,7 @@
 Usage
 =====
 
-IPA provides two entry points, a command line interface and a controller class
+img-proof provides two entry points, a command line interface and a controller class
 that can be used directly from Python code.
 
 CLI
@@ -18,7 +18,7 @@ Testing an image with CLI
 
 .. code-block:: console
 
-   > ipa test -i {image-id} \
+   > img-proof test -i {image-id} \
      -a {account} \
      -d openSUSE_Leap \
      --early-exit \
@@ -28,7 +28,7 @@ Testing an image with CLI
      ec2 test_image
 
    Starting instance
-   Running tests /home/{user}/ipa/tests/test_image.py
+   Running tests /home/{user}/img_proof/tests/test_image.py
    PASSED tests=1|pass=1|fail=0|error=0
 
 Verbosity
@@ -133,18 +133,18 @@ The order of processing for the sections is as follows:
 
 .. code-block:: console
 
-   > ipa test ... --inject testing_injection.yaml
+   > img-proof test ... --inject testing_injection.yaml
 
 Code
 ----
 
-**IPA** can also be imported and invokedd directly in Python 3 code through
+**img-proof** can also be imported and invokedd directly in Python 3 code through
 the controller class. It is insalled as a Python site package and can be
 imported as follows:
 
 .. code-block:: python3
 
-   from ipa.ipa_controller import test_image
+   from img_proof.ipa_controller import test_image
 
    status, results = test_image(
        cloud_framework,
@@ -154,5 +154,5 @@ imported as follows:
        tests
    )
 
-See :doc:`modules/ipa.ipa_controller` for specific methods that can be
+See :doc:`modules/img_proof.ipa_controller` for specific methods that can be
 invoked.
