@@ -598,6 +598,19 @@ class IpaCloud(object):
         else:
             return file_name
 
+    def _cleanup_instance(self, status):
+        """
+        Cleanup instance based on arguments.
+
+        If tests pass and cleanup flag is none, or
+        cleanup flag is true, terminate instance.
+        """
+        if (status == 0 and self.cleanup is None) or self.cleanup:
+            self.logger.info(
+                'Terminating instance %s' % self.running_instance_id
+            )
+            self._terminate_instance()
+
     def test_image(self):
         """
         The entry point for testing an image.
@@ -640,10 +653,14 @@ class IpaCloud(object):
                 client
             )
         except IpaSSHException as error:
+            self._cleanup_instance(1)
+
             raise IpaCloudException(
                 'Unable to connect to instance: %s' % error
             )
         except Exception as error:
+            self._cleanup_instance(1)
+
             raise IpaCloudException(
                 'An error occurred retrieving host key: %s' % error
             )
@@ -762,14 +779,7 @@ class IpaCloud(object):
         if self.collect_vm_info:
             self._collect_vm_info()
 
-        # If tests pass and cleanup flag is none, or
-        # cleanup flag is true, terminate instance.
-        if status == 0 and self.cleanup is None or self.cleanup:
-            self.logger.info(
-                'Terminating instance %s' % self.running_instance_id
-            )
-            self._terminate_instance()
-
+        self._cleanup_instance(status)
         self._save_results()
         self._update_history()
 
