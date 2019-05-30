@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa utils unit tests."""
+"""img_proof utils unit tests."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -30,17 +30,17 @@ import pytest
 from shutil import copyfile
 from tempfile import NamedTemporaryFile
 
-from ipa import ipa_utils
-from ipa.ipa_exceptions import IpaSSHException, IpaUtilsException
+from img_proof import ipa_utils
+from img_proof.ipa_exceptions import IpaSSHException, IpaUtilsException
 
 from unittest.mock import MagicMock, patch
 
 LOCALHOST = '127.0.0.1'
 
 
-@patch('ipa.ipa_utils.execute_ssh_command')
+@patch('img_proof.ipa_utils.execute_ssh_command')
 def test_utils_clear_cache(mock_exec_cmd):
-    """Test ipa utils client cache and clear specific ip."""
+    """Test img_proof utils client cache and clear specific ip."""
     client = MagicMock()
     ipa_utils.CLIENT_CACHE[LOCALHOST] = client
 
@@ -185,7 +185,7 @@ def test_utils_expand_sync_points():
     assert expanded[2] == 'test_hard_reboot'
 
 
-@patch('ipa.ipa_utils.execute_ssh_command')
+@patch('img_proof.ipa_utils.execute_ssh_command')
 def test_utils_extract_archive(mock_exec_ssh_command):
     client = MagicMock()
 
@@ -244,7 +244,7 @@ def test_get_config_values():
     data = ipa_utils.get_config_values(
         'tests/data/config',
         'ec2',
-        'ipa'
+        'img_proof'
     )
 
     assert data['region'] == 'us-west-1'
@@ -257,7 +257,7 @@ def test_utils_get_config_values_exceptions():
         ipa_utils.get_config_values(
             'tests/data/fake.config',
             'ec2',
-            'ipa'
+            'img_proof'
         )
 
     assert str(error.value) == \
@@ -357,6 +357,6 @@ def test_utils_history_log_no_input():
 
 def test_utils_generate_instance_name():
     """Test generate instance name method."""
-    name = ipa_utils.generate_instance_name('azure-ipa-test')
-    assert len(name) == 20
-    assert name.startswith('azure-ipa-test-')
+    name = ipa_utils.generate_instance_name('azure-img-proof-test')
+    assert len(name) == 26
+    assert name.startswith('azure-img-proof-test-')

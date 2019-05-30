@@ -2,6 +2,6 @@
 API
 ===
 
-.. click:: ipa.scripts.cli:main
-   :prog: ipa
+.. click:: img_proof.scripts.cli:main
+   :prog: img-proof
    :show-nested:

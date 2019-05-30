@@ -2,15 +2,15 @@ Installation
 ============
 
 ```shell
-$ git clone https://github.com/SUSE-Enceladus/ipa.git
-$ cd ipa
+$ git clone https://github.com/SUSE-Enceladus/img-proof.git
+$ cd img-proof
 
 # Activate virtual Environment then install
-# ipa and dev dependences in editable mode
+# img-proof and dev dependences in editable mode
 $ pip install -e .[dev]
 ```
 
-ipa is now installed in the active virtual environment in development
+img-proof is now installed in the active virtual environment in development
 mode.
 
 Dev Requirements
@@ -39,7 +39,7 @@ Contribution Checklist
 Versions & Releases
 ===================
 
-**ipa** adheres to Semantic versioning; see <http://semver.org/> for
+**img-proof** adheres to Semantic versioning; see <http://semver.org/> for
 details.
 
 [bumpversion](https://pypi.python.org/pypi/bumpversion/) is used for
@@ -69,7 +69,7 @@ All tests should pass and test coverage should remain above 90%.
 The tests and coverage can be run directly via pytest.
 
 ```shell
-$ pytest --cov=ipa
+$ pytest --cov=img_proof
 ```
 
 Testing with tox
@@ -111,7 +111,7 @@ Code Style
 Source should pass flake8 and pep8 standards.
 
 ```shell
-$ flake8 ipa
+$ flake8 img_proof
 ```
 
 Man Pages

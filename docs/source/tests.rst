@@ -12,7 +12,7 @@ SLES Test Suite
 
 There is a suite of tests for SLES and openSUSE_Leap. It can be found
 in the `GitHub repository
-<https://github.com/SUSE-Enceladus/ipa/tree/master/usr/share/lib/ipa/tests>`__.
+<https://github.com/SUSE-Enceladus/img-proof/tree/master/usr/share/lib/img_proof/tests>`__.
 
 They are also packaged in the Open Build Service for openSUSE:
 
@@ -20,13 +20,13 @@ They are also packaged in the Open Build Service for openSUSE:
 
    $ zypper ar http://download.opensuse.org/repositories/Cloud:/Tools/<distribution>
    $ zypper refresh
-   $ zypper in python3-ipa-tests
+   $ zypper in python3-img-proof-tests
 
 Test directories
 ================
 
-The default locations for test files are locally in ~/ipa/tests/ and
-centralized in /usr/share/ipa/tests. These locations can be overridden
+The default locations for test files are locally in ~/img_proof/tests/ and
+centralized in /usr/share/img_proof/tests. These locations can be overridden
 in the config and/or command line arguments.
 
 Test organization
@@ -36,7 +36,7 @@ Tests can be organized in a directory structure:
 
 ::
 
-   ~/ipa/tests/:
+   ~/img_proof/tests/:
      conftest.py
      test_image.py
      openSUSE:
@@ -67,7 +67,7 @@ Adding tests to command line args you simply drop the extension:
 
 .. code-block:: shell
 
-   $ ipa test ... test_leap_423
+   $ img-proof test ... test_leap_423
 
 This means there cannot be a name overlap with test files and/or test
 descriptions.
@@ -91,7 +91,7 @@ To invoke a specific test the Pytest conventions can be used:
 
 .. code-block:: console
 
-   $ ipa test ... test_leap_ec2::test-services-running-enabled
+   $ img-proof test ... test_leap_ec2::test-services-running-enabled
 
 To run only one parameterized test append ids and use [ID]:
 
@@ -106,7 +106,7 @@ To run only one parameterized test append ids and use [ID]:
 
 .. code-block:: console
 
-   $ ipa test ... test_leap_ec2::test-services-running-enabled[ssm]
+   $ img-proof test ... test_leap_ec2::test-services-running-enabled[ssm]
 
 Failures
 --------

@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""IPA controller unit tests."""
+"""img_proof controller unit tests."""
 
 # Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -24,11 +24,11 @@
 from pytest import raises
 from unittest.mock import patch
 
-from ipa.ipa_controller import collect_tests
-from ipa.ipa_exceptions import IpaControllerException
+from img_proof.ipa_controller import collect_tests
+from img_proof.ipa_exceptions import IpaControllerException
 
 
-@patch('ipa.ipa_controller.os')
+@patch('img_proof.ipa_controller.os')
 def test_collect_tests_no_dirs(mock_os):
     """Test collect tests default directories do not exist."""
     mock_os.path.exists.return_value = False

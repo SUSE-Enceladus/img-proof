@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa SLES distro unit tests."""
+"""img_proof SLES distro unit tests."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 
 import pytest
 
-from ipa.ipa_exceptions import IpaDistroException, IpaSLESException
-from ipa.ipa_sles import SLES
+from img_proof.ipa_exceptions import IpaDistroException, IpaSLESException
+from img_proof.ipa_sles import SLES
 
 from unittest.mock import MagicMock, patch
 
@@ -51,7 +51,7 @@ def test_sles_install_package():
     client = MagicMock()
     sles = SLES()
 
-    with patch('ipa.ipa_utils.execute_ssh_command',
+    with patch('img_proof.ipa_utils.execute_ssh_command',
                MagicMock(return_value='')) as mocked:
         sles.install_package(client, 'python')
 
@@ -67,7 +67,7 @@ def test_sles_reboot():
     sles = SLES()
     sles.init_system = 'systemd'
 
-    with patch('ipa.ipa_utils.execute_ssh_command',
+    with patch('img_proof.ipa_utils.execute_ssh_command',
                MagicMock(return_value='')) as mocked:
         sles.reboot(client)
 
@@ -83,7 +83,7 @@ def test_sles_reboot_exception():
     sles = SLES()
     sles.init_system = 'systemd'
 
-    with patch('ipa.ipa_utils.execute_ssh_command', MagicMock(
+    with patch('img_proof.ipa_utils.execute_ssh_command', MagicMock(
                side_effect=Exception('ERROR!'))) as mocked:
         pytest.raises(
             IpaDistroException,
@@ -102,7 +102,7 @@ def test_sles_update():
     client = MagicMock()
     sles = SLES()
 
-    with patch('ipa.ipa_utils.execute_ssh_command',
+    with patch('img_proof.ipa_utils.execute_ssh_command',
                MagicMock(return_value='Update finished!')) as mocked:
         output = sles.update(client)
 
@@ -119,7 +119,7 @@ def test_sles_update_exception():
     client = MagicMock()
     sles = SLES()
 
-    with patch('ipa.ipa_utils.execute_ssh_command', MagicMock(
+    with patch('img_proof.ipa_utils.execute_ssh_command', MagicMock(
                side_effect=Exception('ERROR!'))) as mocked:
         pytest.raises(
             IpaDistroException,

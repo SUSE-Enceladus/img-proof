@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa ec2 provider unit tests."""
+"""img_proof ec2 provider unit tests."""
 
-# Copyright (c) 2018 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -24,8 +24,8 @@
 import boto3
 import pytest
 
-from ipa.ipa_ec2 import EC2Cloud
-from ipa.ipa_exceptions import EC2CloudException
+from img_proof.ipa_ec2 import EC2Cloud
+from img_proof.ipa_exceptions import EC2CloudException
 
 from unittest.mock import MagicMock, patch
 
@@ -152,7 +152,7 @@ class TestEC2Provider(object):
         assert not provider._is_instance_running()
         assert mock_get_instance_state.call_count == 1
 
-    @patch('ipa.ipa_ec2.ipa_utils.generate_public_ssh_key')
+    @patch('img_proof.ipa_ec2.ipa_utils.generate_public_ssh_key')
     def test_ec2_get_user_data(self, mock_generate_ssh_key):
         mock_generate_ssh_key.return_value = b'testkey12345'
 

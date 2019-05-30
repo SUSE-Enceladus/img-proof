@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa SSH provider unit tests."""
+"""img_proof SSH provider unit tests."""
 
-# Copyright (c) 2018 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 
 import pytest
 
-from ipa.ipa_exceptions import SSHCloudException
-from ipa.ipa_ssh import SSHCloud
+from img_proof.ipa_exceptions import SSHCloudException
+from img_proof.ipa_ssh import SSHCloud
 
 
 class TestSSHProvider(object):

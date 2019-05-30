@@ -1,3 +1,17 @@
+v4.0.0 (2019-05-30)
+===================
+
+- Clear ssh cache at start of module.
+  [\#196](https://github.com/SUSE-Enceladus/ipa/pull/196)
+- Move set_distro to beginning of method.
+  [\#199](https://github.com/SUSE-Enceladus/ipa/pull/199)
+- Attempt to cleanup instance on ssh fail.
+  [\#200](https://github.com/SUSE-Enceladus/ipa/pull/200)
+- Echo log file if results file provided.
+  [\#201](https://github.com/SUSE-Enceladus/ipa/pull/201)
+- Rename ipa to img-proof.
+  [\#202](https://github.com/SUSE-Enceladus/ipa/pull/202)
+
 v3.3.1 (2019-05-07)
 ===================
 

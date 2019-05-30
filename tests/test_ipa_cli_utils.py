@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa CLI utils unit tests."""
+"""img_proof CLI utils unit tests."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -21,22 +21,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ipa.scripts import cli_utils
+from img_proof.scripts import cli_utils
 
 DATA = {
     "info": {
         "platform": "azure",
         "image": "test_image",
-        "instance": "azure-ipa-test",
+        "instance": "azure-img_proof-test",
         "timestamp": "20170622155322",
         "distro": "SLES"
     },
     "tests": [{
-        "name": "ipa/tests/test_sles.py::test_sles",
+        "name": "img_proof/tests/test_sles.py::test_sles",
         "test_index": 0,
         "outcome": "passed"
     }, {
-        "name": "ipa/tests/test_broken.py::test_broken",
+        "name": "img_proof/tests/test_broken.py::test_broken",
         "test_index": 1,
         "outcome": "failed"
     }],

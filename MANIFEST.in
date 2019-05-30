@@ -4,7 +4,7 @@ include LICENSE
 include README.md
 include tox.ini
 include ipa-complete.sh
-include package/python3-ipa.spec
+include package/python3-img-proof.spec
 include requirements.txt
 include requirements-test.txt
 include requirements-dev.txt

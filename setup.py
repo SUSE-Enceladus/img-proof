@@ -3,9 +3,9 @@
 
 """Setup script."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img-proof. img-proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -42,20 +42,21 @@ tox_requirements = [
 
 
 setup(
-    name='python3-ipa',
-    version='3.3.1',
+    name='img-proof',
+    version='4.0.0',
     description="Package for automated testing of cloud images.",
     long_description=readme,
     long_description_content_type="text/markdown",
     author="SUSE",
     author_email='public-cloud-dev@susecloud.net',
-    url='https://github.com/SUSE-Enceladus/ipa',
+    url='https://github.com/SUSE-Enceladus/img-proof',
     packages=find_packages(),
-    package_dir={'ipa':
-                 'ipa'},
+    package_dir={
+        'img_proof': 'img_proof'
+    },
     entry_points={
         'console_scripts': [
-            'ipa=ipa.scripts.cli:main'
+            'img-proof=img_proof.scripts.cli:main'
         ]
     },
     include_package_data=True,
@@ -68,7 +69,7 @@ setup(
     },
     license='GPLv3+',
     zip_safe=False,
-    keywords='ipa',
+    keywords='img-proof img_proof',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',

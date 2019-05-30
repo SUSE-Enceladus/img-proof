@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Ipa openSUSE_Leap distro unit tests."""
+"""img_proof openSUSE_Leap distro unit tests."""
 
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of ipa. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ipa.ipa_opensuse_leap import openSUSE_Leap
+from img_proof.ipa_opensuse_leap import openSUSE_Leap
 
 from unittest.mock import MagicMock, patch
 
@@ -31,7 +31,7 @@ def test_opensuse_leap_set_init_system():
     client = MagicMock()
     leap = openSUSE_Leap()
 
-    with patch('ipa.ipa_utils.execute_ssh_command',
+    with patch('img_proof.ipa_utils.execute_ssh_command',
                MagicMock(return_value='systemd')) as mocked:
         leap._set_init_system(client)
 
