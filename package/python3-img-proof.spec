@@ -60,6 +60,7 @@ BuildRequires:  python3-pytest
 BuildRequires:  python3-pytest-cov
 BuildRequires:  python3-testinfra
 %endif
+Obsoletes:      python3-ipa < 4.0.0
 
 %description
 img-proof provides a command line utility to test images in
@@ -70,6 +71,7 @@ Summary:        Infrastructure tests for img-proof
 Group:          Development/Languages/Python
 Requires:       python3-susepubliccloudinfo
 PreReq:         python3-img-proof = %{version}
+Obsoletes:      python3-ipa-tests < 4.0.0
 
 %description tests
 Directory of infrastructure tests for testing images.
