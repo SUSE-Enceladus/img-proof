@@ -605,7 +605,7 @@ class IpaCloud(object):
         If tests pass and cleanup flag is none, or
         cleanup flag is true, terminate instance.
         """
-        if status == 0 and self.cleanup is None or self.cleanup:
+        if (status == 0 and self.cleanup is None) or self.cleanup:
             self.logger.info(
                 'Terminating instance %s' % self.running_instance_id
             )
