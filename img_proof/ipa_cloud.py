@@ -4,7 +4,7 @@
 
 # Copyright (c) 2019 SUSE LLC. All rights reserved.
 #
-# This file is part of img_proof. Ipa provides an api and command line
+# This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
 #
 # This program is free software: you can redistribute it and/or modify
