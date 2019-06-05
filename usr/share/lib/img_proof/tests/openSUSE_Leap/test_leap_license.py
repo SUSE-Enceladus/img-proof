@@ -1,5 +1,5 @@
 def test_leap_license(host):
-    license_dir = '/etc/YaST2/licenses/base'
+    license_dir = '/usr/share/licenses/openSUSE-release'
     license_content = 'LICENSE AGREEMENT'
 
     lic_dir = host.file(license_dir)
