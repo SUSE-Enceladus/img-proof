@@ -229,3 +229,21 @@ def install_zypper_package(host):
         result = host.run('sudo zypper -n in %s' % name)
         return result.rc
     return f
+
+
+@pytest.fixture()
+def confirm_license_content(host):
+    def f(license_dirs, license_content):
+        for license_dir in license_dirs:
+            lic_dir = host.file(license_dir)
+
+            if lic_dir.exists and lic_dir.is_directory:
+                lic = host.file(license_dir + 'license.txt')
+                return all([
+                    lic.exists,
+                    lic.is_file,
+                    any(lic.contains(content) for content in license_content)
+                ])
+
+        return False
+    return f

@@ -353,27 +353,3 @@ def is_sles_sap(host):
         sap = host.file('/etc/products.d/SLES_SAP.prod')
         return sap.exists and sap.is_file
     return f
-
-
-@pytest.fixture()
-def confirm_sles_license_content(host):
-    def f(license_dirs):
-        license_content = [
-            'SUSE End User License Agreement',
-            'SUSE(R) Linux Enterprise End User License Agreement',
-            'SUSE® Linux Enterprise End User License Agreement'
-        ]
-
-        for license_dir in license_dirs:
-            lic_dir = host.file(license_dir)
-
-            if lic_dir.exists and lic_dir.is_directory:
-                lic = host.file(license_dir + 'license.txt')
-                return all([
-                    lic.exists,
-                    lic.is_file,
-                    any(lic.contains(content) for content in license_content)
-                ])
-
-        return False
-    return f
