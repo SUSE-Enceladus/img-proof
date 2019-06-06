@@ -1,3 +1,9 @@
+v4.1.0 (2019-06-06)
+===================
+
+- Make license test fixture generic.
+  [\#206](https://github.com/SUSE-Enceladus/ipa/pull/206)
+
 v4.0.0 (2019-05-30)
 ===================
 
