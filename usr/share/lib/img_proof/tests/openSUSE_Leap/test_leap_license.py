@@ -1,12 +1,18 @@
-def test_leap_license(host):
-    license_dir = '/etc/YaST2/licenses/base'
-    license_content = 'LICENSE AGREEMENT'
+import pytest
 
-    lic_dir = host.file(license_dir)
-    assert lic_dir.exists
-    assert lic_dir.is_directory
 
-    license = host.file(license_dir + '/license.txt')
-    assert license.exists
-    assert license.is_file
-    assert license.contains(license_content)
+def test_leap_license(confirm_license_content):
+    license_dirs = [
+        '/etc/YaST2/licenses/base/',
+        '/usr/share/licenses/openSUSE-release/'
+    ]
+    license_content = [
+        'LICENSE AGREEMENT'
+    ]
+    result = confirm_license_content(license_dirs, license_content)
+
+    if result is False:
+        pytest.fail(
+            'SUSE End User License Agreement not found '
+            'or license has incorrect content.'
+        )
