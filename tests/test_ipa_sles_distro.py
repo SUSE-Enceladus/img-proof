@@ -61,40 +61,34 @@ def test_sles_install_package():
     )
 
 
-def test_sles_reboot():
+@patch('img_proof.ipa_distro.time')
+def test_sles_reboot(mock_time):
     """Test soft reboot method for SLES distro."""
     client = MagicMock()
+    channel = MagicMock()
+    transport = MagicMock()
+    transport.open_session.return_value = channel
+    client.get_transport.return_value = transport
     sles = SLES()
     sles.init_system = 'systemd'
 
-    with patch('img_proof.ipa_utils.execute_ssh_command',
-               MagicMock(return_value='')) as mocked:
-        sles.reboot(client)
+    sles.reboot(client)
 
-    mocked.assert_called_once_with(
-        client,
-        "sudo sh -c 'systemctl stop sshd.service;shutdown -r now'"
+    channel.exec_command.assert_called_once_with(
+        "sudo sh -c '(sleep 1 && systemctl stop sshd.service "
+        "&& shutdown -r now &)' && exit"
     )
 
 
 def test_sles_reboot_exception():
     """Test soft reboot method exception for SLES distro."""
     client = MagicMock()
+    client.get_transport.side_effect = Exception('ERROR!')
     sles = SLES()
     sles.init_system = 'systemd'
 
-    with patch('img_proof.ipa_utils.execute_ssh_command', MagicMock(
-               side_effect=Exception('ERROR!'))) as mocked:
-        pytest.raises(
-            IpaDistroException,
-            sles.reboot,
-            client
-        )
-
-    mocked.assert_called_once_with(
-        client,
-        "sudo sh -c 'systemctl stop sshd.service;shutdown -r now'"
-    )
+    with pytest.raises(IpaDistroException):
+        sles.reboot(client)
 
 
 def test_sles_update():
