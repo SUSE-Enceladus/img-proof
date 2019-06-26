@@ -1,4 +1,5 @@
 import json
+import os
 import pytest
 
 from susepubliccloudinfoclient import infoserverrequests
@@ -164,6 +165,14 @@ def determine_region(host):
 
 
 @pytest.fixture()
+def get_baseproduct():
+    """Return the nmae of the file the 'baseproduct' link points to"""
+    baseproduct = '/etc/products.d/baseproduct'
+    if os.path.islink(baseproduct):
+        return os.readlink(baseproduct).split('.')[0]
+
+
+@pytest.fixture()
 def get_release_value(host):
     def f(key):
         release = host.file('/etc/os-release')
@@ -194,8 +203,8 @@ def get_smt_server_name(host):
 @pytest.fixture()
 def get_smt_servers(get_release_value, host):
     def f(provider, region):
-        cpe_name = get_release_value('CPE_NAME')
-        if 'sap' in cpe_name:
+        product_name = get_baseproduct()
+        if 'sap' in product_name.lower():
             smt_type = 'smt-sap'
         else:
             smt_type = 'smt-sles'
