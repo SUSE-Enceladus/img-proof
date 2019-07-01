@@ -20,6 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
+
 from img_proof import ipa_utils
 from img_proof.ipa_constants import NOT_IMPLEMENTED
 from img_proof.ipa_exceptions import IpaDistroException
@@ -130,17 +132,19 @@ class Distro(object):
         """Execute reboot command on instance."""
         self._set_init_system(client)
 
-        reboot_cmd = "{sudo} '{stop_ssh};{reboot}'".format(
-            sudo=self.get_sudo_exec_wrapper(),
-            stop_ssh=self.get_stop_ssh_service_cmd(),
-            reboot=self.get_reboot_cmd()
-        )
+        reboot_cmd = \
+            "{sudo} '(sleep 1 && {stop_ssh} && {reboot} &)' && exit".format(
+                sudo=self.get_sudo_exec_wrapper(),
+                stop_ssh=self.get_stop_ssh_service_cmd(),
+                reboot=self.get_reboot_cmd()
+            )
 
         try:
-            ipa_utils.execute_ssh_command(
-                client,
-                reboot_cmd
-            )
+            transport = client.get_transport()
+            channel = transport.open_session()
+            channel.exec_command(reboot_cmd)
+            time.sleep(1)  # Required for delay in reboot
+            transport.close()
         except Exception as error:
             raise IpaDistroException(
                 'An error occurred rebooting instance: %s' % error
