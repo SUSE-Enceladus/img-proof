@@ -1,3 +1,11 @@
+v4.1.1 (2019-07-01)
+===================
+
+- Run reboot in background process.
+  [\#207](https://github.com/SUSE-Enceladus/ipa/pull/207)
+- Make tox env work with python3.7.
+  [\#209](https://github.com/SUSE-Enceladus/ipa/pull/209)
+
 v4.1.0 (2019-06-06)
 ===================
 
