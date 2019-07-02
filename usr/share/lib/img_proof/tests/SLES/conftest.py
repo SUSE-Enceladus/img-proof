@@ -345,11 +345,3 @@ def get_sles_repos():
     def f(version):
         return SLES_REPOS.get(version)
     return f
-
-
-@pytest.fixture()
-def is_sles_sap(host):
-    def f():
-        sap = host.file('/etc/products.d/SLES_SAP.prod')
-        return sap.exists and sap.is_file
-    return f

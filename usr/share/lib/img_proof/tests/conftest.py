@@ -165,11 +165,29 @@ def determine_region(host):
 
 
 @pytest.fixture()
-def get_baseproduct():
-    """Return the nmae of the file the 'baseproduct' link points to"""
-    baseproduct = '/etc/products.d/baseproduct'
-    if os.path.islink(baseproduct):
-        return os.readlink(baseproduct).split('.')[0]
+def get_sles_baseproduct(host):
+    """
+    Return the name of the file the 'baseproduct' link points to.
+    """
+    def f():
+        result = host.run('readlink -f "/etc/products.d/baseproduct"')
+        return result.stdout.strip()
+    return f
+
+
+@pytest.fixture()
+def is_sles_sap(host, get_sles_baseproduct):
+    def f():
+        sap_product = '/etc/products.d/SLES_SAP.prod'
+        sap = host.file(sap_product)
+        base_product = get_sles_baseproduct()
+
+        return all([
+            sap.exists,
+            sap.is_file,
+            base_product == sap_product
+        ])
+    return f
 
 
 @pytest.fixture()
@@ -201,10 +219,9 @@ def get_smt_server_name(host):
 
 
 @pytest.fixture()
-def get_smt_servers(get_release_value, host):
+def get_smt_servers(get_release_value, host, is_sles_sap):
     def f(provider, region):
-        product_name = get_baseproduct()
-        if 'sap' in product_name.lower():
+        if is_sles_sap():
             smt_type = 'smt-sap'
         else:
             smt_type = 'smt-sles'
