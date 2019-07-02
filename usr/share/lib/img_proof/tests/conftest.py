@@ -165,7 +165,7 @@ def determine_region(host):
 
 
 @pytest.fixture()
-def get_sles_baseproduct(host):
+def get_baseproduct(host):
     """
     Return the name of the file the 'baseproduct' link points to.
     """
@@ -176,11 +176,11 @@ def get_sles_baseproduct(host):
 
 
 @pytest.fixture()
-def is_sles_sap(host, get_sles_baseproduct):
+def is_sles_sap(host, get_baseproduct):
     def f():
         sap_product = '/etc/products.d/SLES_SAP.prod'
         sap = host.file(sap_product)
-        base_product = get_sles_baseproduct()
+        base_product = get_baseproduct()
 
         return all([
             sap.exists,
