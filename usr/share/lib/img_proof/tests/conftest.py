@@ -1,4 +1,5 @@
 import json
+import os
 import pytest
 
 from susepubliccloudinfoclient import infoserverrequests
@@ -164,6 +165,32 @@ def determine_region(host):
 
 
 @pytest.fixture()
+def get_baseproduct(host):
+    """
+    Return the name of the file the 'baseproduct' link points to.
+    """
+    def f():
+        result = host.run('readlink -f "/etc/products.d/baseproduct"')
+        return result.stdout.strip()
+    return f
+
+
+@pytest.fixture()
+def is_sles_sap(host, get_baseproduct):
+    def f():
+        sap_product = '/etc/products.d/SLES_SAP.prod'
+        sap = host.file(sap_product)
+        base_product = get_baseproduct()
+
+        return all([
+            sap.exists,
+            sap.is_file,
+            base_product == sap_product
+        ])
+    return f
+
+
+@pytest.fixture()
 def get_release_value(host):
     def f(key):
         release = host.file('/etc/os-release')
@@ -192,10 +219,9 @@ def get_smt_server_name(host):
 
 
 @pytest.fixture()
-def get_smt_servers(get_release_value, host):
+def get_smt_servers(get_release_value, host, is_sles_sap):
     def f(provider, region):
-        cpe_name = get_release_value('CPE_NAME')
-        if 'sap' in cpe_name:
+        if is_sles_sap():
             smt_type = 'smt-sap'
         else:
             smt_type = 'smt-sles'
