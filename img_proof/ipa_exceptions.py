@@ -40,6 +40,8 @@ class EC2CloudException(IpaCloudException):
 class GCECloudException(IpaCloudException):
     """Generic GCE exception."""
 
+class GCECloudRetryableError(GCECloudException):
+    """GCE retryable error exception."""
 
 class IpaControllerException(IpaException):
     """Generic exception for img_proof controller module."""
@@ -76,6 +78,8 @@ class IpaUtilsException(IpaException):
 class IpaSSHException(IpaUtilsException):
     """Generic exception for img_proof SSH methods."""
 
+class IpaRetryableError(IpaCloudException):
+    """Generic retryable error exception."""
 
 class SSHCloudException(IpaUtilsException):
     """Generic exception for SSH class."""
