@@ -29,9 +29,12 @@ from img_proof.ipa_constants import (
     GCE_DEFAULT_USER
 )
 from img_proof.ipa_exceptions import GCECloudException
+from img_proof.ipa_exceptions import GCECloudRetryableError
 from img_proof.ipa_cloud import IpaCloud
 
 from libcloud.common.google import ResourceNotFoundError
+from libcloud.common.google import GoogleBaseError
+from libcloud.common.google import QuotaExceededError
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 
@@ -230,6 +233,25 @@ class GCECloud(IpaCloud):
                     message=message
                 )
             )
+        except QuotaExceededError as error:
+            raise GCECloudRetryableError(
+                'An error occurred launching instance: {message}.'.format(
+                    message=error.value['message']
+                )
+            )
+        except GoogleBaseError as error:
+            if error.value['reason'] == 'quotaExceeded':
+                raise GCECloudRetryableError(
+                    'An error occurred launching instance: {message}.'.format(
+                        message=error.value['message']
+                    )
+                )
+            else:
+                raise GCECloudException(
+                    'An error occurred launching instance: {message}.'.format(
+                        message=error.value['message']
+                    )
+                )
 
         self.compute_driver.wait_until_running(
             [instance],
