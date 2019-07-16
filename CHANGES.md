@@ -1,3 +1,13 @@
+v4.2.0 (2019-07-16)
+===================
+
+- Use the "baseproduct" link as indicator of the SLES product.
+  [\#208](https://github.com/SUSE-Enceladus/ipa/pull/208)
+- Remove support for py3.4.
+  [\#210](https://github.com/SUSE-Enceladus/ipa/pull/210)
+- Indicate retryable error (GCE only).
+  [\#211](https://github.com/SUSE-Enceladus/ipa/pull/211)
+
 v4.1.1 (2019-07-01)
 ===================
 
