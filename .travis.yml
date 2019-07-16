@@ -5,7 +5,6 @@ branches:
     - /\bv[0-9]/
 dist: xenial
 python:
-  - "3.4"
   - "3.5"
   - "3.6"
   - "3.7"
