@@ -240,7 +240,7 @@ class GCECloud(IpaCloud):
                 )
             )
         except GoogleBaseError as error:
-            if error.value['reason'] == 'quotaExceeded':
+            if error.value['reason'] in ['quotaExceeded', 'conditionNotMet']:
                 raise GCECloudRetryableError(
                     'An error occurred launching instance: {message}.'.format(
                         message=error.value['message']
