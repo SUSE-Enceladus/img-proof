@@ -1,3 +1,13 @@
+v4.2.1 (2019-07-18)
+===================
+
+- Consider location restrictions retryable in GCE.
+  [\#212](https://github.com/SUSE-Enceladus/ipa/pull/212)
+- Wait longer on soft reboot.
+  [\#213](https://github.com/SUSE-Enceladus/ipa/pull/213)
+- Add test for azure launch exception.
+  [\#213](https://github.com/SUSE-Enceladus/ipa/pull/213)
+
 v4.2.0 (2019-07-16)
 ===================
 
