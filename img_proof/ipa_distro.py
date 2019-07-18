@@ -143,7 +143,7 @@ class Distro(object):
             transport = client.get_transport()
             channel = transport.open_session()
             channel.exec_command(reboot_cmd)
-            time.sleep(1)  # Required for delay in reboot
+            time.sleep(2)  # Required for delay in reboot
             transport.close()
         except Exception as error:
             raise IpaDistroException(
