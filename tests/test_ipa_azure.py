@@ -142,8 +142,27 @@ class TestAzureProvider(object):
 
     @patch.object(AzureCloud, '_wait_on_instance')
     @patch('img_proof.ipa_utils.generate_instance_name')
-    def test_azure_launch_instance(
+    def test_azure_launch_instance_exception(
         self, mock_generate_instance_name, mock_wait_on_instance
+    ):
+        """Test launch instance method."""
+        mock_generate_instance_name.return_value = 'azure-test-instance'
+        self.client.resource_groups.create_or_update.side_effect = Exception(
+            'Cannot create resource group!'
+        )
+        self.client.resource_groups.delete.side_effect = Exception(
+            'Cannot delete resource group!'
+        )
+
+        provider = self.helper_get_provider()
+
+        with pytest.raises(AzureCloudException):
+            provider._launch_instance()
+
+    @patch.object(AzureCloud, '_wait_on_instance')
+    @patch('img_proof.ipa_utils.generate_instance_name')
+    def test_azure_launch_instance(
+            self, mock_generate_instance_name, mock_wait_on_instance
     ):
         """Test launch instance method."""
         mock_generate_instance_name.return_value = 'azure-test-instance'
