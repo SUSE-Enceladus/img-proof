@@ -152,17 +152,6 @@ class TestEC2Provider(object):
         assert not provider._is_instance_running()
         assert mock_get_instance_state.call_count == 1
 
-    @patch('img_proof.ipa_ec2.ipa_utils.generate_public_ssh_key')
-    def test_ec2_get_user_data(self, mock_generate_ssh_key):
-        mock_generate_ssh_key.return_value = b'testkey12345'
-
-        provider = EC2Cloud(**self.kwargs)
-
-        result = provider._get_user_data()
-
-        assert result == '#!/bin/bash\n' \
-            'echo testkey12345 >> /home/ec2-user/.ssh/authorized_keys\n'
-
     @patch.object(EC2Cloud, '_wait_on_instance')
     @patch.object(EC2Cloud, '_connect')
     def test_ec2_launch_instance(self, mock_connect, mock_wait_on_instance):

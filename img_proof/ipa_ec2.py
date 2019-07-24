@@ -27,7 +27,6 @@ from collections import ChainMap, defaultdict
 
 from img_proof import ipa_utils
 from img_proof.ipa_constants import (
-    BASH_SSH_SCRIPT,
     EC2_CONFIG_FILE,
     EC2_DEFAULT_TYPE,
     EC2_DEFAULT_USER
@@ -217,19 +216,6 @@ class EC2Cloud(IpaCloud):
             )
 
         return state
-
-    def _get_user_data(self):
-        """
-        Return formatted bash script string.
-
-        The public ssh key is added by cloud init to the instance based on
-        the ssh user and private key file.
-        """
-        key = ipa_utils.generate_public_ssh_key(
-            self.ssh_private_key_file
-        ).decode()
-        script = BASH_SSH_SCRIPT.format(user=self.ssh_user, key=key)
-        return script
 
     def _is_instance_running(self):
         """
