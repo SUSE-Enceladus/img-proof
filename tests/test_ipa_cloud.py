@@ -71,7 +71,8 @@ class TestIpaCloud(object):
             'no_default_test_dirs': True,
             'results_dir': self.results_dir.name,
             'test_dirs': 'tests/data/tests',
-            'test_files': ['test_image']
+            'test_files': ['test_image'],
+            'ssh_user': 'ec2-user'
         }
 
     @pytest.mark.parametrize(
@@ -124,6 +125,18 @@ class TestIpaCloud(object):
         assert mock_get_ssh_client.call_count == 1
 
         ipa_utils.clear_cache()
+
+    @patch('img_proof.ipa_cloud.ipa_utils.generate_public_ssh_key')
+    def test_cloud_get_user_data(self, mock_generate_ssh_key):
+        mock_generate_ssh_key.return_value = b'testkey12345'
+
+        provider = IpaCloud(*args, **self.kwargs)
+
+        result = provider._get_user_data()
+
+        assert result == \
+            '#!/bin/bash\n' \
+            'echo testkey12345 >> /home/ec2-user/.ssh/authorized_keys\n'
 
     def test_cloud_get_non_null_values(self):
         """Test cloud get non null values method."""
