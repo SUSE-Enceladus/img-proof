@@ -213,8 +213,10 @@ class IpaCloud(object):
     def _get_user_data(self):
         """
         Return formatted bash script string.
-         The public ssh key is added by cloud init to the instance based on
-        the ssh user and private key file.
+
+        The public ssh key is added by instance initialization code
+        to the instance. The public key is generated from the
+        private key file.
         """
         key = ipa_utils.generate_public_ssh_key(
             self.ssh_private_key_file
