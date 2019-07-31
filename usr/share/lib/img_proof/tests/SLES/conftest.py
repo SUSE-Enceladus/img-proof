@@ -176,6 +176,32 @@ SLE_12_SP4_SAP = [
     'SLE-HA12-SP4-Updates'
 ]
 
+SLE_12_SP5_BASE = [
+    'SLES12-SP5-Debuginfo-Pool',
+    'SLES12-SP5-Debuginfo-Updates',
+    'SLES12-SP5-Pool',
+    'SLES12-SP5-Updates',
+    'SLE-SDK12-SP5-Debuginfo-Pool',
+    'SLE-SDK12-SP5-Debuginfo-Updates',
+    'SLE-SDK12-SP5-Pool',
+    'SLE-SDK12-SP5-Updates'
+]
+
+SLE_12_SP5_MODULES = SLE_12_SP4_MODULES
+
+SLE_12_SP5_SAP = [
+    'SLE12-SP5-SAP-Debuginfo-Pool',
+    'SLE-12-SP5-SAP-Debuginfo-Updates',
+    'SLE12-SP5-SAP-Pool',
+    'SLE12-SP5-SAP-Source-Pool',
+    'SLE-12-SP5-SAP-Updates',
+    'SLE-HA12-SP5-Debuginfo-Pool',
+    'SLE-HA12-SP5-Debuginfo-Updates',
+    'SLE-HA12-SP5-Pool',
+    'SLE-HA12-SP5-Source-Pool',
+    'SLE-HA12-SP5-Updates'
+]
+
 SLE_15_BASE = [
     'SLE-Module-Basesystem15-Debuginfo-Pool',
     'SLE-Module-Basesystem15-Debuginfo-Updates',
@@ -329,6 +355,9 @@ SLES_REPOS = {
     '12-SP4-X86_64': SLE_12_SP4_BASE + SLE_12_SP4_MODULES,
     '12-SP4-X86_64-SAP':
         SLE_12_SP4_SAP + SLE_12_SP4_BASE + SLE_12_SP4_MODULES,
+    '12-SP5-X86_64': SLE_12_SP5_BASE + SLE_12_SP5_MODULES,
+    '12-SP5-X86_64-SAP':
+        SLE_12_SP5_SAP + SLE_12_SP5_BASE + SLE_12_SP5_MODULES,
     '15-AARCH64': BASE_15,
     '15-AARCH64-SAP': BASE_15_SAP,
     '15-X86_64': BASE_15 + SLE_15_X86_64_MODULES,
