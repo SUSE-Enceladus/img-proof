@@ -1,5 +1,7 @@
 import pytest
 
+import xml.etree.ElementTree as ET
+
 
 SLE_11_SP4_BASE = [
     'SLE11-SDK-SP4-Pool',
@@ -344,4 +346,19 @@ SLES_REPOS = {
 def get_sles_repos():
     def f(version):
         return SLES_REPOS.get(version)
+    return f
+
+
+@pytest.fixture()
+def get_instance_repos(host):
+    def f():
+        repos = []
+
+        zypper_lr = host.run('zypper -x lr').stdout.strip()
+        root = ET.fromstring(zypper_lr)
+
+        for repo in root.iter('repo'):
+            repos.append(repo.get('name'))
+
+        return repos
     return f

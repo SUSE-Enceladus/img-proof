@@ -102,14 +102,6 @@ def check_service(host):
 
 
 @pytest.fixture()
-def check_zypper_repo(host):
-    def f(repo):
-        repo = host.file('/etc/zypp/repos.d/' + repo + '.repo')
-        return repo.exists
-    return f
-
-
-@pytest.fixture()
 def determine_architecture(host):
     def f():
         result = host.run('uname --m')
