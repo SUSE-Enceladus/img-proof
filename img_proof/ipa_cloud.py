@@ -631,6 +631,12 @@ class IpaCloud(object):
             )
             self._terminate_instance()
 
+    def get_console_log(self):
+        """
+        Return console log output if it is available.
+        """
+        raise NotImplementedError(NOT_IMPLEMENTED)
+
     def test_image(self):
         """
         The entry point for testing an image.
@@ -670,6 +676,10 @@ class IpaCloud(object):
             self._set_instance_ip()
             self.logger.debug('IP of instance: %s' % self.instance_ip)
 
+        self._set_results_dir()
+        self._update_history()
+        self._log_info()
+
         try:
             # Ensure instance running and SSH connection
             # can be established prior to testing instance.
@@ -678,20 +688,23 @@ class IpaCloud(object):
                 client
             )
         except IpaSSHException as error:
+            console_log = self.get_console_log()
             self._cleanup_instance(1)
 
-            raise IpaCloudException(
-                'Unable to connect to instance: %s' % error
-            )
+            msg = 'Unable to connect to instance: %s' % error
+            self._write_to_log(msg)
+            self._write_to_log(console_log)
+
+            raise IpaCloudException(msg)
         except Exception as error:
+            console_log = self.get_console_log()
             self._cleanup_instance(1)
 
-            raise IpaCloudException(
-                'An error occurred retrieving host key: %s' % error
-            )
+            msg = 'Unable to connect to instance: %s' % error
+            self._write_to_log(msg)
+            self._write_to_log(console_log)
 
-        self._set_results_dir()
-        self._log_info()
+            raise IpaCloudException(msg)
 
         if self.inject:
             self.process_injection_file(self._get_ssh_client())
@@ -806,7 +819,6 @@ class IpaCloud(object):
 
         self._cleanup_instance(status)
         self._save_results()
-        self._update_history()
 
         # Return status and results json
         return status, self.results

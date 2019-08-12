@@ -326,3 +326,11 @@ class GCECloud(IpaCloud):
         """Terminate the instance."""
         instance = self._get_instance()
         instance.destroy()
+
+    def get_console_log(self):
+        """
+        Return console log output if it is available.
+        """
+        instance = self._get_instance()
+        output = self.compute_driver.ex_get_serial_output(instance)
+        return output

@@ -580,3 +580,11 @@ class AzureCloud(IpaCloud):
             raise AzureCloudException(
                 'Unable to terminate resource group: {0}.'.format(error)
             )
+
+    def get_console_log(self):
+        """
+        Return console log output if it is available.
+
+        Currently there is no way to get console log from API.
+        """
+        return ''

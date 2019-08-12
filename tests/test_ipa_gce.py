@@ -300,3 +300,14 @@ class TestGCECloud(object):
 
         self.cloud._terminate_instance()
         assert instance.destroy.call_count == 1
+
+    @patch.object(GCECloud, '_get_instance')
+    def test_gce_get_console_log(self, mock_get_instance):
+        """Test gce get console log method."""
+        instance = MagicMock()
+        mock_get_instance.return_value = instance
+        self.cloud.compute_driver.ex_get_serial_output.return_value = 'output'
+
+        output = self.cloud.get_console_log()
+        assert output == 'output'
+        assert self.cloud.compute_driver.ex_get_serial_output.call_count == 1
