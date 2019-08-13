@@ -1,3 +1,17 @@
+v4.3.0 (2019-08-13)
+===================
+
+- Move get user data method to base class.
+  [\#215](https://github.com/SUSE-Enceladus/ipa/pull/215)
+- Update sles repos test for rmt.
+  [\#217](https://github.com/SUSE-Enceladus/ipa/pull/217)
+- Add repos for sles12-sp5.
+  [\#218](https://github.com/SUSE-Enceladus/ipa/pull/218)
+- Print serial console output to log.
+  [\#219](https://github.com/SUSE-Enceladus/ipa/pull/219)
+- Add case for checking kernel config version.
+  [\#220](https://github.com/SUSE-Enceladus/ipa/pull/220)
+
 v4.2.1 (2019-07-18)
 ===================
 
