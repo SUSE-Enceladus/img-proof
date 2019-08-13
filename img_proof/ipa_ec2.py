@@ -22,6 +22,7 @@
 
 import boto3
 import os
+import time
 
 from collections import ChainMap, defaultdict
 
@@ -314,3 +315,25 @@ class EC2Cloud(IpaCloud):
         """Terminate the instance."""
         instance = self._get_instance()
         instance.terminate()
+
+    def get_console_log(self):
+        """
+        Return console log output if it is available.
+
+        Boto3 will return a response with no output if serial console
+        is not available.
+        """
+        instance = self._get_instance()
+
+        start = time.time()
+        end = start + 300
+
+        while time.time() < end:
+            response = instance.console_output()
+
+            if 'Output' in response:
+                return response['Output']
+
+            time.sleep(10)
+
+        return ''

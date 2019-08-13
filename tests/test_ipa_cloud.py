@@ -44,7 +44,8 @@ NOT_IMPL_METHODS = [
     '_set_instance_ip',
     '_start_instance',
     '_stop_instance',
-    '_terminate_instance'
+    '_terminate_instance',
+    'get_console_log'
 ]
 
 
@@ -384,6 +385,7 @@ class TestIpaCloud(object):
             client, 'python test.py'
         )
 
+    @patch.object(IpaCloud, 'get_console_log')
     @patch.object(IpaCloud, '_set_instance_ip')
     @patch.object(IpaCloud, '_set_image_id')
     @patch.object(IpaCloud, '_start_instance_if_stopped')
@@ -393,13 +395,15 @@ class TestIpaCloud(object):
         mock_get_ssh_client,
         mock_start_instance,
         mock_set_image_id,
-        mock_set_instance_ip
+        mock_set_instance_ip,
+        mock_get_console_log
     ):
         """Test exception raised when connection cannot be established."""
         mock_get_ssh_client.side_effect = IpaSSHException('ERROR!')
         mock_start_instance.return_value = None
         mock_set_image_id.return_value = None
         mock_set_instance_ip.return_value = None
+        mock_get_console_log.return_value = 'Console log output...'
         self.kwargs['running_instance_id'] = 'fakeinstance'
 
         cloud = IpaCloud(*args, **self.kwargs)

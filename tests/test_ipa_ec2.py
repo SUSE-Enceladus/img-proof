@@ -272,3 +272,18 @@ class TestEC2Provider(object):
         provider = EC2Cloud(**self.kwargs)
         provider._terminate_instance()
         assert mock_get_instance.call_count == 1
+
+    @patch('time.sleep')
+    @patch.object(EC2Cloud, '_get_instance')
+    def test_ec2_get_console_log(self, mock_get_instance, mock_time):
+        """Test ec2 get console log method."""
+        instance = MagicMock()
+        instance.console_output.return_value = {
+            'Output': 'Console log output...'
+        }
+        mock_get_instance.return_value = instance
+
+        provider = EC2Cloud(**self.kwargs)
+        output = provider.get_console_log()
+        assert output == 'Console log output...'
+        assert mock_get_instance.call_count == 1
