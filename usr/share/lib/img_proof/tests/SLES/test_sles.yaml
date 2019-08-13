@@ -7,3 +7,4 @@ tests:
   - test_sles_hostname
   - test_sles_haveged
   - test_sles_lscpu
+  - test_sles_kernel_version
