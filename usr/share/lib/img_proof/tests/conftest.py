@@ -1,57 +1,7 @@
 import json
-import os
 import pytest
 
 from susepubliccloudinfoclient import infoserverrequests
-
-azure_regions = {
-    'centralus': 'Central US',
-    'eastus': 'East US',
-    'eastus2': 'East US 2',
-    'northcentralus': 'North Central US',
-    'southcentralus': 'South Central US',
-    'westus': 'West US',
-    'northeurope': 'North Europe',
-    'westeurope': 'West Europe',
-    'eastasia': 'East Asia',
-    'southeastasia': 'Southeast Asia',
-    'japaneast': 'Japan East',
-    'japanwest': 'Japan West',
-    'brazilsouth': 'Brazil South',
-    'australiaeast': 'Australia East',
-    'australiasoutheast': 'Australia Southeast',
-    'centralindia': 'Central India',
-    'southindia': 'South India',
-    'westindia': 'West India',
-    'canadacentral': 'Canada Central',
-    'canadaeast': 'Canada East',
-    'westcentralus': 'West Central US',
-    'westus2': 'West US 2',
-    'uknorth': 'UK North',
-    'uksouth': 'UK South',
-    'uksouth2': 'UK South 2',
-    'ukwest': 'UK West',
-    'uscentraleuap': 'Central US EUAP',
-    'useast2euap': 'East US 2 EUAP',
-    'koreacentral': 'Korea Central',
-    'koreasouth': 'Korea South',
-    'francecentral': 'France Central',
-    'francesouth': 'France South',
-    'australiacentral': 'Australia Central',
-    'australiacentral2': 'Australia Central 2',
-    'germanycentral': 'Germany Central',
-    'germanynortheast': 'Germany Northeast',
-    'chinanorth': 'China North',
-    'chinaeast': 'China East',
-    'chinanorth2': 'China North 2',
-    'chinaeast2': 'China East 2',
-    'usgoviowa': 'US Gov Iowa',
-    'usgovvirginia': 'US Gov Virginia',
-    'usgovarizona': 'US Gov Arizona',
-    'usgovtexas': 'US Gov Texas',
-    'usdodeast': 'US DoD East',
-    'usdodcentral': 'US DoD Central'
-}
 
 
 @pytest.fixture()
@@ -151,7 +101,6 @@ def determine_region(host):
                 '?api-version=2017-12-01"'
             )
             region = json.loads(result.stdout)['compute']['location']
-            region = azure_regions[region]  # Convert to display name format
         return region
     return f
 
@@ -211,13 +160,8 @@ def get_smt_server_name(host):
 
 
 @pytest.fixture()
-def get_smt_servers(get_release_value, host, is_sles_sap):
+def get_smt_servers(get_release_value, host):
     def f(provider, region):
-        if is_sles_sap():
-            smt_type = 'smt-sap'
-        else:
-            smt_type = 'smt-sles'
-
         if provider == 'azure':
             provider = 'microsoft'
         elif provider == 'ec2':
@@ -232,8 +176,7 @@ def get_smt_servers(get_release_value, host, is_sles_sap):
                 provider,
                 'smt',
                 'json',
-                region,
-                'type~{smt_type}'.format(smt_type=smt_type)
+                region
             )
         )
 
