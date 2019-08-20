@@ -1,5 +1,4 @@
 import json
-import os
 import pytest
 
 from susepubliccloudinfoclient import infoserverrequests
@@ -211,13 +210,8 @@ def get_smt_server_name(host):
 
 
 @pytest.fixture()
-def get_smt_servers(get_release_value, host, is_sles_sap):
+def get_smt_servers(get_release_value, host):
     def f(provider, region):
-        if is_sles_sap():
-            smt_type = 'smt-sap'
-        else:
-            smt_type = 'smt-sles'
-
         if provider == 'azure':
             provider = 'microsoft'
         elif provider == 'ec2':
@@ -232,8 +226,7 @@ def get_smt_servers(get_release_value, host, is_sles_sap):
                 provider,
                 'smt',
                 'json',
-                region,
-                'type~{smt_type}'.format(smt_type=smt_type)
+                region
             )
         )
 
