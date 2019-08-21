@@ -1,3 +1,11 @@
+v4.3.1 (2019-08-21)
+===================
+
+- Remove azure regions map from smt reg test.
+- Update get\_smt\_servers to not filter type in smt reg
+  test.
+  [\#221](https://github.com/SUSE-Enceladus/ipa/pull/221)
+
 v4.3.0 (2019-08-13)
 ===================
 
