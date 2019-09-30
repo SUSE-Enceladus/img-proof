@@ -160,8 +160,8 @@ def get_smt_server_name(host):
 
 
 @pytest.fixture()
-def get_smt_servers(get_release_value, host):
-    def f(provider, region):
+def get_smt_servers():
+    def f(provider, region=None):
         if provider == 'azure':
             provider = 'microsoft'
         elif provider == 'ec2':
@@ -171,13 +171,13 @@ def get_smt_servers(get_release_value, host):
         else:
             raise Exception('Provider %s unknown' % provider)
 
+        args = [provider, 'smt', 'json']
+
+        if region:
+            args.append(region)
+
         output = json.loads(
-            infoserverrequests.get_server_data(
-                provider,
-                'smt',
-                'json',
-                region
-            )
+            infoserverrequests.get_server_data(*args)
         )
 
         return output['servers']
