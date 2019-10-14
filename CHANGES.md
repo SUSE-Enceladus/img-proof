@@ -1,3 +1,9 @@
+v4.4.0 (2019-10-14)
+===================
+
+- Remove region filter from smt registration test.
+  [\#223](https://github.com/SUSE-Enceladus/ipa/pull/223)
+
 v4.3.1 (2019-08-21)
 ===================
 
