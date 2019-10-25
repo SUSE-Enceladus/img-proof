@@ -7,11 +7,12 @@ from susepubliccloudinfoclient import infoserverrequests
 @pytest.fixture()
 def check_cloud_register(host):
     def f():
-        client_log = host.file('/var/log/cloudregister')
-        return all([
-            client_log.contains('ERROR') is False,
-            client_log.contains('failed') is False
-        ])
+        result = host.run(
+            "python3 -c 'from cloudregister import registerutils; "
+            "print(registerutils.is_registered(registerutils.get_current_smt()))'"
+        )
+        output = result.stdout.strip()
+        return output == '1'
     return f
 
 
