@@ -1,3 +1,9 @@
+v4.5.0 (2019-10-25)
+===================
+
+- Use registerutils functions to check registration.
+  [\#224](https://github.com/SUSE-Enceladus/ipa/pull/224)
+
 v4.4.0 (2019-10-14)
 ===================
 
