@@ -8,7 +8,7 @@ from susepubliccloudinfoclient import infoserverrequests
 def check_cloud_register(host):
     def f():
         result = host.run(
-            "python3 -c 'from cloudregister import registerutils; "
+            "sudo python3 -c 'from cloudregister import registerutils; "
             "print(registerutils.is_registered(registerutils.get_current_smt()))'"
         )
         output = result.stdout.strip()
