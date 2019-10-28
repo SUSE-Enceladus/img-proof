@@ -1,3 +1,9 @@
+v4.5.1 (2019-10-28)
+===================
+
+- Use sudo with registration command for non root users.
+  [\#225](https://github.com/SUSE-Enceladus/ipa/pull/225)
+
 v4.5.0 (2019-10-25)
 ===================
 
