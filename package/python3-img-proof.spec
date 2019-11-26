@@ -27,6 +27,8 @@ URL:            https://github.com/SUSE-Enceladus/img-proof
 Source:         https://files.pythonhosted.org/packages/source/p/img-proof/img-proof-%{version}.tar.gz
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-click-man
+BuildRequires:  python3-click
 Requires:       python3-PyYAML
 Requires:       python3-boto3
 Requires:       python3-apache-libcloud
@@ -51,7 +53,6 @@ BuildRequires:  python3-azure-mgmt-compute
 BuildRequires:  python3-azure-mgmt-network
 BuildRequires:  python3-azure-mgmt-resource
 BuildRequires:  python3-certifi
-BuildRequires:  python3-click
 BuildRequires:  python3-coverage
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-paramiko
@@ -81,6 +82,8 @@ Directory of infrastructure tests for testing images.
 
 %build
 python3 setup.py build
+mkdir -p man/man1
+python3 setup.py --command-packages=click_man.commands man_pages --target man/man1
 
 %install
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
