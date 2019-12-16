@@ -4,3 +4,5 @@ test_dirs = tests/data/tests
 [azure]
 
 [ec2]
+
+[oci]

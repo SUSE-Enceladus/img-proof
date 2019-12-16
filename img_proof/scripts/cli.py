@@ -249,6 +249,30 @@ def main(context, no_color):
     'cloud',
     type=click.Choice(SUPPORTED_CLOUDS)
 )
+@click.option(
+    '--compartment-id',
+    help='The OCI compartment to use for image testing.'
+)
+@click.option(
+    '--availability-domain',
+    help='The domain to place the instance and networking for testing.'
+)
+@click.option(
+    '--signing-key-fingerprint',
+    help='The public fingerprint of the OCI signing key.'
+)
+@click.option(
+    '--signing-key-file',
+    help='The OCI key file path used for API signing.'
+)
+@click.option(
+    '--tenancy',
+    help='The tenancy for the OCI user.'
+)
+@click.option(
+    '--oci-user-id',
+    help='The ID for the OCI user.'
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -284,6 +308,12 @@ def test(context,
          vnet_resource_group,
          collect_vm_info,
          cloud,
+         compartment_id,
+         availability_domain,
+         signing_key_fingerprint,
+         signing_key_file,
+         tenancy,
+         oci_user_id,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -321,7 +351,13 @@ def test(context,
             timeout,
             vnet_name,
             vnet_resource_group,
-            collect_vm_info
+            collect_vm_info,
+            compartment_id,
+            availability_domain,
+            signing_key_fingerprint,
+            signing_key_file,
+            tenancy,
+            oci_user_id,
         )
         echo_results(results, no_color)
         sys.exit(status)

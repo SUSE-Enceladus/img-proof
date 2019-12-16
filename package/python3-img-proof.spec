@@ -43,6 +43,7 @@ Requires:       python3-paramiko
 Requires:       python3-pycryptodome
 Requires:       python3-pytest
 Requires:       python3-testinfra
+Requires:       python3-oci-sdk
 BuildArch:      noarch
 %if %{with test}
 BuildRequires:  python3-PyYAML
@@ -60,6 +61,7 @@ BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pytest-cov
 BuildRequires:  python3-testinfra
+BuildRequires:  python3-oci-sdk
 %endif
 Obsoletes:      python3-ipa < 4.5.1
 

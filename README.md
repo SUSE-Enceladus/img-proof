@@ -42,6 +42,7 @@ $ zypper in python3-img-proof
 Requirements
 ============
 
+-   boto3
 -   apache-libcloud
 -   azure-common
 -   azure-mgmt-compute
@@ -55,6 +56,7 @@ Requirements
 -   pytest
 -   PyYaml
 -   testinfra
+-   oci
 
 # [Docs](https://img-proof.readthedocs.io/en/latest/)
 

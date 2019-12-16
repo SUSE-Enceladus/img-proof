@@ -69,6 +69,7 @@ Requirements
 -  pytest
 -  PyYaml
 -  testinfra
+-  oci
 
 Configuration
 =============
@@ -135,6 +136,22 @@ GCE Config
 
 The GCE  cloud class has no additional config file. Options should be
 placed into the **img-proof** config file.
+
+OCI Config
+----------
+
+For testing OCI instances **img-proof** will look for the Oracle configuration
+file located at ~/.oci/config.
+
+See
+`OCI docs <https://oracle-cloud-infrastructure-python-sdk.readthedocs.io/en/latest/configuration.html>`__
+for more info on the Oracle configuration file.
+
+To override the OCI config location the CLI option,
+``--cloud-config`` is available.
+
+The OCI config file is optional as **img-proof** will also look for configuration
+arguments in the **img-proof** config file and these can be overridden by CLI values.
 
 SSH Config
 ----------
@@ -226,3 +243,31 @@ SSH
 Requires no cloud credentials to test instances. SSH user, SSH
 private key can be placed in SSH section of config. The instance to be
 tested must be running.
+
+OCI
+---
+
+To use OCI a new compartment, a new user, a new group and an api signing key are required.
+The user will require access to the compartment via a policy.
+
+The first step is to create an API signing key which will be used by the user for
+running commands via the OCI SDK. The following
+`doc <https://docs.cloud.oracle.com/iaas/Content/API/Concepts/apisigningkey.htm>`__
+provides info on creating a key and getting the public key and fingerprint.
+
+Once you have the API signing key you will now create a user, group, compartment and
+a policy for the new user. The following
+`doc <https://docs.cloud.oracle.com/iaas/Content/GSG/Tasks/addingusers.htm#two>`__
+provides all the steps necessary to set these artifacts up. The group will require the
+following policy for the new compartment:
+
+.. code-block:: console
+
+   Allow group {group_name} to manage all-resources in compartment {compartment_name}
+
+With this setup you can now add the API key to your user. The steps to upload your public
+key are in the following doc:
+`doc <https://docs.cloud.oracle.com/iaas/Content/API/Concepts/apisigningkey.htm#three>`__
+
+All of this info can be added as arguments to the OCI config, **img-proof** config or as
+command line arguments when testing images in OCI.
