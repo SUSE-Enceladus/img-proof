@@ -1,3 +1,15 @@
+v4.6.0 (2020-1-21)
+===================
+
+- Edit sap license test to handle 12SP5.
+  [\#226](https://github.com/SUSE-Enceladus/ipa/pull/226)
+- Skip kernel test if not a latest image version.
+  [\#227](https://github.com/SUSE-Enceladus/ipa/pull/227)
+- Generate man pages in build with click-man.
+  [\#228](https://github.com/SUSE-Enceladus/ipa/pull/228)
+- Implement Oracle cloud class (oci).
+  [\#229](https://github.com/SUSE-Enceladus/ipa/pull/229)
+
 v4.5.1 (2019-10-28)
 ===================
 
