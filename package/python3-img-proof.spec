@@ -1,7 +1,7 @@
 #
 # spec file for package python3-ipa
 #
-# Copyright (c) 2018 SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) 2020 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -24,7 +24,7 @@ Summary:        Command line and API for testing custom images
 License:        GPL-3.0-or-later
 Group:          Development/Languages/Python
 URL:            https://github.com/SUSE-Enceladus/img-proof
-Source:         https://files.pythonhosted.org/packages/source/p/img-proof/img-proof-%{version}.tar.gz
+Source:         https://files.pythonhosted.org/packages/source/i/img-proof/img-proof-%{version}.tar.gz
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-click-man
@@ -80,7 +80,7 @@ Obsoletes:      python3-ipa-tests < 4.6.0
 Directory of infrastructure tests for testing images.
 
 %prep
-%setup -q
+%setup -q -n img-proof-%{version}
 
 %build
 python3 setup.py build
