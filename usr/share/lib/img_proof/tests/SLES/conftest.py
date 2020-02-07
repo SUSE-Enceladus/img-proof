@@ -336,10 +336,79 @@ SLE_15_SP1_SAP = [
     'SLE-Product-SLES_SAP15-SP1-Updates'
 ]
 
+SLE_15_SP2_BASE = [
+    'SLE-Module-Basesystem15-SP2-Debuginfo-Pool',
+    'SLE-Module-Basesystem15-SP2-Debuginfo-Updates',
+    'SLE-Module-Basesystem15-SP2-Pool',
+    'SLE-Module-Basesystem15-SP2-Updates'
+]
+
+SLE_15_SP2_PRODUCTS = [
+    'SLE-Product-SLES15-SP2-Pool',
+    'SLE-Product-SLES15-SP2-Updates'
+]
+
+SLE_15_SP2_MODULES = [
+    'SLE-Module-Desktop-Applications15-SP2-Debuginfo-Pool',
+    'SLE-Module-Desktop-Applications15-SP2-Debuginfo-Updates',
+    'SLE-Module-Desktop-Applications15-SP2-Pool',
+    'SLE-Module-Desktop-Applications15-SP2-Updates',
+    'SLE-Module-DevTools15-SP2-Debuginfo-Pool',
+    'SLE-Module-DevTools15-SP2-Debuginfo-Updates',
+    'SLE-Module-DevTools15-SP2-Pool',
+    'SLE-Module-DevTools15-SP2-Updates',
+    'SLE-Module-Legacy15-SP2-Debuginfo-Pool',
+    'SLE-Module-Legacy15-SP2-Debuginfo-Updates',
+    'SLE-Module-Legacy15-SP2-Pool',
+    'SLE-Module-Legacy15-SP2-Updates',
+    'SLE-Module-Public-Cloud15-SP2-Debuginfo-Pool',
+    'SLE-Module-Public-Cloud15-SP2-Debuginfo-Updates',
+    'SLE-Module-Public-Cloud15-SP2-Pool',
+    'SLE-Module-Public-Cloud15-SP2-Updates',
+    'SLE-Module-Python2-15-SP2-Pool',
+    'SLE-Module-Python2-15-SP2-Updates',
+    'SLE-Module-Server-Applications15-SP2-Debuginfo-Pool',
+    'SLE-Module-Server-Applications15-SP2-Debuginfo-Updates',
+    'SLE-Module-Server-Applications15-SP2-Pool',
+    'SLE-Module-Server-Applications15-SP2-Updates',
+    'SLE-Module-Web-Scripting15-SP2-Debuginfo-Pool',
+    'SLE-Module-Web-Scripting15-SP2-Debuginfo-Updates',
+    'SLE-Module-Web-Scripting15-SP2-Pool',
+    'SLE-Module-Web-Scripting15-SP2-Updates'
+]
+
+SLE_15_SP2_X86_64_MODULES = [
+    'SLE-Module-CAP-Tools15-SP2-Debuginfo-Pool',
+    'SLE-Module-CAP-Tools15-SP2-Debuginfo-Updates',
+    'SLE-Module-CAP-Tools15-SP2-Pool',
+    'SLE-Module-CAP-Tools15-SP2-Updates',
+    'SLE-Module-Containers15-SP2-Debuginfo-Pool',
+    'SLE-Module-Containers15-SP2-Debuginfo-Updates',
+    'SLE-Module-Containers15-SP2-Pool',
+    'SLE-Module-Containers15-SP2-Updates'
+]
+
+SLE_15_SP2_SAP = [
+    'SLE-Module-SAP-Applications15-SP2-Debuginfo-Pool',
+    'SLE-Module-SAP-Applications15-SP2-Debuginfo-Updates',
+    'SLE-Module-SAP-Applications15-SP2-Pool',
+    'SLE-Module-SAP-Applications15-SP2-Updates',
+    'SLE-Product-HA15-SP2-Debuginfo-Pool',
+    'SLE-Product-HA15-SP2-Debuginfo-Updates',
+    'SLE-Product-HA15-SP2-Pool',
+    'SLE-Product-HA15-SP2-Updates',
+    'SLE-Product-SLES_SAP15-SP2-Debuginfo-Pool',
+    'SLE-Product-SLES_SAP15-SP2-Debuginfo-Updates',
+    'SLE-Product-SLES_SAP15-SP2-Pool',
+    'SLE-Product-SLES_SAP15-SP2-Updates'
+]
+
 BASE_15 = SLE_15_BASE + SLE_15_MODULES + SLE_15_PRODUCTS
 BASE_15_SAP = SLE_15_SAP + SLE_15_BASE + SLE_15_MODULES
 BASE_15_SP1 = SLE_15_SP1_BASE + SLE_15_SP1_MODULES + SLE_15_SP1_PRODUCTS
 BASE_15_SP1_SAP = SLE_15_SP1_SAP + SLE_15_SP1_BASE + SLE_15_SP1_MODULES
+BASE_15_SP2 = SLE_15_SP2_BASE + SLE_15_SP2_MODULES + SLE_15_SP2_PRODUCTS
+BASE_15_SP2_SAP = SLE_15_SP2_SAP + SLE_15_SP2_BASE + SLE_15_SP2_MODULES
 
 SLES_REPOS = {
     '11.4-X86_64': SLE_11_SP4_BASE + SLE_11_SP4_MODULES,
@@ -368,6 +437,10 @@ SLES_REPOS = {
     '15-SP1-AARCH64-SAP': BASE_15_SP1_SAP,
     '15-SP1-X86_64': BASE_15_SP1 + SLE_15_SP1_X86_64_MODULES,
     '15-SP1-X86_64-SAP': BASE_15_SP1_SAP + SLE_15_SP1_X86_64_MODULES,
+    '15-SP2-AARCH64': BASE_15_SP2,
+    '15-SP2-AARCH64-SAP': BASE_15_SP2_SAP,
+    '15-SP2-X86_64': BASE_15_SP2 + SLE_15_SP2_X86_64_MODULES,
+    '15-SP2-X86_64-SAP': BASE_15_SP2_SAP + SLE_15_SP2_X86_64_MODULES,
 }
 
 
