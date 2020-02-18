@@ -1,3 +1,11 @@
+v4.7.0 (2020-02-18)
+===================
+
+- Cleanup spec file.
+  [\#230](https://github.com/SUSE-Enceladus/ipa/pull/230)
+- Add list of 15-SP2 repos to SLES on-demand repo test.
+  [\#232](https://github.com/SUSE-Enceladus/ipa/pull/232)
+
 v4.6.0 (2020-1-21)
 ===================
 
