@@ -471,12 +471,11 @@ class IpaCloud(object):
         end = start + timeout
 
         while time.time() < end:
-            current_state = self._get_instance_state()
+            time.sleep(wait_period)
 
+            current_state = self._get_instance_state()
             if state.lower() == current_state.lower():
                 return
-
-            time.sleep(wait_period)
 
         raise IpaCloudException(
             'Instance has not arrived at the given state: {state}'.format(
@@ -668,9 +667,19 @@ class IpaCloud(object):
             try:
                 self._launch_instance()
             except GCECloudRetryableError as error:
-                raise IpaRetryableError(
-                    'Unable to connect to instance: %s' % error
-                )
+                with ipa_utils.ignored(Exception):
+                    self._cleanup_instance(1)
+
+                msg = 'Unable to connect to instance: %s' % error
+                self._write_to_log(msg)
+                raise IpaRetryableError(msg)
+            except Exception as error:
+                with ipa_utils.ignored(Exception):
+                    self._cleanup_instance(1)
+
+                msg = 'Unable to connect to instance: %s' % error
+                self._write_to_log(msg)
+                raise
 
         if not self.instance_ip:
             self._set_instance_ip()
