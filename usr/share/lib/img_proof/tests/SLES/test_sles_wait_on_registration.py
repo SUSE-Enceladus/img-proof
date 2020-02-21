@@ -7,9 +7,9 @@ def test_sles_wait_on_registration(host):
     end = start + 600
 
     while time.time() < end:
-        result = host.run('pgrep registercloud')
+        result = host.run('systemctl is-active guestregister.service')
 
-        if not result.stdout.strip():
+        if result.stdout.strip() == 'inactive':
             break
         else:
             time.sleep(10)
