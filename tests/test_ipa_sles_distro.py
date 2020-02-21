@@ -135,7 +135,7 @@ def test_sles_refresh():
 
     with patch('img_proof.ipa_utils.execute_ssh_command',
                MagicMock(return_value='Refresh finished!')) as mocked:
-        output = sles.refresh(client)
+        output = sles.repo_refresh(client)
 
     mocked.assert_called_once_with(
         client,
@@ -153,7 +153,7 @@ def test_sles_refresh_exception():
             side_effect=Exception('ERROR!'))) as mocked:
         pytest.raises(
             IpaDistroException,
-            sles.refresh,
+            sles.repo_refresh,
             client
         )
 

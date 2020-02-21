@@ -171,7 +171,7 @@ class Distro(object):
             )
         return out
 
-    def refresh(self, client):
+    def repo_refresh(self, client):
         """Execute repo refresh command on instance."""
         update_cmd = "{sudo} '{refresh}'".format(
             sudo=self.get_sudo_exec_wrapper(),

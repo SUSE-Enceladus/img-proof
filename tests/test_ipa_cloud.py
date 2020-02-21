@@ -566,7 +566,7 @@ class TestIpaCloud(object):
     @patch.object(IpaCloud, '_get_ssh_client')
     @patch.object(IpaCloud, '_terminate_instance')
     @patch('img_proof.ipa_utils.get_host_key_fingerprint')
-    @patch.object(Distro, 'refresh')
+    @patch.object(Distro, 'repo_refresh')
     def test_cloud_distro_refresh(
             self,
             mock_distro_refresh,

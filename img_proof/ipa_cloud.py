@@ -803,7 +803,7 @@ class IpaCloud(object):
                     result = 1
 
                     try:
-                        out = self.distro.refresh(self._get_ssh_client())
+                        out = self.distro.repo_refresh(self._get_ssh_client())
                         result = 0
                     except Exception as error:
                         self.logger.error('Instance failed to refresh')
