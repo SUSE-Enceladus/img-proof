@@ -126,3 +126,38 @@ def test_sles_update_exception():
         "sudo sh -c 'zypper -n refresh;zypper -n up "
         "--auto-agree-with-licenses --force-resolution --replacefiles'"
     )
+
+
+def test_sles_refresh():
+    """Test refresh method for SLES distro."""
+    client = MagicMock()
+    sles = SLES()
+
+    with patch('img_proof.ipa_utils.execute_ssh_command',
+               MagicMock(return_value='Refresh finished!')) as mocked:
+        output = sles.refresh(client)
+
+    mocked.assert_called_once_with(
+        client,
+        "sudo sh -c 'zypper -n refresh'"
+    )
+    assert output == 'Refresh finished!'
+
+
+def test_sles_refresh_exception():
+    """Test refresh method exception for SLES distro."""
+    client = MagicMock()
+    sles = SLES()
+
+    with patch('img_proof.ipa_utils.execute_ssh_command', MagicMock(
+            side_effect=Exception('ERROR!'))) as mocked:
+        pytest.raises(
+            IpaDistroException,
+            sles.refresh,
+            client
+        )
+
+    mocked.assert_called_once_with(
+        client,
+        "sudo sh -c 'zypper -n refresh'"
+    )

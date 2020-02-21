@@ -50,7 +50,8 @@ echo {key} >> /home/{user}/.ssh/authorized_keys
 SYNC_POINTS = (
     'test_hard_reboot',
     'test_soft_reboot',
-    'test_update'
+    'test_update',
+    'test_refresh'
 )
 
 TEST_PATHS = (
