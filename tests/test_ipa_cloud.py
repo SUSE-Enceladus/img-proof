@@ -564,6 +564,44 @@ class TestIpaCloud(object):
     @patch.object(IpaCloud, '_set_image_id')
     @patch.object(IpaCloud, '_start_instance_if_stopped')
     @patch.object(IpaCloud, '_get_ssh_client')
+    @patch.object(IpaCloud, '_terminate_instance')
+    @patch('img_proof.ipa_utils.get_host_key_fingerprint')
+    @patch.object(Distro, 'repo_refresh')
+    def test_cloud_distro_refresh(
+            self,
+            mock_distro_refresh,
+            mock_get_host_key,
+            mock_terminate_instance,
+            mock_get_ssh_client,
+            mock_start_instance,
+            mock_set_image_id,
+            mock_set_instance_ip
+    ):
+        """Test exception raised when invalid test item provided."""
+        mock_distro_refresh.return_value = 'Refreshed!'
+        mock_get_host_key.return_value = b'04820482'
+        mock_terminate_instance.return_value = None
+        mock_get_ssh_client.return_value = None
+        mock_start_instance.return_value = None
+        mock_set_image_id.return_value = None
+        mock_set_instance_ip.return_value = None
+        self.kwargs['running_instance_id'] = 'fakeinstance'
+        self.kwargs['test_files'] = ['test_refresh']
+        self.kwargs['cleanup'] = True
+
+        cloud = IpaCloud(*args, **self.kwargs)
+        cloud.ssh_private_key_file = 'tests/data/ida_test'
+        cloud.ssh_user = 'root'
+
+        status, results = cloud.test_image()
+        assert status == 0
+        assert mock_distro_refresh.call_count == 1
+        self.kwargs['cleanup'] = None
+
+    @patch.object(IpaCloud, '_set_instance_ip')
+    @patch.object(IpaCloud, '_set_image_id')
+    @patch.object(IpaCloud, '_start_instance_if_stopped')
+    @patch.object(IpaCloud, '_get_ssh_client')
     @patch('img_proof.ipa_utils.get_host_key_fingerprint')
     @patch.object(IpaCloud, '_run_tests')
     def test_cloud_break_if_test_failure(

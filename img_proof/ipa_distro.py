@@ -170,3 +170,22 @@ class Distro(object):
                 'An error occurred updating instance: %s' % error
             )
         return out
+
+    def repo_refresh(self, client):
+        """Execute repo refresh command on instance."""
+        update_cmd = "{sudo} '{refresh}'".format(
+            sudo=self.get_sudo_exec_wrapper(),
+            refresh=self.get_refresh_repo_cmd()
+        )
+
+        out = ''
+        try:
+            out = ipa_utils.execute_ssh_command(
+                client,
+                update_cmd
+            )
+        except Exception as error:
+            raise IpaDistroException(
+                'An error occurred refreshing repos on instance: %s' % error
+            )
+        return out

@@ -806,6 +806,26 @@ class IpaCloud(object):
                         )
                         status = status or result
 
+                elif item == 'test_refresh':
+                    self.logger.info('Testing refresh')
+                    start = time.time()
+                    result = 1
+
+                    try:
+                        out = self.distro.repo_refresh(self._get_ssh_client())
+                        result = 0
+                    except Exception as error:
+                        self.logger.error('Instance failed to refresh')
+                        self.logger.debug(error)
+                    else:
+                        self._write_to_log(out)
+                    finally:
+                        duration = time.time() - start
+                        self._process_test_results(
+                            duration, 'test_refresh', result
+                        )
+                        status = status or result
+
                 elif isinstance(item, set):
                     self.logger.info('Running tests %s' % ' '.join(item))
                     with open(self.log_file, 'a') as log_file:
