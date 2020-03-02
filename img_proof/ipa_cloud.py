@@ -671,14 +671,14 @@ class IpaCloud(object):
                     self._cleanup_instance(1)
 
                 msg = 'Unable to connect to instance: %s' % error
-                self._write_to_log(msg)
+                self.logger.error(msg)
                 raise IpaRetryableError(msg)
             except Exception as error:
                 with ipa_utils.ignored(Exception):
                     self._cleanup_instance(1)
 
                 msg = 'Unable to connect to instance: %s' % error
-                self._write_to_log(msg)
+                self.logger.error(msg)
                 raise
 
         if not self.instance_ip:
