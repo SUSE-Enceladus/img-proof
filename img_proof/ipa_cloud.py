@@ -83,7 +83,7 @@ class IpaCloud(object):
         image_id=None,
         inject=None,
         instance_type=None,
-        log_level=30,
+        log_level=None,
         no_default_test_dirs=False,
         cloud_config=None,
         region=None,
@@ -425,7 +425,9 @@ class IpaCloud(object):
         # Add log file handler
         file_handler = logging.FileHandler(self.log_file)
         file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(logging.Formatter('\n%(message)s\n'))
+        file_handler.setFormatter(
+            logging.Formatter('\n%(asctime)s: %(message)s\n')
+        )
         self.logger.addHandler(file_handler)
 
     def _start_instance(self):
