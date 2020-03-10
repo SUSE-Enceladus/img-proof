@@ -1,3 +1,19 @@
+v4.8.0 (2020-03-10)
+===================
+
+- Attempt to cleanup instance if error during launch.
+  [\#234](https://github.com/SUSE-Enceladus/ipa/pull/234)
+- Add distro refresh option.
+  [\#235](https://github.com/SUSE-Enceladus/ipa/pull/235)
+- Use systemctl to check guestregister status.
+  [\#236](https://github.com/SUSE-Enceladus/ipa/pull/236)
+- Log only to base logger.
+  [\#239](https://github.com/SUSE-Enceladus/ipa/pull/239)
+- Handle HPC on-demand repos.
+  [\#240](https://github.com/SUSE-Enceladus/ipa/pull/240)
+- Add timestamp to file log handler.
+  [\#241](https://github.com/SUSE-Enceladus/ipa/pull/241)
+
 v4.7.0 (2020-02-18)
 ===================
 
