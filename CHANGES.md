@@ -1,3 +1,9 @@
+v4.8.1 (2020-03-10)
+===================
+
+- Fix bug and check both CLI output versions for single
+  and double quote.
+
 v4.8.0 (2020-03-10)
 ===================
 
