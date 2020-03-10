@@ -43,7 +43,7 @@ tox_requirements = [
 
 setup(
     name='img-proof',
-    version='4.8.0',
+    version='4.8.1',
     description="Package for automated testing of cloud images.",
     long_description=readme,
     long_description_content_type="text/markdown",
