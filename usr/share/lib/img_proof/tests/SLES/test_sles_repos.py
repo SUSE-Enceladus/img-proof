@@ -5,14 +5,16 @@ def test_sles_repos(
     get_instance_repos,
     get_release_value,
     get_sles_repos,
-    is_sles_sap,
+    get_baseproduct,
     determine_architecture
 ):
     version = [get_release_value('VERSION'), determine_architecture()]
 
-    sap = is_sles_sap()
-    if sap:
+    product = get_baseproduct()
+    if 'sap' in product.lower():
         version.append('SAP')
+    if 'hpc' in product.lower():
+        version.append('HPC')
 
     version = '-'.join(version)
 
