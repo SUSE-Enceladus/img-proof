@@ -78,7 +78,8 @@ def test_cli_invalid_distro():
     runner = CliRunner()
     result = runner.invoke(main, ['test', '-d', 'Distro'])
     assert result.exit_code != 0
-    assert "Error: Invalid value for '-d' / '--distro'" in result.output
+    assert "Error: Invalid value for '-d' / '--distro'" \
+        or 'Error: Invalid value for "-d" / "--distro"' in result.output
 
 
 def test_cli_test_image_exception():
@@ -172,7 +173,8 @@ def test_cli_archive():
             main,
             ['results', '--history-log', 'tests/.history', 'list']
         )
-        assert "Path 'tests/.history' does not exist." in result.output
+        assert "Path 'test/.history' does not exist." \
+            or 'Path "test/.history" does not exist.' in result.output
 
 
 def test_cli_archive_item():
@@ -354,7 +356,8 @@ def test_cli_clear_history():
             main,
             ['results', '--history-log', 'test/.history', 'list']
         )
-        assert "Path 'test/.history' does not exist." in result.output
+        assert "Path 'test/.history' does not exist." \
+            or 'Path "test/.history" does not exist.' in result.output
 
 
 def test_cli_delete_history_item():
