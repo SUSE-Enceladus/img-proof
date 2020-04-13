@@ -48,6 +48,7 @@ def test_image(
     early_exit=None,
     history_log=None,
     image_id=None,
+    image_project=None,
     inject=None,
     instance_type=None,
     ip_address=None,
@@ -124,6 +125,7 @@ def test_image(
     elif cloud_name == 'gce':
         cloud = GCECloud(
             service_account_file=service_account_file,
+            image_project=image_project,
             **kwargs
         )
     elif cloud_name == 'ssh':

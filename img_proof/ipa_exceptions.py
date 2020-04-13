@@ -41,10 +41,6 @@ class GCECloudException(IpaCloudException):
     """Generic GCE exception."""
 
 
-class GCECloudRetryableError(GCECloudException):
-    """GCE retryable error exception."""
-
-
 class OCICloudException(IpaCloudException):
     """Generic OCI exception."""
 

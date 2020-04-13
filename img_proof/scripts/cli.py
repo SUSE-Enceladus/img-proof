@@ -137,6 +137,12 @@ def main(context, no_color):
     help='The ID of the image used for instance.'
 )
 @click.option(
+    '--image-project',
+    help='The image project where the image exists. This is required if '
+         'testing an image in a project different than the service account '
+         'project.'
+)
+@click.option(
     '--inject',
     help='Path to an injection yaml config file.',
     type=click.Path(exists=True)
@@ -286,6 +292,7 @@ def test(context,
          early_exit,
          history_log,
          image_id,
+         image_project,
          inject,
          instance_type,
          ip_address,
@@ -330,6 +337,7 @@ def test(context,
             early_exit,
             history_log,
             image_id,
+            image_project,
             inject,
             instance_type,
             ip_address,

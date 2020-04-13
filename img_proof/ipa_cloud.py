@@ -45,9 +45,7 @@ from img_proof.ipa_sles import SLES
 from img_proof.ipa_exceptions import (
     IpaException,
     IpaCloudException,
-    IpaSSHException,
-    IpaRetryableError,
-    GCECloudRetryableError
+    IpaSSHException
 )
 from img_proof.results_plugin import Report
 
@@ -157,6 +155,8 @@ class IpaCloud(object):
         self.ssh_private_key_file = self.ipa_config['ssh_private_key_file']
         self.ssh_user = self.ipa_config['ssh_user']
         self.subnet_id = self.ipa_config['subnet_id']
+        self.enable_uefi_boot = False
+        self.enable_secure_boot = False
 
         if self.cloud_config:
             self.cloud_config = os.path.expanduser(self.cloud_config)
@@ -668,19 +668,11 @@ class IpaCloud(object):
             self.logger.info('Launching new instance')
             try:
                 self._launch_instance()
-            except GCECloudRetryableError as error:
-                with ipa_utils.ignored(Exception):
-                    self._cleanup_instance(1)
-
-                msg = 'Unable to connect to instance: %s' % error
-                self.logger.error(msg)
-                raise IpaRetryableError(msg)
             except Exception as error:
                 with ipa_utils.ignored(Exception):
                     self._cleanup_instance(1)
 
-                msg = 'Unable to connect to instance: %s' % error
-                self.logger.error(msg)
+                self.logger.error(error)
                 raise
 
         if not self.instance_ip:

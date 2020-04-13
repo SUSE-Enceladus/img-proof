@@ -1,5 +1,4 @@
 boto3
-apache-libcloud
 azure-common
 azure-mgmt-compute
 azure-mgmt-network
@@ -13,3 +12,5 @@ pytest
 PyYAML
 testinfra
 oci
+google-auth
+google-api-python-client
