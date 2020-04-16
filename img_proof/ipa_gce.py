@@ -24,7 +24,7 @@ import json
 import os
 import time
 
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 
 from img_proof import ipa_utils
 from img_proof.ipa_constants import (
@@ -44,6 +44,10 @@ def get_message_from_http_error(error, resource_name):
 
     If there is an error get message use a default message string.
     """
+    with suppress(AttributeError):
+        # In python 3.5 content is bytes
+        error.content = error.content.decode()
+
     try:
         message = json.loads(error.content)['error']['message']
     except (AttributeError, KeyError):
@@ -409,6 +413,10 @@ class GCECloud(IpaCloud):
                 body=self.get_instance_config(**kwargs)
             ).execute()
         except Exception as error:
+            with suppress(AttributeError):
+                # In python 3.5 content is bytes
+                error.content = error.content.decode()
+
             error_obj = json.loads(error.content)['error']
 
             try:
