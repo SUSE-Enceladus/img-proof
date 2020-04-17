@@ -279,6 +279,18 @@ def main(context, no_color):
     '--oci-user-id',
     help='The ID for the OCI user.'
 )
+@click.option(
+    '--enable-secure-boot',
+    is_flag=True,
+    help='Enable secure boot for the instance. Secure boot requires '
+         'UEFI boot firmware.'
+)
+@click.option(
+    '--enable-uefi',
+    is_flag=True,
+    help='Enable boot firmware for the instance. By default secure boot '
+         'is disabled.'
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -321,6 +333,8 @@ def test(context,
          signing_key_file,
          tenancy,
          oci_user_id,
+         enable_secure_boot,
+         enable_uefi,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -366,6 +380,8 @@ def test(context,
             signing_key_file,
             tenancy,
             oci_user_id,
+            enable_secure_boot,
+            enable_uefi
         )
         echo_results(results, no_color)
         sys.exit(status)

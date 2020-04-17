@@ -63,7 +63,9 @@ class AzureCloud(IpaCloud):
         timeout=None,
         vnet_name=None,
         vnet_resource_group=None,
-        collect_vm_info=None
+        collect_vm_info=None,
+        enable_secure_boot=None,
+        enable_uefi=None
     ):
         """Initialize Azure Cloud class."""
         super(AzureCloud, self).__init__(
@@ -89,7 +91,9 @@ class AzureCloud(IpaCloud):
             collect_vm_info,
             ssh_private_key_file,
             ssh_user,
-            subnet_id
+            subnet_id,
+            enable_secure_boot,
+            enable_uefi
         )
 
         self.vnet_name = vnet_name or self.ipa_config['vnet_name']

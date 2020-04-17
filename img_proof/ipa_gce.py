@@ -106,7 +106,9 @@ class GCECloud(IpaCloud):
         test_files=None,
         timeout=None,
         collect_vm_info=None,
-        image_project=None
+        image_project=None,
+        enable_secure_boot=None,
+        enable_uefi=None
     ):
         super(GCECloud, self).__init__(
             'gce',
@@ -131,7 +133,9 @@ class GCECloud(IpaCloud):
             collect_vm_info,
             ssh_private_key_file,
             ssh_user,
-            subnet_id
+            subnet_id,
+            enable_secure_boot,
+            enable_uefi
         )
 
         self.service_account_file = (
@@ -400,7 +404,7 @@ class GCECloud(IpaCloud):
             'network_interfaces': network_interfaces
         }
 
-        if self.enable_uefi_boot:
+        if self.enable_uefi:
             kwargs['shielded_instance_config'] = \
                 self.get_shielded_instance_config(
                     enable_secure_boot=self.enable_secure_boot

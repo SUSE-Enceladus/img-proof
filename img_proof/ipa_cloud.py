@@ -93,7 +93,9 @@ class IpaCloud(object):
         collect_vm_info=None,
         ssh_private_key_file=None,
         ssh_user=None,
-        subnet_id=None
+        subnet_id=None,
+        enable_secure_boot=None,
+        enable_uefi=None
     ):
         """Initialize base cloud framework class."""
         super(IpaCloud, self).__init__()
@@ -155,8 +157,11 @@ class IpaCloud(object):
         self.ssh_private_key_file = self.ipa_config['ssh_private_key_file']
         self.ssh_user = self.ipa_config['ssh_user']
         self.subnet_id = self.ipa_config['subnet_id']
-        self.enable_uefi_boot = False
-        self.enable_secure_boot = False
+        self.enable_secure_boot = self.ipa_config['enable_secure_boot']
+        self.enable_uefi = self.ipa_config['enable_uefi']
+
+        if self.enable_secure_boot and not self.enable_uefi:
+            self.enable_uefi = True
 
         if self.cloud_config:
             self.cloud_config = os.path.expanduser(self.cloud_config)

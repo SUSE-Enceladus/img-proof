@@ -67,7 +67,9 @@ class EC2Cloud(IpaCloud):
         test_dirs=None,
         test_files=None,
         timeout=None,
-        collect_vm_info=None
+        collect_vm_info=None,
+        enable_secure_boot=None,
+        enable_uefi=None
     ):
         """Initialize EC2 cloud framework class."""
         super(EC2Cloud, self).__init__(
@@ -93,7 +95,9 @@ class EC2Cloud(IpaCloud):
             collect_vm_info,
             ssh_private_key_file,
             ssh_user,
-            subnet_id
+            subnet_id,
+            enable_secure_boot,
+            enable_uefi
         )
         # Get command line values that are not None
         cmd_line_values = self._get_non_null_values(locals())
