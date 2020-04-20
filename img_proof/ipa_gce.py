@@ -195,7 +195,8 @@ class GCECloud(IpaCloud):
         return discovery.build(
             'compute',
             'v1',
-            credentials=self.credentials
+            credentials=self.credentials,
+            cache_discovery=False
         )
 
     def _get_instance(self):
