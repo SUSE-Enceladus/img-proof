@@ -137,6 +137,12 @@ def main(context, no_color):
     help='The ID of the image used for instance.'
 )
 @click.option(
+    '--image-project',
+    help='The image project where the image exists. This is required if '
+         'testing an image in a project different than the service account '
+         'project.'
+)
+@click.option(
     '--inject',
     help='Path to an injection yaml config file.',
     type=click.Path(exists=True)
@@ -273,6 +279,18 @@ def main(context, no_color):
     '--oci-user-id',
     help='The ID for the OCI user.'
 )
+@click.option(
+    '--enable-secure-boot',
+    is_flag=True,
+    help='Enable secure boot for the instance. Secure boot requires '
+         'UEFI boot firmware.'
+)
+@click.option(
+    '--enable-uefi',
+    is_flag=True,
+    help='Enable boot firmware for the instance. By default secure boot '
+         'is disabled.'
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -286,6 +304,7 @@ def test(context,
          early_exit,
          history_log,
          image_id,
+         image_project,
          inject,
          instance_type,
          ip_address,
@@ -314,6 +333,8 @@ def test(context,
          signing_key_file,
          tenancy,
          oci_user_id,
+         enable_secure_boot,
+         enable_uefi,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -330,6 +351,7 @@ def test(context,
             early_exit,
             history_log,
             image_id,
+            image_project,
             inject,
             instance_type,
             ip_address,
@@ -358,6 +380,8 @@ def test(context,
             signing_key_file,
             tenancy,
             oci_user_id,
+            enable_secure_boot,
+            enable_uefi
         )
         echo_results(results, no_color)
         sys.exit(status)

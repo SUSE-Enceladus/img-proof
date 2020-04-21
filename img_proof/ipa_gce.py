@@ -2,7 +2,7 @@
 
 """Cloud framework module for testing Google Compute Engine (GCE) images."""
 
-# Copyright (c) 2019 SUSE LLC. All rights reserved.
+# Copyright (c) 2020 SUSE LLC. All rights reserved.
 #
 # This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -22,21 +22,59 @@
 
 import json
 import os
+import time
+
+from contextlib import contextmanager, suppress
 
 from img_proof import ipa_utils
 from img_proof.ipa_constants import (
     GCE_DEFAULT_TYPE,
     GCE_DEFAULT_USER
 )
-from img_proof.ipa_exceptions import GCECloudException
-from img_proof.ipa_exceptions import GCECloudRetryableError
+from img_proof.ipa_exceptions import GCECloudException, IpaRetryableError
 from img_proof.ipa_cloud import IpaCloud
 
-from libcloud.common.google import ResourceNotFoundError
-from libcloud.common.google import GoogleBaseError
-from libcloud.common.google import QuotaExceededError
-from libcloud.compute.types import Provider
-from libcloud.compute.providers import get_driver
+from google.oauth2 import service_account
+from googleapiclient import discovery
+
+
+def get_message_from_http_error(error, resource_name):
+    """
+    Attempt to parse error message from json.
+
+    If there is an error getting the message content
+    use the default of `resource not found`.
+    """
+    with suppress(AttributeError):
+        # In python 3.5 content is bytes
+        error.content = error.content.decode()
+
+    try:
+        message = json.loads(error.content)['error']['message']
+    except (AttributeError, KeyError):
+        message = 'Resource {resource_name} not found.'.format(
+            resource_name=resource_name
+        )
+
+    return message
+
+
+@contextmanager
+def handle_gce_http_errors(type_name, resource_name):
+    """
+    Context manager to handle GCE HTTP Errors.
+    """
+    try:
+        yield
+    except Exception as error:
+        message = get_message_from_http_error(error, resource_name)
+
+        raise GCECloudException(
+            'Unable to retrieve {type_name}: {error}'.format(
+                type_name=type_name,
+                error=message
+            )
+        ) from error
 
 
 class GCECloud(IpaCloud):
@@ -68,7 +106,10 @@ class GCECloud(IpaCloud):
         test_dirs=None,
         test_files=None,
         timeout=None,
-        collect_vm_info=None
+        collect_vm_info=None,
+        image_project=None,
+        enable_secure_boot=None,
+        enable_uefi=None
     ):
         super(GCECloud, self).__init__(
             'gce',
@@ -93,7 +134,9 @@ class GCECloud(IpaCloud):
             collect_vm_info,
             ssh_private_key_file,
             ssh_user,
-            subnet_id
+            subnet_id,
+            enable_secure_boot,
+            enable_uefi
         )
 
         self.service_account_file = (
@@ -116,14 +159,15 @@ class GCECloud(IpaCloud):
 
         self.ssh_user = self.ssh_user or GCE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
+        self.image_project = image_project
 
-        self._get_service_account_info()
+        self.credentials = self._get_credentials()
         self.compute_driver = self._get_driver()
 
         self._validate_region()
 
-    def _get_service_account_info(self):
-        """Retrieve json dict from service account file."""
+    def _get_credentials(self):
+        """Retrieve credentials object using service account file."""
         with open(self.service_account_file, 'r') as f:
             info = json.load(f)
 
@@ -143,28 +187,27 @@ class GCECloud(IpaCloud):
                 'docs for information on GCE configuration.'
             )
 
+        return service_account.Credentials.from_service_account_file(
+            self.service_account_file
+        )
+
     def _get_driver(self):
         """Get authenticated GCE driver."""
-        ComputeEngine = get_driver(Provider.GCE)
-        return ComputeEngine(
-            self.service_account_email,
-            self.service_account_file,
-            project=self.service_account_project
+        return discovery.build(
+            'compute',
+            'v1',
+            credentials=self.credentials,
+            cache_discovery=False
         )
 
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
-        try:
-            instance = self.compute_driver.ex_get_node(
-                self.running_instance_id,
-                zone=self.region
-            )
-        except ResourceNotFoundError as e:
-            raise GCECloudException(
-                'Instance with id: {id} cannot be found: {error}'.format(
-                    id=self.running_instance_id, error=e
-                )
-            )
+        with handle_gce_http_errors('instance', self.running_instance_id):
+            instance = self.compute_driver.instances().get(
+                project=self.service_account_project,
+                zone=self.region,
+                instance=self.running_instance_id
+            ).execute()
 
         return instance
 
@@ -176,92 +219,258 @@ class GCECloud(IpaCloud):
             key=key.decode()
         )
 
+    def _get_network(self, network_id):
+        """
+        Return the network by network id (name).
+
+        If network not found GCE will raise a 404 error.
+        """
+        with handle_gce_http_errors('network', network_id):
+            network = self.compute_driver.networks().get(
+                project=self.service_account_project,
+                network=network_id
+            ).execute()
+
+        return network
+
     def _get_subnet(self, subnet_id):
-        subnet = None
-        try:
+        """
+        Return the subnet by subnet id (name).
+
+        If subnet not found GCE will raise a 404 error.
+        """
+        with handle_gce_http_errors('subnet', subnet_id):
             # Subnet lives in a region whereas self.region
             # is a specific zone (us-west1-a).
             region = '-'.join(self.region.split('-')[:-1])
-            subnet = self.compute_driver.ex_get_subnetwork(
-                subnet_id, region=region
-            )
-        except Exception:
-            raise GCECloudException(
-                'GCE subnet: {subnet_id} not found.'.format(
-                    subnet_id=subnet_id
-                )
-            )
+            subnet = self.compute_driver.subnetworks().get(
+                project=self.service_account_project,
+                region=region,
+                subnetwork=subnet_id
+            ).execute()
 
         return subnet
 
+    def _get_instance_type(self, type_name):
+        """
+        Return the instance type by name.
+
+        If type not found GCE will raise a 404 error.
+        """
+        with handle_gce_http_errors('instance type', type_name):
+            machine_type = self.compute_driver.machineTypes().get(
+                project=self.service_account_project,
+                zone=self.region,
+                machineType=type_name
+            ).execute()
+
+        return machine_type
+
+    def _get_image(self, image_name):
+        """
+        Return the image by image name.
+
+        If image is not found GCE will raise a 404 error.
+        """
+        with handle_gce_http_errors('image', image_name):
+            image = self.compute_driver.images().get(
+                project=self.image_project or self.service_account_project,
+                image=image_name
+            ).execute()
+
+        return image
+
+    def _get_disk(self, disk_name):
+        """
+        Return the disk by name.
+
+        If disk is not found GCE will raise a 404 error.
+        """
+        with handle_gce_http_errors('disk', disk_name):
+            disk = self.compute_driver.disks().get(
+                project=self.service_account_project,
+                zone=self.region,
+                disk=disk_name
+            ).execute()
+
+        return disk
+
+    def _get_network_config(self, subnet_id):
+        """
+        Return the network config.
+
+        If a subnet_id is provided use the subnet and
+        network. Otherwise use the default network.
+        """
+        interface = {
+            'accessConfigs': [{
+                'name': 'External NAT',
+                'type': 'ONE_TO_ONE_NAT'
+            }]
+        }
+
+        if subnet_id:
+            subnet = self._get_subnet(subnet_id)
+            interface['subnetwork'] = subnet['selfLink']
+            interface['network'] = subnet['network']
+        else:
+            interface['network'] = self._get_network('default')['selfLink']
+
+        return interface
+
+    @staticmethod
+    def get_shielded_instance_config(
+        enable_secure_boot=False,
+        enable_vtpm=True,
+        enable_integrity_monitoring=True
+    ):
+        """
+        Return shielded instance config object.
+
+        Return with default values unless overridden by args.
+        """
+        shielded_instance_config = {
+            'enableSecureBoot': enable_secure_boot,
+            'enableVtpm': enable_vtpm,
+            'enableIntegrityMonitoring': enable_integrity_monitoring
+        }
+
+        return shielded_instance_config
+
+    @staticmethod
+    def get_instance_config(
+        instance_name,
+        machine_type,
+        network_interfaces,
+        service_account_email,
+        source_image,
+        ssh_key,
+        auto_delete=True,
+        boot_disk=True,
+        disk_type='PERSISTENT',
+        disk_mode='READ_WRITE',
+        shielded_instance_config=None,
+    ):
+        """Return an instance config for launching a new instance."""
+        config = {
+            'metadata': {
+                'items': [{'key': 'ssh-keys', 'value': ssh_key}]
+            },
+            'service_accounts': [{
+                'email': service_account_email,
+                'scopes': ['storage-ro']
+            }],
+            'machineType': machine_type,
+            'disks': [{
+                'autoDelete': auto_delete,
+                'boot': boot_disk,
+                'type': disk_type,
+                'mode': disk_mode,
+                'deviceName': instance_name,
+                'initializeParams': {
+                    'diskName': instance_name,
+                    'sourceImage': source_image
+                }
+            }],
+            'networkInterfaces': network_interfaces,
+            'name': instance_name
+        }
+
+        if shielded_instance_config:
+            config['shieldedInstanceConfig'] = shielded_instance_config
+            config['disks'][0]['guestOsFeatures'] = [{
+                'type': 'UEFI_COMPATIBLE'
+            }]
+
+        return config
+
     def _launch_instance(self):
         """Launch an instance of the given image."""
-        metadata = {'key': 'ssh-keys', 'value': self.ssh_public_key}
         self.running_instance_id = ipa_utils.generate_instance_name(
             'gce-img-proof-test'
         )
         self.logger.debug('ID of instance: %s' % self.running_instance_id)
 
+        machine_type = self._get_instance_type(
+            self.instance_type or GCE_DEFAULT_TYPE
+        )['selfLink']
+        source_image = self._get_image(self.image_id)['selfLink']
+        network_interfaces = [self._get_network_config(self.subnet_id)]
+
         kwargs = {
-            'location': self.region,
-            'ex_metadata': metadata,
-            'ex_service_accounts': [{
-                'email': self.service_account_email,
-                'scopes': ['storage-ro']
-            }]
+            'instance_name': self.running_instance_id,
+            'machine_type': machine_type,
+            'service_account_email': self.service_account_email,
+            'source_image': source_image,
+            'ssh_key': self.ssh_public_key,
+            'network_interfaces': network_interfaces
         }
 
-        if self.subnet_id:
-            kwargs['ex_subnetwork'] = self._get_subnet(self.subnet_id)
-            kwargs['ex_network'] = kwargs['ex_subnetwork'].network
+        if self.enable_uefi:
+            kwargs['shielded_instance_config'] = \
+                self.get_shielded_instance_config(
+                    enable_secure_boot=self.enable_secure_boot
+                )
 
         try:
-            instance = self.compute_driver.create_node(
-                self.running_instance_id,
-                self.instance_type or GCE_DEFAULT_TYPE,
-                self.image_id,
-                **kwargs
-            )
-        except ResourceNotFoundError as error:
-            try:
-                message = error.value['message']
-            except TypeError:
-                message = error
+            response = self.compute_driver.instances().insert(
+                project=self.service_account_project,
+                zone=self.region,
+                body=self.get_instance_config(**kwargs)
+            ).execute()
+        except Exception as error:
+            with suppress(AttributeError):
+                # In python 3.5 content is bytes
+                error.content = error.content.decode()
 
-            raise GCECloudException(
-                'An error occurred launching instance: {message}.'.format(
+            error_obj = json.loads(error.content)['error']
+
+            try:
+                message = error_obj['message']
+            except (AttributeError, KeyError):
+                message = 'Unknown exception.'
+
+            if error_obj['code'] == 412:
+                # 412 is conditionNotmet
+                error_class = IpaRetryableError
+            else:
+                error_class = GCECloudException
+
+            raise error_class(
+                'Failed to launch instance: {message}'.format(
                     message=message
                 )
-            )
-        except QuotaExceededError as error:
-            raise GCECloudRetryableError(
-                'An error occurred launching instance: {message}.'.format(
-                    message=error.value['message']
-                )
-            )
-        except GoogleBaseError as error:
-            if error.value['reason'] in ['quotaExceeded', 'conditionNotMet']:
-                raise GCECloudRetryableError(
-                    'An error occurred launching instance: {message}.'.format(
-                        message=error.value['message']
-                    )
-                )
-            else:
-                raise GCECloudException(
-                    'An error occurred launching instance: {message}.'.format(
-                        message=error.value['message']
-                    )
-                )
+            ) from error
 
-        self.compute_driver.wait_until_running(
-            [instance],
+        operation = self._wait_on_operation(response['name'])
+
+        if 'error' in operation and operation['error'].get('errors'):
+            error = operation['error']['errors'][0]
+
+            if error['code'] in ('QUOTA_EXCEEDED', 'PRECONDITION_FAILED'):
+                error_class = IpaRetryableError
+            else:
+                error_class = GCECloudException
+
+            raise error_class(
+                'Failed to launch instance: {message}'.format(
+                    message=error['message']
+                )
+            )
+
+        self._wait_on_instance(
+            'RUNNING',
             timeout=self.timeout
         )
 
     def _set_image_id(self):
-        """If existing image used get image id."""
+        """Set the image_id instance variable based on boot disk."""
         instance = self._get_instance()
-        self.image_id = instance.image
+        disk = self._get_disk(instance['disks'][0]['deviceName'])
+
+        # Example sourceImage format:
+        # projects/debian-cloud/global/images/opensuse-leap-15.0-YYYYMMDD
+        self.image_id = disk['sourceImage'].rsplit('/', maxsplit=1)[-1]
 
     def _validate_region(self):
         """Validate region was passed in and is a valid GCE zone."""
@@ -272,7 +481,10 @@ class GCECloud(IpaCloud):
             )
 
         try:
-            zone = self.compute_driver.ex_get_zone(self.region)
+            zone = self.compute_driver.zones().get(
+                project=self.service_account_project,
+                zone=self.region
+            ).execute()
         except Exception:
             zone = None
 
@@ -287,50 +499,87 @@ class GCECloud(IpaCloud):
     def _get_instance_state(self):
         """Attempt to retrieve the state of the instance."""
         instance = self._get_instance()
-        return instance.state
+        return instance['status']
 
     def _is_instance_running(self):
         """Return True if instance is in running state."""
-        return self._get_instance_state() == 'running'
+        return self._get_instance_state() == 'RUNNING'
 
     def _set_instance_ip(self):
         """Retrieve and set the instance ip address."""
         instance = self._get_instance()
 
-        if instance.public_ips:
-            self.instance_ip = instance.public_ips[0]
-        elif instance.private_ips:
-            self.instance_ip = instance.private_ips[0]
-        else:
-            raise GCECloudException(
-                'IP address for instance: %s cannot be found.'
-                % self.running_instance_id
-            )
+        interface = instance['networkInterfaces'][0]
+        try:
+            self.instance_ip = interface['accessConfigs'][0]['natIP']
+        except (KeyError, IndexError):
+            try:
+                self.instance_ip = interface['networkIP']
+            except KeyError:
+                raise GCECloudException(
+                    'IP address for instance: %s cannot be found.'
+                    % self.running_instance_id
+                )
 
     def _start_instance(self):
         """Start the instance."""
-        instance = self._get_instance()
-        self.compute_driver.ex_start_node(instance)
-        self.compute_driver.wait_until_running(
-            [instance],
+        self.compute_driver.instances().start(
+            project=self.service_account_project,
+            zone=self.region,
+            instance=self.running_instance_id
+        ).execute()
+
+        self._wait_on_instance(
+            'RUNNING',
             timeout=self.timeout
         )
 
     def _stop_instance(self):
         """Stop the instance."""
-        instance = self._get_instance()
-        self.compute_driver.ex_stop_node(instance)
-        self._wait_on_instance('stopped', timeout=self.timeout)
+        self.compute_driver.instances().stop(
+            project=self.service_account_project,
+            zone=self.region,
+            instance=self.running_instance_id
+        ).execute()
+
+        # In GCE an instance that is stopped has a state of TERMINATED:
+        # https://cloud.google.com/compute/docs/instances/instance-life-cycle
+        self._wait_on_instance(
+            'TERMINATED',
+            timeout=self.timeout
+        )
 
     def _terminate_instance(self):
         """Terminate the instance."""
-        instance = self._get_instance()
-        instance.destroy()
+        self.compute_driver.instances().delete(
+            project=self.service_account_project,
+            zone=self.region,
+            instance=self.running_instance_id
+        ).execute()
 
     def get_console_log(self):
         """
         Return console log output if it is available.
         """
-        instance = self._get_instance()
-        output = self.compute_driver.ex_get_serial_output(instance)
-        return output
+        output = self.compute_driver.instances().getSerialPortOutput(
+            project=self.service_account_project,
+            zone=self.region,
+            instance=self.running_instance_id
+        ).execute()
+        return output.get('contents', '')
+
+    def _wait_on_operation(self, operation_name, timeout=600, wait_period=10):
+        start = time.time()
+        end = start + timeout
+
+        while time.time() < end:
+            time.sleep(wait_period)
+
+            operation = self.compute_driver.zoneOperations().get(
+                project=self.service_account_project,
+                zone=self.region,
+                operation=operation_name
+            ).execute()
+
+            if operation['status'] == 'DONE':
+                return operation

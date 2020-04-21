@@ -31,7 +31,8 @@ BuildRequires:  python3-click-man
 BuildRequires:  python3-click
 Requires:       python3-PyYAML
 Requires:       python3-boto3
-Requires:       python3-apache-libcloud
+Requires:       python3-google-auth
+Requires:       python3-google-api-python-client
 Requires:       python3-azure-common
 Requires:       python3-azure-mgmt-compute
 Requires:       python3-azure-mgmt-network
@@ -48,7 +49,8 @@ BuildArch:      noarch
 %if %{with test}
 BuildRequires:  python3-PyYAML
 BuildRequires:  python3-boto3
-BuildRequires:  python3-apache-libcloud
+BuildRequires:  python3-google-auth
+BuildRequires:  python3-google-api-python-client
 BuildRequires:  python3-azure-common
 BuildRequires:  python3-azure-mgmt-compute
 BuildRequires:  python3-azure-mgmt-network

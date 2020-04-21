@@ -48,6 +48,7 @@ def test_image(
     early_exit=None,
     history_log=None,
     image_id=None,
+    image_project=None,
     inject=None,
     instance_type=None,
     ip_address=None,
@@ -75,7 +76,9 @@ def test_image(
     signing_key_fingerprint=None,
     signing_key_file=None,
     tenancy=None,
-    oci_user_id=None
+    oci_user_id=None,
+    enable_secure_boot=None,
+    enable_uefi=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -100,7 +103,9 @@ def test_image(
         'test_dirs': test_dirs,
         'test_files': tests,
         'timeout': timeout,
-        'collect_vm_info': collect_vm_info
+        'collect_vm_info': collect_vm_info,
+        'enable_secure_boot': enable_secure_boot,
+        'enable_uefi': enable_uefi
     }
 
     cloud_name = cloud_name.lower()
@@ -124,6 +129,7 @@ def test_image(
     elif cloud_name == 'gce':
         cloud = GCECloud(
             service_account_file=service_account_file,
+            image_project=image_project,
             **kwargs
         )
     elif cloud_name == 'ssh':

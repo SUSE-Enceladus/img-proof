@@ -63,7 +63,9 @@ class OCICloud(IpaCloud):
         signing_key_fingerprint=None,
         signing_key_file=None,
         tenancy=None,
-        oci_user_id=None
+        oci_user_id=None,
+        enable_secure_boot=None,
+        enable_uefi=None
     ):
         """Initialize OCI cloud framework class."""
         super(OCICloud, self).__init__(
@@ -89,7 +91,9 @@ class OCICloud(IpaCloud):
             collect_vm_info,
             ssh_private_key_file,
             ssh_user,
-            subnet_id
+            subnet_id,
+            enable_secure_boot,
+            enable_uefi
         )
 
         self.availability_domain = (
