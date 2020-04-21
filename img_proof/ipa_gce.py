@@ -42,7 +42,8 @@ def get_message_from_http_error(error, resource_name):
     """
     Attempt to parse error message from json.
 
-    If there is an error get message use a default message string.
+    If there is an error getting the message content
+    use the default of `resource not found`.
     """
     with suppress(AttributeError):
         # In python 3.5 content is bytes
@@ -541,6 +542,8 @@ class GCECloud(IpaCloud):
             instance=self.running_instance_id
         ).execute()
 
+        # In GCE an instance that is stopped has a state of TERMINATED:
+        # https://cloud.google.com/compute/docs/instances/instance-life-cycle
         self._wait_on_instance(
             'TERMINATED',
             timeout=self.timeout
