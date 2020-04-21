@@ -1,3 +1,9 @@
+v5.0.0 (2020-04-21)
+===================
+
+- Migrate GCE to Google API.
+  [\#242](https://github.com/SUSE-Enceladus/ipa/pull/242)
+
 v4.8.1 (2020-03-10)
 ===================
 
