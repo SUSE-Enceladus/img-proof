@@ -359,9 +359,11 @@ class GCECloud(IpaCloud):
                     {'key': 'enable-guest-attributes', 'value': True}
                 ]
             },
-            'service_accounts': [{
+            'serviceAccounts': [{
                 'email': service_account_email,
-                'scopes': ['storage-ro']
+                'scopes': [
+                    'https://www.googleapis.com/auth/devstorage.read_only'
+                ]
             }],
             'machineType': machine_type,
             'disks': [{
