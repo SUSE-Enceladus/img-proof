@@ -354,11 +354,16 @@ class GCECloud(IpaCloud):
         """Return an instance config for launching a new instance."""
         config = {
             'metadata': {
-                'items': [{'key': 'ssh-keys', 'value': ssh_key}]
+                'items': [
+                    {'key': 'ssh-keys', 'value': ssh_key},
+                    {'key': 'enable-guest-attributes', 'value': True}
+                ]
             },
-            'service_accounts': [{
+            'serviceAccounts': [{
                 'email': service_account_email,
-                'scopes': ['storage-ro']
+                'scopes': [
+                    'https://www.googleapis.com/auth/devstorage.read_only'
+                ]
             }],
             'machineType': machine_type,
             'disks': [{

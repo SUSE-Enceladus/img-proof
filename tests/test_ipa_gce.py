@@ -289,7 +289,7 @@ class TestGCECloud(object):
         )
 
         assert 'metadata' in config
-        assert 'service_accounts' in config
+        assert 'serviceAccounts' in config
         assert 'machineType' in config
         assert 'disks' in config
         assert 'networkInterfaces' in config
