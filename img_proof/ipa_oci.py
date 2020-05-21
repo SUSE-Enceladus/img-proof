@@ -413,11 +413,28 @@ class OCICloud(IpaCloud):
     def get_console_log(self):
         """
         Return console log output if it is available.
-
-        Todo: The get_console_history_content method does not appear to work
-              during initial implementation. Consider this in the future.
         """
-        return ''
+        states = [
+            oci.core.models.ConsoleHistory.LIFECYCLE_STATE_SUCCEEDED
+        ]
+
+        try:
+            history_details = oci.core.models.CaptureConsoleHistoryDetails(
+                instance_id=self.running_instance_id
+            )
+            result = self.compute_composite_client.\
+                capture_console_history_and_wait_for_state(
+                    history_details,
+                    wait_for_states=states
+                ).data
+            output = self.compute_client.get_console_history_content(
+                result.id
+            ).data
+            history = output.decode()
+        except Exception:
+            history = ''
+
+        return history
 
     def _launch_instance(self):
         """Launch an instance of the given image."""
