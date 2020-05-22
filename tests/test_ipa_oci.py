@@ -454,8 +454,18 @@ class TestOCIProvider(object):
     def test_get_console_log(self, mock_init):
         """Test oci get console log method."""
         mock_init.return_value = None
+        response = MagicMock()
+        response.data = b'Test output'
+        client = MagicMock()
+        client.get_console_history_content.return_value = response
+
         cloud = OCICloud(**self.kwargs)
-        cloud.get_console_log()
+        cloud.compute_client = client
+        cloud.compute_composite_client = client
+        cloud.running_instance_id = 'instance-123'
+
+        log = cloud.get_console_log()
+        assert log == 'Test output'
 
     @patch.object(OCICloud, '_wait_on_instance')
     @patch.object(OCICloud, '_terminate_instance')
