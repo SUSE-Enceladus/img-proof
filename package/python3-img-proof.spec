@@ -34,14 +34,11 @@ BuildRequires:  python3-azure-mgmt-compute
 BuildRequires:  python3-azure-mgmt-network
 BuildRequires:  python3-azure-mgmt-resource
 BuildRequires:  python3-boto3
-BuildRequires:  python3-certifi
 BuildRequires:  python3-click
-BuildRequires:  python3-cryptography
 BuildRequires:  python3-google-api-python-client
 BuildRequires:  python3-google-auth
 BuildRequires:  python3-oci-sdk
 BuildRequires:  python3-paramiko
-BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-pytest
 BuildRequires:  python3-testinfra
 %if %{with test}
@@ -54,14 +51,11 @@ Requires:       python3-azure-mgmt-compute
 Requires:       python3-azure-mgmt-network
 Requires:       python3-azure-mgmt-resource
 Requires:       python3-boto3
-Requires:       python3-certifi
 Requires:       python3-click
-Requires:       python3-cryptography
 Requires:       python3-google-api-python-client
 Requires:       python3-google-auth
 Requires:       python3-oci-sdk
 Requires:       python3-paramiko
-Requires:       python3-pycryptodome
 Requires:       python3-pytest
 Requires:       python3-testinfra
 BuildArch:      noarch
