@@ -372,7 +372,12 @@ class TestGCECloud(object):
     def test_gce_set_image_id(self, mock_get_instance, mock_get_disk):
         """Test gce cloud set image id method."""
         instance = {
-            'disks': [{'deviceName': 'disk123'}]
+            'disks': [{
+                'deviceName': 'disk123',
+                'boot': True,
+                'source': 'https://www.googleapis.com/compute/v1/projects/'
+                          'test/zones/us-west1-a/disks/disk123'
+            }]
         }
         disk = {
             'sourceImage': 'projects/suse/global/images/opensuse-leap-15.0'

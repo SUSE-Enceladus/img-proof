@@ -471,7 +471,13 @@ class GCECloud(IpaCloud):
     def _set_image_id(self):
         """Set the image_id instance variable based on boot disk."""
         instance = self._get_instance()
-        disk = self._get_disk(instance['disks'][0]['deviceName'])
+
+        for disk_info in instance['disks']:
+            if disk_info.get('boot'):
+                disk_name = disk_info['source'].rsplit('/', maxsplit=1)[-1]
+                break
+
+        disk = self._get_disk(disk_name)
 
         # Example sourceImage format:
         # projects/debian-cloud/global/images/opensuse-leap-15.0-YYYYMMDD
