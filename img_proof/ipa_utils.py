@@ -190,8 +190,8 @@ def generate_instance_name(name):
     return '%s-%s' % (name, get_random_string(length=5))
 
 
-def generate_public_ssh_key(ssh_private_key_file):
-    """Generate SSH public key from private key file."""
+def get_public_ssh_key(ssh_private_key_file):
+    """Get SSH public key from private key file."""
     pub_key = ssh_private_key_file + '.pub'
 
     try:
