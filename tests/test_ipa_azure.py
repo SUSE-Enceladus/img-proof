@@ -119,9 +119,9 @@ class TestAzureProvider(object):
         assert str(error.value) == 'Unable to create resource management ' \
             'client: Not valid.'
 
-    @patch('img_proof.ipa_azure.ipa_utils.generate_public_ssh_key')
-    def test_get_ssh_public_key(self, mock_generate_pub_key):
-        mock_generate_pub_key.return_value = b'pub-key'
+    @patch('img_proof.ipa_azure.ipa_utils.get_public_ssh_key')
+    def test_get_ssh_public_key(self, mock_get_pub_key):
+        mock_get_pub_key.return_value = b'pub-key'
         provider = self.helper_get_provider()
         key = provider._get_ssh_public_key()
 

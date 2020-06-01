@@ -437,12 +437,12 @@ class TestOCIProvider(object):
 
         cloud._get_vnic_attachments(compartment_id, instance_id)
 
-    @patch('img_proof.ipa_utils.generate_public_ssh_key')
+    @patch('img_proof.ipa_utils.get_public_ssh_key')
     @patch.object(OCICloud, '__init__')
-    def test_get_ssh_public_key(self, mock_init, mock_generate_public_ssh_key):
+    def test_get_ssh_public_key(self, mock_init, mock_get_public_ssh_key):
         """Test oci get ssh public key method."""
         mock_init.return_value = None
-        mock_generate_public_ssh_key.return_value = b'key123'
+        mock_get_public_ssh_key.return_value = b'key123'
 
         cloud = OCICloud(**self.kwargs)
         cloud.ssh_private_key_file = 'tests/oci/api_key.pem'

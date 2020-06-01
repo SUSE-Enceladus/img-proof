@@ -223,7 +223,7 @@ class IpaCloud(object):
         to the instance. The public key is generated from the
         private key file.
         """
-        key = ipa_utils.generate_public_ssh_key(
+        key = ipa_utils.get_public_ssh_key(
             self.ssh_private_key_file
         ).decode()
 

@@ -127,9 +127,9 @@ class TestIpaCloud(object):
 
         ipa_utils.clear_cache()
 
-    @patch('img_proof.ipa_cloud.ipa_utils.generate_public_ssh_key')
-    def test_cloud_get_user_data(self, mock_generate_ssh_key):
-        mock_generate_ssh_key.return_value = b'testkey12345'
+    @patch('img_proof.ipa_cloud.ipa_utils.get_public_ssh_key')
+    def test_cloud_get_user_data(self, mock_get_ssh_key):
+        mock_get_ssh_key.return_value = b'testkey12345'
 
         provider = IpaCloud(*args, **self.kwargs)
 

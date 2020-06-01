@@ -407,7 +407,7 @@ class OCICloud(IpaCloud):
 
     def _get_ssh_public_key(self):
         """Generate SSH public key from private key."""
-        key = ipa_utils.generate_public_ssh_key(self.ssh_private_key_file)
+        key = ipa_utils.get_public_ssh_key(self.ssh_private_key_file)
         return key.decode()
 
     def get_console_log(self):
