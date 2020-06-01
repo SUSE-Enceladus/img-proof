@@ -1,3 +1,19 @@
+v5.1.0 (2020-06-01)
+===================
+
+- Ensure region hint is in cloudregister log.
+  [\#244](https://github.com/SUSE-Enceladus/ipa/pull/244)
+-  Enable guest attrs by default in GCE.
+  [\#245](https://github.com/SUSE-Enceladus/ipa/pull/245)
+- Fix build requires in test clause in spec.
+  [\#246](https://github.com/SUSE-Enceladus/ipa/pull/246)
+- Integrate OCI console history method.
+  [\#247](https://github.com/SUSE-Enceladus/ipa/pull/247)
+- Pull disk source name not devicename.
+  [\#248](https://github.com/SUSE-Enceladus/ipa/pull/248)
+- Pull public ssh key from file.
+  [\#249](https://github.com/SUSE-Enceladus/ipa/pull/249)
+
 v5.0.0 (2020-04-21)
 ===================
 
