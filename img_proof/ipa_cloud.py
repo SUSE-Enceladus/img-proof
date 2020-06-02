@@ -95,7 +95,8 @@ class IpaCloud(object):
         ssh_user=None,
         subnet_id=None,
         enable_secure_boot=None,
-        enable_uefi=None
+        enable_uefi=None,
+        log_callback=None
     ):
         """Initialize base cloud framework class."""
         super(IpaCloud, self).__init__()
@@ -111,14 +112,12 @@ class IpaCloud(object):
         self.config = config or default_values['config']
         log_level = log_level or default_values['log_level']
 
-        self.logger = logging.getLogger('img_proof')
-        self.logger.setLevel(log_level)
-
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(log_level)
-        console_handler.setFormatter(logging.Formatter('%(message)s'))
-
-        self.logger.addHandler(console_handler)
+        if log_callback:
+            self.logger = log_callback
+        else:
+            self.logger = logging.getLogger('img_proof')
+            self.logger.setLevel(log_level)
+            self.logger.propagate = False
 
         try:
             self.ipa_config = ipa_utils.get_config_values(
@@ -433,7 +432,11 @@ class IpaCloud(object):
         file_handler.setFormatter(
             logging.Formatter('\n%(asctime)s: %(message)s\n')
         )
-        self.logger.addHandler(file_handler)
+
+        try:
+            self.logger.addHandler(file_handler)
+        except AttributeError:
+            self.logger.logger.addHandler(file_handler)  # LogAdapter
 
     def _start_instance(self):
         """Start the instance."""

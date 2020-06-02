@@ -2,7 +2,7 @@
 
 """Controller class for img_proof endpoints."""
 
-# Copyright (c) 2019 SUSE LLC. All rights reserved.
+# Copyright (c) 2020 SUSE LLC. All rights reserved.
 #
 # This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -78,7 +78,8 @@ def test_image(
     tenancy=None,
     oci_user_id=None,
     enable_secure_boot=None,
-    enable_uefi=None
+    enable_uefi=None,
+    log_callback=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -105,7 +106,8 @@ def test_image(
         'timeout': timeout,
         'collect_vm_info': collect_vm_info,
         'enable_secure_boot': enable_secure_boot,
-        'enable_uefi': enable_uefi
+        'enable_uefi': enable_uefi,
+        'log_callback': log_callback
     }
 
     cloud_name = cloud_name.lower()

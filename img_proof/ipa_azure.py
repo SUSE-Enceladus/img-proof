@@ -2,7 +2,7 @@
 
 """Module for testing instances in Azure."""
 
-# Copyright (c) 2019 SUSE LLC. All rights reserved.
+# Copyright (c) 2020 SUSE LLC. All rights reserved.
 #
 # This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -65,7 +65,8 @@ class AzureCloud(IpaCloud):
         vnet_resource_group=None,
         collect_vm_info=None,
         enable_secure_boot=None,
-        enable_uefi=None
+        enable_uefi=None,
+        log_callback=None
     ):
         """Initialize Azure Cloud class."""
         super(AzureCloud, self).__init__(
@@ -93,7 +94,8 @@ class AzureCloud(IpaCloud):
             ssh_user,
             subnet_id,
             enable_secure_boot,
-            enable_uefi
+            enable_uefi,
+            log_callback
         )
 
         self.vnet_name = vnet_name or self.ipa_config['vnet_name']

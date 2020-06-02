@@ -2,7 +2,7 @@
 
 """img-proof CLI endpoints using click library."""
 
-# Copyright (c) 2019 SUSE LLC. All rights reserved.
+# Copyright (c) 2020 SUSE LLC. All rights reserved.
 #
 # This file is part of img-proof. img-proof provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -338,6 +338,8 @@ def test(context,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
+    logger = ipa_utils.get_logger(log_level)
+
     try:
         status, results = test_image(
             cloud,
@@ -381,7 +383,8 @@ def test(context,
             tenancy,
             oci_user_id,
             enable_secure_boot,
-            enable_uefi
+            enable_uefi,
+            logger
         )
         echo_results(results, no_color)
         sys.exit(status)
