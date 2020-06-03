@@ -426,18 +426,6 @@ class IpaCloud(object):
         )
         self.logger.debug('Created results file %s' % self.results_file)
 
-        # Add log file handler
-        file_handler = logging.FileHandler(self.log_file)
-        file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(
-            logging.Formatter('\n%(asctime)s: %(message)s\n')
-        )
-
-        try:
-            self.logger.addHandler(file_handler)
-        except AttributeError:
-            self.logger.logger.addHandler(file_handler)  # LogAdapter
-
     def _start_instance(self):
         """Start the instance."""
         raise NotImplementedError(NOT_IMPLEMENTED)
