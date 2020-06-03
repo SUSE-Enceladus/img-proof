@@ -2,7 +2,7 @@
 
 """Cloud framework module for testing AWS EC2 images."""
 
-# Copyright (c) 2019 SUSE LLC. All rights reserved.
+# Copyright (c) 2020 SUSE LLC. All rights reserved.
 #
 # This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -69,7 +69,8 @@ class EC2Cloud(IpaCloud):
         timeout=None,
         collect_vm_info=None,
         enable_secure_boot=None,
-        enable_uefi=None
+        enable_uefi=None,
+        log_callback=None
     ):
         """Initialize EC2 cloud framework class."""
         super(EC2Cloud, self).__init__(
@@ -97,7 +98,8 @@ class EC2Cloud(IpaCloud):
             ssh_user,
             subnet_id,
             enable_secure_boot,
-            enable_uefi
+            enable_uefi,
+            log_callback
         )
         # Get command line values that are not None
         cmd_line_values = self._get_non_null_values(locals())

@@ -2,7 +2,7 @@
 
 """Cloud module for testing Oracle OCI images."""
 
-# Copyright (c) 2019 SUSE LLC. All rights reserved.
+# Copyright (c) 2020 SUSE LLC. All rights reserved.
 #
 # This file is part of ipa. Ipa provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -65,7 +65,8 @@ class OCICloud(IpaCloud):
         tenancy=None,
         oci_user_id=None,
         enable_secure_boot=None,
-        enable_uefi=None
+        enable_uefi=None,
+        log_callback=None
     ):
         """Initialize OCI cloud framework class."""
         super(OCICloud, self).__init__(
@@ -93,7 +94,8 @@ class OCICloud(IpaCloud):
             ssh_user,
             subnet_id,
             enable_secure_boot,
-            enable_uefi
+            enable_uefi,
+            log_callback
         )
 
         self.availability_domain = (

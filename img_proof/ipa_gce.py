@@ -109,7 +109,8 @@ class GCECloud(IpaCloud):
         collect_vm_info=None,
         image_project=None,
         enable_secure_boot=None,
-        enable_uefi=None
+        enable_uefi=None,
+        log_callback=None
     ):
         super(GCECloud, self).__init__(
             'gce',
@@ -136,7 +137,8 @@ class GCECloud(IpaCloud):
             ssh_user,
             subnet_id,
             enable_secure_boot,
-            enable_uefi
+            enable_uefi,
+            log_callback
         )
 
         self.service_account_file = (

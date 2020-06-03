@@ -2,7 +2,7 @@
 
 """Utility functions."""
 
-# Copyright (c) 2019 SUSE LLC. All rights reserved.
+# Copyright (c) 2020 SUSE LLC. All rights reserved.
 #
 # This file is part of img_proof. img_proof provides an api and command line
 # utilities for testing images in the Public Cloud.
@@ -22,6 +22,7 @@
 
 import configparser
 import fnmatch
+import logging
 import os
 import random
 import sys
@@ -549,3 +550,18 @@ def update_history_log(history_log,
                 description or ''
             )
             f.write(out.strip() + '\n')
+
+
+def get_logger(log_level):
+    """
+    Return new console logger at provided log level.
+    """
+    logger = logging.getLogger('img_proof')
+    logger.setLevel(log_level)
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(log_level)
+    console_handler.setFormatter(logging.Formatter('%(message)s'))
+
+    logger.addHandler(console_handler)
+    return logger
