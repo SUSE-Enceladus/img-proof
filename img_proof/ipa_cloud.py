@@ -40,6 +40,8 @@ from img_proof.ipa_constants import (
     NOT_IMPLEMENTED,
     TEST_PATHS
 )
+from img_proof.ipa_rhel import RHEL
+from img_proof.ipa_fedora import Fedora
 from img_proof.ipa_opensuse_leap import openSUSE_Leap
 from img_proof.ipa_sles import SLES
 from img_proof.ipa_exceptions import (
@@ -376,7 +378,11 @@ class IpaCloud(object):
 
     def _set_distro(self):
         """Determine distro for image and create instance of class."""
-        if self.distro_name == 'sles':
+        if self.distro_name == 'rhel':
+            self.distro = RHEL()
+        elif self.distro_name == 'fedora':
+            self.distro = Fedora()
+        elif self.distro_name == 'sles':
             self.distro = SLES()
         elif self.distro_name == 'opensuse_leap':
             self.distro = openSUSE_Leap()
