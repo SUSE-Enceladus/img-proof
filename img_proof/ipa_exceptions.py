@@ -65,6 +65,10 @@ class IpaResultsException(IpaException):
     """Results subcommand exception."""
 
 
+class IpaRedHatException(IpaDistroException):
+    """Generic Exception for Red Hat distro modules."""
+
+
 class IpaSLESException(IpaDistroException):
     """Generic Exception for distro modules."""
 

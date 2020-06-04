@@ -31,8 +31,8 @@ About
 -----
 
 With **img-proof** you can now test custom images in a cloud framework agnostic way
-with one tool and one API. In the first release, **img-proof** supports the
-openSUSE and SLES distributions. It also supports the three largest
+with one tool and one API. **img-proof** supports the RHEL, Fedora,
+openSUSE, and SLES distributions. It also supports the three largest
 cloud frameworks (AWS, Azure and GCE). However, it is intended to be
 distribution agnostic and framework transparent so both are easily
 extensible.
@@ -80,6 +80,8 @@ includes tests such as soft reboot (e.g. "shutdown -r now") and update.
 
 The current supported distributions are:
 
+* RHEL
+* Fedora
 * SLES
 * openSUSE_Leap
 
