@@ -1,3 +1,13 @@
+v5.2.0 (2020-06-07)
+===================
+
+- Allow any calls to API to provide their own logger instance.
+  [\#250](https://github.com/SUSE-Enceladus/ipa/pull/250)
+- Remove file handler for logging which causes message duplication.
+  [\#251](https://github.com/SUSE-Enceladus/ipa/pull/251)
+- Add Red Hat family distro module and Fedora distro module.
+  [\#252](https://github.com/SUSE-Enceladus/ipa/pull/252)
+
 v5.1.0 (2020-06-01)
 ===================
 
