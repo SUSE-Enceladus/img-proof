@@ -378,14 +378,14 @@ class IpaCloud(object):
 
     def _set_distro(self):
         """Determine distro for image and create instance of class."""
-        if self.distro_name == 'rhel':
-            self.distro = RHEL()
-        elif self.distro_name == 'fedora':
+        if self.distro_name == 'fedora':
             self.distro = Fedora()
-        elif self.distro_name == 'sles':
-            self.distro = SLES()
         elif self.distro_name == 'opensuse_leap':
             self.distro = openSUSE_Leap()
+        elif self.distro_name == 'rhel':
+            self.distro = RHEL()
+        elif self.distro_name == 'sles':
+            self.distro = SLES()
         else:
             raise IpaCloudException(
                 'Distribution: %s, not supported.' % self.distro_name
