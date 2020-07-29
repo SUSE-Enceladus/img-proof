@@ -81,18 +81,19 @@ specific values.
 To override the default configuration location the CLI option ``-C`` or
 ``--config`` is available.
 
-The img_proof section is required. The cloud framework sections are optional and
-would be [{cloud_framework}]. For example, the [ec2] section in the following
-file.
+The config file can have multiple sections. The default section is [img_proof]
+and each cloud framework can have it's own section such as [{cloud_framework}].
+A config file with an [ec2] section may look like the following:
 
 .. code-block:: ini
 
    [img_proof]
-   tests=~/img_proof/tests/
-   results=~/img_proof/results/
+   test_dirs=/custom/tests/path/
+   results_dir=/custom/results/dir/
 
    [ec2]
    region=us-west-1
+   ssh_private_key_file = ~/.ssh/id_rsa
 
 There are multiple ways to provide configuration values when using
 **img-proof**. All options are available via command line and the configuration
