@@ -2,18 +2,18 @@ import pytest
 
 
 @pytest.mark.parametrize('name', [
-    'google-accounts-daemon',
-    'google-clock-skew-daemon',
-    'google-network-daemon'
+    'google-guest-agent'
 ])
 def test_sles_gce_running_services(check_service, name):
     assert check_service(name)
 
 
 @pytest.mark.parametrize('name', [
-    'google-instance-setup',
     'google-startup-scripts',
-    'google-shutdown-scripts'
+    'google-shutdown-scripts',
+    'google-optimize-local-ssd',
+    'google-oslogin-cache',
+    'google-set-multiqueue'
 ])
 def test_sles_gce_one_shot_services(check_service, host, name):
     assert check_service(name, running=None)
