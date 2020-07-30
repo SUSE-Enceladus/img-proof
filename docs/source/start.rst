@@ -82,7 +82,7 @@ To override the default configuration location the CLI option ``-C`` or
 ``--config`` is available.
 
 The config file can have multiple sections. The default section is [img_proof]
-and each cloud framework can have it's own section such as [{cloud_framework}].
+and each cloud framework can have its own section such as [{cloud_framework}].
 A config file with an [ec2] section may look like the following:
 
 .. code-block:: ini
