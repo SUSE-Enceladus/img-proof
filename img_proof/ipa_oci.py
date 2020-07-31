@@ -46,7 +46,7 @@ class OCICloud(IpaCloud):
         inject=None,
         instance_type=None,
         log_level=None,
-        no_default_test_dirs=False,
+        no_default_test_dirs=None,
         cloud_config=None,
         region=None,
         results_dir=None,

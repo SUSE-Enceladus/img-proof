@@ -30,6 +30,7 @@ import pytest
 
 from collections import ChainMap, defaultdict
 from datetime import datetime
+from distutils.util import strtobool
 
 from img_proof import ipa_utils
 from img_proof.ipa_constants import (
@@ -58,7 +59,8 @@ default_values = {
     'log_level': logging.INFO,
     'results_dir': IPA_RESULTS_PATH,
     'test_files': set(),
-    'timeout': 600
+    'timeout': 600,
+    'no_default_test_dirs': False
 }
 
 
@@ -84,7 +86,7 @@ class IpaCloud(object):
         inject=None,
         instance_type=None,
         log_level=None,
-        no_default_test_dirs=False,
+        no_default_test_dirs=None,
         cloud_config=None,
         region=None,
         results_dir=None,
@@ -160,6 +162,9 @@ class IpaCloud(object):
         self.subnet_id = self.ipa_config['subnet_id']
         self.enable_secure_boot = self.ipa_config['enable_secure_boot']
         self.enable_uefi = self.ipa_config['enable_uefi']
+        self.no_default_test_dirs = bool(
+            strtobool(str(self.ipa_config['no_default_test_dirs']))
+        )
 
         if self.enable_secure_boot and not self.enable_uefi:
             self.enable_uefi = True
@@ -193,7 +198,7 @@ class IpaCloud(object):
             )
         }
 
-        self._parse_test_files(test_dirs, no_default_test_dirs)
+        self._parse_test_files(test_dirs, self.no_default_test_dirs)
 
     def _get_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)
