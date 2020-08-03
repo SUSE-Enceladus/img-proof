@@ -244,26 +244,18 @@ class IpaCloud(object):
 
     def _log_info(self):
         """Output test run information to top of log file."""
-        if self.cloud == 'ssh':
-            self.results['info'] = {
-                'platform': self.cloud,
-                'distro': self.distro_name,
-                'image': self.instance_ip,
-                'timestamp': self.time_stamp,
-                'log_file': self.log_file,
-                'results_file': self.results_file
-            }
-        else:
-            self.results['info'] = {
-                'platform': self.cloud,
-                'region': self.region,
-                'distro': self.distro_name,
-                'image': self.image_id,
-                'instance': self.running_instance_id,
-                'timestamp': self.time_stamp,
-                'log_file': self.log_file,
-                'results_file': self.results_file
-            }
+        self.results['info'] = {
+            'platform': self.cloud,
+            'distro': self.distro_name,
+            'image': self.instance_ip,
+            'timestamp': self.time_stamp,
+            'log_file': self.log_file,
+            'results_file': self.results_file
+        }
+
+        if self.cloud != 'ssh':
+            self.results['info']['region'] = self.region
+            self.results['info']['instance'] = self.running_instance_id
 
         self._write_to_log(
             '\n'.join(
