@@ -70,7 +70,8 @@ class EC2Cloud(IpaCloud):
         collect_vm_info=None,
         enable_secure_boot=None,
         enable_uefi=None,
-        log_callback=None
+        log_callback=None,
+        prefix_name=None
     ):
         """Initialize EC2 cloud framework class."""
         super(EC2Cloud, self).__init__(
@@ -99,7 +100,8 @@ class EC2Cloud(IpaCloud):
             subnet_id,
             enable_secure_boot,
             enable_uefi,
-            log_callback
+            log_callback,
+            prefix_name
         )
         # Get command line values that are not None
         cmd_line_values = self._get_non_null_values(locals())
@@ -234,7 +236,7 @@ class EC2Cloud(IpaCloud):
         """Launch an instance of the given image."""
         resource = self._connect()
 
-        instance_name = ipa_utils.generate_instance_name('ec2-img-proof-test')
+        instance_name = self._generate_instance_name()
         kwargs = {
             'InstanceType': self.instance_type or EC2_DEFAULT_TYPE,
             'ImageId': self.image_id,

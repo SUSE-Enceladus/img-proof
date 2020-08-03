@@ -66,7 +66,8 @@ class OCICloud(IpaCloud):
         oci_user_id=None,
         enable_secure_boot=None,
         enable_uefi=None,
-        log_callback=None
+        log_callback=None,
+        prefix_name=None
     ):
         """Initialize OCI cloud framework class."""
         super(OCICloud, self).__init__(
@@ -95,7 +96,8 @@ class OCICloud(IpaCloud):
             subnet_id,
             enable_secure_boot,
             enable_uefi,
-            log_callback
+            log_callback,
+            prefix_name
         )
 
         self.availability_domain = (
@@ -440,7 +442,7 @@ class OCICloud(IpaCloud):
 
     def _launch_instance(self):
         """Launch an instance of the given image."""
-        self.display_name = ipa_utils.generate_instance_name('oci-ipa-test')
+        self.display_name = self._generate_instance_name()
 
         try:
             if not self.subnet_id:

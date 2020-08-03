@@ -110,7 +110,8 @@ class GCECloud(IpaCloud):
         image_project=None,
         enable_secure_boot=None,
         enable_uefi=None,
-        log_callback=None
+        log_callback=None,
+        prefix_name=None
     ):
         super(GCECloud, self).__init__(
             'gce',
@@ -138,7 +139,8 @@ class GCECloud(IpaCloud):
             subnet_id,
             enable_secure_boot,
             enable_uefi,
-            log_callback
+            log_callback,
+            prefix_name
         )
 
         self.service_account_file = (
@@ -393,9 +395,7 @@ class GCECloud(IpaCloud):
 
     def _launch_instance(self):
         """Launch an instance of the given image."""
-        self.running_instance_id = ipa_utils.generate_instance_name(
-            'gce-img-proof-test'
-        )
+        self.running_instance_id = self._generate_instance_name()
         self.logger.debug('ID of instance: %s' % self.running_instance_id)
 
         machine_type = self._get_instance_type(

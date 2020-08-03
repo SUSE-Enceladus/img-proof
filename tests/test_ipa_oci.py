@@ -515,6 +515,7 @@ class TestOCIProvider(object):
         cloud.instance_type = None
         cloud.image_id = 'image123'
         cloud.logger = logger
+        cloud.prefix_name = None
 
         cloud._launch_instance()
 
