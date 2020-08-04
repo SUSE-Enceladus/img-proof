@@ -178,7 +178,7 @@ def main(context, no_color):
 @click.option(
     '--no-default-test-dirs',
     is_flag=True,
-    default=False,
+    default=None,
     help='Do not include default test directories in search for tests.'
 )
 @click.option(
