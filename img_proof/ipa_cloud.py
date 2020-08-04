@@ -100,7 +100,8 @@ class IpaCloud(object):
         subnet_id=None,
         enable_secure_boot=None,
         enable_uefi=None,
-        log_callback=None
+        log_callback=None,
+        prefix_name=None
     ):
         """Initialize base cloud framework class."""
         super(IpaCloud, self).__init__()
@@ -165,6 +166,7 @@ class IpaCloud(object):
         self.no_default_test_dirs = bool(
             strtobool(str(self.ipa_config['no_default_test_dirs']))
         )
+        self.prefix_name = self.ipa_config['prefix_name']
 
         if self.enable_secure_boot and not self.enable_uefi:
             self.enable_uefi = True
@@ -244,26 +246,18 @@ class IpaCloud(object):
 
     def _log_info(self):
         """Output test run information to top of log file."""
-        if self.cloud == 'ssh':
-            self.results['info'] = {
-                'platform': self.cloud,
-                'distro': self.distro_name,
-                'image': self.instance_ip,
-                'timestamp': self.time_stamp,
-                'log_file': self.log_file,
-                'results_file': self.results_file
-            }
-        else:
-            self.results['info'] = {
-                'platform': self.cloud,
-                'region': self.region,
-                'distro': self.distro_name,
-                'image': self.image_id,
-                'instance': self.running_instance_id,
-                'timestamp': self.time_stamp,
-                'log_file': self.log_file,
-                'results_file': self.results_file
-            }
+        self.results['info'] = {
+            'platform': self.cloud,
+            'distro': self.distro_name,
+            'image': self.instance_ip,
+            'timestamp': self.time_stamp,
+            'log_file': self.log_file,
+            'results_file': self.results_file
+        }
+
+        if self.cloud != 'ssh':
+            self.results['info']['region'] = self.region
+            self.results['info']['instance'] = self.running_instance_id
 
         self._write_to_log(
             '\n'.join(
@@ -638,6 +632,19 @@ class IpaCloud(object):
                 'Terminating instance %s' % self.running_instance_id
             )
             self._terminate_instance()
+
+    def _generate_instance_name(self):
+        """
+        Generate a new instance name with a random string appended.
+
+        If a prefix is supplied add to the beginning of instance name.
+        """
+        instance_name = ipa_utils.generate_instance_name('img-proof')
+
+        if self.prefix_name:
+            instance_name = '-'.join([self.prefix_name, instance_name])
+
+        return instance_name
 
     def get_console_log(self):
         """

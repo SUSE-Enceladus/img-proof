@@ -79,7 +79,8 @@ def test_image(
     oci_user_id=None,
     enable_secure_boot=None,
     enable_uefi=None,
-    log_callback=None
+    log_callback=None,
+    prefix_name=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -107,7 +108,8 @@ def test_image(
         'collect_vm_info': collect_vm_info,
         'enable_secure_boot': enable_secure_boot,
         'enable_uefi': enable_uefi,
-        'log_callback': log_callback
+        'log_callback': log_callback,
+        'prefix_name': prefix_name
     }
 
     cloud_name = cloud_name.lower()

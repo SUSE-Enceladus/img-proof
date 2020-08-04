@@ -66,7 +66,8 @@ class AzureCloud(IpaCloud):
         collect_vm_info=None,
         enable_secure_boot=None,
         enable_uefi=None,
-        log_callback=None
+        log_callback=None,
+        prefix_name=None
     ):
         """Initialize Azure Cloud class."""
         super(AzureCloud, self).__init__(
@@ -95,7 +96,8 @@ class AzureCloud(IpaCloud):
             subnet_id,
             enable_secure_boot,
             enable_uefi,
-            log_callback
+            log_callback,
+            prefix_name
         )
 
         self.vnet_name = vnet_name or self.ipa_config['vnet_name']
@@ -424,9 +426,7 @@ class AzureCloud(IpaCloud):
         """
         Create new test instance in a resource group with the same name.
         """
-        self.running_instance_id = ipa_utils.generate_instance_name(
-            'azure-img-proof-test'
-        )
+        self.running_instance_id = self._generate_instance_name()
         self.logger.debug('ID of instance: %s' % self.running_instance_id)
         self._set_default_resource_names()
 
