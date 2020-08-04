@@ -111,7 +111,8 @@ class GCECloud(IpaCloud):
         enable_secure_boot=None,
         enable_uefi=None,
         log_callback=None,
-        prefix_name=None
+        prefix_name=None,
+        retry_count=None
     ):
         super(GCECloud, self).__init__(
             'gce',
@@ -140,7 +141,8 @@ class GCECloud(IpaCloud):
             enable_secure_boot,
             enable_uefi,
             log_callback,
-            prefix_name
+            prefix_name,
+            retry_count
         )
 
         self.service_account_file = (

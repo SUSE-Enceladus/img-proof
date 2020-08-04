@@ -67,7 +67,8 @@ class OCICloud(IpaCloud):
         enable_secure_boot=None,
         enable_uefi=None,
         log_callback=None,
-        prefix_name=None
+        prefix_name=None,
+        retry_count=None
     ):
         """Initialize OCI cloud framework class."""
         super(OCICloud, self).__init__(
@@ -97,7 +98,8 @@ class OCICloud(IpaCloud):
             enable_secure_boot,
             enable_uefi,
             log_callback,
-            prefix_name
+            prefix_name,
+            retry_count
         )
 
         self.availability_domain = (

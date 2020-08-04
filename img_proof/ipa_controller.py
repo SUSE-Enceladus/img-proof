@@ -80,7 +80,8 @@ def test_image(
     enable_secure_boot=None,
     enable_uefi=None,
     log_callback=None,
-    prefix_name=None
+    prefix_name=None,
+    retry_count=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -109,7 +110,8 @@ def test_image(
         'enable_secure_boot': enable_secure_boot,
         'enable_uefi': enable_uefi,
         'log_callback': log_callback,
-        'prefix_name': prefix_name
+        'prefix_name': prefix_name,
+        'retry_count': retry_count
     }
 
     cloud_name = cloud_name.lower()

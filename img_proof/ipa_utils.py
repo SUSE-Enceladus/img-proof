@@ -116,11 +116,8 @@ def expand_test_files(test_dirs, names):
     """
     Expand the list of test files and test descriptions.
 
-    The list is split on sync points and duplicates in
-    each set are removed.
-
     Returns:
-        List of test files split into sets by sync points.
+        List of test files and sync points.
     Raises:
         IpaUtilsException: If names is not a list.
     """
@@ -426,33 +423,25 @@ def ignored(*exceptions):
 
 def parse_sync_points(names, tests):
     """
-    Slice list of test names on sync points.
-
     If test is test file find full path to file.
 
+    Otherwise leave sync point names as is.
+
     Returns:
-        A list of test file sets and sync point strings.
+        A list of test file paths and sync points.
     Examples:
         ['test_hard_reboot']
-        [set('test1', 'test2')]
-        [set('test1', 'test2'), 'test_soft_reboot']
-        [set('test1', 'test2'), 'test_soft_reboot', set('test3')]
+        ['/path/to/test1', '/path/to/test2']
+        ['/path/to/test1', '/path/to/test2', 'test_soft_reboot']
     """
     test_files = []
-    section = set()
 
     for name in names:
         if name in SYNC_POINTS:
-            if section:
-                test_files.append(section)
-
             test_files.append(name)
-            section = set()
         else:
-            section.add(find_test_file(name, tests))
+            test_files.append(find_test_file(name, tests))
 
-    if section:
-        test_files.append(section)
     return test_files
 
 
