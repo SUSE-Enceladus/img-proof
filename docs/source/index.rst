@@ -85,25 +85,26 @@ The current supported distributions are:
 * SLES
 * openSUSE_Leap
 
-In addition to soft reboot and update there is a built in test for 
+In addition to soft reboot, refresh and update there is a built in test for
 hard reboot (framework reboot).
 
-These tests are "synchronization points". The synch points not only test
-functionality but also act as dividers to separate distinct sections of
-a test suite.
+These tests are "synchronization points". The tests are built into each
+distribution as the commands can be slightly different.
 
 By default pytest does not guarantee the order of tests. However, there
 are cases where this is ideal when testing images. For example you 
 can run an update then do a reboot to ensure an instance starts properly.
 
 A test suite such as ['test_soft_reboot', 'test_sles', 'test_update',
-'test_hard_reboot', 'test_sles_ec2'] will be broken into multiple pytest
-invocations (lists are pytest invocations):
+'test_hard_reboot', 'test_sles_ec2'] will be broken into five pytest
+invocations:
 
-Soft reboot, ['test_sles'], update, hard reboot, ['test_sles_ec2']
+Soft reboot, test_sles, update, hard reboot, test_sles_ec2
 
-The order of tests is guaranteed and the results will be agregated to
-determine the status of a test run.
+The order of tests is guaranteed and the results will be aggregated to
+determine the status of a test run. If a test fails it will be re-run
+up to the number of retries. The default is three times and this can be
+configured with the **--retry-count** option.
 
 Cloud Framework Classes
 ^^^^^^^^^^^^^^^^^^^^^^^

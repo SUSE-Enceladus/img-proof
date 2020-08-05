@@ -210,7 +210,7 @@ class TestIpaCloud(object):
             'region': 'us-west-1'
         }
 
-        out = cloud._run_tests(
+        out = cloud._run_test(
             ['tests/data/tests/test_image.py'],
             'test.ssh'
         )
@@ -603,10 +603,10 @@ class TestIpaCloud(object):
     @patch.object(IpaCloud, '_start_instance_if_stopped')
     @patch.object(IpaCloud, '_get_ssh_client')
     @patch('img_proof.ipa_utils.get_host_key_fingerprint')
-    @patch.object(IpaCloud, '_run_tests')
+    @patch.object(IpaCloud, '_run_test')
     def test_cloud_break_if_test_failure(
         self,
-        mock_run_tests,
+        mock_run_test,
         mock_get_host_key,
         mock_get_ssh_client,
         mock_start_instance,
@@ -614,7 +614,7 @@ class TestIpaCloud(object):
         mock_set_instance_ip
     ):
         """Test exception raised when invalid test item provided."""
-        mock_run_tests.return_value = 1
+        mock_run_test.return_value = 1
         mock_get_host_key.return_value = b'04820482'
         mock_get_ssh_client.return_value = None
         mock_start_instance.return_value = None
@@ -629,7 +629,7 @@ class TestIpaCloud(object):
 
         status, results = cloud.test_image()
         assert status == 1
-        assert mock_run_tests.call_count == 1
+        assert mock_run_test.call_count == 1
 
     @patch.object(IpaCloud, '_get_instance_state')
     @patch('time.sleep')

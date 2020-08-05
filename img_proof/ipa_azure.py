@@ -67,7 +67,8 @@ class AzureCloud(IpaCloud):
         enable_secure_boot=None,
         enable_uefi=None,
         log_callback=None,
-        prefix_name=None
+        prefix_name=None,
+        retry_count=None
     ):
         """Initialize Azure Cloud class."""
         super(AzureCloud, self).__init__(
@@ -97,7 +98,8 @@ class AzureCloud(IpaCloud):
             enable_secure_boot,
             enable_uefi,
             log_callback,
-            prefix_name
+            prefix_name,
+            retry_count
         )
 
         self.vnet_name = vnet_name or self.ipa_config['vnet_name']

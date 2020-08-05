@@ -141,10 +141,9 @@ def test_utils_expand_test_files():
     test_dirs = ['tests/data/tests']
     names = ['test_sles::test_sles', 'test_image_desc']
     expanded = ipa_utils.expand_test_files(test_dirs, names)
-    assert expanded[0] - set(
-        ['tests/data/tests/test_image.py',
-         'tests/data/tests/test_sles.py::test_sles']
-    ) == set()
+
+    assert 'tests/data/tests/test_image.py' in expanded
+    assert 'tests/data/tests/test_sles.py::test_sles' in expanded
 
 
 def test_utils_test_file_not_found():
@@ -176,13 +175,11 @@ def test_utils_expand_sync_points():
     names = ['test_soft_reboot', 'test_sles_desc', 'test_hard_reboot']
     expanded = ipa_utils.expand_test_files(test_dirs, names)
 
-    assert len(expanded) == 3
+    assert len(expanded) == 4
     assert expanded[0] == 'test_soft_reboot'
-    assert expanded[1] - set(
-        ['tests/data/tests/test_sles.py',
-         'tests/data/tests/test_image.py']
-    ) == set()
-    assert expanded[2] == 'test_hard_reboot'
+    assert expanded[1] == 'tests/data/tests/test_sles.py'
+    assert expanded[2] == 'tests/data/tests/test_image.py'
+    assert expanded[3] == 'test_hard_reboot'
 
 
 @patch('img_proof.ipa_utils.execute_ssh_command')

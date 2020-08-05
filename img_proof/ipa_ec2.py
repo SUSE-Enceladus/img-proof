@@ -71,7 +71,8 @@ class EC2Cloud(IpaCloud):
         enable_secure_boot=None,
         enable_uefi=None,
         log_callback=None,
-        prefix_name=None
+        prefix_name=None,
+        retry_count=None
     ):
         """Initialize EC2 cloud framework class."""
         super(EC2Cloud, self).__init__(
@@ -101,7 +102,8 @@ class EC2Cloud(IpaCloud):
             enable_secure_boot,
             enable_uefi,
             log_callback,
-            prefix_name
+            prefix_name,
+            retry_count
         )
         # Get command line values that are not None
         cmd_line_values = self._get_non_null_values(locals())

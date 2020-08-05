@@ -60,7 +60,8 @@ default_values = {
     'results_dir': IPA_RESULTS_PATH,
     'test_files': set(),
     'timeout': 600,
-    'no_default_test_dirs': False
+    'no_default_test_dirs': False,
+    'retry_count': 3
 }
 
 
@@ -101,7 +102,8 @@ class IpaCloud(object):
         enable_secure_boot=None,
         enable_uefi=None,
         log_callback=None,
-        prefix_name=None
+        prefix_name=None,
+        retry_count=None
     ):
         """Initialize base cloud framework class."""
         super(IpaCloud, self).__init__()
@@ -167,6 +169,7 @@ class IpaCloud(object):
             strtobool(str(self.ipa_config['no_default_test_dirs']))
         )
         self.prefix_name = self.ipa_config['prefix_name']
+        self.retry_count = int(self.ipa_config['retry_count'])
 
         if self.enable_secure_boot and not self.enable_uefi:
             self.enable_uefi = True
@@ -335,8 +338,8 @@ class IpaCloud(object):
         }
         self._merge_results(result)
 
-    def _run_tests(self, tests, ssh_config):
-        """Run the test suite on the image."""
+    def _run_test(self, test, ssh_config):
+        """Run the test on the image."""
         options = []
         if self.early_exit:
             options.append('-x')
@@ -345,7 +348,7 @@ class IpaCloud(object):
                 ' '.join(options),
                 ssh_config,
                 self.instance_ip,
-                ' '.join(tests)
+                test
             )
 
         # Print output captured to log file for test run
@@ -357,8 +360,16 @@ class IpaCloud(object):
         print('Arguments:\n{}\n'.format(args))
 
         cmds = shlex.split(args)
-        plugin = Report()
-        result = pytest.main(cmds, plugins=[plugin])
+        num_retries = 0
+
+        while num_retries < self.retry_count:
+            plugin = Report()
+            result = pytest.main(cmds, plugins=[plugin])
+
+            if result != 0:
+                num_retries += 1
+            else:
+                break
 
         # If pytest has an error there will be no report but
         # we still want to process the error as a failure.
@@ -834,12 +845,12 @@ class IpaCloud(object):
                         )
                         status = status or result
 
-                elif isinstance(item, set):
-                    self.logger.info('Running tests %s' % ' '.join(item))
+                elif isinstance(item, str):
+                    self.logger.info('Running test {name}'.format(name=item))
                     with open(self.log_file, 'a') as log_file:
                         with ipa_utils.redirect_output(log_file):
                             # Run tests
-                            result = self._run_tests(item, ssh_config)
+                            result = self._run_test(item, ssh_config)
                             status = status or result
 
                 else:
