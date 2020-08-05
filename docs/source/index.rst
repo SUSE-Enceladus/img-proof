@@ -96,7 +96,7 @@ are cases where this is ideal when testing images. For example you
 can run an update then do a reboot to ensure an instance starts properly.
 
 A test suite such as ['test_soft_reboot', 'test_sles', 'test_update',
-'test_hard_reboot', 'test_sles_ec2'] will be broken five pytest
+'test_hard_reboot', 'test_sles_ec2'] will be broken into five pytest
 invocations:
 
 Soft reboot, test_sles, update, hard reboot, test_sles_ec2
