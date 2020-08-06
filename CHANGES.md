@@ -1,3 +1,17 @@
+v5.3.0 (2020-08-06)
+===================
+
+- Update getting started doc.
+  [\#255](https://github.com/SUSE-Enceladus/ipa/pull/255)
+- Update list of services for GCE and Azure images.
+  [\#256](https://github.com/SUSE-Enceladus/ipa/pull/256)
+- Allow no default test dirs in config.
+  [\#257](https://github.com/SUSE-Enceladus/ipa/pull/257)
+- Add prefix name option.
+  [\#258](https://github.com/SUSE-Enceladus/ipa/pull/258)
+- Run every test case individually.
+  [\#259](https://github.com/SUSE-Enceladus/ipa/pull/259)
+
 v5.2.0 (2020-06-07)
 ===================
 
