@@ -120,6 +120,12 @@ class SSHCloud(IpaCloud):
         """
         pass
 
+    def get_console_log(self):
+        """
+        Return console log output if it is available.
+        """
+        return ''  # No console log for SSH backend
+
     def _launch_instance(self):
         """
         Do nothing.
