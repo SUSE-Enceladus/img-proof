@@ -35,6 +35,7 @@ from binascii import hexlify
 from contextlib import contextmanager
 from string import ascii_lowercase
 from tempfile import NamedTemporaryFile
+from paramiko.ssh_exception import AuthenticationException
 
 from img_proof.ipa_constants import SYNC_POINTS
 from img_proof.ipa_exceptions import IpaSSHException, IpaUtilsException
@@ -81,6 +82,8 @@ def establish_ssh_connection(ip,
                 key_filename=ssh_private_key_file,
                 timeout=timeout
             )
+        except (FileNotFoundError, AuthenticationException):
+            raise
         except:  # noqa: E722
             attempts -= 1
             time.sleep(10)
@@ -281,6 +284,16 @@ def get_ssh_client(ip,
                 timeout=wait_period
             )
             execute_ssh_command(client, 'ls')
+        except FileNotFoundError:
+            raise IpaSSHException(
+                'SSH private key file {key_file} not found.'.format(
+                    key_file=ssh_private_key_file
+                )
+            )
+        except AuthenticationException:
+            raise IpaSSHException(
+                'Authentication failed while establishing SSH connection.'
+            )
         except:  # noqa: E722
             if client:
                 client.close()
