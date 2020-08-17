@@ -116,43 +116,41 @@ def test_image(
 
     cloud_name = cloud_name.lower()
     if cloud_name == 'azure':
-        cloud = AzureCloud(
-            accelerated_networking=accelerated_networking,
-            service_account_file=service_account_file,
-            vnet_name=vnet_name,
-            vnet_resource_group=vnet_resource_group,
-            **kwargs
-        )
+        kwargs['custom_args'] = {
+            'accelerated_networking': accelerated_networking,
+            'service_account_file': service_account_file,
+            'vnet_name': vnet_name,
+            'vnet_resource_group': vnet_resource_group
+        }
+        cloud = AzureCloud(**kwargs)
     elif cloud_name == 'ec2':
-        cloud = EC2Cloud(
-            access_key_id=access_key_id,
-            account_name=account,
-            secret_access_key=secret_access_key,
-            security_group_id=security_group_id,
-            ssh_key_name=ssh_key_name,
-            **kwargs
-        )
+        kwargs['custom_args'] = {
+            'access_key_id': access_key_id,
+            'account_name': account,
+            'secret_access_key': secret_access_key,
+            'security_group_id': security_group_id,
+            'ssh_key_name': ssh_key_name
+        }
+        cloud = EC2Cloud(**kwargs)
     elif cloud_name == 'gce':
-        cloud = GCECloud(
-            service_account_file=service_account_file,
-            image_project=image_project,
-            **kwargs
-        )
+        kwargs['custom_args'] = {
+            'service_account_file': service_account_file,
+            'image_project': image_project
+        }
+        cloud = GCECloud(**kwargs)
     elif cloud_name == 'ssh':
-        cloud = SSHCloud(
-            ip_address=ip_address,
-            **kwargs
-        )
+        kwargs['custom_args'] = {'ip_address': ip_address}
+        cloud = SSHCloud(**kwargs)
     elif cloud_name == 'oci':
-        cloud = OCICloud(
-            compartment_id=compartment_id,
-            availability_domain=availability_domain,
-            signing_key_fingerprint=signing_key_fingerprint,
-            signing_key_file=signing_key_file,
-            tenancy=tenancy,
-            oci_user_id=oci_user_id,
-            **kwargs
-        )
+        kwargs['custom_args'] = {
+            'compartment_id': compartment_id,
+            'availability_domain': availability_domain,
+            'signing_key_fingerprint': signing_key_fingerprint,
+            'signing_key_file': signing_key_file,
+            'tenancy': tenancy,
+            'oci_user_id': oci_user_id
+        }
+        cloud = OCICloud(**kwargs)
     else:
         raise IpaControllerException(
             'Cloud framework: %s unavailable.' % cloud_name

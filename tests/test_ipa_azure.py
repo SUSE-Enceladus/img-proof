@@ -43,10 +43,12 @@ class TestAzureProvider(object):
             'image_id': 'another:fake:image:id',
             'no_default_test_dirs': True,
             'running_instance_id': 'fakeinstance',
-            'service_account_file': 'tests/azure/test-sa.json',
             'ssh_private_key_file': 'tests/data/ida_test',
             'test_dirs': 'tests/data/tests',
-            'test_files': ['test_image']
+            'test_files': ['test_image'],
+            'custom_args': {
+                'service_account_file': 'tests/azure/test-sa.json'
+            }
         }
 
     @patch.object(AzureCloud, '_get_management_client')

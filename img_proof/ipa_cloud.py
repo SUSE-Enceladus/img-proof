@@ -73,10 +73,10 @@ class IpaCloud(object):
     modules extend the base class and implement cloud
     specific methods for launching and managing instances.
     """
+    cloud = 'base'
 
     def __init__(
         self,
-        cloud,
         cleanup=None,
         config=None,
         description=None,
@@ -103,7 +103,8 @@ class IpaCloud(object):
         enable_uefi=None,
         log_callback=None,
         prefix_name=None,
-        retry_count=None
+        retry_count=None,
+        custom_args=None
     ):
         """Initialize base cloud framework class."""
         super(IpaCloud, self).__init__()
@@ -112,7 +113,7 @@ class IpaCloud(object):
 
         ipa_utils.clear_cache()
 
-        self.cloud = cloud
+        self.custom_args = custom_args if custom_args else {}
         self.host_key_fingerprint = None
         self.instance_ip = None
 
@@ -204,6 +205,10 @@ class IpaCloud(object):
         }
 
         self._parse_test_files(test_dirs, self.no_default_test_dirs)
+        self.post_init()
+
+    def post_init(self):
+        pass
 
     def _get_instance(self):
         raise NotImplementedError(NOT_IMPLEMENTED)

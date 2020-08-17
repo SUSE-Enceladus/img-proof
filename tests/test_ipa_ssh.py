@@ -35,12 +35,12 @@ class TestSSHProvider(object):
         self.kwargs = {
             'config': 'tests/data/config',
             'distro_name': 'sles',
-            'ip_address': '10.0.0.1',
             'no_default_test_dirs': True,
             'ssh_private_key_file': 'tests/data/ida_test',
             'ssh_user': 'root',
             'test_dirs': 'tests/data/tests',
-            'test_files': ['test_image']
+            'test_files': ['test_image'],
+            'custom_args': {'ip_address': '10.0.0.1'}
         }
 
     @pytest.mark.parametrize('name,msg', [
@@ -48,8 +48,7 @@ class TestSSHProvider(object):
         (
             'ssh_private_key_file',
             'SSH private key file is required to connect to instance.'
-        ),
-        ('ip_address', 'IP address is required to connect to instance.')
+        )
     ])
     def test_required_args(self, name, msg):
         self.kwargs[name] = None

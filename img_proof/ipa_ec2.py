@@ -38,78 +38,16 @@ from img_proof.ipa_cloud import IpaCloud
 
 class EC2Cloud(IpaCloud):
     """Cloud framework class for testing AWS EC2 images."""
+    cloud = 'ec2'
 
-    def __init__(
-        self,
-        access_key_id=None,
-        account_name=None,
-        cleanup=None,
-        config=None,
-        description=None,
-        distro_name=None,
-        early_exit=None,
-        history_log=None,
-        image_id=None,
-        inject=None,
-        instance_type=None,
-        log_level=None,
-        no_default_test_dirs=None,
-        cloud_config=None,
-        region=None,
-        results_dir=None,
-        running_instance_id=None,
-        secret_access_key=None,
-        security_group_id=None,
-        ssh_key_name=None,
-        ssh_private_key_file=None,
-        ssh_user=None,
-        subnet_id=None,
-        test_dirs=None,
-        test_files=None,
-        timeout=None,
-        collect_vm_info=None,
-        enable_secure_boot=None,
-        enable_uefi=None,
-        log_callback=None,
-        prefix_name=None,
-        retry_count=None
-    ):
+    def post_init(self):
         """Initialize EC2 cloud framework class."""
-        super(EC2Cloud, self).__init__(
-            'ec2',
-            cleanup,
-            config,
-            description,
-            distro_name,
-            early_exit,
-            history_log,
-            image_id,
-            inject,
-            instance_type,
-            log_level,
-            no_default_test_dirs,
-            cloud_config,
-            region,
-            results_dir,
-            running_instance_id,
-            test_dirs,
-            test_files,
-            timeout,
-            collect_vm_info,
-            ssh_private_key_file,
-            ssh_user,
-            subnet_id,
-            enable_secure_boot,
-            enable_uefi,
-            log_callback,
-            prefix_name,
-            retry_count
-        )
+
         # Get command line values that are not None
-        cmd_line_values = self._get_non_null_values(locals())
+        cmd_line_values = self._get_non_null_values(self.custom_args)
 
         self.zone = None
-        self.account_name = account_name
+        self.account_name = self.custom_args.get('account_name')
 
         if not self.account_name:
             self.logger.debug(

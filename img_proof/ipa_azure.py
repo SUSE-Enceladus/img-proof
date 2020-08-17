@@ -35,76 +35,18 @@ from img_proof.ipa_cloud import IpaCloud
 
 class AzureCloud(IpaCloud):
     """Class for testing instances in Azure."""
+    cloud = 'azure'
 
-    def __init__(
-        self,
-        accelerated_networking=False,
-        cleanup=None,
-        config=None,
-        description=None,
-        distro_name=None,
-        early_exit=None,
-        history_log=None,
-        image_id=None,
-        inject=None,
-        instance_type=None,
-        log_level=None,
-        no_default_test_dirs=None,
-        cloud_config=None,
-        region=None,
-        results_dir=None,
-        running_instance_id=None,
-        service_account_file=None,
-        ssh_private_key_file=None,
-        ssh_user=None,
-        subnet_id=None,
-        test_dirs=None,
-        test_files=None,
-        timeout=None,
-        vnet_name=None,
-        vnet_resource_group=None,
-        collect_vm_info=None,
-        enable_secure_boot=None,
-        enable_uefi=None,
-        log_callback=None,
-        prefix_name=None,
-        retry_count=None
-    ):
-        """Initialize Azure Cloud class."""
-        super(AzureCloud, self).__init__(
-            'azure',
-            cleanup,
-            config,
-            description,
-            distro_name,
-            early_exit,
-            history_log,
-            image_id,
-            inject,
-            instance_type,
-            log_level,
-            no_default_test_dirs,
-            cloud_config,
-            region,
-            results_dir,
-            running_instance_id,
-            test_dirs,
-            test_files,
-            timeout,
-            collect_vm_info,
-            ssh_private_key_file,
-            ssh_user,
-            subnet_id,
-            enable_secure_boot,
-            enable_uefi,
-            log_callback,
-            prefix_name,
-            retry_count
+    def post_init(self):
+        """Initialize Azure cloud framework class."""
+
+        self.vnet_name = (
+                self.custom_args.get('vnet_name')
+                or self.ipa_config['vnet_name']
         )
-
-        self.vnet_name = vnet_name or self.ipa_config['vnet_name']
         self.vnet_resource_group = (
-                vnet_resource_group or self.ipa_config['vnet_resource_group']
+            self.custom_args.get('vnet_resource_group')
+            or self.ipa_config['vnet_resource_group']
         )
 
         subnet_args = [
@@ -117,7 +59,8 @@ class AzureCloud(IpaCloud):
             )
 
         self.service_account_file = (
-            service_account_file or self.ipa_config['service_account_file']
+            self.custom_args.get('service_account_file')
+            or self.ipa_config['service_account_file']
         )
         if not self.service_account_file:
             raise AzureCloudException(
@@ -134,8 +77,8 @@ class AzureCloud(IpaCloud):
             )
 
         self.accelerated_networking = (
-            accelerated_networking or
-            self.ipa_config['accelerated_networking']
+            self.custom_args.get('accelerated_networking')
+            or self.ipa_config['accelerated_networking']
         )
         self.ssh_user = self.ssh_user or AZURE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
