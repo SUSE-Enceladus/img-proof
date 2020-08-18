@@ -64,9 +64,11 @@ class TestGCECloud(object):
             'distro_name': 'SLES',
             'image_id': 'fakeimage',
             'no_default_test_dirs': True,
-            'service_account_file': 'tests/gce/service-account.json',
             'ssh_private_key_file': 'tests/data/ida_test',
-            'test_files': ['test_image']
+            'test_files': ['test_image'],
+            'custom_args': {
+                'service_account_file': 'tests/gce/service-account.json'
+            }
         }
 
         driver = MagicMock()
@@ -80,7 +82,7 @@ class TestGCECloud(object):
 
     def test_gce_exception_required_args(self):
         """Test an exception is raised if required args missing."""
-        self.kwargs['service_account_file'] = None
+        self.kwargs['custom_args']['service_account_file'] = None
         self.kwargs['ssh_private_key_file'] = None
 
         # Test service account file required
@@ -90,7 +92,8 @@ class TestGCECloud(object):
         assert str(error.value) == \
             'Service account file is required to connect to GCE.'
 
-        self.kwargs['service_account_file'] = 'tests/gce/service-account.json'
+        self.kwargs['custom_args']['service_account_file'] = \
+            'tests/gce/service-account.json'
 
         # Test ssh private key file required
         with pytest.raises(GCECloudException) as error:

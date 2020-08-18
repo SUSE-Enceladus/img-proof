@@ -33,8 +33,6 @@ from img_proof.ipa_cloud import IpaCloud
 from unittest.mock import call, MagicMock, patch
 from tempfile import TemporaryDirectory
 
-args = ['ec2']
-
 NOT_IMPL_METHODS = [
     '_get_instance',
     '_get_instance_state',
@@ -83,7 +81,7 @@ class TestIpaCloud(object):
     )
     def test_cloud_not_implemented_methods(self, method):
         """Confirm methods raise not implemented exception."""
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
 
         with pytest.raises(NotImplementedError) as error:
             getattr(cloud, method)()
@@ -92,7 +90,7 @@ class TestIpaCloud(object):
     def test_cloud_distro_required(self):
         """Test exception raised if no distro provided."""
         with pytest.raises(IpaCloudException) as error:
-            IpaCloud(*args, config='tests/data/config')
+            IpaCloud(config='tests/data/config')
 
         assert str(error.value) == \
             'Distro name is required.'
@@ -101,7 +99,6 @@ class TestIpaCloud(object):
         """Test exception if no running instance or image id provided."""
         with pytest.raises(IpaCloudException) as error:
             IpaCloud(
-                *args,
                 config='tests/data/config',
                 distro_name='SLES'
             )
@@ -112,7 +109,7 @@ class TestIpaCloud(object):
     @patch.object(ipa_utils, 'get_ssh_client')
     def test_cloud_get_ssh_client(self, mock_get_ssh_client):
         """Test get ssh client method."""
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
 
         cloud.instance_ip = '127.0.0.1'
         cloud.ssh_user = 'ec2-user'
@@ -131,7 +128,7 @@ class TestIpaCloud(object):
     def test_cloud_get_user_data(self, mock_get_ssh_key):
         mock_get_ssh_key.return_value = b'testkey12345'
 
-        provider = IpaCloud(*args, **self.kwargs)
+        provider = IpaCloud(**self.kwargs)
 
         result = provider._get_user_data()
 
@@ -141,7 +138,7 @@ class TestIpaCloud(object):
 
     def test_cloud_get_non_null_values(self):
         """Test cloud get non null values method."""
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
 
         data = {'region': 'us-east-1', 'type': None}
 
@@ -152,7 +149,7 @@ class TestIpaCloud(object):
 
     def test_cloud_merge_results(self):
         """Test merge results output."""
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
 
         results = {
             "tests": [
@@ -184,7 +181,7 @@ class TestIpaCloud(object):
             assert cloud.results['tests'][0][key] == val
 
     def test_process_test_results(self):
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud._process_test_results(5.0, 'test_test')
 
         assert cloud.results['summary']['duration'] == 5.0
@@ -202,7 +199,7 @@ class TestIpaCloud(object):
         mock_pytest.return_value = 0
         mock_merge_results.return_value = None
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
 
         cloud.terminate = True
         cloud.results['info'] = {
@@ -220,7 +217,7 @@ class TestIpaCloud(object):
 
     def test_cloud_invalid_distro_name(self):
         """Test invalid distro name provided raises exception."""
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.distro_name = 'BadDistro'
 
         with pytest.raises(IpaCloudException) as error:
@@ -238,7 +235,7 @@ class TestIpaCloud(object):
         mock_instance_running.return_value = False
         mock_start_instance.return_value = None
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud._start_instance_if_stopped()
 
         assert mock_instance_running.call_count == 1
@@ -249,7 +246,7 @@ class TestIpaCloud(object):
         client = MagicMock()
         mock_exec_cmd.return_value = 'command executed successfully!'
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.log_file = 'fake_file.name'
 
         with patch('builtins.open', create=True) as mock_open:
@@ -269,7 +266,7 @@ class TestIpaCloud(object):
 
         mock_extract_archive.return_value = 'archive extracted successfully!'
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.log_file = 'fake_file.name'
 
         with patch('builtins.open', create=True) as mock_open:
@@ -301,7 +298,7 @@ class TestIpaCloud(object):
         mock_start_instance.return_value = None
         mock_set_instance_ip.return_value = None
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.instance_ip = '0.0.0.0'
         cloud.hard_reboot_instance()
 
@@ -316,7 +313,7 @@ class TestIpaCloud(object):
         file_path = '/home/user/test.file'
         basename = 'test.file'
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         out = cloud.put_file(client, file_path)
 
         assert out == basename
@@ -330,7 +327,7 @@ class TestIpaCloud(object):
         distro = MagicMock()
         distro.install_package.return_value = 'package install successful!'
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.log_file = 'fake_file.name'
         cloud.distro = distro
 
@@ -361,7 +358,7 @@ class TestIpaCloud(object):
             'test.noarch.rpm', 'test.tar.xz', 'test.py'
         ]
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.inject = 'tests/data/injection/test_injection.yaml'
 
         cloud.process_injection_file(client)
@@ -406,7 +403,7 @@ class TestIpaCloud(object):
         mock_get_console_log.return_value = 'Console log output...'
         self.kwargs['running_instance_id'] = 'fakeinstance'
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         with pytest.raises(IpaCloudException) as error:
             cloud.test_image()
         assert str(error.value) == 'Unable to connect to instance: ERROR!'
@@ -437,7 +434,7 @@ class TestIpaCloud(object):
         self.kwargs['running_instance_id'] = 'fakeinstance'
         self.kwargs['test_files'] = ['test_hard_reboot']
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.ssh_private_key_file = 'tests/data/ida_test'
         cloud.ssh_user = 'root'
         cloud.logger = MagicMock()
@@ -494,7 +491,7 @@ class TestIpaCloud(object):
         self.kwargs['running_instance_id'] = 'fakeinstance'
         self.kwargs['test_files'] = ['test_soft_reboot']
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.ssh_private_key_file = 'tests/data/ida_test'
         cloud.ssh_user = 'root'
         cloud.logger = MagicMock()
@@ -551,7 +548,7 @@ class TestIpaCloud(object):
         self.kwargs['test_files'] = ['test_update']
         self.kwargs['cleanup'] = True
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.ssh_private_key_file = 'tests/data/ida_test'
         cloud.ssh_user = 'root'
 
@@ -589,7 +586,7 @@ class TestIpaCloud(object):
         self.kwargs['test_files'] = ['test_refresh']
         self.kwargs['cleanup'] = True
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.ssh_private_key_file = 'tests/data/ida_test'
         cloud.ssh_user = 'root'
 
@@ -623,7 +620,7 @@ class TestIpaCloud(object):
         self.kwargs['running_instance_id'] = 'fakeinstance'
         self.kwargs['early_exit'] = True
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.ssh_private_key_file = 'tests/data/ida_test'
         cloud.ssh_user = 'root'
 
@@ -640,7 +637,7 @@ class TestIpaCloud(object):
         mock_get_instance_state.return_value = 'Stopped'
         mock_sleep.return_value = None
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud._wait_on_instance('Stopped')
         assert mock_get_instance_state.call_count == 1
 
@@ -653,7 +650,7 @@ class TestIpaCloud(object):
             'Failed to collect VM info: Does not exist.'
         mock_get_ssh_client.return_value = client
 
-        cloud = IpaCloud(*args, **self.kwargs)
+        cloud = IpaCloud(**self.kwargs)
         cloud.distro = distro
         cloud.log_file = 'fake_file.name'
         cloud.logger = MagicMock()

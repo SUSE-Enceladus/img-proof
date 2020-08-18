@@ -26,69 +26,19 @@ from img_proof.ipa_cloud import IpaCloud
 
 class SSHCloud(IpaCloud):
     """Class for testing instances in Azure."""
+    cloud = 'ssh'
 
-    def __init__(
-        self,
-        cleanup=None,
-        config=None,
-        description=None,
-        distro_name=None,
-        early_exit=None,
-        history_log=None,
-        image_id=None,  # Not used in SSH
-        inject=None,
-        instance_type=None,  # Not used in SSH
-        ip_address=None,
-        log_level=30,
-        no_default_test_dirs=False,
-        cloud_config=None,
-        region=None,  # Not used in SSH
-        results_dir=None,
-        running_instance_id=None,  # Not used in SSH
-        ssh_private_key_file=None,
-        ssh_user=None,
-        subnet_id=None,  # Not used in SSH
-        test_dirs=None,
-        test_files=None,
-        timeout=None,
-        collect_vm_info=None
-    ):
-        """Initialize Azure cloud class."""
-        super(SSHCloud, self).__init__(
-            'ssh',
-            cleanup,
-            config,
-            description,
-            distro_name,
-            early_exit,
-            history_log,
-            image_id,
-            inject,
-            instance_type,
-            log_level,
-            no_default_test_dirs,
-            cloud_config,
-            region,
-            results_dir,
-            running_instance_id,
-            test_dirs,
-            test_files,
-            timeout,
-            collect_vm_info,
-            ssh_private_key_file,
-            ssh_user,
-            subnet_id
-        )
+    def post_init(self):
+        """Initialize SSH cloud class."""
 
         # Cannot cleanup SSH instance
         self.cleanup = False
+        self.instance_ip = self.custom_args.get('ip_address')
 
-        if not ip_address:
+        if not self.instance_ip:
             raise SSHCloudException(
                 'IP address is required to connect to instance.'
             )
-        else:
-            self.instance_ip = ip_address
 
         if not self.ssh_private_key_file:
             raise SSHCloudException(

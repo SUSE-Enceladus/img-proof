@@ -41,15 +41,19 @@ class TestOCIProvider(object):
             'no_default_test_dirs': True,
             'cloud_config': 'tests/oci/config',
             'test_files': ['test_image'],
-            'oci_user_id':
-                'ocid1.user.oc1..'
-                'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-            'signing_key_fingerprint':
-                '00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00',
-            'signing_key_file': 'tests/oci/api_key.pem',
-            'tenancy':
-                'ocid1.tenancy.oc1..'
-                'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+            'custom_args': {
+                'oci_user_id':
+                    'ocid1.user.oc1..'
+                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                'signing_key_fingerprint':
+                    '00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00',
+                'signing_key_file': 'tests/oci/api_key.pem',
+                'tenancy':
+                    'ocid1.tenancy.oc1..'
+                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+            }
         }
 
     def test_oci_exception_required_args(self):
@@ -58,13 +62,13 @@ class TestOCIProvider(object):
         with pytest.raises(OCICloudException):
             OCICloud(**self.kwargs)
 
-        self.kwargs['availability_domain'] = 'Omic:PHX-AD-1'
+        self.kwargs['custom_args']['availability_domain'] = 'Omic:PHX-AD-1'
 
         # Test missing compartment id
         with pytest.raises(OCICloudException):
             OCICloud(**self.kwargs)
 
-        self.kwargs['compartment_id'] = (
+        self.kwargs['custom_args']['compartment_id'] = (
             'ocid1.compartment.oc1..'
             'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
         )
@@ -83,8 +87,8 @@ class TestOCIProvider(object):
         mock_oci.core.VirtualNetworkClient.return_value = client
         mock_oci.core.VirtualNetworkClientCompsiteOperations.return_value = client  # noqa
 
-        self.kwargs['availability_domain'] = 'Omic:PHX-AD-1'
-        self.kwargs['compartment_id'] = (
+        self.kwargs['custom_args']['availability_domain'] = 'Omic:PHX-AD-1'
+        self.kwargs['custom_args']['compartment_id'] = (
             'ocid1.compartment.oc1..'
             'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
         )

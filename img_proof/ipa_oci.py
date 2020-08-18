@@ -33,77 +33,14 @@ from img_proof.ipa_cloud import IpaCloud
 
 class OCICloud(IpaCloud):
     """Cloud framework class for testing Oracle OCI images."""
+    cloud = 'oci'
 
-    def __init__(
-        self,
-        cleanup=None,
-        config=None,
-        description=None,
-        distro_name=None,
-        early_exit=None,
-        history_log=None,
-        image_id=None,
-        inject=None,
-        instance_type=None,
-        log_level=None,
-        no_default_test_dirs=None,
-        cloud_config=None,
-        region=None,
-        results_dir=None,
-        running_instance_id=None,
-        ssh_private_key_file=None,
-        ssh_user=None,
-        subnet_id=None,
-        test_dirs=None,
-        test_files=None,
-        timeout=None,
-        collect_vm_info=None,
-        compartment_id=None,
-        availability_domain=None,
-        signing_key_fingerprint=None,
-        signing_key_file=None,
-        tenancy=None,
-        oci_user_id=None,
-        enable_secure_boot=None,
-        enable_uefi=None,
-        log_callback=None,
-        prefix_name=None,
-        retry_count=None
-    ):
+    def post_init(self):
         """Initialize OCI cloud framework class."""
-        super(OCICloud, self).__init__(
-            'oci',
-            cleanup,
-            config,
-            description,
-            distro_name,
-            early_exit,
-            history_log,
-            image_id,
-            inject,
-            instance_type,
-            log_level,
-            no_default_test_dirs,
-            cloud_config,
-            region,
-            results_dir,
-            running_instance_id,
-            test_dirs,
-            test_files,
-            timeout,
-            collect_vm_info,
-            ssh_private_key_file,
-            ssh_user,
-            subnet_id,
-            enable_secure_boot,
-            enable_uefi,
-            log_callback,
-            prefix_name,
-            retry_count
-        )
 
         self.availability_domain = (
-            availability_domain or self.ipa_config['availability_domain']
+            self.custom_args.get('availability_domain')
+            or self.ipa_config['availability_domain']
         )
 
         if not self.availability_domain:
@@ -112,7 +49,8 @@ class OCICloud(IpaCloud):
             )
 
         self.compartment_id = (
-            compartment_id or self.ipa_config['compartment_id']
+            self.custom_args.get('compartment_id')
+            or self.ipa_config['compartment_id']
         )
 
         if not self.compartment_id:
@@ -126,15 +64,20 @@ class OCICloud(IpaCloud):
             )
 
         self.ssh_user = self.ssh_user or OCI_DEFAULT_USER
-        self.subnet_id = subnet_id or self.ipa_config['subnet_id']
-        self.oci_user_id = oci_user_id or self.ipa_config['oci_user_id']
-        self.tenancy = tenancy or self.ipa_config['tenancy']
+        self.oci_user_id = (
+            self.custom_args.get('oci_user_id')
+            or self.ipa_config['oci_user_id']
+        )
+        self.tenancy = (
+            self.custom_args.get('tenancy') or self.ipa_config['tenancy']
+        )
         self.signing_key_fingerprint = (
-            signing_key_fingerprint
+            self.custom_args.get('signing_key_fingerprint')
             or self.ipa_config['signing_key_fingerprint']
         )
         self.signing_key_file = (
-            signing_key_file or self.ipa_config['signing_key_file']
+            self.custom_args.get('signing_key_file')
+            or self.ipa_config['signing_key_file']
         )
 
         config = self._get_config()

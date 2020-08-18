@@ -36,14 +36,16 @@ class TestEC2Provider(object):
     def setup_method(self, method):
         """Set up kwargs dict."""
         self.kwargs = {
-            'account_name': 'bob',
             'config': 'tests/data/config',
             'distro_name': 'SLES',
             'image_id': 'fakeimage',
             'no_default_test_dirs': True,
             'cloud_config': 'tests/ec2/.ec2utils.conf',
             'test_files': ['test_image'],
-            'ssh_key_name': 'test-key'
+            'custom_args': {
+                'account_name': 'bob',
+                'ssh_key_name': 'test-key'
+            }
         }
 
     def test_ec2_exception_required_args(self):
