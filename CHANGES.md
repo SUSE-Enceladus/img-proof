@@ -1,3 +1,13 @@
+v6.0.0 (2020-08-18)
+===================
+
+- Use post init workflow.
+  [\#261](https://github.com/SUSE-Enceladus/ipa/pull/261)
+- Break connection loop on certain exceptions.
+  [\#262](https://github.com/SUSE-Enceladus/ipa/pull/262)
+- Create empty console log method for ssh backend.
+  [\#263](https://github.com/SUSE-Enceladus/ipa/pull/263)
+
 v5.3.0 (2020-08-06)
 ===================
 
