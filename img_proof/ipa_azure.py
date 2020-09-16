@@ -196,6 +196,16 @@ class AzureCloud(IpaCloud):
                 }
             }
 
+        if self.enable_uefi:
+            generation = 'V2'
+        else:
+            generation = 'V1'
+
+        storage_profile['os_disk'] = {
+            'hyper_v_generation': generation,
+            'create_option': 'FromImage'
+        }
+
         return storage_profile
 
     def _create_subnet(self, resource_group_name, subnet_id, vnet_name):

@@ -172,9 +172,6 @@ class IpaCloud(object):
         self.prefix_name = self.ipa_config['prefix_name']
         self.retry_count = int(self.ipa_config['retry_count'])
 
-        if self.enable_secure_boot and not self.enable_uefi:
-            self.enable_uefi = True
-
         if self.cloud_config:
             self.cloud_config = os.path.expanduser(self.cloud_config)
 

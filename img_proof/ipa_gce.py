@@ -104,6 +104,9 @@ class GCECloud(IpaCloud):
                 'SSH private key file is required to connect to instance.'
             )
 
+        if self.enable_secure_boot and not self.enable_uefi:
+            self.enable_uefi = True
+
         self.ssh_user = self.ssh_user or GCE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
         self.image_project = self.custom_args.get('image_project')
