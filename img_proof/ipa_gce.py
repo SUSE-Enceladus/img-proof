@@ -36,6 +36,7 @@ from img_proof.ipa_cloud import IpaCloud
 
 from google.oauth2 import service_account
 from googleapiclient import discovery
+from googleapiclient.errors import HttpError
 
 
 def get_message_from_http_error(error, resource_name):
@@ -66,13 +67,20 @@ def handle_gce_http_errors(type_name, resource_name):
     """
     try:
         yield
-    except Exception as error:
+    except HttpError as error:
         message = get_message_from_http_error(error, resource_name)
 
         raise GCECloudException(
             'Unable to retrieve {type_name}: {error}'.format(
                 type_name=type_name,
                 error=message
+            )
+        ) from error
+    except Exception as error:
+        raise GCECloudException(
+            'Unable to retrieve {type_name}: {error}'.format(
+                type_name=type_name,
+                error=str(error)
             )
         ) from error
 
@@ -368,7 +376,7 @@ class GCECloud(IpaCloud):
                 zone=self.region,
                 body=self.get_instance_config(**kwargs)
             ).execute()
-        except Exception as error:
+        except HttpError as error:
             with suppress(AttributeError):
                 # In python 3.5 content is bytes
                 error.content = error.content.decode()
@@ -389,6 +397,12 @@ class GCECloud(IpaCloud):
             raise error_class(
                 'Failed to launch instance: {message}'.format(
                     message=message
+                )
+            ) from error
+        except Exception as error:
+            raise GCECloudException(
+                'Failed to launch instance: {message}'.format(
+                    message=str(error)
                 )
             ) from error
 
