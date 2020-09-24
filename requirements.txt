@@ -1,7 +1,6 @@
 boto3
 azure-common
-# adal and msrestazure required by azure-common, remove when fixed upstream
-adal
+# msrestazure required by azure-common, remove when fixed upstream
 msrestazure
 azure-mgmt-compute
 azure-mgmt-network
