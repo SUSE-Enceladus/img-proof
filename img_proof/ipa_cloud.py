@@ -349,7 +349,7 @@ class IpaCloud(object):
         if self.early_exit:
             options.append('-x')
 
-        args = '-v {} --ssh-config={} --hosts={} {}'.format(
+        args = '-v -s {} --ssh-config={} --hosts={} {}'.format(
                 ' '.join(options),
                 ssh_config,
                 self.instance_ip,
@@ -369,7 +369,11 @@ class IpaCloud(object):
 
         while num_retries < self.retry_count:
             plugin = Report()
-            result = pytest.main(cmds, plugins=[plugin])
+
+            try:
+                result = pytest.main(cmds, plugins=[plugin])
+            except Exception:
+                result = 2
 
             if result != 0:
                 num_retries += 1
