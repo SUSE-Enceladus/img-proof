@@ -166,6 +166,10 @@ SLE_12_SP4_BASE = [
 SLE_12_SP4_MODULES = SLE_12_SP3_MODULES
 
 SLE_12_SP4_SAP = [
+    'SLE-Live-Patching12-SP4-Debuginfo-Pool',
+    'SLE-Live-Patching12-SP4-Debuginfo-Updates',
+    'SLE-Live-Patching12-SP4-Pool',
+    'SLE-Live-Patching12-SP4-Updates',
     'SLE12-SP4-SAP-Debuginfo-Pool',
     'SLE-12-SP4-SAP-Debuginfo-Updates',
     'SLE12-SP4-SAP-Pool',
@@ -192,6 +196,10 @@ SLE_12_SP5_BASE = [
 SLE_12_SP5_MODULES = SLE_12_SP4_MODULES
 
 SLE_12_SP5_SAP = [
+    'SLE-Live-Patching12-SP5-Debuginfo-Pool',
+    'SLE-Live-Patching12-SP5-Debuginfo-Updates',
+    'SLE-Live-Patching12-SP5-Pool',
+    'SLE-Live-Patching12-SP5-Updates',
     'SLE12-SP5-SAP-Debuginfo-Pool',
     'SLE-12-SP5-SAP-Debuginfo-Updates',
     'SLE12-SP5-SAP-Pool',
@@ -255,6 +263,10 @@ SLE_15_X86_64_MODULES = [
 ]
 
 SLE_15_SAP = [
+    'SLE-Module-Live-Patching15-Debuginfo-Pool',
+    'SLE-Module-Live-Patching15-Debuginfo-Updates',
+    'SLE-Module-Live-Patching15-Pool',
+    'SLE-Module-Live-Patching15-Updates',
     'SLE-Module-SAP-Applications15-Debuginfo-Pool',
     'SLE-Module-SAP-Applications15-Debuginfo-Updates',
     'SLE-Module-SAP-Applications15-Pool',
@@ -322,6 +334,10 @@ SLE_15_SP1_X86_64_MODULES = [
 ]
 
 SLE_15_SP1_SAP = [
+    'SLE-Module-Live-Patching15-SP1-Debuginfo-Pool',
+    'SLE-Module-Live-Patching15-SP1-Debuginfo-Updates',
+    'SLE-Module-Live-Patching15-SP1-Pool',
+    'SLE-Module-Live-Patching15-SP1-Updates',
     'SLE-Module-SAP-Applications15-SP1-Debuginfo-Pool',
     'SLE-Module-SAP-Applications15-SP1-Debuginfo-Updates',
     'SLE-Module-SAP-Applications15-SP1-Pool',
@@ -423,6 +439,10 @@ SLE_15_SP2_X86_64_MODULES = [
 ]
 
 SLE_15_SP2_SAP = [
+    'SLE-Module-Live-Patching15-SP2-Debuginfo-Pool',
+    'SLE-Module-Live-Patching15-SP2-Debuginfo-Updates',
+    'SLE-Module-Live-Patching15-SP2-Pool',
+    'SLE-Module-Live-Patching15-SP2-Updates',
     'SLE-Module-SAP-Applications15-SP2-Debuginfo-Pool',
     'SLE-Module-SAP-Applications15-SP2-Debuginfo-Updates',
     'SLE-Module-SAP-Applications15-SP2-Pool',
