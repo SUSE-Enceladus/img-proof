@@ -373,7 +373,7 @@ class IpaCloud(object):
             try:
                 result = pytest.main(cmds, plugins=[plugin])
             except Exception:
-                result = 2
+                result = 3  # See below for pytest error codes
 
             if result != 0:
                 num_retries += 1
