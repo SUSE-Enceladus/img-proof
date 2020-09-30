@@ -1,3 +1,14 @@
+v6.1.0 (2020-09-30)
+===================
+
+- Handle Google HttpError explicitly.
+  [\#265](https://github.com/SUSE-Enceladus/ipa/pull/265)
+- Disable all pytest stdout capturing with -s option.
+- Catch unhandled exceptions from pytest.
+  [\#266](https://github.com/SUSE-Enceladus/ipa/pull/266)
+- SAP has live-patching enabled
+  [\#267](https://github.com/SUSE-Enceladus/ipa/pull/267)
+
 v6.0.0 (2020-08-18)
 ===================
 
