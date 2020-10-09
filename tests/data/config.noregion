@@ -6,3 +6,5 @@ test_dirs = tests/data/tests
 [ec2]
 
 [oci]
+
+[alibaba]

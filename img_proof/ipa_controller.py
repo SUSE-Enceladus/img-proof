@@ -33,6 +33,7 @@ from img_proof.ipa_exceptions import IpaControllerException
 from img_proof.ipa_gce import GCECloud
 from img_proof.ipa_ssh import SSHCloud
 from img_proof.ipa_oci import OCICloud
+from img_proof.ipa_alibaba import AlibabaCloud
 from img_proof.ipa_utils import get_test_files
 
 
@@ -40,6 +41,8 @@ def test_image(
     cloud_name,
     accelerated_networking=None,
     access_key_id=None,
+    access_key=None,
+    access_secret=None,
     account=None,
     cleanup=None,
     config=None,
@@ -81,7 +84,8 @@ def test_image(
     enable_uefi=None,
     log_callback=None,
     prefix_name=None,
-    retry_count=None
+    retry_count=None,
+    v_switch_id=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -151,6 +155,15 @@ def test_image(
             'oci_user_id': oci_user_id
         }
         cloud = OCICloud(**kwargs)
+    elif cloud_name == 'alibaba':
+        kwargs['custom_args'] = {
+            'access_key': access_key,
+            'access_secret': access_secret,
+            'security_group_id': security_group_id,
+            'v_switch_id': v_switch_id,
+            'ssh_key_name': ssh_key_name
+        }
+        cloud = AlibabaCloud(**kwargs)
     else:
         raise IpaControllerException(
             'Cloud framework: %s unavailable.' % cloud_name

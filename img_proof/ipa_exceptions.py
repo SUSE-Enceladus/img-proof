@@ -95,3 +95,7 @@ class SSHCloudException(IpaUtilsException):
 
 class LibcloudException(IpaCloudException):
     """Generic libcloud exception."""
+
+
+class AlibabaCloudException(IpaCloudException):
+    """Generic Alibaba exception."""

@@ -92,6 +92,14 @@ def main(context, no_color):
     help='EC2 access key ID for login credentials.'
 )
 @click.option(
+    '--access-key',
+    help='Alibaba access key for login credentials.'
+)
+@click.option(
+    '--access-secret',
+    help='Alibaba access secret for login credentials.'
+)
+@click.option(
     '-a',
     '--account',
     help='Settings account to provide connection information.'
@@ -305,11 +313,17 @@ def main(context, no_color):
          'and/or network connections.',
     type=click.IntRange(min=0)
 )
+@click.option(
+    '--v-switch-id',
+    help='ID for the Alibaba VSwitch to attach to the instance.'
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
          accelerated_networking,
          access_key_id,
+         access_key,
+         access_secret,
          account,
          cleanup,
          config,
@@ -351,6 +365,7 @@ def test(context,
          enable_uefi,
          prefix_name,
          retry_count,
+         v_switch_id,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -361,6 +376,8 @@ def test(context,
             cloud,
             accelerated_networking,
             access_key_id,
+            access_key,
+            access_secret,
             account,
             cleanup,
             config,
@@ -402,7 +419,8 @@ def test(context,
             enable_uefi,
             logger,
             prefix_name,
-            retry_count
+            retry_count,
+            v_switch_id
         )
         echo_results(results, no_color)
         sys.exit(status)
