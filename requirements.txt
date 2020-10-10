@@ -13,3 +13,5 @@ testinfra
 oci
 google-auth
 google-api-python-client
+aliyun-python-sdk-core
+aliyun-python-sdk-ecs
