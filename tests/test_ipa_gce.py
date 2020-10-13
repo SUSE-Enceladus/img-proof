@@ -288,7 +288,8 @@ class TestGCECloud(object):
             'service-account-123@email.com',
             'image123',
             'secretkey',
-            shielded_instance_config={'shielded': 'config'}
+            shielded_instance_config={'shielded': 'config'},
+            sev_capable=True
         )
 
         assert 'metadata' in config

@@ -115,6 +115,7 @@ class GCECloud(IpaCloud):
         self.ssh_user = self.ssh_user or GCE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
         self.image_project = self.custom_args.get('image_project')
+        self.sev_capable = self.custom_args.get('sev_capable')
 
         self.credentials = self._get_credentials()
         self.compute_driver = self._get_driver()
@@ -305,6 +306,7 @@ class GCECloud(IpaCloud):
         disk_type='PERSISTENT',
         disk_mode='READ_WRITE',
         shielded_instance_config=None,
+        sev_capable=False
     ):
         """Return an instance config for launching a new instance."""
         config = {
@@ -336,11 +338,17 @@ class GCECloud(IpaCloud):
             'name': instance_name
         }
 
+        guest_os_features = []
+
         if shielded_instance_config:
             config['shieldedInstanceConfig'] = shielded_instance_config
-            config['disks'][0]['guestOsFeatures'] = [{
-                'type': 'UEFI_COMPATIBLE'
-            }]
+            guest_os_features.append({'type': 'UEFI_COMPATIBLE'})
+
+        if sev_capable:
+            guest_os_features.append({'type': 'SEV_CAPABLE'})
+
+        if guest_os_features:
+            config['disks'][0]['guestOsFeatures'] = guest_os_features
 
         return config
 
@@ -361,7 +369,8 @@ class GCECloud(IpaCloud):
             'service_account_email': self.service_account_email,
             'source_image': source_image,
             'ssh_key': self.ssh_public_key,
-            'network_interfaces': network_interfaces
+            'network_interfaces': network_interfaces,
+            'sev_capable': self.sev_capable
         }
 
         if self.enable_uefi:
