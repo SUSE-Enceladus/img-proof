@@ -85,7 +85,8 @@ def test_image(
     log_callback=None,
     prefix_name=None,
     retry_count=None,
-    v_switch_id=None
+    v_switch_id=None,
+    sev_capable=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -139,7 +140,8 @@ def test_image(
     elif cloud_name == 'gce':
         kwargs['custom_args'] = {
             'service_account_file': service_account_file,
-            'image_project': image_project
+            'image_project': image_project,
+            'sev_capable': sev_capable
         }
         cloud = GCECloud(**kwargs)
     elif cloud_name == 'ssh':

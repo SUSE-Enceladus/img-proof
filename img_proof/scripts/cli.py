@@ -317,6 +317,12 @@ def main(context, no_color):
     '--v-switch-id',
     help='ID for the Alibaba VSwitch to attach to the instance.'
 )
+@click.option(
+    '--sev-capable',
+    is_flag=True,
+    help='Enable confidential computing in GCE via Secure Encrypted '
+         'Virtualization (SEV) feature.'
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -366,6 +372,7 @@ def test(context,
          prefix_name,
          retry_count,
          v_switch_id,
+         sev_capable,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -420,7 +427,8 @@ def test(context,
             logger,
             prefix_name,
             retry_count,
-            v_switch_id
+            v_switch_id,
+            sev_capable
         )
         echo_results(results, no_color)
         sys.exit(status)
