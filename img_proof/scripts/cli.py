@@ -323,6 +323,11 @@ def main(context, no_color):
     help='Enable confidential computing in GCE via Secure Encrypted '
          'Virtualization (SEV) feature.'
 )
+@click.option(
+    '--additional-info',
+    help='Additional info to add during instance start or creation '
+         'when using EC2 provider.'
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -373,6 +378,7 @@ def test(context,
          retry_count,
          v_switch_id,
          sev_capable,
+         additional_info,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -428,7 +434,8 @@ def test(context,
             prefix_name,
             retry_count,
             v_switch_id,
-            sev_capable
+            sev_capable,
+            additional_info
         )
         echo_results(results, no_color)
         sys.exit(status)
