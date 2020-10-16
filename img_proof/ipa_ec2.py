@@ -89,6 +89,7 @@ class EC2Cloud(IpaCloud):
         self.secret_access_key = self.ec2_config['secret_access_key']
         self.security_group_id = self.ec2_config['security_group_id']
         self.ssh_key_name = self.ec2_config['ssh_key_name']
+        self.additional_info = self.ec2_config['additional_info']
         self.subnet_id = self.ec2_config['subnet_id']
 
         self.ssh_user = (
@@ -209,6 +210,9 @@ class EC2Cloud(IpaCloud):
         if self.security_group_id:
             kwargs['SecurityGroupIds'] = [self.security_group_id]
 
+        if self.additional_info:
+            kwargs['AdditionalInfo'] = self.additional_info
+
         try:
             instances = resource.create_instances(**kwargs)
         except Exception as error:
@@ -249,8 +253,14 @@ class EC2Cloud(IpaCloud):
 
     def _start_instance(self):
         """Start the instance."""
+        kwargs = {}
+
+        if self.additional_info:
+            kwargs['AdditionalInfo'] = self.additional_info
+
         instance = self._get_instance()
-        instance.start()
+        instance.start(**kwargs)
+
         self._wait_on_instance('running', self.timeout)
 
     def _stop_instance(self):
