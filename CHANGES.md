@@ -1,3 +1,16 @@
+v6.2.0 (2020-10-19)
+===================
+
+- Integrate Alibaba cloud class.
+  [\#268](https://github.com/SUSE-Enceladus/ipa/pull/268)
+  [\#269](https://github.com/SUSE-Enceladus/ipa/pull/269)
+- Add SEV_CAPABLE flag in GCE instances.
+  [\#270](https://github.com/SUSE-Enceladus/ipa/pull/270)
+- Add additional info option for ec2 provider.
+  [\#271](https://github.com/SUSE-Enceladus/ipa/pull/271)
+- Test that multipath is dsiabled on the kernel command line.
+  [\#272](https://github.com/SUSE-Enceladus/ipa/pull/272)
+
 v6.1.0 (2020-09-30)
 ===================
 
