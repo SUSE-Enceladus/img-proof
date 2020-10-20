@@ -345,6 +345,10 @@ class GCECloud(IpaCloud):
             guest_os_features.append({'type': 'UEFI_COMPATIBLE'})
 
         if sev_capable:
+            config['confidentialInstanceConfig'] = {
+                'enableConfidentialCompute': True
+            }
+            config['scheduling'] = {'onHostMaintenance': 'TERMINATE'}
             guest_os_features.append({'type': 'SEV_CAPABLE'})
 
         if guest_os_features:
