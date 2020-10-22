@@ -25,7 +25,7 @@ img-proof Documentation
 .. image:: /_images/logo.png
 
 **img-proof** (IPA) provides a command line utility to test images in the Public
-Cloud (AWS, Azure, GCE, OCI, etc.).
+Cloud (AWS, Azure, GCE, OCI, Alibaba, etc.).
 
 About
 -----
@@ -120,7 +120,7 @@ Some of the required methods for cloud framework classes include:
 * Get instance info
 * Stop/Start/Reboot instances
 
-The implementations are dependent on each CSP API (or Libcloud) and require
+The implementations are dependent on each CSP API and require
 the CSP credentials to perform the necessary operations.
 
 The current supported CSPs are:
@@ -130,6 +130,7 @@ The current supported CSPs are:
 * GCE
 * OCI
 * SSH
+* Alibaba
 
 The SSH class is generic and can be used for any accessible instance
 that is running. There are no credentials required except the instance

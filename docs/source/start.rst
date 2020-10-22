@@ -56,8 +56,9 @@ for more information on vcs support.
 Requirements
 ============
 
--  apache-libcloud
+-  boto3
 -  azure-common
+-  msrestazure
 -  azure-mgmt-compute
 -  azure-mgmt-network
 -  azure-mgmt-resource
@@ -67,6 +68,10 @@ Requirements
 -  PyYaml
 -  testinfra
 -  oci
+-  google-auth
+-  google-api-python-client
+-  aliyun-python-sdk-core
+-  aliyun-python-sdk-ecs
 
 Configuration
 =============
@@ -157,6 +162,12 @@ SSH Config
 The SSH cloud class has no additional config file. Options should be
 placed into the **img-proof** config file.
 
+Alibaba Config
+--------------
+
+The Alibaba cloud class has no additional config file. Options should be
+placed into the **img-proof** config file.
+
 Credentials
 ===========
 
@@ -186,7 +197,7 @@ EC2
 ---
 
 The EC2 credentials are a ``--secret-access-key`` and ``--access-key-id``.
-These can be from a root account but it's sugessted to use IAM accounts to
+These can be from a root account but it's suggested to use IAM accounts to
 control role based access.
 
 See `EC2 docs`_ for more information on setting up IAM accounts.
@@ -269,3 +280,15 @@ key are in the following doc:
 
 All of this info can be added as arguments to the OCI config, **img-proof** config or as
 command line arguments when testing images in OCI.
+
+Alibaba
+-------
+
+The Alibaba credentials are a ``--access-secret`` and ``--access-key``.
+These can be from a root account but it's suggested to use RAM accounts to
+control role based access.
+
+See `Alibaba docs`_ for more information on setting up RAM accounts.
+
+.. _Alibaba docs: https://www.alibabacloud.com/help/doc-detail/57445.htm?spm=a3c0i.100866.8498235500.1.4d7e1e4eQPpV5V
+
