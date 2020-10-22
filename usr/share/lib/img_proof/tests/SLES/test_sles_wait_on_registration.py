@@ -8,9 +8,14 @@ def test_sles_wait_on_registration(host):
 
     while time.time() < end:
         result = host.run('systemctl is-active guestregister.service')
+        status = result.stdout.strip()
 
-        if result.stdout.strip() == 'inactive':
+        if status == 'inactive':
             break
+        elif status == 'failed':
+            pytest.fail(
+                'Registration failed for on-demand instance.'
+            )
         else:
             time.sleep(10)
     else:
