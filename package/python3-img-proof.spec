@@ -1,5 +1,5 @@
 #
-# spec file for package python3-ipa
+# spec file for package python3-img-proof
 #
 # Copyright (c) 2020 SUSE LLC
 #
@@ -12,7 +12,7 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
 
@@ -25,27 +25,31 @@ License:        GPL-3.0-or-later
 Group:          Development/Languages/Python
 URL:            https://github.com/SUSE-Enceladus/img-proof
 Source:         https://files.pythonhosted.org/packages/source/i/img-proof/img-proof-%{version}.tar.gz
-BuildRequires:  python3-click-man
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
 BuildRequires:  python3-PyYAML
+BuildRequires:  python3-aliyun-python-sdk-core
+BuildRequires:  python3-aliyun-python-sdk-ecs
 BuildRequires:  python3-azure-common
 BuildRequires:  python3-azure-mgmt-compute
 BuildRequires:  python3-azure-mgmt-network
 BuildRequires:  python3-azure-mgmt-resource
 BuildRequires:  python3-boto3
 BuildRequires:  python3-click
+BuildRequires:  python3-click-man
+BuildRequires:  python3-devel
 BuildRequires:  python3-google-api-python-client
 BuildRequires:  python3-google-auth
 BuildRequires:  python3-oci-sdk
 BuildRequires:  python3-paramiko
 BuildRequires:  python3-pytest
+BuildRequires:  python3-setuptools
 BuildRequires:  python3-testinfra
 %if %{with test}
 BuildRequires:  python3-coverage
 BuildRequires:  python3-pytest-cov
 %endif
 Requires:       python3-PyYAML
+Requires:       python3-aliyun-python-sdk-core
+Requires:       python3-aliyun-python-sdk-ecs
 Requires:       python3-azure-common
 Requires:       python3-azure-mgmt-compute
 Requires:       python3-azure-mgmt-network
