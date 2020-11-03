@@ -1,3 +1,13 @@
+v6.3.0 (2020-11-03)
+===================
+
+- Fix SEV CAPABLE function.
+  [\#273](https://github.com/SUSE-Enceladus/ipa/pull/273)
+- Add snippets on Alibaba creds.
+  [\#274](https://github.com/SUSE-Enceladus/ipa/pull/274)
+- Eager fail for failed registration.
+  [\#275](https://github.com/SUSE-Enceladus/ipa/pull/275)
+
 v6.2.0 (2020-10-19)
 ===================
 
