@@ -345,6 +345,8 @@ class IpaCloud(object):
 
     def _run_test(self, test, ssh_config):
         """Run the test on the image."""
+        self.logger.info('Running test {name}'.format(name=test))
+
         options = []
         if self.early_exit:
             options.append('-x')
@@ -357,12 +359,12 @@ class IpaCloud(object):
             )
 
         # Print output captured to log file for test run
-        print(
+        self.logger.debug(
             '\nTest directories:\n{}\n'.format(
                 '\n'.join(self.test_dirs)
             )
         )
-        print('Arguments:\n{}\n'.format(args))
+        self.logger.debug('Arguments:\n{}\n'.format(args))
 
         cmds = shlex.split(args)
         num_retries = 0
@@ -371,9 +373,12 @@ class IpaCloud(object):
             plugin = Report()
 
             try:
-                result = pytest.main(cmds, plugins=[plugin])
-            except Exception:
+                with open(self.log_file, 'a') as log_file:
+                    with ipa_utils.redirect_output(log_file):
+                        result = pytest.main(cmds, plugins=[plugin])
+            except Exception as error:
                 result = 3  # See below for pytest error codes
+                self.logger.exception(str(error))
 
             if result != 0:
                 num_retries += 1
@@ -855,13 +860,9 @@ class IpaCloud(object):
                         status = status or result
 
                 elif isinstance(item, str):
-                    self.logger.info('Running test {name}'.format(name=item))
-                    with open(self.log_file, 'a') as log_file:
-                        with ipa_utils.redirect_output(log_file):
-                            # Run tests
-                            result = self._run_test(item, ssh_config)
-                            status = status or result
-
+                    # Run tests
+                    result = self._run_test(item, ssh_config)
+                    status = status or result
                 else:
                     self.logger.error(
                         'Invalid test item in list: %s' % item
