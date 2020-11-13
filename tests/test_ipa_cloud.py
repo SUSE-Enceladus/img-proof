@@ -192,25 +192,37 @@ class TestIpaCloud(object):
         assert test['outcome'] == 'passed'
         assert test['name'] == 'test_test'
 
+    @patch('img_proof.ipa_cloud.ipa_utils')
     @patch.object(IpaCloud, '_merge_results')
     @patch.object(pytest, 'main')
-    def test_cloud_run_tests(self, mock_pytest, mock_merge_results):
+    def test_cloud_run_tests(
+        self,
+        mock_pytest,
+        mock_merge_results,
+        mock_ipa_utils
+    ):
         """Test run tests method."""
         mock_pytest.return_value = 0
         mock_merge_results.return_value = None
 
         cloud = IpaCloud(**self.kwargs)
 
+        cloud.log_file = 'fake_file.name'
         cloud.terminate = True
         cloud.results['info'] = {
             'platform': 'ec2',
             'region': 'us-west-1'
         }
 
-        out = cloud._run_test(
-            ['tests/data/tests/test_image.py'],
-            'test.ssh'
-        )
+        with patch('builtins.open', create=True) as mock_open:
+            mock_open.return_value = MagicMock(spec=io.IOBase)
+            _ = mock_open.return_value.__enter__.return_value
+
+            out = cloud._run_test(
+                ['tests/data/tests/test_image.py'],
+                'test.ssh'
+            )
+
         assert out == 0
         assert mock_pytest.call_count == 1
         assert mock_merge_results.call_count == 1
