@@ -27,7 +27,7 @@ Test directories
 
 The default locations for test files are locally in ~/img_proof/tests/ and
 centralized in /usr/share/img_proof/tests. These locations can be overridden
-in the config and/or command line arguments.
+in the config and/or command line arguments as `--test-dirs`.
 
 Test organization
 =================
@@ -126,7 +126,7 @@ Custom Test Modules
 provided for checking standard things such as packages, services, files,
 etc.
 
-Modules can be easily written or extended from using `Pytest
+Modules can be easily written or extended using `Pytest
 fixtures <https://docs.pytest.org/en/latest/fixture.html>`__. Any custom
 modules reside in the conftest.py file inside the test directory:
 
@@ -150,6 +150,19 @@ modules reside in the conftest.py file inside the test directory:
                     repo.contains('name=%s' % name)]
            return all(tests)
        return f
+
+To use a Pytest fixture in a test it is simply included as an arg by name.
+For example the test below includes the CheckRepo fixture which is then
+used to validate a specific repo exists and is enabled.
+
+.. code-block:: python3
+
+   def test_some_repo(CheckRepo):
+       assert CheckRepo('openSUSE-20200325-0', 'openSUSE-20200325-0')
+
+In order for Pytest to discover the fixture used in a test module it is
+required to be in a conftest.py file in the same directory or a parent
+directory.
 
 Useful Links
 ============

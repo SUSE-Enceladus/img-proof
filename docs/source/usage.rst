@@ -8,28 +8,10 @@ that can be used directly from Python code.
 CLI
 ---
 
-The command line interface is written using the `Click`_ package and has a
-documented :doc:`api`.
+The command line interface is written using the `Click`_ package. The API
+documentation can be found at :doc:`api`.
 
 .. _Click: https://click.palletsprojects.com/en/7.x/
-
-Testing an image with CLI
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: console
-
-   > img-proof test -i {image-id} \
-     -a {account} \
-     -d openSUSE_Leap \
-     --early-exit \
-     --no-cleanup \
-     --no-color \
-     --debug \
-     ec2 test_image
-
-   Starting instance
-   Running tests /home/{user}/img_proof/tests/test_image.py
-   PASSED tests=1|pass=1|fail=0|error=0
 
 Verbosity
 ~~~~~~~~~
@@ -50,7 +32,7 @@ Cleanup
 ~~~~~~~
 
 By default the instance will be terminated if all tests pass. If a test
-fails the instance will remain running for debuggin purposes. This
+fails the instance will remain running for debugging purposes. This
 behavior can be configured with the ``--cleanup`` and ``--no-cleanup``
 flags.
 
@@ -138,8 +120,8 @@ The order of processing for the sections is as follows:
 Code
 ----
 
-**img-proof** can also be imported and invokedd directly in Python 3 code through
-the controller class. It is insalled as a Python site package and can be
+**img-proof** can also be imported and invoked directly in Python 3 code through
+the controller class. It is installed as a Python site package and can be
 imported as follows:
 
 .. code-block:: python3

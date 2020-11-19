@@ -8,19 +8,17 @@ Installation
 openSUSE package
 ----------------
 
-Perform the following commands as root for development version:
+Perform the following commands as root for stable version:
+
+.. code-block:: console
+
+   $ zypper in python3-img-proof
+
+Perform the following commands as root for development release:
 
 .. code-block:: console
 
    $ zypper ar http://download.opensuse.org/repositories/Cloud:/Tools/<distribution>
-   $ zypper refresh
-   $ zypper in python3-img-proof
-
-Perform the following commands as root for stable release:
-
-.. code-block:: console
-
-   $ zypper ar http://download.opensuse.org/repositories/Cloud:/Tools:/CI/<distribution>
    $ zypper refresh
    $ zypper in python3-img-proof
 
@@ -93,11 +91,11 @@ A config file with an [ec2] section may look like the following:
 .. code-block:: ini
 
    [img_proof]
-   test_dirs=/custom/tests/path/
-   results_dir=/custom/results/dir/
+   test_dirs = /custom/tests/path/
+   results_dir = /custom/results/dir/
 
    [ec2]
-   region=us-west-1
+   region = us-west-1
    ssh_private_key_file = ~/.ssh/id_rsa
 
 There are multiple ways to provide configuration values when using
@@ -106,7 +104,7 @@ file. Also, for certain clouds **img-proof** will read cloud specific
 config files.
 
 All command line options which have a format such as ``--ssh-user`` can be
-placed in config with underscores. E.g. ``--ssh-user`` would be ssh_user in
+placed in config with underscores. E.g. ``--ssh-user`` would be ``ssh_user`` in
 the config file.
 
 The precedence for values is as follows:
@@ -132,7 +130,8 @@ See
 for an example configuration file.
 
 To override the EC2 config location the CLI option,
-``--cloud-config`` is available.
+``--cloud-config`` is available. In order for **img-proof** to use the ec2imgutils
+config file the ``--account-name`` is required.
 
 GCE Config
 ----------
@@ -189,6 +188,10 @@ The following command will generate the necessary json file:
     
    $ az ad sp create-for-rbac --sdk-auth --name "{name}" > mycredentials.json
 
+Once a json credential file is generated for a service principal it can be
+used to test images/instances in Azure. The ``--service-account-file``
+option should point to the path to this file.
+
 See `Azure docs`_ for more info on creating a service principal json file.
 
 .. _Azure docs: https://docs.microsoft.com/en-us/python/azure/python-sdk-azure-authenticate?view=azure-python#mgmt-auth-file
@@ -199,6 +202,9 @@ EC2
 The EC2 credentials are a ``--secret-access-key`` and ``--access-key-id``.
 These can be from a root account but it's suggested to use IAM accounts to
 control role based access.
+
+Once you have generated secret key values these can be configured with the
+``--secret-access-key`` and ``--access-key-id`` options.
 
 See `EC2 docs`_ for more information on setting up IAM accounts.
 
@@ -238,6 +244,10 @@ Or you can follow the
 docs <http://libcloud.readthedocs.io/en/latest/compute/drivers/gce.html#service-account>`__
 or `Google
 docs <https://cloud.google.com/iam/docs/creating-managing-service-accounts>`__.
+
+Once a json credential file is generated for a service account it can be
+used to test images/instances in GCE. The ``--service-account-file``
+option should point to the path to this file.
 
 For more information on updating an existing service account:
 
@@ -279,7 +289,14 @@ key are in the following doc:
 `doc <https://docs.cloud.oracle.com/iaas/Content/API/Concepts/apisigningkey.htm#three>`__
 
 All of this info can be added as arguments to the OCI config, **img-proof** config or as
-command line arguments when testing images in OCI.
+command line arguments when testing images in OCI. The required options are:
+
+- ``--availability-domain``
+- ``--compartment-id``
+- ``--oci-user-id``
+- ``--signing-key-fingerprint``
+- ``--signing-key-file``
+- ``--tenancy``
 
 Alibaba
 -------
