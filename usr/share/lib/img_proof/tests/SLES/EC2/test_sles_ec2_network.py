@@ -16,7 +16,7 @@ special_regions = [
     'us-gov-west-1'
 ]
 
-dl_time = 15
+dl_time = 20
 
 
 def test_sles_ec2_network(determine_region, host):
