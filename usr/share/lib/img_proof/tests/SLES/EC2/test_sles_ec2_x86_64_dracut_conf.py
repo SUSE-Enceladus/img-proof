@@ -1,4 +1,4 @@
-def test_sles_ec2_dracut_conf(host):
+def test_sles_ec2_x86_64_dracut_conf(host):
     needed_drivers = (
         'ena',
         'nvme',
