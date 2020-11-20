@@ -1,3 +1,21 @@
+v6.3.1 (2020-11-20)
+===================
+
+- Enable the test for multipath being disabled by default.
+  [\#276](https://github.com/SUSE-Enceladus/ipa/pull/276)
+- Log pytest exceptions for debugging.
+  [\#277](https://github.com/SUSE-Enceladus/ipa/pull/277)
+- Add test to ensure we have a dracut configuration.
+  [\#278](https://github.com/SUSE-Enceladus/ipa/pull/278)
+- Update, cleanup docs.
+  [\#279](https://github.com/SUSE-Enceladus/ipa/pull/279)
+- Fix typos in dracut test.
+  [\#280](https://github.com/SUSE-Enceladus/ipa/pull/280)
+- Match instance type list with mash.
+  [\#281](https://github.com/SUSE-Enceladus/ipa/pull/281)
+- Bump ec2 net test timeout.
+  [\#282](https://github.com/SUSE-Enceladus/ipa/pull/282)
+
 v6.3.0 (2020-11-03)
 ===================
 
