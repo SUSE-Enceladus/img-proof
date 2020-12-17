@@ -17,7 +17,7 @@ script:
   - flake8 tests --exclude=data
 deploy:
   provider: pypi
-  user: "suse-pub-cloud-dev"
+  user: __token__
   password: $PYPI_PASS
   on:
     tags: true
