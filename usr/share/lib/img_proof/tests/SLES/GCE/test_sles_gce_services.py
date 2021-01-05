@@ -2,7 +2,9 @@ import pytest
 
 
 @pytest.mark.parametrize('name', [
-    'google-guest-agent'
+    'google-guest-agent',
+    'google-osconfig-agent',
+    'google-oslogin-cache.timer'
 ])
 def test_sles_gce_running_services(check_service, name):
     assert check_service(name)
@@ -11,9 +13,6 @@ def test_sles_gce_running_services(check_service, name):
 @pytest.mark.parametrize('name', [
     'google-startup-scripts',
     'google-shutdown-scripts',
-    'google-optimize-local-ssd',
-    'google-oslogin-cache',
-    'google-set-multiqueue'
 ])
 def test_sles_gce_one_shot_services(check_service, host, name):
     assert check_service(name, running=None)
