@@ -28,6 +28,7 @@ Source:         https://files.pythonhosted.org/packages/source/i/img-proof/img-p
 BuildRequires:  python3-PyYAML
 BuildRequires:  python3-aliyun-python-sdk-core
 BuildRequires:  python3-aliyun-python-sdk-ecs
+BuildRequires:  python3-msrestazure
 BuildRequires:  python3-azure-common
 BuildRequires:  python3-azure-mgmt-compute
 BuildRequires:  python3-azure-mgmt-network
@@ -50,6 +51,7 @@ BuildRequires:  python3-pytest-cov
 Requires:       python3-PyYAML
 Requires:       python3-aliyun-python-sdk-core
 Requires:       python3-aliyun-python-sdk-ecs
+Requires:       python3-msrestazure
 Requires:       python3-azure-common
 Requires:       python3-azure-mgmt-compute
 Requires:       python3-azure-mgmt-network
