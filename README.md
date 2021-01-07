@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/SUSE-Enceladus/img-proof.svg?branch=master)](https://travis-ci.com/SUSE-Enceladus/img-proof)
+![Continuous testing & Linting](https://github.com/SUSE-Enceladus/img-proof/workflows/Continuous%20testing%20&%20Linting/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/img-proof/badge/?version=latest)](https://img-proof.readthedocs.io/en/latest/?badge=latest)
 [![Py Versions](https://img.shields.io/pypi/pyversions/img-proof.svg)](https://pypi.org/project/img-proof/)
 [![License](https://img.shields.io/pypi/l/img-proof.svg)](https://pypi.org/project/img-proof/)
