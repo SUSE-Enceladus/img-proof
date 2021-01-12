@@ -1,6 +1,10 @@
 import pytest
 
-def test_sles_ec2_x86_64_dracut_conf(host):
+
+def test_sles_ec2_dracut_conf(host, get_release_value, determine_architecture):
+    if determine_architecture() != 'X86_64':
+        pytest.skip('Only x86_64 architecture is tested.')
+
     needed_drivers = (
         'ena',
         'nvme',
