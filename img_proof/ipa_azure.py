@@ -22,7 +22,7 @@
 
 import os
 
-from azure.common.client_factory import get_client_from_auth_file
+from azure.identity import ClientSecretCredential
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.compute import ComputeManagementClient
@@ -31,6 +31,7 @@ from img_proof import ipa_utils
 from img_proof.ipa_constants import AZURE_DEFAULT_TYPE, AZURE_DEFAULT_USER
 from img_proof.ipa_exceptions import AzureCloudException
 from img_proof.ipa_cloud import IpaCloud
+from img_proof.azure_creds_wrapper import CredentialWrapper
 
 
 class AzureCloud(IpaCloud):
@@ -84,7 +85,10 @@ class AzureCloud(IpaCloud):
         self.ssh_public_key = self._get_ssh_public_key()
 
         self.compute = self._get_management_client(ComputeManagementClient)
-        self.network = self._get_management_client(NetworkManagementClient)
+        self.network = self._get_management_client(
+            NetworkManagementClient,
+            wrap_creds=False
+        )
         self.resource = self._get_management_client(ResourceManagementClient)
 
         if self.running_instance_id:
@@ -117,7 +121,7 @@ class AzureCloud(IpaCloud):
             nic_config['enable_accelerated_networking'] = True
 
         try:
-            nic_setup = self.network.network_interfaces.create_or_update(
+            nic_setup = self.network.network_interfaces.begin_create_or_update(
                 resource_group_name, nic_name, nic_config
             )
         except Exception as error:
@@ -140,7 +144,7 @@ class AzureCloud(IpaCloud):
 
         try:
             public_ip_setup = \
-                self.network.public_ip_addresses.create_or_update(
+                self.network.public_ip_addresses.begin_create_or_update(
                     resource_group_name, public_ip_name, public_ip_config
                 )
         except Exception as error:
@@ -205,7 +209,7 @@ class AzureCloud(IpaCloud):
         subnet_config = {'address_prefix': '10.0.0.0/29'}
 
         try:
-            subnet_setup = self.network.subnets.create_or_update(
+            subnet_setup = self.network.subnets.begin_create_or_update(
                 resource_group_name, vnet_name, subnet_id, subnet_config
             )
         except Exception as error:
@@ -227,7 +231,7 @@ class AzureCloud(IpaCloud):
         }
 
         try:
-            vnet_setup = self.network.virtual_networks.create_or_update(
+            vnet_setup = self.network.virtual_networks.begin_create_or_update(
                 resource_group_name, vnet_name, vnet_config
             )
         except Exception as error:
@@ -235,14 +239,14 @@ class AzureCloud(IpaCloud):
                 'Unable to create vnet: {0}.'.format(error)
             )
 
-        vnet_setup.wait()
+        vnet_setup.result()
 
     def _create_vm(self, vm_config):
         """
         Attempt to create or update VM instance based on vm_parameters config.
         """
         try:
-            vm_setup = self.compute.virtual_machines.create_or_update(
+            vm_setup = self.compute.virtual_machines.begin_create_or_update(
                 self.running_instance_id, self.running_instance_id,
                 vm_config
             )
@@ -253,7 +257,7 @@ class AzureCloud(IpaCloud):
                 )
             )
 
-        vm_setup.wait()
+        vm_setup.result()
 
     def _create_vm_config(self, interface):
         """
@@ -330,13 +334,36 @@ class AzureCloud(IpaCloud):
             if status.code.startswith('PowerState'):
                 return status.display_status
 
-    def _get_management_client(self, client_class):
+    def _get_client_from_json(self, client, credentials, wrap_creds=True):
+        credential = self._get_secret_credential(credentials)
+
+        if wrap_creds:
+            credential = CredentialWrapper(credential)
+
+        return client(
+            credential,
+            credentials['subscriptionId']
+        )
+
+    @staticmethod
+    def _get_secret_credential(credentials):
+        return ClientSecretCredential(
+            tenant_id=credentials['tenantId'],
+            client_id=credentials['clientId'],
+            client_secret=credentials['clientSecret']
+        )
+
+    def _get_management_client(self, client_class, wrap_creds=True):
         """
         Return instance of resource management client.
         """
+        credentials = ipa_utils.load_json(self.service_account_file)
+
         try:
-            client = get_client_from_auth_file(
-                client_class, auth_path=self.service_account_file
+            client = self._get_client_from_json(
+                client_class,
+                credentials,
+                wrap_creds=wrap_creds
             )
         except ValueError as error:
             raise AzureCloudException(
@@ -496,7 +523,7 @@ class AzureCloud(IpaCloud):
         Start the instance.
         """
         try:
-            vm_start = self.compute.virtual_machines.start(
+            vm_start = self.compute.virtual_machines.begin_start(
                 self.running_instance_id, self.running_instance_id
             )
         except Exception as error:
@@ -504,14 +531,14 @@ class AzureCloud(IpaCloud):
                 'Unable to start instance: {0}.'.format(error)
             )
 
-        vm_start.wait()
+        vm_start.result()
 
     def _stop_instance(self):
         """
         Stop the instance.
         """
         try:
-            vm_stop = self.compute.virtual_machines.power_off(
+            vm_stop = self.compute.virtual_machines.begin_power_off(
                 self.running_instance_id, self.running_instance_id
             )
         except Exception as error:
@@ -519,14 +546,16 @@ class AzureCloud(IpaCloud):
                 'Unable to stop instance: {0}.'.format(error)
             )
 
-        vm_stop.wait()
+        vm_stop.result()
 
     def _terminate_instance(self):
         """
         Terminate the resource group and instance.
         """
         try:
-            self.resource.resource_groups.delete(self.running_instance_id)
+            self.resource.resource_groups.delete(
+                self.running_instance_id
+            )
         except Exception as error:
             raise AzureCloudException(
                 'Unable to terminate resource group: {0}.'.format(error)
