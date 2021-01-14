@@ -68,21 +68,18 @@ class TestAzureProvider(object):
 
         assert str(error.value) == msg
 
-    @patch('img_proof.ipa_azure.get_client_from_auth_file')
+    @patch.object(AzureCloud, '_get_client_from_json')
     def test_get_management_client(self, mock_get_client):
         client = MagicMock()
         mock_get_client.return_value = client
 
-        client_class = MagicMock()
-
         provider = self.helper_get_provider()
-        result = provider._get_management_client(client_class)
+        result = provider._get_management_client(self.client)
 
         assert result == client
 
-    @patch('img_proof.ipa_azure.get_client_from_auth_file')
+    @patch.object(AzureCloud, '_get_client_from_json')
     def test_get_management_client_json_error(self, mock_get_client):
-        client_class = MagicMock()
         mock_get_client.side_effect = ValueError(
             'Not valid'
         )
@@ -90,28 +87,27 @@ class TestAzureProvider(object):
         provider = self.helper_get_provider()
 
         with pytest.raises(AzureCloudException) as error:
-            provider._get_management_client(client_class)
+            provider._get_management_client(self.client)
 
         assert str(error.value) == 'Service account file format is invalid: ' \
             'Not valid.'
 
-    @patch('img_proof.ipa_azure.get_client_from_auth_file')
+    @patch.object(AzureCloud, '_get_client_from_json')
     def test_get_management_client_key_error(self, mock_get_client):
-        client_class = MagicMock()
-        mock_get_client.side_effect = KeyError('subscriptionId')
+        mock_get_client.side_effect = KeyError('tenantId')
 
         provider = self.helper_get_provider()
 
         with pytest.raises(AzureCloudException) as error:
-            provider._get_management_client(client_class)
+            provider._get_management_client(self.client)
 
         assert str(error.value) == "Service account file missing key: " \
-            "'subscriptionId'."
+            "'tenantId'."
 
-    @patch('img_proof.ipa_azure.get_client_from_auth_file')
-    def test_get_management_client_exception(self, mock_get_client):
+    @patch('img_proof.ipa_azure.ClientSecretCredential')
+    def test_get_management_client_exception(self, mock_client_cred):
         client_class = MagicMock()
-        mock_get_client.side_effect = Exception('Not valid')
+        mock_client_cred.side_effect = Exception('Not valid')
 
         provider = self.helper_get_provider()
 
@@ -172,12 +168,16 @@ class TestAzureProvider(object):
         provider = self.helper_get_provider()
         provider._launch_instance()
 
-        assert self.client.network_interfaces.create_or_update.call_count == 1
-        assert self.client.public_ip_addresses.create_or_update.call_count == 1
+        assert self.client.network_interfaces.\
+            begin_create_or_update.call_count == 1
+        assert self.client.public_ip_addresses.\
+            begin_create_or_update.call_count == 1
         assert self.client.resource_groups.create_or_update.call_count == 1
-        assert self.client.virtual_machines.create_or_update.call_count == 1
-        assert self.client.subnets.create_or_update.call_count == 1
-        assert self.client.virtual_networks.create_or_update.call_count == 1
+        assert self.client.virtual_machines.\
+            begin_create_or_update.call_count == 1
+        assert self.client.subnets.begin_create_or_update.call_count == 1
+        assert self.client.virtual_networks.\
+            begin_create_or_update.call_count == 1
         assert provider.running_instance_id == 'azure-test-instance'
 
     @patch.object(AzureCloud, '_wait_on_instance')
@@ -287,12 +287,12 @@ class TestAzureProvider(object):
         provider.running_instance_id = 'img_proof-test-instance'
 
         provider._start_instance()
-        self.client.virtual_machines.start.assert_called_once_with(
+        self.client.virtual_machines.begin_start.assert_called_once_with(
             'img_proof-test-instance', 'img_proof-test-instance'
         )
 
         # Test exception
-        self.client.virtual_machines.start.side_effect = Exception(
+        self.client.virtual_machines.begin_start.side_effect = Exception(
             'Instance not found'
         )
 
@@ -308,12 +308,12 @@ class TestAzureProvider(object):
         provider.running_instance_id = 'img_proof-test-instance'
 
         provider._stop_instance()
-        self.client.virtual_machines.power_off.assert_called_once_with(
+        self.client.virtual_machines.begin_power_off.assert_called_once_with(
             'img_proof-test-instance', 'img_proof-test-instance'
         )
 
         # Test exception
-        self.client.virtual_machines.power_off.side_effect = Exception(
+        self.client.virtual_machines.begin_power_off.side_effect = Exception(
             'Instance not found'
         )
 

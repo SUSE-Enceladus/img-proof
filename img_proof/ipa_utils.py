@@ -22,6 +22,7 @@
 
 import configparser
 import fnmatch
+import json
 import logging
 import os
 import random
@@ -567,3 +568,13 @@ def get_logger(log_level):
 
     logger.addHandler(console_handler)
     return logger
+
+
+def load_json(file_path):
+    """
+    Load json from file and return dictionary.
+    """
+    with open(file_path, 'r') as json_file:
+        data = json.load(json_file)
+
+    return data
