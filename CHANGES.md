@@ -1,3 +1,14 @@
+v6.4.0 (2021-01-15)
+===================
+
+- Split kernel command line args before compare.
+  [\#283](https://github.com/SUSE-Enceladus/ipa/pull/283)
+- Update the GCE services test with latest services.
+  [\#284](https://github.com/SUSE-Enceladus/ipa/pull/284)
+- Skip EC2 dracut config test if arch not x86_64.
+  Skip EC2 dracut config test if SLES > 12SP5.
+  [\#287](https://github.com/SUSE-Enceladus/ipa/pull/287)
+
 v6.3.1 (2020-11-20)
 ===================
 
