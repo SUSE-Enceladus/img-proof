@@ -5,8 +5,13 @@ Getting Started
 Installation
 ============
 
-openSUSE package
+SUSE package
 ----------------
+
+Stable
+^^^^^^
+
+.. note::  Tumbleweed and Leap 15.2 have a stable version.
 
 Perform the following commands as root for stable version:
 
@@ -14,13 +19,37 @@ Perform the following commands as root for stable version:
 
    $ zypper in python3-img-proof
 
-Perform the following commands as root for development release:
+Development
+^^^^^^^^^^^
+
+Ensure you have properly registered SLES then perform the following
+commands as root for SLES 15 SP2:
 
 .. code-block:: console
 
-   $ zypper ar http://download.opensuse.org/repositories/Cloud:/Tools/<distribution>
+   $ SUSEConnect -p sle-module-public-cloud/15.2/x86_64
+   $ zypper ar https://download.opensuse.org/repositories/Cloud:Tools:CI/SLE_15_SP2/Cloud:Tools:CI.repo
    $ zypper refresh
    $ zypper in python3-img-proof
+
+Perform the following commands as root for Leap 15.2:
+
+.. code-block:: console
+
+   $ zypper ar https://download.opensuse.org/repositories/Cloud:Tools:CI/openSUSE_Leap_15.2/Cloud:Tools:CI.repo
+   $ zypper refresh
+   $ zypper in python3-img-proof
+
+Perform the following commands as root for Tumbleweed:
+
+.. code-block:: console
+
+   $ zypper ar https://download.opensuse.org/repositories/Cloud:Tools:CI/openSUSE_Tumbleweed/Cloud:Tools:CI.repo
+   $ zypper refresh
+   $ zypper in python3-img-proof
+
+.. note::  An openSUSE and SLES test suite is shipped alongside the SUSE package as python3-img-proof-tests.
+
 
 PyPI
 ----
@@ -50,26 +79,6 @@ Install a specific branch from GitHub:
 See `PyPI
 docs <https://pip.pypa.io/en/stable/reference/pip_install/#vcs-support>`__
 for more information on vcs support.
-
-Requirements
-============
-
--  boto3
--  azure-common
--  msrestazure
--  azure-mgmt-compute
--  azure-mgmt-network
--  azure-mgmt-resource
--  Click
--  paramiko
--  pytest
--  PyYaml
--  testinfra
--  oci
--  google-auth
--  google-api-python-client
--  aliyun-python-sdk-core
--  aliyun-python-sdk-ecs
 
 Configuration
 =============
