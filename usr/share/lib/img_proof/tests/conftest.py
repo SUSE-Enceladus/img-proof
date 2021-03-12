@@ -133,6 +133,14 @@ def is_sles_sap(host, get_baseproduct):
 
 
 @pytest.fixture()
+def is_sles_sapcal(host):
+    def f():
+        motd = host.file('/etc/motd')
+        return motd.contains('SAPCAL')
+    return f
+
+
+@pytest.fixture()
 def get_release_value(host):
     def f(key):
         release = host.file('/etc/os-release')
