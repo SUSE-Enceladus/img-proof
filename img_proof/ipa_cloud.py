@@ -241,7 +241,7 @@ class IpaCloud(object):
         """
         key = ipa_utils.get_public_ssh_key(
             self.ssh_private_key_file
-        ).decode()
+        ).decode().strip()
 
         script = BASH_SSH_SCRIPT.format(user=self.ssh_user, key=key)
         return script
