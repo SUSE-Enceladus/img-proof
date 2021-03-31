@@ -37,7 +37,7 @@ GCE_DEFAULT_USER = 'root'
 OCI_DEFAULT_TYPE = 'VM.Standard2.1'
 OCI_DEFAULT_USER = 'opc'
 ALIBABA_DEFAULT_TYPE = 'ecs.t5-lc1m1.small'
-ALIBABA_DEFAULT_USER = 'root'
+ALIBABA_DEFAULT_USER = 'ali-user'
 
 EC2_CONFIG_FILE = os.path.join(HOME, '.ec2utils.conf')
 IPA_CONFIG_FILE = os.path.join(HOME, '.config', 'img_proof', 'config')
