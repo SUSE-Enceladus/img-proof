@@ -1,7 +1,6 @@
 boto3
-azure-common
-# msrestazure required by azure-common, remove when fixed upstream
-msrestazure
+msrest>=0.6.0
+azure-identity
 azure-mgmt-compute
 azure-mgmt-network
 azure-mgmt-resource
