@@ -170,10 +170,10 @@ SSH Config
 The SSH cloud class has no additional config file. Options should be
 placed into the **img-proof** config file.
 
-Alibaba Config
+Aliyun Config
 --------------
 
-The Alibaba cloud class has no additional config file. Options should be
+The Aliyun cloud class has no additional config file. Options should be
 placed into the **img-proof** config file.
 
 Credentials
@@ -307,14 +307,14 @@ command line arguments when testing images in OCI. The required options are:
 - ``--signing-key-file``
 - ``--tenancy``
 
-Alibaba
+Aliyun
 -------
 
-The Alibaba credentials are a ``--access-secret`` and ``--access-key``.
+The Aliyun credentials are a ``--access-secret`` and ``--access-key``.
 These can be from a root account but it's suggested to use RAM accounts to
 control role based access.
 
-See `Alibaba docs`_ for more information on setting up RAM accounts.
+See `Aliyun docs`_ for more information on setting up RAM accounts.
 
-.. _Alibaba docs: https://www.alibabacloud.com/help/doc-detail/57445.htm?spm=a3c0i.100866.8498235500.1.4d7e1e4eQPpV5V
+.. _Aliyun docs: https://www.alibabacloud.com/help/doc-detail/57445.htm?spm=a3c0i.100866.8498235500.1.4d7e1e4eQPpV5V
 

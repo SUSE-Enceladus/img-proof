@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Cloud framework module for testing Alibaba images."""
+"""Cloud framework module for testing Aliyun images."""
 
 # Copyright (c) 2020 SUSE LLC. All rights reserved.
 #
@@ -47,19 +47,19 @@ from aliyunsdkecs.request.v20140526.RunInstancesRequest import (
 )
 
 from img_proof.ipa_constants import (
-    ALIBABA_DEFAULT_TYPE,
-    ALIBABA_DEFAULT_USER
+    ALIYUN_DEFAULT_TYPE,
+    ALIYUN_DEFAULT_USER
 )
-from img_proof.ipa_exceptions import AlibabaCloudException
+from img_proof.ipa_exceptions import AliyunCloudException
 from img_proof.ipa_cloud import IpaCloud
 
 
-class AlibabaCloud(IpaCloud):
-    """Cloud framework class for testing Alibaba images."""
-    cloud = 'alibaba'
+class AliyunCloud(IpaCloud):
+    """Cloud framework class for testing Aliyun images."""
+    cloud = 'aliyun'
 
     def post_init(self):
-        """Initialize Alibaba cloud framework class."""
+        """Initialize Aliyun cloud framework class."""
 
         # Get command line values that are not None
         cmd_line_values = self._get_non_null_values(self.custom_args)
@@ -70,25 +70,25 @@ class AlibabaCloud(IpaCloud):
         )
 
         if not self.region:
-            raise AlibabaCloudException(
-                'Region is required to connect to Alibaba.'
+            raise AliyunCloudException(
+                'Region is required to connect to Aliyun.'
             )
 
         self.access_key = self.ipa_config['access_key']
         if not self.access_key:
-            raise AlibabaCloudException(
-                'Access key is required to connect to Alibaba.'
+            raise AliyunCloudException(
+                'Access key is required to connect to Aliyun.'
             )
 
         self.access_secret = self.ipa_config['access_secret']
         if not self.access_secret:
-            raise AlibabaCloudException(
-                'Access secret is required to connect to Alibaba.'
+            raise AliyunCloudException(
+                'Access secret is required to connect to Aliyun.'
             )
 
         self.ssh_private_key_file = self.ipa_config['ssh_private_key_file']
         if not self.ssh_private_key_file:
-            raise AlibabaCloudException(
+            raise AliyunCloudException(
                 'SSH private key file is required to connect to instance.'
             )
         else:
@@ -120,11 +120,11 @@ class AlibabaCloud(IpaCloud):
         self.ssh_user = (
             cmd_line_values.get('ssh_user') or
             self.ipa_config.get('ssh_user') or
-            ALIBABA_DEFAULT_USER
+            ALIYUN_DEFAULT_USER
         )
 
     def _connect(self):
-        """Connect to alibaba compute client."""
+        """Connect to aliyun compute client."""
         try:
             client = AcsClient(
                 self.access_key,
@@ -132,7 +132,7 @@ class AlibabaCloud(IpaCloud):
                 self.region
             )
         except Exception:
-            raise AlibabaCloudException(
+            raise AliyunCloudException(
                 'Could not connect to region: %s' % self.region
             )
         return client
@@ -149,7 +149,7 @@ class AlibabaCloud(IpaCloud):
             response = json.loads(client.do_action_with_exception(request))
             instance = response['Instances']['Instance'][0]
         except Exception:
-            raise AlibabaCloudException(
+            raise AliyunCloudException(
                 'Instance with ID: {instance_id} not found.'.format(
                     instance_id=self.running_instance_id
                 )
@@ -161,7 +161,7 @@ class AlibabaCloud(IpaCloud):
         Attempt to retrieve the state of the instance.
 
         Raises:
-            AlibabaCloudException: If the instance cannot be found.
+            AliyunCloudException: If the instance cannot be found.
         """
         instance = self._get_instance()
         state = None
@@ -169,7 +169,7 @@ class AlibabaCloud(IpaCloud):
         try:
             state = instance['Status']
         except KeyError:
-            raise AlibabaCloudException(
+            raise AliyunCloudException(
                 'Status of instance with id: {instance_id}, '
                 'cannot be found.'.format(
                     instance_id=self.running_instance_id
@@ -190,7 +190,7 @@ class AlibabaCloud(IpaCloud):
         instance_name = self._generate_instance_name()
 
         request = RunInstancesRequest()
-        request.set_InstanceType(self.instance_type or ALIBABA_DEFAULT_TYPE)
+        request.set_InstanceType(self.instance_type or ALIYUN_DEFAULT_TYPE)
         request.set_InstanceChargeType('PostPaid')
         request.set_ImageId(self.image_id)
         request.set_InstanceName(instance_name)
@@ -213,7 +213,7 @@ class AlibabaCloud(IpaCloud):
         try:
             response = json.loads(client.do_action_with_exception(request))
         except Exception as error:
-            raise AlibabaCloudException(
+            raise AliyunCloudException(
                 'Unable to create instance: {0}.'.format(error)
             )
 
@@ -240,7 +240,7 @@ class AlibabaCloud(IpaCloud):
         self.instance_ip = public_ip or private_ip
 
         if not self.instance_ip:
-            raise AlibabaCloudException(
+            raise AliyunCloudException(
                 'IP address for instance cannot be found.'
             )
 

@@ -26,7 +26,7 @@ import os
 HOME = os.path.expanduser('~')
 NOT_IMPLEMENTED = 'Implement method in child classes.'
 SUPPORTED_DISTROS = ('opensuse_leap', 'sles', 'rhel', 'fedora')
-SUPPORTED_CLOUDS = ('alibaba', 'azure', 'ec2', 'gce', 'ssh', 'oci')
+SUPPORTED_CLOUDS = ('aliyun', 'azure', 'ec2', 'gce', 'ssh', 'oci')
 
 AZURE_DEFAULT_TYPE = 'Standard_B1ms'
 AZURE_DEFAULT_USER = 'azureuser'
@@ -36,8 +36,8 @@ GCE_DEFAULT_TYPE = 'n1-standard-1'
 GCE_DEFAULT_USER = 'root'
 OCI_DEFAULT_TYPE = 'VM.Standard2.1'
 OCI_DEFAULT_USER = 'opc'
-ALIBABA_DEFAULT_TYPE = 'ecs.t5-lc1m1.small'
-ALIBABA_DEFAULT_USER = 'ali-user'
+ALIYUN_DEFAULT_TYPE = 'ecs.t5-lc1m1.small'
+ALIYUN_DEFAULT_USER = 'ali-user'
 
 EC2_CONFIG_FILE = os.path.join(HOME, '.ec2utils.conf')
 IPA_CONFIG_FILE = os.path.join(HOME, '.config', 'img_proof', 'config')

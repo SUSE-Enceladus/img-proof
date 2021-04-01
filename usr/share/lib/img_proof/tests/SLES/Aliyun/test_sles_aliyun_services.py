@@ -7,7 +7,7 @@ import pytest
     ('cloud-config'),
     ('cloud-final')
 ])
-def test_sles_alibaba_one_shot_services(check_service, host, name):
+def test_sles_aliyun_one_shot_services(check_service, host, name):
     assert check_service(name, running=None)
 
     if host.exists('systemctl'):

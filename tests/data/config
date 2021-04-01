@@ -10,6 +10,6 @@ region = us-west-1
 [oci]
 region = us-phoenix-1
 
-[alibaba]
+[aliyun]
 region = cn-beijing-a
 ssh_private_key_file = tests/data/ida_test

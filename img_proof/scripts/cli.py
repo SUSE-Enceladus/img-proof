@@ -93,11 +93,11 @@ def main(context, no_color):
 )
 @click.option(
     '--access-key',
-    help='Alibaba access key for login credentials.'
+    help='Aliyun access key for login credentials.'
 )
 @click.option(
     '--access-secret',
-    help='Alibaba access secret for login credentials.'
+    help='Aliyun access secret for login credentials.'
 )
 @click.option(
     '-a',
@@ -315,7 +315,7 @@ def main(context, no_color):
 )
 @click.option(
     '--v-switch-id',
-    help='ID for the Alibaba VSwitch to attach to the instance.'
+    help='ID for the Aliyun VSwitch to attach to the instance.'
 )
 @click.option(
     '--sev-capable',
