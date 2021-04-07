@@ -1,3 +1,23 @@
+v7.0.0 (2021-04-07)
+===================
+
+- Use latest SDK functions and authentication from Azure identity.
+  [\#288](https://github.com/SUSE-Enceladus/ipa/pull/288)
+- Update install information in docs.
+  [\#289](https://github.com/SUSE-Enceladus/ipa/pull/289)
+- Add vscode dir to gitignore.
+  [\#291](https://github.com/SUSE-Enceladus/ipa/pull/291)
+- Add case to handle sapcal in repos test.
+  [\#292](https://github.com/SUSE-Enceladus/ipa/pull/292)
+- Strip newline from key file if it exists.
+  [\#293](https://github.com/SUSE-Enceladus/ipa/pull/293)
+- Update default user for Alibaba to ali-user.
+  [\#295](https://github.com/SUSE-Enceladus/ipa/pull/295)
+- Use cloud config instead of bash script for user data.
+  [\#296](https://github.com/SUSE-Enceladus/ipa/pull/296)
+- Rename Alibaba to Aliyun.
+  [\#297](https://github.com/SUSE-Enceladus/ipa/pull/297)
+
 v6.4.0 (2021-01-15)
 ===================
 
