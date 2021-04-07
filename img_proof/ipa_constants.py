@@ -45,8 +45,11 @@ IPA_CONFIG_FILE = os.path.join(HOME, '.config', 'img_proof', 'config')
 IPA_HISTORY_FILE = os.path.join(HOME, '.config', 'img_proof', '.history')
 IPA_RESULTS_PATH = os.path.join(HOME, 'img_proof', 'results')
 
-BASH_SSH_SCRIPT = '''#!/bin/bash
-echo {key} >> /home/{user}/.ssh/authorized_keys
+BASH_SSH_SCRIPT = '''#cloud-config
+disable_root: true
+
+runcmd:
+ - [ sh, -c, 'echo {key} >> /home/{user}/.ssh/authorized_keys' ]
 '''
 
 SYNC_POINTS = (

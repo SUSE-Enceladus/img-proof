@@ -133,8 +133,11 @@ class TestIpaCloud(object):
         result = provider._get_user_data()
 
         assert result == \
-            '#!/bin/bash\n' \
-            'echo testkey12345 >> /home/ec2-user/.ssh/authorized_keys\n'
+            "#cloud-config\n" \
+            "disable_root: true\n\n" \
+            "runcmd:\n" \
+            " - [ sh, -c, 'echo testkey12345 >> " \
+            "/home/ec2-user/.ssh/authorized_keys' ]\n"
 
     def test_cloud_get_non_null_values(self):
         """Test cloud get non null values method."""
