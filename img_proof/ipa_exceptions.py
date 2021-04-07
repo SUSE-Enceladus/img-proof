@@ -97,5 +97,5 @@ class LibcloudException(IpaCloudException):
     """Generic libcloud exception."""
 
 
-class AlibabaCloudException(IpaCloudException):
-    """Generic Alibaba exception."""
+class AliyunCloudException(IpaCloudException):
+    """Generic Aliyun exception."""

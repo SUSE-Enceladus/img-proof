@@ -33,7 +33,7 @@ from img_proof.ipa_exceptions import IpaControllerException
 from img_proof.ipa_gce import GCECloud
 from img_proof.ipa_ssh import SSHCloud
 from img_proof.ipa_oci import OCICloud
-from img_proof.ipa_alibaba import AlibabaCloud
+from img_proof.ipa_aliyun import AliyunCloud
 from img_proof.ipa_utils import get_test_files
 
 
@@ -159,7 +159,7 @@ def test_image(
             'oci_user_id': oci_user_id
         }
         cloud = OCICloud(**kwargs)
-    elif cloud_name == 'alibaba':
+    elif cloud_name == 'aliyun':
         kwargs['custom_args'] = {
             'access_key': access_key,
             'access_secret': access_secret,
@@ -167,7 +167,7 @@ def test_image(
             'v_switch_id': v_switch_id,
             'ssh_key_name': ssh_key_name
         }
-        cloud = AlibabaCloud(**kwargs)
+        cloud = AliyunCloud(**kwargs)
     else:
         raise IpaControllerException(
             'Cloud framework: %s unavailable.' % cloud_name
