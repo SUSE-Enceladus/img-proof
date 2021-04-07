@@ -18,7 +18,7 @@
 
 %bcond_without test
 Name:           python3-img-proof
-Version:        6.4.0
+Version:        7.0.0
 Release:        0
 Summary:        Command line and API for testing custom images
 License:        GPL-3.0-or-later
@@ -65,7 +65,7 @@ Requires:       python3-paramiko
 Requires:       python3-pytest
 Requires:       python3-testinfra
 BuildArch:      noarch
-Obsoletes:      python3-ipa < 6.4.0
+Obsoletes:      python3-ipa < 7.0.0
 
 %description
 img-proof provides a command line utility to test images in
@@ -76,7 +76,7 @@ Summary:        Infrastructure tests for img-proof
 Group:          Development/Languages/Python
 Requires:       python3-susepubliccloudinfo
 PreReq:         python3-img-proof = %{version}
-Obsoletes:      python3-ipa-tests < 6.4.0
+Obsoletes:      python3-ipa-tests < 7.0.0
 
 %description tests
 Directory of infrastructure tests for testing images.
