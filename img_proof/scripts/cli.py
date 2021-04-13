@@ -328,6 +328,12 @@ def main(context, no_color):
     help='Additional info to add during instance start or creation '
          'when using EC2 provider.'
 )
+@click.option(
+    '--use-gvnic',
+    is_flag=True,
+    help='Use a Google Virtual NIC (gVNIC) network interface. '
+         '(GCE only)'
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -379,6 +385,7 @@ def test(context,
          v_switch_id,
          sev_capable,
          additional_info,
+         use_gvnic,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -435,7 +442,8 @@ def test(context,
             retry_count,
             v_switch_id,
             sev_capable,
-            additional_info
+            additional_info,
+            use_gvnic
         )
         echo_results(results, no_color)
         sys.exit(status)

@@ -268,7 +268,10 @@ class TestGCECloud(object):
             'network': net
         }
 
-        subnet_config = self.cloud._get_network_config('sub-123')
+        subnet_config = self.cloud._get_network_config(
+            'sub-123',
+            use_gvnic=True
+        )
 
         assert subnet_config['network'] == net
         assert subnet_config['subnetwork'] == subnet
