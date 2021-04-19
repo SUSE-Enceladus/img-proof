@@ -50,7 +50,7 @@ from img_proof.ipa_exceptions import (
     IpaCloudException,
     IpaSSHException
 )
-from img_proof.results_plugin import Report
+from pytest_jsonreport.plugin import JSONReport
 
 default_values = {
     'collect_vm_info': False,
@@ -351,12 +351,13 @@ class IpaCloud(object):
         if self.early_exit:
             options.append('-x')
 
-        args = '-v -s {} --ssh-config={} --hosts={} {}'.format(
-                ' '.join(options),
-                ssh_config,
-                self.instance_ip,
-                test
-            )
+        args = '-v -s {} --json-report-file=none ' \
+               '--ssh-config={} --hosts={} {}'.format(
+                   ' '.join(options),
+                   ssh_config,
+                   self.instance_ip,
+                   test
+               )
 
         # Print output captured to log file for test run
         self.logger.debug(
@@ -370,7 +371,7 @@ class IpaCloud(object):
         num_retries = 0
 
         while num_retries < self.retry_count:
-            plugin = Report()
+            plugin = JSONReport()
 
             try:
                 with open(self.log_file, 'a') as log_file:
