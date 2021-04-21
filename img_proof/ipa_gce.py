@@ -116,6 +116,7 @@ class GCECloud(IpaCloud):
         self.ssh_public_key = self._get_ssh_public_key()
         self.image_project = self.custom_args.get('image_project')
         self.sev_capable = self.custom_args.get('sev_capable')
+        self.use_gvnic = self.custom_args.get('use_gvnic')
 
         self.credentials = self._get_credentials()
         self.compute_driver = self._get_driver()
@@ -251,7 +252,7 @@ class GCECloud(IpaCloud):
 
         return disk
 
-    def _get_network_config(self, subnet_id):
+    def _get_network_config(self, subnet_id, use_gvnic=False):
         """
         Return the network config.
 
@@ -264,6 +265,9 @@ class GCECloud(IpaCloud):
                 'type': 'ONE_TO_ONE_NAT'
             }]
         }
+
+        if use_gvnic:
+            interface['nicType'] = 'GVNIC'
 
         if subnet_id:
             subnet = self._get_subnet(subnet_id)
@@ -306,7 +310,8 @@ class GCECloud(IpaCloud):
         disk_type='PERSISTENT',
         disk_mode='READ_WRITE',
         shielded_instance_config=None,
-        sev_capable=False
+        sev_capable=False,
+        use_gvnic=False
     ):
         """Return an instance config for launching a new instance."""
         config = {
@@ -351,6 +356,9 @@ class GCECloud(IpaCloud):
             config['scheduling'] = {'onHostMaintenance': 'TERMINATE'}
             guest_os_features.append({'type': 'SEV_CAPABLE'})
 
+        if use_gvnic:
+            guest_os_features.append({'type': 'GVNIC'})
+
         if guest_os_features:
             config['disks'][0]['guestOsFeatures'] = guest_os_features
 
@@ -365,7 +373,9 @@ class GCECloud(IpaCloud):
             self.instance_type or GCE_DEFAULT_TYPE
         )['selfLink']
         source_image = self._get_image(self.image_id)['selfLink']
-        network_interfaces = [self._get_network_config(self.subnet_id)]
+        network_interfaces = [
+            self._get_network_config(self.subnet_id, self.use_gvnic)
+        ]
 
         kwargs = {
             'instance_name': self.running_instance_id,
@@ -374,7 +384,8 @@ class GCECloud(IpaCloud):
             'source_image': source_image,
             'ssh_key': self.ssh_public_key,
             'network_interfaces': network_interfaces,
-            'sev_capable': self.sev_capable
+            'sev_capable': self.sev_capable,
+            'use_gvnic': self.use_gvnic,
         }
 
         if self.enable_uefi:
