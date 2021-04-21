@@ -108,7 +108,7 @@ def echo_results(data, no_color, verbose=False):
 
     results = '{} tests={}|pass={}|skip={}|fail={}|error={}'.format(
         status,
-        str(summary.get('num_tests', 0)),
+        str(summary.get('total', 0)),
         str(summary.get('passed', 0)),
         str(summary.get('skipped', 0)),
         str(summary.get('failed', 0)),
@@ -166,7 +166,7 @@ def echo_verbose_results(data, no_color):
         else:
             fg = 'red'
 
-        name = parse_test_name(test['name'])
+        name = parse_test_name(test['nodeid'])
         echo_style(
             '{} {}'.format(name, test['outcome'].upper()),
             no_color,

@@ -32,11 +32,11 @@ DATA = {
         "distro": "SLES"
     },
     "tests": [{
-        "name": "img_proof/tests/test_sles.py::test_sles",
+        "nodeid": "img_proof/tests/test_sles.py::test_sles",
         "test_index": 0,
         "outcome": "passed"
     }, {
-        "name": "img_proof/tests/test_broken.py::test_broken",
+        "nodeid": "img_proof/tests/test_broken.py::test_broken",
         "test_index": 1,
         "outcome": "failed"
     }],
@@ -44,7 +44,7 @@ DATA = {
         "duration": 0.0048158168791240234,
         "passed": 1,
         "failed": 1,
-        "num_tests": 2
+        "total": 2
     }
 }
 
