@@ -156,7 +156,7 @@ class TestIpaCloud(object):
 
         results = {
             "tests": [
-                {"name": "img_proof/tests/test_sles.py::test_sles",
+                {"nodeid": "img_proof/tests/test_sles.py::test_sles",
                  "teardown": {"duration": 4.792213439941406e-05,
                               "outcome": "passed",
                               "name": "teardown"},
@@ -172,7 +172,7 @@ class TestIpaCloud(object):
             ],
             "summary": {"duration": 0.004277944564819336,
                         "passed": 1,
-                        "num_tests": 1,
+                        "total": 1,
                         "failed": 0}
         }
 
@@ -188,12 +188,12 @@ class TestIpaCloud(object):
         cloud._process_test_results(5.0, 'test_test')
 
         assert cloud.results['summary']['duration'] == 5.0
-        assert cloud.results['summary']['num_tests'] == 1
+        assert cloud.results['summary']['total'] == 1
         assert cloud.results['summary']['passed'] == 1
 
         test = cloud.results['tests'][0]
         assert test['outcome'] == 'passed'
-        assert test['name'] == 'test_test'
+        assert test['nodeid'] == 'test_test'
 
     @patch('img_proof.ipa_cloud.ipa_utils')
     @patch.object(IpaCloud, '_merge_results')
