@@ -332,13 +332,13 @@ class IpaCloud(object):
                 {
                     'outcome': status,
                     'test_index': 0,
-                    'name': test_name
+                    'nodeid': test_name
                 }
             ],
             'summary': {
                 'duration': duration,
                 status: 1,
-                'num_tests': 1
+                'total': 1
             }
         }
         self._merge_results(result)
