@@ -1,3 +1,11 @@
+v7.1.0 (2021-05-07)
+===================
+
+- Add gvnic option to GCE provider.
+  [\#298](https://github.com/SUSE-Enceladus/ipa/pull/298)
+- Replace native pytest results plugin.
+  [\#299](https://github.com/SUSE-Enceladus/ipa/pull/299)
+
 v7.0.0 (2021-04-07)
 ===================
 
