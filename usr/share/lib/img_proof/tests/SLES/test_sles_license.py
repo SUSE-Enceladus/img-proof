@@ -11,7 +11,8 @@ def test_sles_license(confirm_license_content):
     license_content = [
         'SUSE End User License Agreement',
         'SUSE(R) Linux Enterprise End User License Agreement',
-        'SUSE® Linux Enterprise End User License Agreement'
+        'SUSE® Linux Enterprise End User License Agreement',
+        'End User License Agreement for SUSE Products'
     ]
     result = confirm_license_content(license_dirs, license_content)
 
