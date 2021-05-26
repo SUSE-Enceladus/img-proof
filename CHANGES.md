@@ -1,3 +1,10 @@
+v7.3.0 (2021-05-26)
+===================
+
+- Add 15 SP3 repos to on-demand test.
+  [\#302](https://github.com/SUSE-Enceladus/ipa/pull/302)
+- Check if motd file exists before checking content.
+
 v7.2.0 (2021-05-10)
 ===================
 
