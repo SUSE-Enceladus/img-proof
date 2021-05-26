@@ -506,7 +506,7 @@ BASE_15_SP3 = [
 BASE_15_SP3_SAP = [
     repo.replace('SP2', 'SP3') for repo in BASE_15_SP2_SAP
 ]
-BASE_15_SP2_HPC = [
+BASE_15_SP3_HPC = [
     repo.replace('SP2', 'SP3') for repo in BASE_15_SP2_HPC
 ]
 SLE_15_SP3_X86_64_MODULES = [
