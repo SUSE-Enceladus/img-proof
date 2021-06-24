@@ -1,3 +1,8 @@
+v7.3.1 (2021-06-24)
+===================
+
+- Add new SLES SAP license content string for SP3.
+
 v7.3.0 (2021-05-26)
 ===================
 
