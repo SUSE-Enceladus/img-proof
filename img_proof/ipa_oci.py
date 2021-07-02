@@ -503,7 +503,7 @@ class OCICloud(IpaCloud):
             ]
         )
 
-        if not self.display_name.startswith('oci-ipa-test'):
+        if 'img-proof' not in self.display_name:
             # Only cleanup artifacts created by img-proof
             return
 
