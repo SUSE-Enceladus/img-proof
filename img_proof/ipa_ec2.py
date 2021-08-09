@@ -146,6 +146,20 @@ class EC2Cloud(IpaCloud):
             )
         return instance
 
+    def _get_image(self):
+        """Retrieve image matching image_id."""
+        resource = self._connect()
+
+        try:
+            image = resource.Image(self.image_id)
+        except Exception:
+            raise EC2CloudException(
+                'Image with ID: {image_id} not found.'.format(
+                    image_id=self.image_id
+                )
+            )
+        return image
+
     def _get_instance_state(self):
         """
         Attempt to retrieve the state of the instance.
@@ -177,12 +191,17 @@ class EC2Cloud(IpaCloud):
         """Launch an instance of the given image."""
         resource = self._connect()
 
+        image = self._get_image()
         instance_name = self._generate_instance_name()
         kwargs = {
             'InstanceType': self.instance_type or EC2_DEFAULT_TYPE,
             'ImageId': self.image_id,
             'MaxCount': 1,
             'MinCount': 1,
+            'BlockDeviceMappings': [{
+                'DeviceName': image.root_device_name,
+                'Ebs': {'VolumeSize': self.root_disk_size}
+            }],
             'TagSpecifications': [
                 {
                     'ResourceType': 'instance',

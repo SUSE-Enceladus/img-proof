@@ -196,7 +196,7 @@ class AliyunCloud(IpaCloud):
         request.set_InstanceName(instance_name)
         request.set_Amount(1)
         request.set_InternetMaxBandwidthOut(5)
-        request.set_SystemDiskSize(20)
+        request.set_SystemDiskSize(self.root_disk_size)
         request.set_IoOptimized('optimized')
         request.set_SecurityEnhancementStrategy('Active')
         request.set_VSwitchId(self.v_switch_id)

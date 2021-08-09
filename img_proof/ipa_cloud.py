@@ -61,7 +61,8 @@ default_values = {
     'test_files': set(),
     'timeout': 600,
     'no_default_test_dirs': False,
-    'retry_count': 3
+    'retry_count': 3,
+    'root_disk_size': 50
 }
 
 
@@ -104,6 +105,7 @@ class IpaCloud(object):
         log_callback=None,
         prefix_name=None,
         retry_count=None,
+        root_disk_size=None,
         custom_args=None
     ):
         """Initialize base cloud framework class."""
@@ -171,6 +173,7 @@ class IpaCloud(object):
         )
         self.prefix_name = self.ipa_config['prefix_name']
         self.retry_count = int(self.ipa_config['retry_count'])
+        self.root_disk_size = int(self.ipa_config['root_disk_size'])
 
         if self.enable_secure_boot and not self.enable_uefi:
             self.enable_uefi = True

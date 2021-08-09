@@ -2,3 +2,4 @@ tests:
   - test_sles_ec2_services
   - test_sles_ec2_uuid
   - test_sles_ec2_network
+  - test_sles_grow_root

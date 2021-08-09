@@ -1,2 +1,3 @@
 tests:
   - test_sles_aliyun_services
+  - test_sles_grow_root

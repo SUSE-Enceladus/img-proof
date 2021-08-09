@@ -305,6 +305,7 @@ class GCECloud(IpaCloud):
         service_account_email,
         source_image,
         ssh_key,
+        root_disk_size,
         auto_delete=True,
         boot_disk=True,
         disk_type='PERSISTENT',
@@ -336,7 +337,8 @@ class GCECloud(IpaCloud):
                 'deviceName': instance_name,
                 'initializeParams': {
                     'diskName': instance_name,
-                    'sourceImage': source_image
+                    'sourceImage': source_image,
+                    'diskSizeGb': root_disk_size
                 }
             }],
             'networkInterfaces': network_interfaces,
@@ -386,6 +388,7 @@ class GCECloud(IpaCloud):
             'network_interfaces': network_interfaces,
             'sev_capable': self.sev_capable,
             'use_gvnic': self.use_gvnic,
+            'root_disk_size': self.root_disk_size
         }
 
         if self.enable_uefi:
