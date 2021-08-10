@@ -1,3 +1,2 @@
 tests:
   - test_sles_azure_services
-  - test_sles_grow_root
