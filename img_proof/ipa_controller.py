@@ -88,7 +88,8 @@ def test_image(
     v_switch_id=None,
     sev_capable=None,
     additional_info=None,
-    use_gvnic=None
+    use_gvnic=None,
+    root_disk_size=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -118,7 +119,8 @@ def test_image(
         'enable_uefi': enable_uefi,
         'log_callback': log_callback,
         'prefix_name': prefix_name,
-        'retry_count': retry_count
+        'retry_count': retry_count,
+        'root_disk_size': root_disk_size
     }
 
     cloud_name = cloud_name.lower()

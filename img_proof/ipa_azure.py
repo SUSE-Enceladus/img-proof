@@ -183,6 +183,10 @@ class AzureCloud(IpaCloud):
                     'sku': self.image_sku,
                     'version': self.image_version
                 },
+                'os_disk': {
+                    'disk_size_gb': self.root_disk_size,
+                    'create_option': 'FromImage'
+                }
             }
         else:
             for image in self.compute.images.list():

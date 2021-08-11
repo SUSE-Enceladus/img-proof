@@ -334,6 +334,11 @@ def main(context, no_color):
     help='Use a Google Virtual NIC (gVNIC) network interface. '
          '(GCE only)'
 )
+@click.option(
+    '--root-disk-size',
+    help='Size of the root disk in GB.',
+    type=click.IntRange(min=0)
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -386,6 +391,7 @@ def test(context,
          sev_capable,
          additional_info,
          use_gvnic,
+         root_disk_size,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -443,7 +449,8 @@ def test(context,
             v_switch_id,
             sev_capable,
             additional_info,
-            use_gvnic
+            use_gvnic,
+            root_disk_size
         )
         echo_results(results, no_color)
         sys.exit(status)

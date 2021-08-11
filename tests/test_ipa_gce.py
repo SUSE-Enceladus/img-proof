@@ -291,6 +291,7 @@ class TestGCECloud(object):
             'service-account-123@email.com',
             'image123',
             'secretkey',
+            50,
             shielded_instance_config={'shielded': 'config'},
             sev_capable=True
         )
