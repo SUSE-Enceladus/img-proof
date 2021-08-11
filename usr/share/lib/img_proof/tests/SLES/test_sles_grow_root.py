@@ -4,6 +4,13 @@ import shlex
 def test_sles_grow_root(host):
     """
     Ensure root filesystem grows to non default size
+
+    The partitions are slightly different in all images.
+    However, there is always a root partition and in Azure
+    the boot partition is 1GB.
+
+    All the smaller partitions round to zero and
+    therefore they are ignored in calculating size of fs.
     """
 
     # Get root disk size
@@ -31,7 +38,7 @@ def test_sles_grow_root(host):
     boot_part = host.run('findmnt -n -f -o SOURCE /boot').stdout.strip()
 
     if boot_part:
-        # Some images have a separate boot partition
+        # Some images have a separate boot partition that is >= 1G
         result = host.run(
             'df -BG {part} | sed 1D'.format(part=boot_part)
         ).stdout.strip()
