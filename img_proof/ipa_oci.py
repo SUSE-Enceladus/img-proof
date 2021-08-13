@@ -416,7 +416,8 @@ class OCICloud(IpaCloud):
                 shape=self.instance_type or OCI_DEFAULT_TYPE,
                 metadata=instance_metadata,
                 source_details=oci.core.models.InstanceSourceViaImageDetails(
-                    image_id=self.image_id
+                    image_id=self.image_id,
+                    boot_volume_size_in_gbs=self.root_disk_size
                 ),
                 create_vnic_details=oci.core.models.CreateVnicDetails(
                     subnet_id=self.subnet_id

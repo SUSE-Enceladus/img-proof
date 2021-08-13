@@ -520,6 +520,7 @@ class TestOCIProvider(object):
         cloud.image_id = 'image123'
         cloud.logger = logger
         cloud.prefix_name = None
+        cloud.root_disk_size = 50
 
         cloud._launch_instance()
 
