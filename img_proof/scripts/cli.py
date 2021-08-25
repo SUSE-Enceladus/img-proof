@@ -734,7 +734,10 @@ def list_tests(context, verbose, test_dirs):
     each test file, otherwise print the test files only.
 
     If test_dirs supplied they will be used to search for
-    tests otherwise the default test directories are used.
+    tests otherwise the default test directories are used:
+
+    * /usr/share/lib/img_proof/tests
+    * ~/img_proof/tests
     """
     no_color = context.obj['no_color']
     test_dirs = test_dirs or TEST_PATHS
