@@ -1,3 +1,15 @@
+v7.4.0 (2021-09-14)
+===================
+
+- Make the SEV check more lenient
+  [\#304](https://github.com/SUSE-Enceladus/ipa/pull/304)
+- Fix name check when cleanup up oci network components
+  [\#305](https://github.com/SUSE-Enceladus/ipa/pull/305)
+- Add grow root test
+  [\#306](https://github.com/SUSE-Enceladus/ipa/pull/306)
+- Include the default test paths in the CLI help
+  [\#308](https://github.com/SUSE-Enceladus/ipa/pull/308)
+
 v7.3.1 (2021-06-24)
 ===================
 
