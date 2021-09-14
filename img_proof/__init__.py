@@ -22,4 +22,4 @@
 
 __author__ = """SUSE"""
 __email__ = 'public-cloud-dev@susecloud.net'
-__version__ = '7.3.1'
+__version__ = '7.4.0'
