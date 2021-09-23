@@ -323,18 +323,20 @@ class TestAzureProvider(object):
         assert str(error.value) == 'Unable to stop instance: ' \
             'Instance not found.'
 
-    def test_azure_terminate_instance(self):
+    @patch('img_proof.ipa_azure.hasattr')
+    def test_azure_terminate_instance(self, mock_hasattr):
         """Test terminate instance method."""
+        mock_hasattr.return_value = False
         provider = self.helper_get_provider()
         provider.running_instance_id = 'img_proof-test-instance'
 
         provider._terminate_instance()
-        self.client.resource_groups.delete.assert_called_once_with(
+        self.client.resource_groups.begin_delete.assert_called_once_with(
             'img_proof-test-instance'
         )
 
         # Test exception
-        self.client.resource_groups.delete.side_effect = Exception(
+        self.client.resource_groups.begin_delete.side_effect = Exception(
             'Instance not found'
         )
 
