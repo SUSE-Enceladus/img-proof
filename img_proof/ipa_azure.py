@@ -557,9 +557,14 @@ class AzureCloud(IpaCloud):
         Terminate the resource group and instance.
         """
         try:
-            self.resource.resource_groups.delete(
-                self.running_instance_id
-            )
+            if hasattr(self.resource.resource_groups, 'delete'):
+                self.resource.resource_groups.delete(
+                    self.running_instance_id
+                )
+            else:
+                self.resource.resource_groups.begin_delete(
+                    self.running_instance_id
+                )
         except Exception as error:
             raise AzureCloudException(
                 'Unable to terminate resource group: {0}.'.format(error)
