@@ -63,10 +63,15 @@ class TestAzureProvider(object):
         msg = 'SSH private key file is required to connect to instance.'
 
         # Test ssh private key file required
-        with pytest.raises(AzureCloudException) as error:
+        with pytest.raises(AzureCloudException, match=msg):
             AzureCloud(**self.kwargs)
 
-        assert str(error.value) == msg
+        # Test region required
+        self.kwargs['config'] = 'tests/data/config.noregion'
+        msg = 'Region is required to connect to Azure.'
+
+        with pytest.raises(AzureCloudException, match=msg):
+            AzureCloud(**self.kwargs)
 
     @patch.object(AzureCloud, '_get_client_from_json')
     def test_get_management_client(self, mock_get_client):

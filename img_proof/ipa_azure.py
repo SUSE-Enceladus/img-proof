@@ -59,6 +59,11 @@ class AzureCloud(IpaCloud):
                 ' are all required to use an existing subnet.'
             )
 
+        if not self.region:
+            raise AzureCloudException(
+                'Region is required to connect to Azure.'
+            )
+
         self.service_account_file = (
             self.custom_args.get('service_account_file')
             or self.ipa_config['service_account_file']
