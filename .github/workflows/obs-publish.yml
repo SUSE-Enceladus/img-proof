@@ -1,0 +1,23 @@
+name: Publish Python Package To OBS
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout action repo
+        uses: actions/checkout@v2
+        with:
+          repository: suse-enceladus/.github
+      - name: Invoke deployment hook
+        uses: ./actions/webhook-action
+        env:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
