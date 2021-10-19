@@ -80,11 +80,10 @@ includes tests such as soft reboot (e.g. "shutdown -r now") and update.
 
 The current supported distributions are:
 
-* Fedora
-* openSUSE_Leap
-* RHEL
-* SLES
-
+* Fedora (fedora)
+* openSUSE_Leap (opensuse_leap)
+* RHEL (rhel)
+* SLES (sles)
 
 In addition to soft reboot, refresh and update there is a built in test for
 hard reboot (framework reboot).
@@ -158,7 +157,7 @@ Please submit issues and requests to `Github`_.
 License
 -------
 
-Copyright (c) 2020 SUSE LLC.
+Copyright (c) 2021 SUSE LLC.
 
 Distributed under the terms of GPL-3.0+ license, see `LICENSE`_ for details.
 
