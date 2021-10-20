@@ -18,14 +18,14 @@ Verbosity
 
 As seen in the example the CLI output verbosity can be controlled via options:
 
-**\\-\\-debug**
+**\-\-debug**
     Display debug level logging to console. Including full stack trace
     if there is an exception.
 
-**\\-\\-verbose**
+**\-\-verbose**
     (Default) Display logging info to console.
 
-**\\-\\-quiet**
+**\-\-quiet**
     Silence logging information on test run.
 
 Cleanup
@@ -36,10 +36,10 @@ fails the instance will remain running for debugging purposes. This
 behavior can be configured with the ``--cleanup`` and ``--no-cleanup``
 flags.
 
-**\\-\\-cleanup**
+**\-\-cleanup**
     Instance will always be terminated.
 
-**\\-\\-no-cleanup**
+**\-\-no-cleanup**
     Instance will always remain running.
 
 ANSI Style

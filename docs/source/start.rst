@@ -6,39 +6,35 @@ Installation
 ============
 
 SUSE package
-----------------
+------------
 
-Stable
-^^^^^^
-
-.. note::  Tumbleweed and Leap 15.2 have a stable version.
-
-Perform the following commands as root for stable version:
-
-.. code-block:: console
-
-   $ zypper in python3-img-proof
-
-Development
-^^^^^^^^^^^
+**SLES 15**
 
 Ensure you have properly registered SLES then perform the following
-commands as root for SLES 15 SP2:
+commands as root for SLES 15:
 
 .. code-block:: console
 
-   $ SUSEConnect -p sle-module-public-cloud/15.2/x86_64
-   $ zypper ar https://download.opensuse.org/repositories/Cloud:Tools:CI/SLE_15_SP2/Cloud:Tools:CI.repo
+   $ SUSEConnect -p sle-module-public-cloud/15.#/x86_64
+   $ zypper ar https://download.opensuse.org/repositories/Cloud:Tools:CI/SLE_15_SP#/Cloud:Tools:CI.repo
    $ zypper refresh
    $ zypper in python3-img-proof
 
-Perform the following commands as root for Leap 15.2:
+Replace # with the service pack you are using. Currently support exists for SP2+.
+
+**openSUSE Leap 15**
+
+Perform the following commands as root for Leap 15:
 
 .. code-block:: console
 
-   $ zypper ar https://download.opensuse.org/repositories/Cloud:Tools:CI/openSUSE_Leap_15.2/Cloud:Tools:CI.repo
+   $ zypper ar https://download.opensuse.org/repositories/Cloud:Tools:CI/openSUSE_Leap_15.#/Cloud:Tools:CI.repo
    $ zypper refresh
    $ zypper in python3-img-proof
+
+Currently Leap 15.3+ is supported.
+
+**openSUSE Tumbleweed**
 
 Perform the following commands as root for Tumbleweed:
 
@@ -50,6 +46,14 @@ Perform the following commands as root for Tumbleweed:
 
 .. note::  An openSUSE and SLES test suite is shipped alongside the SUSE package as python3-img-proof-tests.
 
+SUSE test suite
+---------------
+
+To install the SLES test suite alongside the package use the following command:
+
+.. code-block:: console
+
+   $ zypper in python3-img-proof-tests
 
 PyPI
 ----
