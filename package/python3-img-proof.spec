@@ -43,7 +43,7 @@ BuildRequires:  python3-oci-sdk
 BuildRequires:  python3-paramiko
 BuildRequires:  python3-pytest
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-testinfra
+BuildRequires:  python3-pytest-testinfra
 BuildRequires:  python3-pytest-json-report
 %if %{with test}
 BuildRequires:  python3-coverage
@@ -64,7 +64,7 @@ Requires:       python3-google-auth
 Requires:       python3-oci-sdk
 Requires:       python3-paramiko
 Requires:       python3-pytest
-Requires:       python3-testinfra
+Requires:       python3-pytest-testinfra
 Requires:       python3-pytest-json-report
 BuildArch:      noarch
 Obsoletes:      python3-ipa < 7.4.0
