@@ -1,3 +1,13 @@
+v7.5.0 (2021-12-10)
+===================
+
+- Handle breaking change in Azure resource package
+  [\#311](https://github.com/SUSE-Enceladus/ipa/pull/311)
+- Raise exception if no region provided when using Azure CSP
+  [\#312](https://github.com/SUSE-Enceladus/ipa/pull/312)
+- Only do a refresh when testing Leap
+  [\#316](https://github.com/SUSE-Enceladus/ipa/pull/316)
+
 v7.4.0 (2021-09-14)
 ===================
 
