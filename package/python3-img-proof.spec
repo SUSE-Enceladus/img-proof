@@ -25,6 +25,7 @@ License:        GPL-3.0-or-later
 Group:          Development/Languages/Python
 URL:            https://github.com/SUSE-Enceladus/img-proof
 Source:         https://files.pythonhosted.org/packages/source/i/img-proof/img-proof-%{version}.tar.gz
+BuildRequires:  python-rpm-macros
 BuildRequires:  python3-PyYAML
 BuildRequires:  python3-aliyun-python-sdk-core
 BuildRequires:  python3-aliyun-python-sdk-ecs
