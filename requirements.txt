@@ -8,7 +8,7 @@ Click
 paramiko
 pytest
 PyYAML
-testinfra
+pytest-testinfra
 oci
 google-auth
 google-api-python-client
