@@ -1,3 +1,8 @@
+v7.6.0 (2022-01-11)
+===================
+
+- Switch testinfra requirement to pytest plugin namespace.
+
 v7.5.2 (2021-12-17)
 ===================
 
