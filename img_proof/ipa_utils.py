@@ -578,3 +578,18 @@ def load_json(file_path):
         data = json.load(json_file)
 
     return data
+
+
+def strtobool(val: str) -> int:
+    """
+    This function implements a strtobool to replace distutils requirement
+
+    Distutils module is deprecated:
+    https://www.python.org/dev/peps/pep-0632/ for details.
+    """
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return 1
+    if val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return 0
+    raise ValueError(f"Invalid truth value {val}")
