@@ -30,7 +30,6 @@ import pytest
 
 from collections import ChainMap, defaultdict
 from datetime import datetime
-from distutils.util import strtobool
 
 from img_proof import ipa_utils
 from img_proof.ipa_constants import (
@@ -170,7 +169,7 @@ class IpaCloud(object):
         self.enable_secure_boot = self.ipa_config['enable_secure_boot']
         self.enable_uefi = self.ipa_config['enable_uefi']
         self.no_default_test_dirs = bool(
-            strtobool(str(self.ipa_config['no_default_test_dirs']))
+            ipa_utils.strtobool(str(self.ipa_config['no_default_test_dirs']))
         )
         self.prefix_name = self.ipa_config['prefix_name']
         self.retry_count = int(self.ipa_config['retry_count'])
