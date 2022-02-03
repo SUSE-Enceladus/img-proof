@@ -44,6 +44,7 @@ from img_proof.ipa_constants import (
 from img_proof.ipa_rhel import RHEL
 from img_proof.ipa_fedora import Fedora
 from img_proof.ipa_opensuse_leap import openSUSE_Leap
+from img_proof.ipa_sle_micro import SLE_Micro
 from img_proof.ipa_sles import SLES
 from img_proof.ipa_exceptions import (
     IpaException,
@@ -412,6 +413,8 @@ class IpaCloud(object):
             self.distro = openSUSE_Leap()
         elif self.distro_name == 'rhel':
             self.distro = RHEL()
+        elif self.distro_name == 'sle_micro':
+            self.distro = SLE_Micro()
         elif self.distro_name == 'sles':
             self.distro = SLES()
         else:
