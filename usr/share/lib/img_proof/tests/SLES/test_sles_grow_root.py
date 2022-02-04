@@ -14,7 +14,10 @@ def test_sles_grow_root(host):
     """
 
     # Get root disk size
-    root_part = host.run('findmnt -n -f -o SOURCE /').stdout.strip()
+    # Drop btrfs info if it exists: "/dev/sda3[/@/.snapshots/1/snapshot]"
+    root_part = host.run(
+        'findmnt -n -f -o SOURCE /'
+    ).stdout.strip().rsplit('[')[0]
 
     device_name = host.run(
         'lsblk -npo pkname {part}'.format(part=root_part)
@@ -48,4 +51,21 @@ def test_sles_grow_root(host):
     else:
         boot_size = 0
 
-    assert root_size + boot_size == disk_size
+    # Get /var partition size
+    var_part = host.run('findmnt -n -f -o SOURCE /var').stdout.strip()
+
+    if var_part:
+        # Some images have a separate /var partition that is >= 1G
+        result = host.run(
+            'df -BG {part} | sed 1D'.format(part=var_part)
+        ).stdout.strip()
+
+        var_size = shlex.split(result)[1]  # Filesystem 1G-blocks
+        var_size = int(var_size.replace('G', ''))
+    else:
+        var_size = 0
+
+    total_size = root_size + boot_size + var_size
+
+    # Rounding can lead to small discrepancies
+    assert total_size in (disk_size - 1, disk_size, disk_size + 1)
