@@ -52,8 +52,9 @@ class TestGCECloud(object):
     @patch('img_proof.ipa_gce.service_account')
     @patch.object(GCECloud, '_validate_region')
     @patch('img_proof.ipa_gce.discovery')
-    def setup(
+    def setup_method(
         self,
+        method,
         mock_discovery,
         mock_validate_region,
         mock_service_account

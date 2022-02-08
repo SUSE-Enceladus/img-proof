@@ -32,11 +32,9 @@ from unittest.mock import MagicMock, patch
 class TestAzureProvider(object):
     """Test Azure provider class."""
 
-    def setup(self):
-        self.client = MagicMock()
-
     def setup_method(self, method):
         """Set up kwargs dict."""
+        self.client = MagicMock()
         self.kwargs = {
             'config': 'tests/data/config',
             'distro_name': 'sles',
