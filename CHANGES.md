@@ -1,3 +1,17 @@
+v7.8.0 (2022-02-09)
+===================
+
+- Fix GCE SSH key insertion
+- Fix sle-micro integration
+- Use strtobool locally instead of from distutils which is deprecated
+- Use setup_method in unit tests instead of setup. Setup is no longer
+  called before every test.
+- Fix flake8 formatting error in test suite
+- Update grow root test:
+  + To handle sle-micro with btrfs root volume
+  + To include /var partition in calculation if it exists
+  + To allow for small discrepancies due to rounding errors
+
 v7.7.0 (2022-01-21)
 ===================
 
