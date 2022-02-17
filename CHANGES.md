@@ -1,3 +1,9 @@
+v7.8.1 (2022-02-17)
+===================
+
+- Use -v/--nofsroot option in root grow test to support btrfs
+- Account for sle-micro in EC2 Dracut conf test
+
 v7.8.0 (2022-02-09)
 ===================
 
