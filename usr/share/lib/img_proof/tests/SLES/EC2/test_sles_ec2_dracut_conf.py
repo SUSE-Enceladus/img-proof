@@ -17,6 +17,9 @@ def test_sles_ec2_dracut_conf(host, get_release_value, determine_architecture):
     version = get_release_value('VERSION')
     assert version
 
+    name = get_release_value('PRETTY_NAME').lower()
+    assert name
+
     dracut_conf = host.file('/etc/dracut.conf.d/07-aws-type-switch.conf')
 
     assert dracut_conf.exists
@@ -24,8 +27,12 @@ def test_sles_ec2_dracut_conf(host, get_release_value, determine_architecture):
 
     for driver in needed_drivers:
         if (
-                driver.startswith('virtio') and
-                (version.startswith('15') or version == '12-SP5')
+            driver.startswith('virtio') and
+            (
+                version.startswith('15') or
+                version == '12-SP5' or
+                'micro' in name
+            )
         ):
             continue
         assert dracut_conf.contains(driver)
