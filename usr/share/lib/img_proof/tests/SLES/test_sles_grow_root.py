@@ -14,10 +14,9 @@ def test_sles_grow_root(host):
     """
 
     # Get root disk size
-    # Drop btrfs info if it exists: "/dev/sda3[/@/.snapshots/1/snapshot]"
     root_part = host.run(
-        'findmnt -n -f -o SOURCE /'
-    ).stdout.strip().rsplit('[')[0]
+        'findmnt -v -n -f -o SOURCE /'
+    ).stdout.strip()
 
     device_name = host.run(
         'lsblk -npo pkname {part}'.format(part=root_part)
