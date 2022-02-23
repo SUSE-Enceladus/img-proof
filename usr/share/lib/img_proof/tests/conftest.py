@@ -25,7 +25,7 @@ def check_cloud_register(host):
             "{0}))'".format(is_registered_arg)
         )
         output = result.stdout.strip()
-        return output == '1'
+        return output in ('1', 'True')
     return f
 
 
