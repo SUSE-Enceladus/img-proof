@@ -7,13 +7,25 @@ from susepubliccloudinfoclient import infoserverrequests
 @pytest.fixture()
 def check_cloud_register(host):
     def f():
+        # There was an API change in registerutils and we have to check
+        # which version is in place on the system
+        deleted_interface_import = \
+            'from cloudregister.registerutils import check_registration'
+        result = host.run(
+            "sudo python3 -c '{0}'".format(deleted_interface_import)
+        )
+        # Old interface of is_registered()
+        is_registered_arg = 'registerutils.get_current_smt()'
+        if result.rc == 1:
+            # New interface of is_registered()
+            is_registered_arg = 'registerutils.get_current_smt().get_FQDN()'
         result = host.run(
             "sudo python3 -c 'from cloudregister import registerutils; "
             "print(registerutils.is_registered("
-            "registerutils.get_current_smt()))'"
+            "{0}))'".format(is_registered_arg)
         )
         output = result.stdout.strip()
-        return output == '1'
+        return output in ('1', 'True')
     return f
 
 
