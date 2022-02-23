@@ -16,7 +16,7 @@ def check_cloud_register(host):
         )
         # Old interface of is_registered()
         is_registered_arg = 'registerutils.get_current_smt()'
-        if result.stdout.strip() == '1':
+        if result.rc == 1:
             # New interface of is_registered()
             is_registered_arg = 'registerutils.get_current_smt().get_FQDN()'
         result = host.run(
