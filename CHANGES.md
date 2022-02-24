@@ -1,3 +1,9 @@
+v7.8.2 (2022-02-24)
+===================
+
+- Handle breaking changes in cloud-regionsrv-client to fix
+  SLES registration check.
+
 v7.8.1 (2022-02-17)
 ===================
 
