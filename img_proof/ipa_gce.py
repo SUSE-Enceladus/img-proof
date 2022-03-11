@@ -35,6 +35,8 @@ from img_proof.ipa_exceptions import GCECloudException, IpaRetryableError
 from img_proof.ipa_cloud import IpaCloud
 
 from google.oauth2 import service_account
+from google.auth.exceptions import RefreshError
+from google.auth.transport.requests import AuthorizedSession
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 
@@ -144,9 +146,37 @@ class GCECloud(IpaCloud):
                 'docs for information on GCE configuration.'
             )
 
-        return service_account.Credentials.from_service_account_file(
-            self.service_account_file
-        )
+        try:
+            creds = service_account.Credentials.from_service_account_file(
+                self.service_account_file
+            )
+        except Exception as error:
+            raise GCECloudException(
+                'Could not extract credentials from "{creds_file}": '
+                '{error}'.format(
+                    creds_file=self.service_account_file,
+                    error=error
+                )
+            )
+
+        try:
+            # https://developers.google.com/identity/protocols/oauth2/scopes#google-sign-in
+            scoped_credentials = creds.with_scopes(['profile'])
+            authed_session = AuthorizedSession(scoped_credentials)
+            authed_session.get('https://www.googleapis.com/oauth2/v2/userinfo')
+        except RefreshError:
+            raise GCECloudException(
+                'The provided credentials are invalid or expired: '
+                '{creds_file}'.format(
+                    creds_file=self.service_account_file
+                )
+            )
+        except Exception as error:
+            raise GCECloudException(
+                'GCP authentication failed: {error}'.format(error=error)
+            )
+
+        return creds
 
     def _get_driver(self):
         """Get authenticated GCE driver."""
