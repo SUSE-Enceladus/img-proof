@@ -49,6 +49,7 @@ def get_http_error(msg, status='404'):
 class TestGCECloud(object):
     """Test GCE cloud class."""
 
+    @patch('img_proof.ipa_gce.AuthorizedSession')
     @patch('img_proof.ipa_gce.service_account')
     @patch.object(GCECloud, '_validate_region')
     @patch('img_proof.ipa_gce.discovery')
@@ -57,7 +58,8 @@ class TestGCECloud(object):
         method,
         mock_discovery,
         mock_validate_region,
-        mock_service_account
+        mock_service_account,
+        mock_auth_session
     ):
         """Set up kwargs dict."""
         self.kwargs = {
@@ -117,6 +119,24 @@ class TestGCECloud(object):
         msg = 'Service account JSON file is invalid for GCE. ' \
             'client_email key is expected. See getting started ' \
             'docs for information on GCE configuration.'
+        assert str(error.value) == msg
+
+    @patch('img_proof.ipa_gce.AuthorizedSession')
+    @patch('img_proof.ipa_gce.service_account')
+    def test_gce_get_creds_invalid(
+        self,
+        mock_service_account,
+        mock_auth_session
+    ):
+        """Test get credentials method with exception."""
+        session = MagicMock()
+        session.get.side_effect = Exception('Invalid creds!')
+        mock_auth_session.return_value = session
+
+        with pytest.raises(GCECloudException) as error:
+            self.cloud._get_credentials()
+
+        msg = 'GCP authentication failed: Invalid creds!'
         assert str(error.value) == msg
 
     def test_gce_get_instance(self):
