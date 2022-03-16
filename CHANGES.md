@@ -1,3 +1,8 @@
+v7.9.0 (2022-03-16)
+===================
+
+- Force GCE auth to provide a useful error message with invalid credentials
+
 v7.8.2 (2022-02-24)
 ===================
 
