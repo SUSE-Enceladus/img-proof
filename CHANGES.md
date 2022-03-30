@@ -1,3 +1,10 @@
+v7.10.0 (2022-03-30)
+===================
+
+- Add SLES 15 SP4 repos to SLES test suite
+- Remove definitions for non existing products
+- Remove SLES 11 repo configuration, SLES 11 is EOL
+
 v7.9.1 (2022-03-16)
 ===================
 
