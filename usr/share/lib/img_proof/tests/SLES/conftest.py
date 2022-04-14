@@ -499,17 +499,29 @@ SLE_15_SP3_X86_64_MODULES = [
 ]
 
 BASE_15_SP4 = [
-    repo.replace('SP3', 'SP4') for repo in BASE_15_SP3
+    repo.replace('SP3', 'SP4') for repo in BASE_15_SP3 \
+    if 'Python2' not in repo
 ]
 BASE_15_SP4_SAP = [
-    repo.replace('SP3', 'SP4') for repo in BASE_15_SP3_SAP
+    repo.replace('SP3', 'SP4') for repo in BASE_15_SP3_SAP \
+    if 'Python2' not in repo
 ]
 BASE_15_SP4_HPC = [
-    repo.replace('SP3', 'SP4') for repo in BASE_15_SP3_HPC
+    repo.replace('SP3', 'SP4') for repo in BASE_15_SP3_HPC \
+    if 'Python2' not in repo
 ]
 SLE_15_SP4_X86_64_MODULES = [
     repo.replace('SP3', 'SP4') for repo in SLE_15_SP3_X86_64_MODULES
 ]
+
+PYTHON3_MODULE = [
+    'SLE-Module-Python3-15-SP4-Pool',
+    'SLE-Module-Python3-15-SP4-Updates'
+]
+
+BASE_15_SP4 += PYTHON3_MODULE
+BASE_15_SP4_SAP += PYTHON3_MODULE
+BASE_15_SP4_HPC += PYTHON3_MODULE
 
 SLES_REPOS = {
     '12-X86_64': SLE_12_BASE + SLE_12_MODULES,
