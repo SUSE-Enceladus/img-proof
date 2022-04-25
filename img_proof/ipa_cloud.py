@@ -260,7 +260,7 @@ class IpaCloud(object):
         self.results['info'] = {
             'platform': self.cloud,
             'distro': self.distro_name,
-            'image': self.instance_ip,
+            'image': self.image_id,
             'timestamp': self.time_stamp,
             'log_file': self.log_file,
             'results_file': self.results_file
