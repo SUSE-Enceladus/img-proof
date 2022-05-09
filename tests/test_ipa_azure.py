@@ -205,6 +205,22 @@ class TestAzureProvider(object):
         assert storage_profile['image_reference']['id'] == \
             '/id/custom-image.vhd'
 
+        # Gallery image
+        image.id = (
+            '/subscriptions/123/resourceGroups/rg123'
+            '/providers/Microsoft.Compute/galleries/gallery1'
+            '/images/image2/versions/2022.02.02'
+        )
+        provider.gallery_name = 'gallery1'
+        provider.gallery_resource_group = 'rg123'
+        provider.image_version = '2022.02.02'
+        provider.image_id = 'image2'
+
+        self.client.gallery_image_versions.get.return_value = image
+        storage_profile = provider._create_storage_profile()
+
+        assert storage_profile['image_reference']['id'] == image.id
+
     def test_process_image_id(self):
         provider = self.helper_get_provider()
         provider._process_image_id()
@@ -249,6 +265,21 @@ class TestAzureProvider(object):
         provider._set_image_id()
 
         assert provider.image_id == 'another:fake:image:id'
+
+        # gallery image
+        image_reference.publisher = None
+        image_reference.id = (
+            '/subscriptions/123/resourceGroups/rg123'
+            '/providers/Microsoft.Compute/galleries/gallery1'
+            '/images/image2/versions/2022.02.02'
+        )
+
+        provider._set_image_id()
+
+        assert provider.image_id == 'image2'
+        assert provider.image_version == '2022.02.02'
+        assert provider.gallery_name == 'gallery1'
+        assert provider.gallery_resource_group == 'rg123'
 
     @patch('img_proof.ipa_utils.generate_instance_name')
     def test_azure_set_instance_ip_exception(

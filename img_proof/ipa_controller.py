@@ -89,7 +89,10 @@ def test_image(
     sev_capable=None,
     additional_info=None,
     use_gvnic=None,
-    root_disk_size=None
+    root_disk_size=None,
+    gallery_name=None,
+    gallery_resource_group=None,
+    image_version=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -129,7 +132,10 @@ def test_image(
             'accelerated_networking': accelerated_networking,
             'service_account_file': service_account_file,
             'vnet_name': vnet_name,
-            'vnet_resource_group': vnet_resource_group
+            'vnet_resource_group': vnet_resource_group,
+            'gallery_name': gallery_name,
+            'gallery_resource_group': gallery_resource_group,
+            'image_version': image_version
         }
         cloud = AzureCloud(**kwargs)
     elif cloud_name == 'ec2':
