@@ -1,3 +1,11 @@
+v7.11.0 (2022-05-10)
+===================
+
+- Add Python3 modules to 15 SP4 in repos test and remove python2
+- Cleanup bugs in test results output
+- Check for pretty name in motd and old format
+- Add option to test shared gallery images
+
 v7.10.0 (2022-03-30)
 ===================
 
