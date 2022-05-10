@@ -226,10 +226,12 @@ class AzureCloud(IpaCloud):
             except Exception:
                 raise AzureCloudException(
                     'Image with name: {0} and version: {1} '
-                    'not found in gallery: {2}.'.format(
+                    'not found in gallery: {2} with resource group: '
+                    '{3}.'.format(
                         self.image_id,
                         self.image_version,
-                        self.gallery_name
+                        self.gallery_name,
+                        self.gallery_resource_group
                     )
                 )
 
