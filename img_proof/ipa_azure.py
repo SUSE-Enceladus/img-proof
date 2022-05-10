@@ -89,6 +89,23 @@ class AzureCloud(IpaCloud):
         self.ssh_user = self.ssh_user or AZURE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
 
+        self.gallery_name = self.custom_args.get('gallery_name')
+        self.gallery_resource_group = self.custom_args.get(
+            'gallery_resource_group'
+        )
+        self.image_version = self.custom_args.get('image_version')
+
+        gallery_args = [
+            self.gallery_name,
+            self.gallery_resource_group,
+            self.image_version
+        ]
+        if any(gallery_args) and not all(gallery_args):
+            raise AzureCloudException(
+                'gallery_name, gallery_resource_group and image_version'
+                ' are all required to use a gallery image.'
+            )
+
         self.compute = self._get_management_client(ComputeManagementClient)
         self.network = self._get_management_client(
             NetworkManagementClient,
@@ -98,6 +115,10 @@ class AzureCloud(IpaCloud):
 
         if self.running_instance_id:
             self._set_default_resource_names()
+
+        self.image_publisher = None
+        self.image_offer = None
+        self.image_sku = None
 
     def _create_network_interface(
         self, ip_config_name, nic_name, public_ip, region,
@@ -191,6 +212,32 @@ class AzureCloud(IpaCloud):
                 'os_disk': {
                     'disk_size_gb': self.root_disk_size,
                     'create_option': 'FromImage'
+                }
+            }
+        elif self.gallery_name:
+            try:
+                image = self.compute.gallery_image_versions.get(
+                    self.gallery_resource_group,
+                    self.gallery_name,
+                    self.image_id,
+                    self.image_version
+                )
+                image_id = image.id
+            except Exception:
+                raise AzureCloudException(
+                    'Image with name: {0} and version: {1} '
+                    'not found in gallery: {2} with resource group: '
+                    '{3}.'.format(
+                        self.image_id,
+                        self.image_version,
+                        self.gallery_name,
+                        self.gallery_resource_group
+                    )
+                )
+
+            storage_profile = {
+                'image_reference': {
+                    'id': image_id
                 }
             }
         else:
@@ -469,14 +516,14 @@ class AzureCloud(IpaCloud):
         Raises:
             If image_id is not a valid format.
         """
-        try:
-            image_info = self.image_id.strip().split(':')
+        image_info = self.image_id.strip().split(':')
+
+        if len(image_info) == 4:
+            # Split out image attrs if in URN format
             self.image_publisher = image_info[0]
             self.image_offer = image_info[1]
             self.image_sku = image_info[2]
             self.image_version = image_info[3]
-        except Exception:
-            self.image_publisher = None
 
     def _set_default_resource_names(self):
         """
@@ -501,7 +548,17 @@ class AzureCloud(IpaCloud):
                 image_info.sku, image_info.version
             ])
         else:
-            self.image_id = image_info.id.rsplit('/', maxsplit=1)[1]
+            if 'galleries' in image_info.id:
+                # /subscriptions/{id}/resourceGroups/{rg_name}
+                # /providers/Microsoft.Compute/galleries/{gallery_name}
+                # /images/{image_definition_name}/versions/{version}
+                data = image_info.id.split('/')
+                self.image_version = data[-1]
+                self.image_id = data[-3]
+                self.gallery_name = data[-5]
+                self.gallery_resource_group = data[-9]
+            else:
+                self.image_id = image_info.id.rsplit('/', maxsplit=1)[1]
 
     def _set_instance_ip(self):
         """

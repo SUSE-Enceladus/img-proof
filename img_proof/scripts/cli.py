@@ -339,6 +339,21 @@ def main(context, no_color):
     help='Size of the root disk in GB.',
     type=click.IntRange(min=0)
 )
+@click.option(
+    '--gallery-name',
+    help='Name of the image gallery where the gallery '
+         'image defitinition is found.'
+)
+@click.option(
+    '--gallery-resource-group',
+    help='The name of the resource group where the '
+         'image gallery is found.'
+)
+@click.option(
+    '--image-version',
+    help='The version of the gallery image definition to use '
+         'for testing in semantic versioning format: "2022.02.02".'
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -392,6 +407,9 @@ def test(context,
          additional_info,
          use_gvnic,
          root_disk_size,
+         gallery_name,
+         gallery_resource_group,
+         image_version,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -450,7 +468,10 @@ def test(context,
             sev_capable,
             additional_info,
             use_gvnic,
-            root_disk_size
+            root_disk_size,
+            gallery_name,
+            gallery_resource_group,
+            image_version
         )
         echo_results(results, no_color)
         sys.exit(status)
