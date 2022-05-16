@@ -1,3 +1,9 @@
+v7.12.0 (2022-05-16)
+===================
+
+- Add kernel command line test for Azure
+- Add role and scope to SP creation command
+
 v7.11.0 (2022-05-10)
 ===================
 
