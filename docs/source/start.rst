@@ -199,7 +199,7 @@ The following command will generate the necessary json file:
 
 .. code-block:: console
     
-   $ az ad sp create-for-rbac --sdk-auth --name "{name}" > mycredentials.json
+   $ az ad sp create-for-rbac --sdk-auth --role Contributor --scopes /subscriptions/{subscription_id} --name "{name}" > mycredentials.json
 
 Once a json credential file is generated for a service principal it can be
 used to test images/instances in Azure. The ``--service-account-file``
