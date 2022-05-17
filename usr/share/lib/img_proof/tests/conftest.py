@@ -230,3 +230,16 @@ def confirm_license_content(host):
 
         return False
     return f
+
+@pytest.fixture()
+def is_byos(host):
+    def f():
+        result = host.run('rpm -q cloud-regionsrv-client')
+        service = host.service('guestregister.service')
+        is_client_installed = result.rc == 0
+
+        if is_client_installed and service.is_enabled:
+            return False
+        else:
+            return True
+    return f

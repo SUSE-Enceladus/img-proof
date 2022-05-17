@@ -1,10 +1,23 @@
+import pytest
 
 
-def test_sles_ec2_billing_code(get_ec2_billing_products):
-    """
-    This is really ONLY for SLES.
+def test_sles_ec2_billing_code(
+    get_ec2_billing_products,
+    is_byos,
+    get_release_value
+):
+    try:
+        products = get_ec2_billing_products()
+    except Exception:
+        # CHOST images have no ec2metdata.
+        pytest.skip(
+            'ec2metadata not in image, cannot determine billing products.'
+        )
 
-    All other on-demand products are sold through the Marketplace
-    and they do not have a billing-product-code.
-    """
-    assert get_ec2_billing_products()
+    variant = get_release_value('VARIANT_ID')
+    byos = is_byos()
+
+    if byos or (variant == 'sles-sap' and not byos):
+        assert products is None
+    else:
+        assert products
