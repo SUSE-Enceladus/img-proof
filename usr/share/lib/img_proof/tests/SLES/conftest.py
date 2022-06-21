@@ -511,7 +511,8 @@ BASE_15_SP4_HPC = [
     if 'Python2' not in repo
 ]
 SLE_15_SP4_X86_64_MODULES = [
-    repo.replace('SP3', 'SP4') for repo in SLE_15_SP3_X86_64_MODULES
+    repo.replace('SP3', 'SP4') for repo in SLE_15_SP3_X86_64_MODULES \
+    if 'CAP' not in repo
 ]
 
 PYTHON3_MODULE = [
