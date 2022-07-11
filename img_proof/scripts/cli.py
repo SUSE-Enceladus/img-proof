@@ -31,7 +31,8 @@ import click
 from img_proof.ipa_constants import (
     IPA_HISTORY_FILE,
     SUPPORTED_DISTROS,
-    SUPPORTED_CLOUDS
+    SUPPORTED_CLOUDS,
+    SUPPORTED_ARCHITECTURES
 )
 from img_proof import ipa_utils
 from img_proof.ipa_constants import TEST_PATHS
@@ -354,6 +355,13 @@ def main(context, no_color):
     help='The version of the gallery image definition to use '
          'for testing in semantic versioning format: "2022.02.02".'
 )
+@click.option(
+    '--architecture',
+    default='x86_64',
+    type=click.Choice(SUPPORTED_ARCHITECTURES),
+    help='The architecture of the compute image being tested. '
+         'Default: x86_64.',
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -410,6 +418,7 @@ def test(context,
          gallery_name,
          gallery_resource_group,
          image_version,
+         architecture,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -471,7 +480,8 @@ def test(context,
             root_disk_size,
             gallery_name,
             gallery_resource_group,
-            image_version
+            image_version,
+            architecture
         )
         echo_results(results, no_color)
         sys.exit(status)

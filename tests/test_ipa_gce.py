@@ -313,6 +313,7 @@ class TestGCECloud(object):
             'image123',
             'secretkey',
             50,
+            'x86_64',
             shielded_instance_config={'shielded': 'config'},
             sev_capable=True
         )

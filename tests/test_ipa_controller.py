@@ -99,7 +99,8 @@ def test_controller_gce_image(
         no_default_test_dirs=True,
         ssh_private_key_file='tests/data/ida_test',
         service_account_file='tests/gce/service-account.json',
-        region='us-west1-a'
+        region='us-west1-a',
+        architecture='arm64'
     )
 
     assert status == 0
