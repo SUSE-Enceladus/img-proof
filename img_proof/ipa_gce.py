@@ -365,7 +365,6 @@ class GCECloud(IpaCloud):
             }],
             'machineType': machine_type,
             'disks': [{
-                'architecture': architecture,
                 'autoDelete': auto_delete,
                 'boot': boot_disk,
                 'type': disk_type,
@@ -374,7 +373,8 @@ class GCECloud(IpaCloud):
                 'initializeParams': {
                     'diskName': instance_name,
                     'sourceImage': source_image,
-                    'diskSizeGb': root_disk_size
+                    'diskSizeGb': root_disk_size,
+                    'architecture': architecture
                 }
             }],
             'networkInterfaces': network_interfaces,
