@@ -119,6 +119,10 @@ class GCECloud(IpaCloud):
         self.image_project = self.custom_args.get('image_project')
         self.sev_capable = self.custom_args.get('sev_capable')
         self.use_gvnic = self.custom_args.get('use_gvnic')
+        self.architecture = self.custom_args.get(
+            'architecture',
+            'x86_64'
+        ).upper()
 
         self.credentials = self._get_credentials()
         self.compute_driver = self._get_driver()
@@ -182,7 +186,7 @@ class GCECloud(IpaCloud):
         """Get authenticated GCE driver."""
         return discovery.build(
             'compute',
-            'v1',
+            'alpha',
             credentials=self.credentials,
             cache_discovery=False
         )
@@ -336,6 +340,7 @@ class GCECloud(IpaCloud):
         source_image,
         ssh_key,
         root_disk_size,
+        architecture,
         auto_delete=True,
         boot_disk=True,
         disk_type='PERSISTENT',
@@ -360,6 +365,7 @@ class GCECloud(IpaCloud):
             }],
             'machineType': machine_type,
             'disks': [{
+                'architecture': architecture,
                 'autoDelete': auto_delete,
                 'boot': boot_disk,
                 'type': disk_type,
@@ -418,7 +424,8 @@ class GCECloud(IpaCloud):
             'network_interfaces': network_interfaces,
             'sev_capable': self.sev_capable,
             'use_gvnic': self.use_gvnic,
-            'root_disk_size': self.root_disk_size
+            'root_disk_size': self.root_disk_size,
+            'architecture': self.architecture
         }
 
         if self.enable_uefi:

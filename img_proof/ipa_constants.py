@@ -27,6 +27,7 @@ HOME = os.path.expanduser('~')
 NOT_IMPLEMENTED = 'Implement method in child classes.'
 SUPPORTED_DISTROS = ('opensuse_leap', 'sles', 'sle_micro', 'rhel', 'fedora')
 SUPPORTED_CLOUDS = ('aliyun', 'azure', 'ec2', 'gce', 'ssh', 'oci')
+SUPPORTED_ARCHITECTURES = ('x86_64', 'arm64')
 
 AZURE_DEFAULT_TYPE = 'Standard_B1ms'
 AZURE_DEFAULT_USER = 'azureuser'
