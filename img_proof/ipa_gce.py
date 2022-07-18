@@ -186,7 +186,7 @@ class GCECloud(IpaCloud):
         """Get authenticated GCE driver."""
         return discovery.build(
             'compute',
-            'alpha',
+            'v1',
             credentials=self.credentials,
             cache_discovery=False
         )
