@@ -362,6 +362,12 @@ def main(context, no_color):
     help='The architecture of the compute image being tested. '
          'Default: x86_64.',
 )
+@click.option(
+    '--exclude',
+    help='Comma-separated optional test exclusion list. Accepted inputs are test names (e.g. `test_sles_motd`) or test paths.',
+    default="",
+    type=str,
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -419,10 +425,12 @@ def test(context,
          gallery_resource_group,
          image_version,
          architecture,
+         exclude,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
     logger = ipa_utils.get_logger(log_level)
+    exclude = [e.strip() for e in exclude.split(",") if e.strip() != ""]  # Create list from comma-separated parameter
 
     try:
         status, results = test_image(
@@ -457,6 +465,7 @@ def test(context,
             ssh_user,
             subnet_id,
             test_dirs,
+            exclude,
             tests,
             timeout,
             vnet_name,

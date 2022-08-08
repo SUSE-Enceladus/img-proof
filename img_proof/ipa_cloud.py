@@ -95,6 +95,7 @@ class IpaCloud(object):
         running_instance_id=None,
         test_dirs=None,
         test_files=None,
+        test_exclude=None,
         timeout=None,
         collect_vm_info=None,
         ssh_private_key_file=None,
@@ -207,7 +208,7 @@ class IpaCloud(object):
             )
         }
 
-        self._parse_test_files(test_dirs, self.no_default_test_dirs)
+        self._parse_test_files(test_dirs, self.no_default_test_dirs, test_exclude)
         self.post_init()
 
     def post_init(self):
@@ -291,7 +292,7 @@ class IpaCloud(object):
         for key, value in results['summary'].items():
             self.results['summary'][key] += value
 
-    def _parse_test_files(self, test_dirs, no_default_test_dirs):
+    def _parse_test_files(self, test_dirs, no_default_test_dirs, exclude = None):
         """
         Collect all test dirs and expand test files.
 
@@ -326,6 +327,15 @@ class IpaCloud(object):
             self.test_dirs,
             self.test_files
         )
+
+        # Remove excluded tests
+        if exclude is None: 
+            exclude = []
+        exclude = ipa_utils.expand_test_files(
+            self.test_dirs,
+            exclude
+        )
+        self.test_files = [test for test in self.test_files if test not in exclude]
 
     def _process_test_results(self, duration, test_name, success=0):
         """Create result dict for sync test and merge with overall results."""
