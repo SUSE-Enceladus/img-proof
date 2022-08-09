@@ -154,6 +154,14 @@ def is_sles_sapcal(host):
 
 
 @pytest.fixture()
+def is_sle_micro(host, get_release_value):
+    def f():
+        name = get_release_value('PRETTY_NAME')
+        return 'micro' in name.lower()
+    return f
+
+
+@pytest.fixture()
 def get_release_value(host):
     def f(key):
         release = host.file('/etc/os-release')
