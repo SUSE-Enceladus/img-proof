@@ -1,3 +1,7 @@
+import pytest
+
+
+@pytest.mark.skipinbeta
 def test_sles_motd(host, get_release_value):
     motd = host.file('/etc/motd')
     assert motd.exists

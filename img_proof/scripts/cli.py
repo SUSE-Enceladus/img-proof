@@ -362,6 +362,12 @@ def main(context, no_color):
     help='The architecture of the compute image being tested. '
          'Default: x86_64.',
 )
+@click.option(
+    '--beta',
+    is_flag=True,
+    help='Running tests on a product in beta. Skip any tests '
+         'that are expected to fail.'
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -419,6 +425,7 @@ def test(context,
          gallery_resource_group,
          image_version,
          architecture,
+         beta,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -481,7 +488,8 @@ def test(context,
             gallery_name,
             gallery_resource_group,
             image_version,
-            architecture
+            architecture,
+            beta
         )
         echo_results(results, no_color)
         sys.exit(status)
