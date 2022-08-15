@@ -106,6 +106,7 @@ class IpaCloud(object):
         prefix_name=None,
         retry_count=None,
         root_disk_size=None,
+        beta=None,
         custom_args=None
     ):
         """Initialize base cloud framework class."""
@@ -174,6 +175,7 @@ class IpaCloud(object):
         self.prefix_name = self.ipa_config['prefix_name']
         self.retry_count = int(self.ipa_config['retry_count'])
         self.root_disk_size = int(self.ipa_config['root_disk_size'])
+        self.beta = self.ipa_config['beta']
 
         if self.enable_secure_boot and not self.enable_uefi:
             self.enable_uefi = True
@@ -354,6 +356,9 @@ class IpaCloud(object):
         if self.early_exit:
             options.append('-x')
 
+        if self.beta:
+            options.append('-m "not skipinbeta"')
+
         args = '-v -s {} --json-report-file=none ' \
                '--ssh-config={} --hosts={} {}'.format(
                    ' '.join(options),
@@ -384,7 +389,7 @@ class IpaCloud(object):
                 result = 3  # See below for pytest error codes
                 self.logger.exception(str(error))
 
-            if result != 0:
+            if result not in (0, 5):
                 num_retries += 1
             else:
                 break
@@ -396,6 +401,11 @@ class IpaCloud(object):
             self._process_test_results(0, 'pytest_error', 1)
         else:
             self._merge_results(plugin.report)
+
+        if result == 5:
+            # pytest exit code 5 no tests collected.
+            # Expected case when using beta flag.
+            result = 0
 
         return result
 
