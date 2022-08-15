@@ -107,6 +107,7 @@ class IpaCloud(object):
         retry_count=None,
         root_disk_size=None,
         beta=None,
+        exclude=None,
         custom_args=None
     ):
         """Initialize base cloud framework class."""
@@ -176,6 +177,7 @@ class IpaCloud(object):
         self.retry_count = int(self.ipa_config['retry_count'])
         self.root_disk_size = int(self.ipa_config['root_disk_size'])
         self.beta = self.ipa_config['beta']
+        self.exclude = exclude or []
 
         if self.enable_secure_boot and not self.enable_uefi:
             self.enable_uefi = True
@@ -209,7 +211,11 @@ class IpaCloud(object):
             )
         }
 
-        self._parse_test_files(test_dirs, self.no_default_test_dirs)
+        self._parse_test_files(
+            test_dirs,
+            self.no_default_test_dirs,
+            self.exclude
+        )
         self.post_init()
 
     def post_init(self):
@@ -293,7 +299,7 @@ class IpaCloud(object):
         for key, value in results['summary'].items():
             self.results['summary'][key] += value
 
-    def _parse_test_files(self, test_dirs, no_default_test_dirs):
+    def _parse_test_files(self, test_dirs, no_default_test_dirs, exclude):
         """
         Collect all test dirs and expand test files.
 
@@ -326,7 +332,8 @@ class IpaCloud(object):
 
         self.test_files = ipa_utils.expand_test_files(
             self.test_dirs,
-            self.test_files
+            self.test_files,
+            exclude
         )
 
     def _process_test_results(self, duration, test_name, success=0):

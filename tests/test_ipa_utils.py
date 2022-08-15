@@ -140,7 +140,8 @@ def test_utils_expand_test_files():
     """Test expand test files utils function."""
     test_dirs = ['tests/data/tests']
     names = ['test_sles::test_sles', 'test_image_desc']
-    expanded = ipa_utils.expand_test_files(test_dirs, names)
+    exclude = []
+    expanded = ipa_utils.expand_test_files(test_dirs, names, exclude)
 
     assert 'tests/data/tests/test_image.py' in expanded
     assert 'tests/data/tests/test_sles.py::test_sles' in expanded
@@ -150,9 +151,10 @@ def test_utils_test_file_not_found():
     """Test expand test file does not exist raises exception."""
     test_dirs = ['tests/data/tests']
     names = ['test_fake']
+    exclude = []
 
     with pytest.raises(IpaUtilsException) as error:
-        ipa_utils.expand_test_files(test_dirs, names)
+        ipa_utils.expand_test_files(test_dirs, names, exclude)
 
     assert str(error.value) == \
         'Test file with name: test_fake cannot be found.'
@@ -162,9 +164,10 @@ def test_utils_expand_names_not_list():
     """Test exception raised if names not a list."""
     test_dirs = ['tests/data/tests']
     names = 'test_sles'
+    exclude = []
 
     with pytest.raises(IpaUtilsException) as error:
-        ipa_utils.expand_test_files(test_dirs, names)
+        ipa_utils.expand_test_files(test_dirs, names, exclude)
     assert str(error.value) == \
         'Names must be a list containing test names and/or test descriptions.'
 
@@ -173,7 +176,8 @@ def test_utils_expand_sync_points():
     """Test expand test files with sync points."""
     test_dirs = ['tests/data/tests']
     names = ['test_soft_reboot', 'test_sles_desc', 'test_hard_reboot']
-    expanded = ipa_utils.expand_test_files(test_dirs, names)
+    exclude = []
+    expanded = ipa_utils.expand_test_files(test_dirs, names, exclude)
 
     assert len(expanded) == 4
     assert expanded[0] == 'test_soft_reboot'
