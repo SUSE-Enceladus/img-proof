@@ -147,6 +147,16 @@ def test_utils_expand_test_files():
     assert 'tests/data/tests/test_sles.py::test_sles' in expanded
 
 
+def test_utils_expand_test_files_exclude():
+    """Test expand test files utils function."""
+    test_dirs = ['tests/data/tests']
+    names = ['test_sles::test_sles', 'test_image_desc']
+    exclude = ['test_image']
+    expanded = ipa_utils.expand_test_files(test_dirs, names, exclude)
+
+    assert 'tests/data/tests/test_image.py' not in expanded
+
+
 def test_utils_test_file_not_found():
     """Test expand test file does not exist raises exception."""
     test_dirs = ['tests/data/tests']
