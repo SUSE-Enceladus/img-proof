@@ -131,6 +131,11 @@ def expand_test_files(test_dirs, names, exclude):
             ' and/or test descriptions.'
         )
 
+    if not isinstance(exclude, list):
+        raise IpaUtilsException(
+            'Exclude should be a list containing test names.'
+        )
+
     tests, descriptions = get_test_files(test_dirs)
 
     expanded_names = []
