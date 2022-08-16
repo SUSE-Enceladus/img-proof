@@ -116,7 +116,7 @@ def execute_ssh_command(client, cmd):
     return out.decode()
 
 
-def expand_test_files(test_dirs, names):
+def expand_test_files(test_dirs, names, exclude):
     """
     Expand the list of test files and test descriptions.
 
@@ -131,6 +131,11 @@ def expand_test_files(test_dirs, names):
             ' and/or test descriptions.'
         )
 
+    if not isinstance(exclude, list):
+        raise IpaUtilsException(
+            'Exclude should be a list containing test names.'
+        )
+
     tests, descriptions = get_test_files(test_dirs)
 
     expanded_names = []
@@ -143,7 +148,7 @@ def expand_test_files(test_dirs, names):
         else:
             expanded_names.append(name)
 
-    return parse_sync_points(expanded_names, tests)
+    return parse_sync_points(expanded_names, tests, exclude)
 
 
 def extract_archive(client, archive_path, extract_path=None):
@@ -435,7 +440,7 @@ def ignored(*exceptions):
         pass
 
 
-def parse_sync_points(names, tests):
+def parse_sync_points(names, tests, exclude):
     """
     If test is test file find full path to file.
 
@@ -451,7 +456,9 @@ def parse_sync_points(names, tests):
     test_files = []
 
     for name in names:
-        if name in SYNC_POINTS:
+        if name in exclude:
+            continue
+        elif name in SYNC_POINTS:
             test_files.append(name)
         else:
             test_files.append(find_test_file(name, tests))
