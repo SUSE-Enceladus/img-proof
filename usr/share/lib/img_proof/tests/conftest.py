@@ -239,6 +239,7 @@ def confirm_license_content(host):
         return False
     return f
 
+
 @pytest.fixture()
 def is_byos(host):
     def f():
