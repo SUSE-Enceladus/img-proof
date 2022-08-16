@@ -1,3 +1,11 @@
+v7.16.0 (2022-08-16)
+===================
+
+- Skip micro in kernel version test
+- Add beta blag to skip marked tests (skipinbeta)
+- Cleanup formatting errors in conftest modules
+- Add option to skip test files by name
+
 v7.15.0 (2022-07-18)
 ===================
 
