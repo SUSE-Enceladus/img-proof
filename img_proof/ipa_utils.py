@@ -131,9 +131,12 @@ def expand_test_files(test_dirs, names, exclude):
             ' and/or test descriptions.'
         )
 
-    if not isinstance(exclude, list):
+    # exclude is expected to be an iterable. Single string arguments are converted to a list
+    if isinstance(exclude, str) :
+        exclude = [exclude]
+    if not hasattr(exclude, '__iter__'):
         raise IpaUtilsException(
-            'Exclude should be a list containing test names.'
+            'Exclude should be an iterable object containing test names.'
         )
 
     tests, descriptions = get_test_files(test_dirs)
