@@ -182,16 +182,14 @@ def test_utils_expand_names_not_list():
         'Names must be a list containing test names and/or test descriptions.'
 
 
-def test_utils_expand_exclude_not_list():
-    """Test exception raised if exclude not a list."""
+def test_utils_expand_exclude_string():
+    """Test exclude handled as a str."""
     test_dirs = ['tests/data/tests']
     names = ['test_sles']
     exclude = 'test_image'
 
-    with pytest.raises(IpaUtilsException) as error:
-        ipa_utils.expand_test_files(test_dirs, names, exclude)
-    assert str(error.value) == \
-        'Exclude should be a list containing test names.'
+    expanded = ipa_utils.expand_test_files(test_dirs, names, exclude)
+    assert 'tests/data/tests/test_image.py' not in expanded
 
 
 def test_utils_expand_sync_points():
