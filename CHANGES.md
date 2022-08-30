@@ -1,3 +1,9 @@
+v7.16.1 (2022-08-30)
+===================
+
+- Fix exclude attr to accept any iterable.
+- Exclude alsocasts str to list
+
 v7.16.0 (2022-08-16)
 ===================
 
