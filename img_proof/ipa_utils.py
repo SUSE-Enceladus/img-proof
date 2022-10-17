@@ -74,6 +74,8 @@ def establish_ssh_connection(ip,
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
+    SECONDS_BETWEEN_REATTEMPTS = 10
+    authentication_failed_already = False
     while attempts:
         try:
             client.connect(
@@ -83,11 +85,18 @@ def establish_ssh_connection(ip,
                 key_filename=ssh_private_key_file,
                 timeout=timeout
             )
-        except (FileNotFoundError, AuthenticationException):
+        except FileNotFoundError:
             raise
+        except AuthenticationException:
+            if not authentication_failed_already:
+                authentication_failed_already = True
+                attempts -= 1
+                time.sleep(SECONDS_BETWEEN_REATTEMPTS)
+            else:
+                raise
         except:  # noqa: E722
             attempts -= 1
-            time.sleep(10)
+            time.sleep(SECONDS_BETWEEN_REATTEMPTS)
         else:
             return client
 
