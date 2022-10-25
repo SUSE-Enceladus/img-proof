@@ -98,6 +98,69 @@ def test_utils_ssh_connect_exception(mock_connect, mock_sleep, mock_time):
     assert mock_connect.call_count > 0
 
 
+@patch.object(time, 'time')
+@patch.object(time, 'sleep')
+@patch.object(paramiko.SSHClient, 'connect')
+@patch.object(paramiko.SSHClient, 'exec_command')
+def test_utils_ssh_connect_authexception_once(
+    mock_exec_cmd,
+    mock_connect,
+    mock_sleep,
+    mock_time
+):
+    """Test auth exception raised happening once connecting to ssh."""
+    mock_connect.side_effect = [
+        paramiko.ssh_exception.AuthenticationException,
+        True
+    ]
+    stdin = stdout = stderr = MagicMock()
+    stderr.read.return_value = b''
+    mock_exec_cmd.return_value = (stdin, stdout, stderr)
+    mock_sleep.return_value = None
+    mock_time.side_effect = [0, 0, 2]
+
+    ipa_utils.get_ssh_client(
+        LOCALHOST,
+        'tests/data/ida_test',
+        timeout=1
+    )
+    assert mock_connect.call_count == 2
+    assert mock_exec_cmd.call_count == 1
+
+    ipa_utils.get_ssh_client(
+        LOCALHOST,
+        'tests/data/ida_test',
+        timeout=10
+    )
+
+
+@patch.object(time, 'time')
+@patch.object(time, 'sleep')
+@patch.object(paramiko.SSHClient, 'connect')
+def test_utils_ssh_connect_authexception_twice(
+    mock_connect,
+    mock_sleep,
+    mock_time
+):
+    """Test auth exception raised happening once connecting to ssh."""
+    mock_connect.side_effect = [
+        paramiko.ssh_exception.AuthenticationException,
+        paramiko.ssh_exception.AuthenticationException
+    ]
+    mock_sleep.return_value = None
+    mock_time.side_effect = [0, 0, 2]
+
+    with pytest.raises(IpaSSHException) as error:
+        ipa_utils.get_ssh_client(
+            LOCALHOST,
+            'tests/data/ida_test',
+            timeout=1
+        )
+
+    assert str(error.value) == \
+        'Authentication failed while establishing SSH connection.'
+
+
 def test_utils_ssh_exec_command():
     """Test successful command execution."""
     stdin = MagicMock()
