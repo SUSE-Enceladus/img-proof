@@ -13,6 +13,11 @@ def test_sles_motd(host, get_release_value):
     version = get_release_value('VERSION')
     assert version
 
+    variant = get_release_value('VARIANT_ID') or ''
+
+    if variant == 'hardened':
+        pytest.skip('Unable to validate motd in hardened images.')
+
     assert (
         motd.contains(pretty_name) or
         motd.contains(
