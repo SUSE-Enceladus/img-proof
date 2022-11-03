@@ -1,3 +1,9 @@
+v7.17.0 (2022-11-03)
+===================
+
+- Skip motd check in hardened images
+- Fix bug when using user-data in ec2 to set ssh key
+
 v7.16.2 (2022-10-03)
 ===================
 
