@@ -76,7 +76,7 @@ def determine_architecture(host):
 @pytest.fixture()
 def determine_provider(host):
     def f():
-        result = host.run('sudo dmidecode -t system')
+        result = host.run('sudo /usr/sbin/dmidecode -t system')
         output = result.stdout.lower()
         if 'amazon' in output:
             provider = 'ec2'
