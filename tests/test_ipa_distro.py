@@ -50,7 +50,8 @@ def test_distro_not_implemented_methods(method):
     )
 
 
-def test_distro_set_init_system_exception():
+@patch('img_proof.ipa_distro.time')
+def test_distro_set_init_system_exception(mock_time):
     """Test distro set init system method exception."""
     client = MagicMock()
     distro = Distro()
@@ -63,7 +64,11 @@ def test_distro_set_init_system_exception():
             client
         )
 
-    mocked.assert_called_once_with(client, 'ps -p 1 -o comm=')
+    mocked.assert_has_calls([
+        call(client, 'ps -p 1 -o comm='),
+        call(client, 'ps -p 1 -o comm='),
+        call(client, 'ps -p 1 -o comm=')
+    ])
 
 
 def test_distro_get_commands():

@@ -35,21 +35,33 @@ class Distro(object):
         super(Distro, self).__init__()
         self.init_system = ''
 
-    def _set_init_system(self, client):
+    def _get_init_system(self, client, retries=3):
         """Determine the init system of distribution."""
-        if not self.init_system:
+        init_system = ''
+
+        while retries > 0:
             try:
                 out = ipa_utils.execute_ssh_command(
                     client,
                     'ps -p 1 -o comm='
                 )
-            except Exception as e:
-                raise IpaDistroException(
-                    'An error occurred while retrieving'
-                    ' the distro init system: %s' % e
-                )
-            if out:
-                self.init_system = out.strip()
+                init_system = out.strip()
+            except Exception as error:
+                last_error = error
+                retries -= 1
+                time.sleep(1)
+            else:
+                return init_system
+
+        raise IpaDistroException(
+            'An error occurred while retrieving'
+            f' the distro init system: {str(last_error)}'
+        )
+
+    def _set_init_system(self, client):
+        """Set the init system variable if not set."""
+        if not self.init_system:
+            self.init_system = self._get_init_system(client)
 
     def get_install_cmd(self):
         """Return install package command for distribution."""
