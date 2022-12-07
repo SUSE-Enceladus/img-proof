@@ -1,3 +1,11 @@
+v7.18.0 (2022-12-07)
+===================
+
+- Use full path to dmidecode in determine provider
+- Skip sap motd check for hardened images
+- Run dmesg as root in gce sev test
+- Add a short wait period and retry checking for init system
+
 v7.17.0 (2022-11-03)
 ===================
 
