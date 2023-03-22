@@ -17,7 +17,7 @@ def test_sles_ec2_billing_code(
     variant = get_release_value('VARIANT_ID')
     byos = is_byos()
 
-    if byos or (variant == 'sles-sap' and not byos):
+    if byos or (variant in ('sles-sap', 'sles-sap-hardened') and not byos):
         assert products is None
     else:
         assert products
