@@ -9,7 +9,6 @@ def test_sles_azure_kernel_cmdline(host, determine_architecture):
             'earlyprintk=ttyS0'
         ],
         'AARCH64': [
-            'console=tty1',
             'console=ttyAMA0',
             'earlycon=pl011,0xeffec000',
             'initcall_blacklist=arm_pmu_acpi_init'
