@@ -1,3 +1,9 @@
+v7.20.0 (2023-05-03)
+===================
+
+- Includes VARIANT-ID 'sles-sap-hardened' in test_sles_ec2_billing_code
+- Remove the Legacy module from the repo test
+
 v7.19.0 (2023-02-27)
 ===================
 
