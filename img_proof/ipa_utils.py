@@ -36,12 +36,16 @@ from binascii import hexlify
 from contextlib import contextmanager
 from string import ascii_lowercase
 from tempfile import NamedTemporaryFile
-from paramiko.ssh_exception import AuthenticationException
+from paramiko.ssh_exception import AuthenticationException, SSHException
 
 from img_proof.ipa_constants import SYNC_POINTS
 from img_proof.ipa_exceptions import IpaSSHException, IpaUtilsException
 
 CLIENT_CACHE = {}
+unrecoverable_errors = (
+    'No existing session',
+    'key cannot be used for signing'
+)
 
 
 def clear_cache(ip=None):
@@ -94,6 +98,12 @@ def establish_ssh_connection(ip,
                 time.sleep(SECONDS_BETWEEN_REATTEMPTS)
             else:
                 raise
+        except SSHException as error:
+            if str(error) in unrecoverable_errors:
+                raise
+            else:
+                attempts -= 1
+                time.sleep(SECONDS_BETWEEN_REATTEMPTS)
         except:  # noqa: E722
             attempts -= 1
             time.sleep(SECONDS_BETWEEN_REATTEMPTS)
@@ -307,6 +317,18 @@ def get_ssh_client(ip,
             raise IpaSSHException(
                 'Authentication failed while establishing SSH connection.'
             )
+        except SSHException as error:
+            if str(error) in unrecoverable_errors:
+                raise IpaSSHException(
+                    'Authentication failed while establishing SSH connection.'
+                    ' Ensure the SSH user "{ssh_user}" is correct.'.format(
+                        ssh_user=ssh_user
+                    )
+                )
+            else:
+                if client:
+                    client.close()
+                wait_period += wait_period
         except:  # noqa: E722
             if client:
                 client.close()
