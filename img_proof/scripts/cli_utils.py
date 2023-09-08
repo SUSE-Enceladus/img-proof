@@ -73,6 +73,24 @@ def archive_history_item(item, destination, no_color):
         )
 
 
+def cli_process_cpu_options(cxt, param, value):
+    cpu_options = []
+    if value:
+        try:
+            for cpu_option in value.split(','):
+                key, val = cpu_option.split('=', 1)
+                option = {
+                    'key': key,
+                    'value': val
+                }
+                cpu_options.append(option)
+        except Exception as e:
+            raise click.BadParameter(
+                "Issue with cpu-option parameter: %s" % e
+            )
+    return cpu_options
+
+
 def echo_log(log_file, no_color):
     try:
         with open(log_file, 'r') as f:

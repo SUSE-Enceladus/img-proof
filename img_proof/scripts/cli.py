@@ -39,6 +39,7 @@ from img_proof.ipa_constants import TEST_PATHS
 from img_proof.ipa_controller import collect_tests, test_image
 from img_proof.scripts.cli_utils import (
     archive_history_item,
+    cli_process_cpu_options,
     echo_log,
     echo_results,
     echo_results_file,
@@ -116,6 +117,16 @@ def main(context, no_color):
     '--config',
     type=click.Path(exists=True),
     help='img_proof config file location. Default: ~/.config/img_proof/config'
+)
+@click.option(
+    '--cpu-options',
+    callback=cli_process_cpu_options,
+    default='',
+    help=(
+        'CPU options to be activated when launching instances for tests.'
+        'Example: --cpu-option AmdSevSnp=enabled'
+        'Multiple values can be specified separated by comma.'
+    )
 )
 @click.option(
     '-D',
@@ -384,6 +395,7 @@ def test(context,
          account,
          cleanup,
          config,
+         cpu_options,
          description,
          distro,
          early_exit,
@@ -497,7 +509,8 @@ def test(context,
             image_version,
             architecture,
             beta,
-            exclude
+            exclude,
+            cpu_options
         )
         echo_results(results, no_color)
         sys.exit(status)

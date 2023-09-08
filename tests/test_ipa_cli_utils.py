@@ -21,7 +21,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import pytest
+
 from img_proof.scripts import cli_utils
+from click import BadParameter
 
 DATA = {
     "info": {
@@ -52,3 +55,37 @@ DATA = {
 def test_echo_results():
     """Test cli utils echo results."""
     cli_utils.echo_results(DATA, False, verbose=True)
+
+
+def test_cli_process_cpu_options():
+    """Test process-cpu options"""
+    TEST_DATA = [
+        {
+            'input': 'AmdSevSnp=enabled',
+            'expected_output': {
+                'key': 'AmdSevSnp',
+                'value': 'enabled'
+            }
+        },
+        {
+            'input': 'ExceptionShouldBeRaised'
+        }
+    ]
+
+    for data in TEST_DATA:
+        if 'expected_output' in data:
+            output = cli_utils.cli_process_cpu_options(
+                {},
+                'cpu-options',
+                data['input']
+            )
+
+            assert data['expected_output'] == output[0]
+        else:
+            with pytest.raises(BadParameter) as exc:
+                cli_utils.cli_process_cpu_options(
+                    {},
+                    'cpu-options',
+                    data['input']
+                )
+                assert str(exc).contains(data['input'])

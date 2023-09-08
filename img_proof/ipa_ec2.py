@@ -232,6 +232,12 @@ class EC2Cloud(IpaCloud):
         if self.additional_info:
             kwargs['AdditionalInfo'] = self.additional_info
 
+        cpu_options = self.custom_args.get('cpu_options', [])
+        if cpu_options:
+            kwargs['CpuOptions'] = {}
+            for cpu_op in cpu_options:
+                kwargs['CpuOption'][cpu_op.get('key')] = cpu_op.get('value')
+
         try:
             instances = resource.create_instances(**kwargs)
         except Exception as error:
