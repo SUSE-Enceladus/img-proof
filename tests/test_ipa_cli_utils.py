@@ -63,13 +63,19 @@ def test_cli_process_cpu_options():
         {
             'input': 'AmdSevSnp=enabled',
             'expected_output': {
-                'key': 'AmdSevSnp',
-                'value': 'enabled'
+                'AmdSevSnp': 'enabled'
             }
         },
         {
             'input': 'ExceptionShouldBeRaised'
-        }
+        },
+        {
+            'input': 'AmdSevSnp=enabled,secondOption=secondValue',
+            'expected_output': {
+                'AmdSevSnp': 'enabled',
+                'secondOption': 'secondValue'
+            }
+        },
     ]
 
     for data in TEST_DATA:
@@ -80,7 +86,7 @@ def test_cli_process_cpu_options():
                 data['input']
             )
 
-            assert data['expected_output'] == output[0]
+            assert data['expected_output'] == output
         else:
             with pytest.raises(BadParameter) as exc:
                 cli_utils.cli_process_cpu_options(

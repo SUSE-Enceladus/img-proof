@@ -74,19 +74,16 @@ def archive_history_item(item, destination, no_color):
 
 
 def cli_process_cpu_options(cxt, param, value):
-    cpu_options = []
+    cpu_options = {}
     if value:
         try:
-            for cpu_option in value.split(','):
-                key, val = cpu_option.split('=', 1)
-                option = {
-                    'key': key,
-                    'value': val
-                }
-                cpu_options.append(option)
+            cpu_options.update(
+                dict(option.split('=', 1) for option in value.split(","))
+            )
         except Exception as e:
             raise click.BadParameter(
-                "Issue with cpu-option parameter: %s" % e
+                "--cpu-options parameter is invalid: %s" % e +
+                '. (example value: "--cpu-options AmdSevSnp=enabled")'
             )
     return cpu_options
 
