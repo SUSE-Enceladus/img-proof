@@ -95,7 +95,8 @@ def test_image(
     image_version=None,
     architecture=None,
     beta=None,
-    exclude=None
+    exclude=None,
+    cpu_options=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -150,7 +151,8 @@ def test_image(
             'secret_access_key': secret_access_key,
             'security_group_id': security_group_id,
             'ssh_key_name': ssh_key_name,
-            'additional_info': additional_info
+            'additional_info': additional_info,
+            'cpu_options': cpu_options
         }
         cloud = EC2Cloud(**kwargs)
     elif cloud_name == 'gce':
