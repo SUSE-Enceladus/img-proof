@@ -1,3 +1,9 @@
+v7.21.0 (2023-10-03)
+===================
+
+- Exits on certain ssh key exceptions
+- Includes a CLI parameter to include cpu-options in AWS instances
+
 v7.20.0 (2023-05-03)
 ===================
 
