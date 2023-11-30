@@ -4,7 +4,8 @@ import pytest
 def test_sles_ec2_billing_code(
     get_ec2_billing_products,
     is_byos,
-    get_release_value
+    get_release_value,
+    is_suma_server
 ):
     try:
         products = get_ec2_billing_products()
@@ -17,7 +18,13 @@ def test_sles_ec2_billing_code(
     variant = get_release_value('VARIANT_ID')
     byos = is_byos()
 
-    if byos or (variant in ('sles-sap', 'sles-sap-hardened') and not byos):
+    has_no_code = (
+        byos or
+        (variant in ('sles-sap', 'sles-sap-hardened') and not byos) or
+        is_suma_server() and not byos
+    )
+
+    if has_no_code:
         assert products is None
     else:
         assert products
