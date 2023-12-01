@@ -146,6 +146,43 @@ def is_sles_sap(host, get_baseproduct):
 
 
 @pytest.fixture()
+def is_suma_server(host, get_baseproduct):
+    def f():
+        suma_server_product = '/etc/products.d/SUSE-Manager-Server.prod'
+        suma_server = host.file(suma_server_product)
+        base_product = get_baseproduct()
+
+        return all([
+            suma_server.exists,
+            suma_server.is_file,
+            base_product == suma_server_product
+        ])
+    return f
+
+
+@pytest.fixture()
+def is_suma_proxy(host, get_baseproduct):
+    def f():
+        suma_proxy_product = '/etc/products.d/SUSE-Manager-Proxy.prod'
+        suma_proxy = host.file(suma_proxy_product)
+        base_product = get_baseproduct()
+
+        return all([
+            suma_proxy.exists,
+            suma_proxy.is_file,
+            base_product == suma_proxy_product
+        ])
+    return f
+
+
+@pytest.fixture()
+def is_suma(is_suma_server, is_suma_proxy):
+    def f():
+        return is_suma_server() or is_suma_proxy()
+    return f
+
+
+@pytest.fixture()
 def is_sles_sapcal(host):
     def f():
         motd = host.file('/etc/motd')
