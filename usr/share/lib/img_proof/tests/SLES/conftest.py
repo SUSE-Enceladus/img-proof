@@ -487,9 +487,11 @@ BASE_15_SP2_HPC = SLE_15_SP2_BASE + SLE_15_SP2_HPC
 
 BASE_15_SP3 = [
     repo.replace('SP2', 'SP3') for repo in BASE_15_SP2
+    if ('Python2' not in repo and 'Legacy' not in repo)
 ]
 BASE_15_SP3_SAP = [
     repo.replace('SP2', 'SP3') for repo in BASE_15_SP2_SAP
+    if ('Python2' not in repo and 'Legacy' not in repo)
 ]
 BASE_15_SP3_HPC = [
     repo.replace('SP2', 'SP3') for repo in BASE_15_SP2_HPC
