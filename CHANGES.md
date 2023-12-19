@@ -1,3 +1,12 @@
+v7.22.0 (2023-12-19)
+===================
+
+- Register skipinbeta marker
+- Add readthedocs config file
+- Handle suma payg in ec2 billing code test
+- Add OpenSCAP test for hardened images
+- Update sles 15 sp3 repos list
+
 v7.21.0 (2023-10-03)
 ===================
 
