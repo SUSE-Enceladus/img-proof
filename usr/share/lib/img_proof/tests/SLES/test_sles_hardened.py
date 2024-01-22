@@ -63,7 +63,7 @@ def test_sles_hardened(host, get_release_value, is_sles_sap, is_sle_micro):
     )
 
     result = host.run(
-        "sudo oscap xccdf eval --local-files {dir} --profile {profile} {file}".format(
+        "sudo oscap xccdf eval --report /var/tmp/report.html --local-files {dir} --profile {profile} {file}".format(
             dir=oscap_dir,
             file=oscap_file,
             profile=oscap_profile,
