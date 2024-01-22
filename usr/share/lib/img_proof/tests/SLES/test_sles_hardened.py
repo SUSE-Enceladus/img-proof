@@ -23,6 +23,9 @@ def setup_swap(host, swap_file=SWAP_FILE):
         ]:
             result = host.run(command)
             if result.rc != 0:
+                print("{} command failed".format(command))
+                print("STDOUT: {}".format(result.stdout.strip()))
+                print("STDERR: {}".format(result.stderr.strip()))
                 return False
     return True
 
