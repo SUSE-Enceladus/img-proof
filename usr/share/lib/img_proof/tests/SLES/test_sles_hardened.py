@@ -23,7 +23,7 @@ def setup_swap(host, swap_file=SWAP_FILE):
         ]:
             result = host.run(command)
             if result.rc != 0:
-                print("{} command failed".format(command))
+                print("{} command failed with {}".format(command, result.rc))
                 print("STDOUT: {}".format(result.stdout.strip()))
                 print("STDERR: {}".format(result.stderr.strip()))
                 return False
@@ -69,6 +69,11 @@ def test_sles_hardened(host, get_release_value, is_sles_sap, is_sle_micro):
             profile=oscap_profile,
         )
     )
+
+    if result.rc != 0:
+        print("oscap command failed with {}".format(result.rc))
+        print("STDOUT: {}".format(result.stdout.strip()))
+        print("STDERR: {}".format(result.stderr.strip()))
 
     assert result.rc == 0
 
