@@ -1,3 +1,4 @@
+import os
 import pytest
 
 
@@ -62,8 +63,15 @@ def test_sles_hardened(host, get_release_value, is_sles_sap, is_sle_micro):
         )
     )
 
+    scap_report = os.environ.get("SCAP_REPORT", "")
+    if scap_report:
+        if os.path.exists(scap_report) or not scap_report.endswith(".html"):
+            pytest.skip("Invalid filename for SCAP_REPORT: {}".format(scap_report))
+        scap_report = "--report {}".format(scap_report)
+
     result = host.run(
-        "sudo oscap xccdf eval --report /var/tmp/report.html --local-files {dir} --profile {profile} {file}".format(
+        "sudo oscap xccdf eval {scap_report} --local-files {dir} --profile {profile} {file}".format(
+            scap_report=scap_report,
             dir=oscap_dir,
             file=oscap_file,
             profile=oscap_profile,
