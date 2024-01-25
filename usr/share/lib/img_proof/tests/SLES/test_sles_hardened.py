@@ -1,3 +1,4 @@
+import os
 import pytest
 
 
@@ -23,7 +24,7 @@ def setup_swap(host, swap_file=SWAP_FILE):
         ]:
             result = host.run(command)
             if result.rc != 0:
-                print("{} command failed".format(command))
+                print("{} command failed with {}".format(command, result.rc))
                 print("STDOUT: {}".format(result.stdout.strip()))
                 print("STDERR: {}".format(result.stderr.strip()))
                 return False
@@ -62,13 +63,26 @@ def test_sles_hardened(host, get_release_value, is_sles_sap, is_sle_micro):
         )
     )
 
+    scap_report = os.environ.get("SCAP_REPORT", "")
+    if scap_report:
+        if os.path.exists(scap_report) or not scap_report.endswith(".html"):
+            print("Ignoring SCAP_REPORT: {}".format(scap_report))
+        else:
+            scap_report = "--report {}".format(scap_report)
+
     result = host.run(
-        "sudo oscap xccdf eval --local-files {dir} --profile {profile} {file}".format(
+        "sudo oscap xccdf eval {scap_report} --local-files {dir} --profile {profile} {file}".format(
+            scap_report=scap_report,
             dir=oscap_dir,
             file=oscap_file,
             profile=oscap_profile,
         )
     )
+
+    if result.rc != 0:
+        print("oscap command failed with {}".format(result.rc))
+        print("STDOUT: {}".format(result.stdout.strip()))
+        print("STDERR: {}".format(result.stderr.strip()))
 
     assert result.rc == 0
 
