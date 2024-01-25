@@ -1,3 +1,8 @@
+v7.23.0 (2024-01-25)
+===================
+
+- Enhance OpenSCAP test with logging and report generation.
+
 v7.22.0 (2023-12-19)
 ===================
 
