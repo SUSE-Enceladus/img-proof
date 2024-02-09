@@ -108,6 +108,7 @@ class IpaCloud(object):
         root_disk_size=None,
         beta=None,
         exclude=None,
+        instance_options=None,
         custom_args=None
     ):
         """Initialize base cloud framework class."""
@@ -178,6 +179,7 @@ class IpaCloud(object):
         self.root_disk_size = int(self.ipa_config['root_disk_size'])
         self.beta = self.ipa_config['beta']
         self.exclude = exclude or []
+        self.instance_options = instance_options or []
 
         if self.enable_secure_boot and not self.enable_uefi:
             self.enable_uefi = True

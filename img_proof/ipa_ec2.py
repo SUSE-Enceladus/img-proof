@@ -233,6 +233,14 @@ class EC2Cloud(IpaCloud):
             kwargs['AdditionalInfo'] = self.additional_info
 
         cpu_options = self.custom_args.get('cpu_options', {})
+        for option in self.instance_options:
+            try:
+                key, value = option.split('=')
+            except ValueError:
+                self.logger.warning(f'Invalid CPU option provided: {option}')
+
+            cpu_options[key] = value
+
         if cpu_options:
             kwargs['CpuOptions'] = cpu_options
 

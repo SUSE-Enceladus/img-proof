@@ -315,7 +315,8 @@ class TestGCECloud(object):
             50,
             'x86_64',
             shielded_instance_config={'shielded': 'config'},
-            sev_capable=True
+            sev='SEV_SNP',
+            use_gvnic=True
         )
 
         assert 'metadata' in config

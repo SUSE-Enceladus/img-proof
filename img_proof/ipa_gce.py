@@ -117,12 +117,28 @@ class GCECloud(IpaCloud):
         self.ssh_user = self.ssh_user or GCE_DEFAULT_USER
         self.ssh_public_key = self._get_ssh_public_key()
         self.image_project = self.custom_args.get('image_project')
-        self.sev_capable = self.custom_args.get('sev_capable')
-        self.use_gvnic = self.custom_args.get('use_gvnic')
         self.architecture = self.custom_args.get(
             'architecture',
             'x86_64'
         ).upper()
+
+        if (
+            self.custom_args.get('use_gvnic')
+            or 'GVNIC' in self.instance_options
+        ):
+            self.use_gvnic = True
+        else:
+            self.use_gvnic = False
+
+        if 'SEV_SNP_CAPABLE' in self.instance_options:
+            self.sev = 'SEV_SNP'
+        elif (
+            'SEV_CAPABLE' in self.instance_options
+            or self.custom_args.get('sev_capable', False)
+        ):
+            self.sev = 'SEV'
+        else:
+            self.sev = None
 
         self.credentials = self._get_credentials()
         self.compute_driver = self._get_driver()
@@ -186,7 +202,7 @@ class GCECloud(IpaCloud):
         """Get authenticated GCE driver."""
         return discovery.build(
             'compute',
-            'v1',
+            'beta',
             credentials=self.credentials,
             cache_discovery=False
         )
@@ -346,7 +362,7 @@ class GCECloud(IpaCloud):
         disk_type='PERSISTENT',
         disk_mode='READ_WRITE',
         shielded_instance_config=None,
-        sev_capable=False,
+        sev=None,
         use_gvnic=False
     ):
         """Return an instance config for launching a new instance."""
@@ -387,12 +403,18 @@ class GCECloud(IpaCloud):
             config['shieldedInstanceConfig'] = shielded_instance_config
             guest_os_features.append({'type': 'UEFI_COMPATIBLE'})
 
-        if sev_capable:
+        if sev:
             config['confidentialInstanceConfig'] = {
+                'confidentialInstanceType': sev,
                 'enableConfidentialCompute': True
             }
             config['scheduling'] = {'onHostMaintenance': 'TERMINATE'}
-            guest_os_features.append({'type': 'SEV_CAPABLE'})
+
+            if sev == 'SEV_SNP':
+                config['minCpuPlatform'] = 'AMD Milan'
+                guest_os_features.append({'type': 'SEV_SNP_CAPABLE'})
+            else:
+                guest_os_features.append({'type': 'SEV_CAPABLE'})
 
         if use_gvnic:
             guest_os_features.append({'type': 'GVNIC'})
@@ -422,7 +444,7 @@ class GCECloud(IpaCloud):
             'source_image': source_image,
             'ssh_key': self.ssh_public_key,
             'network_interfaces': network_interfaces,
-            'sev_capable': self.sev_capable,
+            'sev': self.sev,
             'use_gvnic': self.use_gvnic,
             'root_disk_size': self.root_disk_size,
             'architecture': self.architecture
