@@ -28,6 +28,48 @@ As seen in the example the CLI output verbosity can be controlled via options:
 **\-\-quiet**
     Silence logging information on test run.
 
+
+Instance Options
+~~~~~~~~~~~~~~~~
+
+The **instance-option** arguments provide a way to enable instance options
+that will be activated when launching instances. This is a multi-option
+value. To provide multiple options in a single command split each option
+into a separate argement. An example for tests in Google:
+
+.. code-block:: console
+
+   img-proof test gcp ... \
+     --instance-option SEV_SNP_CAPABLE \
+     --instance-option GVNIC
+
+The Google instance options are the guest os feature flags. See
+https://cloud.google.com/compute/docs/images/create-custom#guest-os-features
+for more details. As seen above a an example for Google looks like:
+
+.. code-block:: console
+
+   img-proof test gcp ... \
+     --instance-option SEV_SNP_CAPABLE
+
+The Amazon options are the different options available when running the
+run instances command. These can be found at
+https://docs.aws.amazon.com/cli/latest/reference/ec2/run-instances.html.
+
+To provide an instance option for testing in Amazon the type of option
+and the key/val are provided in the following format: "OptType=key.val".
+Example usage to enable SEV SNP looks like:
+
+.. code-block:: console
+
+   img-proof test ec2 ... \
+     --instance-option CpuOptions=AmdSevSnp.enabled
+
+
+Where the key is derived from the CLI reference page provided above. In
+this case the AWS CLI option is --cpu-options which becomes "CpuOptions".
+"AmdSevSnp" is the key and the value is "enabled".
+
 Cleanup
 ~~~~~~~
 

@@ -134,13 +134,13 @@ def main(context, no_color):
     multiple=True,
     help=(
         'Instance options to be activated when launching instances for tests. '
-        'Amazon Example: "--instance-option AmdSevSnp=enabled". '
+        'Amazon Example: "--instance-option CpuOptions=AmdSevSnp.enabled". '
         'Google Example: "--instance-option SEV_SNP_CAPABLE". '
         'Multiple values can be specified such as (Google) '
         '"--instance-option SEV_SNP_CAPABLE --instance-option GVNIC". '
-        'The Google instance options are the guest os feature flags. See '
-        'https://cloud.google.com/compute/docs/images/create-custom'
-        '#guest-os-features for more details.'
+        'More details can be found in the img-proof documentation '
+        'https://img-proof.readthedocs.io/en/latest/usage.html'
+        '#instance-options.'
     )
 )
 @click.option(
