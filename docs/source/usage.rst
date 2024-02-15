@@ -35,7 +35,7 @@ Instance Options
 The **instance-option** arguments provide a way to enable instance options
 that will be activated when launching instances. This is a multi-option
 value. To provide multiple options in a single command split each option
-into a separate argement. An example for tests in Google:
+into a separate argument. An example for tests in Google:
 
 .. code-block:: console
 
@@ -45,7 +45,7 @@ into a separate argement. An example for tests in Google:
 
 The Google instance options are the guest os feature flags. See
 https://cloud.google.com/compute/docs/images/create-custom#guest-os-features
-for more details. As seen above a an example for Google looks like:
+for more details. As seen above an example for Google looks like:
 
 .. code-block:: console
 
