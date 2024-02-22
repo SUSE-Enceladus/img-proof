@@ -44,8 +44,10 @@ class TestEC2Provider(object):
             'test_files': ['test_image'],
             'custom_args': {
                 'account_name': 'bob',
-                'ssh_key_name': 'test-key'
-            }
+                'ssh_key_name': 'test-key',
+                'cpu_options': {'AmdSevSnp': 'enabled'}
+            },
+            'instance_options': ['CpuOptions=AmdSevSnp.enabled']
         }
 
     def test_ec2_exception_required_args(self):

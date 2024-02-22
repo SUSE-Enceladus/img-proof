@@ -96,7 +96,8 @@ def test_image(
     architecture=None,
     beta=None,
     exclude=None,
-    cpu_options=None
+    cpu_options=None,
+    instance_options=None
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -129,7 +130,8 @@ def test_image(
         'retry_count': retry_count,
         'root_disk_size': root_disk_size,
         'beta': beta,
-        'exclude': exclude
+        'exclude': exclude,
+        'instance_options': instance_options
     }
 
     cloud_name = cloud_name.lower()

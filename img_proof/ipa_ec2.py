@@ -233,6 +233,26 @@ class EC2Cloud(IpaCloud):
             kwargs['AdditionalInfo'] = self.additional_info
 
         cpu_options = self.custom_args.get('cpu_options', {})
+        for option in self.instance_options:
+            try:
+                # AmdSevSnp=enabled
+                key, value = option.split('=')
+            except ValueError:
+                self.logger.warning(f'Invalid CPU option provided: {option}')
+
+            try:
+                # CpuOptions=AmdSevSnp.enabled
+                opt_key, opt_val = value.split('.')
+            except ValueError:
+                opt_key = None
+
+            if opt_key and key.lower() == 'cpuoptions':
+                cpu_options[opt_key] = opt_val
+            elif opt_key and key.lower() != 'cpuoptions':
+                pass  # No other options supported at the moment
+            else:
+                cpu_options[key] = value
+
         if cpu_options:
             kwargs['CpuOptions'] = cpu_options
 

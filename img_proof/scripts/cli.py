@@ -129,6 +129,21 @@ def main(context, no_color):
     )
 )
 @click.option(
+    '--instance-option',
+    'instance_options',
+    multiple=True,
+    help=(
+        'Instance options to be activated when launching instances for tests. '
+        'Amazon Example: "--instance-option CpuOptions=AmdSevSnp.enabled". '
+        'Google Example: "--instance-option SEV_SNP_CAPABLE". '
+        'Multiple values can be specified such as (Google) '
+        '"--instance-option SEV_SNP_CAPABLE --instance-option GVNIC". '
+        'More details can be found in the img-proof documentation '
+        'https://img-proof.readthedocs.io/en/latest/usage.html'
+        '#instance-options.'
+    )
+)
+@click.option(
     '-D',
     '--description',
     help='Short description for test run.'
@@ -396,6 +411,7 @@ def test(context,
          cleanup,
          config,
          cpu_options,
+         instance_options,
          description,
          distro,
          early_exit,
@@ -449,6 +465,33 @@ def test(context,
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
     logger = ipa_utils.get_logger(log_level)
+
+    if cpu_options:
+        echo_style(
+            '--cpu-options is deprecated and replaced by '
+            '"--instance-option AmdSevSnp=enabled". '
+            '--cpu-options will be removed in v8.0.0.',
+            no_color,
+            fg='red'
+        )
+
+    if sev_capable:
+        echo_style(
+            '--sev-capable is deprecated and replaced by'
+            '"--instance-option SEV_CAPABLE". '
+            '--sev-capable will be removed in v8.0.0.',
+            no_color,
+            fg='red'
+        )
+
+    if use_gvnic:
+        echo_style(
+            '--use-gvnic is deprecated and replaced by'
+            '"--instance-option GVNIC". '
+            '--use-gvnic will be removed in v8.0.0.',
+            no_color,
+            fg='red'
+        )
 
     try:
         status, results = test_image(
@@ -510,7 +553,8 @@ def test(context,
             architecture,
             beta,
             exclude,
-            cpu_options
+            cpu_options,
+            instance_options
         )
         echo_results(results, no_color)
         sys.exit(status)
