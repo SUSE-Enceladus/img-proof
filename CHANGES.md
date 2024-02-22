@@ -1,3 +1,10 @@
+v7.24.0 (2024-02-22)
+===================
+
+- Add instance options cli option
+- Add sev-snp support for Google testing
+- Add sev-snp test to SLES test suite
+
 v7.23.0 (2024-01-25)
 ===================
 
