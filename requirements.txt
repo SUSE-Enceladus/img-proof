@@ -11,7 +11,7 @@ PyYAML
 pytest-testinfra
 oci
 google-auth
-google-api-python-client
+google-cloud-compute>=1.21.0
 aliyun-python-sdk-core
 aliyun-python-sdk-ecs
 pytest-json-report

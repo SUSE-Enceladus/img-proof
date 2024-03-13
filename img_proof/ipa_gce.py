@@ -37,8 +37,8 @@ from img_proof.ipa_cloud import IpaCloud
 from google.oauth2 import service_account
 from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import AuthorizedSession
-from googleapiclient import discovery
-from googleapiclient.errors import HttpError
+from google.cloud import compute_v1
+from google.api_core.extended_operation import ExtendedOperation
 
 
 def get_message_from_http_error(error, resource_name):
@@ -69,15 +69,6 @@ def handle_gce_http_errors(type_name, resource_name):
     """
     try:
         yield
-    except HttpError as error:
-        message = get_message_from_http_error(error, resource_name)
-
-        raise GCECloudException(
-            'Unable to retrieve {type_name}: {error}'.format(
-                type_name=type_name,
-                error=message
-            )
-        ) from error
     except Exception as error:
         raise GCECloudException(
             'Unable to retrieve {type_name}: {error}'.format(
@@ -146,7 +137,12 @@ class GCECloud(IpaCloud):
             self.stack_type = 'IPV4_ONLY'
 
         self.credentials = self._get_credentials()
-        self.compute_driver = self._get_driver()
+        self.instances_client = compute_v1.InstancesClient(
+            credentials=self.credentials
+        )
+        self.zone_operations_client = compute_v1.ZoneOperationsClient(
+            credentials=self.credentials
+        )
 
         self._validate_region()
 
@@ -203,23 +199,14 @@ class GCECloud(IpaCloud):
 
         return creds
 
-    def _get_driver(self):
-        """Get authenticated GCE driver."""
-        return discovery.build(
-            'compute',
-            'beta',
-            credentials=self.credentials,
-            cache_discovery=False
-        )
-
     def _get_instance(self):
         """Retrieve instance matching instance_id."""
         with handle_gce_http_errors('instance', self.running_instance_id):
-            instance = self.compute_driver.instances().get(
+            instance = self.instances_client.get(
                 project=self.service_account_project,
                 zone=self.region,
                 instance=self.running_instance_id
-            ).execute()
+            )
 
         return instance
 
@@ -237,11 +224,15 @@ class GCECloud(IpaCloud):
 
         If network not found GCE will raise a 404 error.
         """
+        networks_client = compute_v1.NetworksClient(
+            credentials=self.credentials
+        )
+
         with handle_gce_http_errors('network', network_id):
-            network = self.compute_driver.networks().get(
+            network = networks_client.get(
                 project=self.service_account_project,
                 network=network_id
-            ).execute()
+            )
 
         return network
 
@@ -251,15 +242,19 @@ class GCECloud(IpaCloud):
 
         If subnet not found GCE will raise a 404 error.
         """
+        subnetworks_client = compute_v1.SubnetworksClient(
+            credentials=self.credentials
+        )
+
         with handle_gce_http_errors('subnet', subnet_id):
             # Subnet lives in a region whereas self.region
             # is a specific zone (us-west1-a).
             region = '-'.join(self.region.split('-')[:-1])
-            subnet = self.compute_driver.subnetworks().get(
+            subnet = subnetworks_client.get(
                 project=self.service_account_project,
                 region=region,
                 subnetwork=subnet_id
-            ).execute()
+            )
 
         return subnet
 
@@ -269,12 +264,16 @@ class GCECloud(IpaCloud):
 
         If type not found GCE will raise a 404 error.
         """
+        machine_types_client = compute_v1.MachineTypesClient(
+            credentials=self.credentials
+        )
+
         with handle_gce_http_errors('instance type', type_name):
-            machine_type = self.compute_driver.machineTypes().get(
+            machine_type = machine_types_client.get(
                 project=self.service_account_project,
                 zone=self.region,
-                machineType=type_name
-            ).execute()
+                machine_type=type_name
+            )
 
         return machine_type
 
@@ -284,11 +283,15 @@ class GCECloud(IpaCloud):
 
         If image is not found GCE will raise a 404 error.
         """
+        images_client = compute_v1.ImagesClient(
+            credentials=self.credentials
+        )
+
         with handle_gce_http_errors('image', image_name):
-            image = self.compute_driver.images().get(
+            image = images_client.get(
                 project=self.image_project or self.service_account_project,
                 image=image_name
-            ).execute()
+            )
 
         return image
 
@@ -298,12 +301,16 @@ class GCECloud(IpaCloud):
 
         If disk is not found GCE will raise a 404 error.
         """
+        disks_client = compute_v1.DisksClient(
+            credentials=self.credentials
+        )
+
         with handle_gce_http_errors('disk', disk_name):
-            disk = self.compute_driver.disks().get(
+            disk = disks_client.get(
                 project=self.service_account_project,
                 zone=self.region,
                 disk=disk_name
-            ).execute()
+            )
 
         return disk
 
@@ -315,22 +322,21 @@ class GCECloud(IpaCloud):
         network. Otherwise use the default network.
         """
         interface = {
-            'accessConfigs': [{
-                'name': 'External NAT',
-                'type': 'ONE_TO_ONE_NAT'
+            'access_configs': [{
+                'name': 'External NAT'
             }],
-            'stackType': self.stack_type
+            'stack_type': self.stack_type
         }
 
         if use_gvnic:
-            interface['nicType'] = 'GVNIC'
+            interface['nic_type'] = 'GVNIC'
 
         if subnet_id:
             subnet = self._get_subnet(subnet_id)
-            interface['subnetwork'] = subnet['selfLink']
-            interface['network'] = subnet['network']
+            interface['subnetwork'] = subnet.self_link
+            interface['network'] = subnet.network.self_link
         else:
-            interface['network'] = self._get_network('default')['selfLink']
+            interface['network'] = self._get_network('default').self_link
 
         return interface
 
@@ -346,9 +352,9 @@ class GCECloud(IpaCloud):
         Return with default values unless overridden by args.
         """
         shielded_instance_config = {
-            'enableSecureBoot': enable_secure_boot,
-            'enableVtpm': enable_vtpm,
-            'enableIntegrityMonitoring': enable_integrity_monitoring
+            'enable_secure_boot': enable_secure_boot,
+            'enable_vtpm': enable_vtpm,
+            'enable_integrity_monitoring': enable_integrity_monitoring
         }
 
         return shielded_instance_config
@@ -376,59 +382,62 @@ class GCECloud(IpaCloud):
             'metadata': {
                 'items': [
                     {'key': 'ssh-keys', 'value': ssh_key},
-                    {'key': 'enable-guest-attributes', 'value': True}
+                    {'key': 'enable-guest-attributes', 'value': 'true'}
                 ]
             },
-            'serviceAccounts': [{
+            'service_accounts': [{
                 'email': service_account_email,
                 'scopes': [
                     'https://www.googleapis.com/auth/devstorage.read_only'
                 ]
             }],
-            'machineType': machine_type,
+            'machine_type': machine_type,
             'disks': [{
-                'autoDelete': auto_delete,
+                'auto_delete': auto_delete,
                 'boot': boot_disk,
-                'type': disk_type,
+                'type_': disk_type,
                 'mode': disk_mode,
-                'deviceName': instance_name,
-                'initializeParams': {
-                    'diskName': instance_name,
-                    'sourceImage': source_image,
-                    'diskSizeGb': root_disk_size,
+                'device_name': instance_name,
+                'initialize_params': {
+                    'disk_name': instance_name,
+                    'source_image': source_image,
+                    'disk_size_gb': root_disk_size,
                     'architecture': architecture
                 }
             }],
-            'networkInterfaces': network_interfaces,
+            'network_interfaces': network_interfaces,
             'name': instance_name
         }
 
         guest_os_features = []
 
         if shielded_instance_config:
-            config['shieldedInstanceConfig'] = shielded_instance_config
-            guest_os_features.append({'type': 'UEFI_COMPATIBLE'})
+            config['shielded_instance_config'] = shielded_instance_config
+            guest_os_features.append({'type_': 'UEFI_COMPATIBLE'})
 
         if sev:
-            config['confidentialInstanceConfig'] = {
-                'confidentialInstanceType': sev,
-                'enableConfidentialCompute': True
+            config['confidential_instance_config'] = {
+                'confidential_instance_type': sev,
+                'enable_confidential_compute': True
             }
-            config['scheduling'] = {'onHostMaintenance': 'TERMINATE'}
+            config['scheduling'] = {'on_host_maintenance': 'TERMINATE'}
 
             if sev == 'SEV_SNP':
-                config['minCpuPlatform'] = 'AMD Milan'
-                guest_os_features.append({'type': 'SEV_SNP_CAPABLE'})
+                config['min_cpu_platform'] = 'AMD Milan'
+                guest_os_features.append({'type_': 'SEV_SNP_CAPABLE'})
             else:
-                guest_os_features.append({'type': 'SEV_CAPABLE'})
+                guest_os_features.append({'type_': 'SEV_CAPABLE'})
 
         if use_gvnic:
-            guest_os_features.append({'type': 'GVNIC'})
+            guest_os_features.append({'type_': 'GVNIC'})
 
         if guest_os_features:
-            config['disks'][0]['guestOsFeatures'] = guest_os_features
+            config['disks'][0]['guest_os_features'] = guest_os_features
 
-        return config
+        instance = compute_v1.Instance(
+            mapping=config
+        )
+        return instance
 
     def _launch_instance(self):
         """Launch an instance of the given image."""
@@ -437,8 +446,8 @@ class GCECloud(IpaCloud):
 
         machine_type = self._get_instance_type(
             self.instance_type or GCE_DEFAULT_TYPE
-        )['selfLink']
-        source_image = self._get_image(self.image_id)['selfLink']
+        ).self_link
+        source_image = self._get_image(self.image_id).self_link
         network_interfaces = [
             self._get_network_config(self.subnet_id, self.use_gvnic)
         ]
@@ -463,34 +472,12 @@ class GCECloud(IpaCloud):
                 )
 
         try:
-            response = self.compute_driver.instances().insert(
+            request = compute_v1.InsertInstanceRequest(
                 project=self.service_account_project,
                 zone=self.region,
-                body=self.get_instance_config(**kwargs)
-            ).execute()
-        except HttpError as error:
-            with suppress(AttributeError):
-                # In python 3.5 content is bytes
-                error.content = error.content.decode()
-
-            error_obj = json.loads(error.content)['error']
-
-            try:
-                message = error_obj['message']
-            except (AttributeError, KeyError):
-                message = 'Unknown exception.'
-
-            if error_obj['code'] == 412:
-                # 412 is conditionNotmet
-                error_class = IpaRetryableError
-            else:
-                error_class = GCECloudException
-
-            raise error_class(
-                'Failed to launch instance: {message}'.format(
-                    message=message
-                )
-            ) from error
+                instance_resource=self.get_instance_config(**kwargs)
+            )
+            operation = self.instances_client.insert(request=request)
         except Exception as error:
             raise GCECloudException(
                 'Failed to launch instance: {message}'.format(
@@ -498,21 +485,7 @@ class GCECloud(IpaCloud):
                 )
             ) from error
 
-        operation = self._wait_on_operation(response['name'])
-
-        if 'error' in operation and operation['error'].get('errors'):
-            error = operation['error']['errors'][0]
-
-            if error['code'] in ('QUOTA_EXCEEDED', 'PRECONDITION_FAILED'):
-                error_class = IpaRetryableError
-            else:
-                error_class = GCECloudException
-
-            raise error_class(
-                'Failed to launch instance: {message}'.format(
-                    message=error['message']
-                )
-            )
+        self.wait_for_extended_operation(operation, 'instance creation')
 
         self._wait_on_instance(
             'RUNNING',
@@ -523,16 +496,16 @@ class GCECloud(IpaCloud):
         """Set the image_id instance variable based on boot disk."""
         instance = self._get_instance()
 
-        for disk_info in instance['disks']:
-            if disk_info.get('boot'):
-                disk_name = disk_info['source'].rsplit('/', maxsplit=1)[-1]
+        for disk_info in instance.disks:
+            if disk_info.boot:
+                disk_name = disk_info.source.rsplit('/', maxsplit=1)[-1]
                 break
 
         disk = self._get_disk(disk_name)
 
         # Example sourceImage format:
         # projects/debian-cloud/global/images/opensuse-leap-15.0-YYYYMMDD
-        self.image_id = disk['sourceImage'].rsplit('/', maxsplit=1)[-1]
+        self.image_id = disk.source_image.rsplit('/', maxsplit=1)[-1]
 
     def _validate_region(self):
         """Validate region was passed in and is a valid GCE zone."""
@@ -542,11 +515,15 @@ class GCECloud(IpaCloud):
                 'Example: us-west1-a'
             )
 
+        zones_client = compute_v1.ZonesClient(
+            credentials=self.credentials
+        )
+
         try:
-            zone = self.compute_driver.zones().get(
+            zone = zones_client.get(
                 project=self.service_account_project,
                 zone=self.region
-            ).execute()
+            )
         except Exception:
             zone = None
 
@@ -561,7 +538,7 @@ class GCECloud(IpaCloud):
     def _get_instance_state(self):
         """Attempt to retrieve the state of the instance."""
         instance = self._get_instance()
-        return instance['status']
+        return instance.status
 
     def _is_instance_running(self):
         """Return True if instance is in running state."""
@@ -571,25 +548,25 @@ class GCECloud(IpaCloud):
         """Retrieve and set the instance ip address."""
         instance = self._get_instance()
 
-        interface = instance['networkInterfaces'][0]
+        interface = instance.network_interfaces[0]
         try:
-            self.instance_ip = interface['accessConfigs'][0]['natIP']
-        except (KeyError, IndexError):
-            try:
-                self.instance_ip = interface['networkIP']
-            except KeyError:
-                raise GCECloudException(
-                    'IP address for instance: %s cannot be found.'
-                    % self.running_instance_id
-                )
+            self.instance_ip = interface.access_configs[0].nat_i_p
+        except IndexError:
+            self.instance_ip = interface.network_i_p
+
+        if not self.instance_ip:
+            raise GCECloudException(
+                'IP address for instance: %s cannot be found.'
+                % self.running_instance_id
+            )
 
     def _start_instance(self):
         """Start the instance."""
-        self.compute_driver.instances().start(
+        self.instances_client.start(
             project=self.service_account_project,
             zone=self.region,
             instance=self.running_instance_id
-        ).execute()
+        )
 
         self._wait_on_instance(
             'RUNNING',
@@ -598,12 +575,12 @@ class GCECloud(IpaCloud):
 
     def _stop_instance(self):
         """Stop the instance."""
-        self.compute_driver.instances().stop(
+        self.instances_client.stop(
             project=self.service_account_project,
             zone=self.region,
             instance=self.running_instance_id,
             discardLocalSsd=True
-        ).execute()
+        )
 
         # In GCE an instance that is stopped has a state of TERMINATED:
         # https://cloud.google.com/compute/docs/instances/instance-life-cycle
@@ -614,22 +591,22 @@ class GCECloud(IpaCloud):
 
     def _terminate_instance(self):
         """Terminate the instance."""
-        self.compute_driver.instances().delete(
+        self.instances_client.delete(
             project=self.service_account_project,
             zone=self.region,
             instance=self.running_instance_id
-        ).execute()
+        )
 
     def get_console_log(self):
         """
         Return console log output if it is available.
         """
-        output = self.compute_driver.instances().getSerialPortOutput(
+        output = self.instances_client.get_serial_port_output(
             project=self.service_account_project,
             zone=self.region,
             instance=self.running_instance_id
-        ).execute()
-        return output.get('contents', '')
+        )
+        return output.contents
 
     def _wait_on_operation(self, operation_name, timeout=600, wait_period=10):
         start = time.time()
@@ -638,11 +615,37 @@ class GCECloud(IpaCloud):
         while time.time() < end:
             time.sleep(wait_period)
 
-            operation = self.compute_driver.zoneOperations().get(
+            operation = self.zone_operations_client.get(
                 project=self.service_account_project,
                 zone=self.region,
                 operation=operation_name
-            ).execute()
+            )
 
-            if operation['status'] == 'DONE':
+            if operation.status == 'DONE':
                 return operation
+
+    def wait_for_extended_operation(
+        self,
+        operation: ExtendedOperation,
+        verbose_name: str = 'operation',
+        timeout: int = 300
+    ):
+        retryable_errors = ('QUOTA_EXCEEDED', 'PRECONDITION_FAILED')
+        result = operation.result(timeout=timeout)
+
+        if operation.warnings:
+            for warning in operation.warnings:
+                self.logger.warning(f'{warning.code}: {warning.message}')
+
+        if operation.error_code:
+            if operation.error_code in retryable_errors:
+                error_class = IpaRetryableError
+            else:
+                error_class = GCECloudException
+
+            raise error_class(
+                f'Failed to launch instance: {operation.error_code}: '
+                f'{operation.error_message}'
+            )
+
+        return result

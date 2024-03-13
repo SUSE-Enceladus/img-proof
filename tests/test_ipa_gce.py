@@ -21,29 +21,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
 import pytest
 
 from img_proof.ipa_gce import GCECloud
-from img_proof.ipa_exceptions import GCECloudException, IpaRetryableError
+from img_proof.ipa_exceptions import GCECloudException
 
 from unittest.mock import MagicMock, patch
-
-from googleapiclient.errors import HttpError
-
-
-def get_http_error(msg, status='404'):
-    resp = MagicMock()
-    resp.status = status
-
-    content = {
-        'error': {
-            'code': int(status),
-            'message': msg
-        }
-    }
-
-    return HttpError(resp, json.dumps(content).encode())
 
 
 class TestGCECloud(object):
@@ -52,11 +35,11 @@ class TestGCECloud(object):
     @patch('img_proof.ipa_gce.AuthorizedSession')
     @patch('img_proof.ipa_gce.service_account')
     @patch.object(GCECloud, '_validate_region')
-    @patch('img_proof.ipa_gce.discovery')
+    @patch('img_proof.ipa_gce.compute_v1')
     def setup_method(
         self,
         method,
-        mock_discovery,
+        mock_compute_v1,
         mock_validate_region,
         mock_service_account,
         mock_auth_session
@@ -75,8 +58,18 @@ class TestGCECloud(object):
             'instance_options': 'STACK_TYPE=IPV4_ONLY'
         }
 
-        driver = MagicMock()
-        mock_discovery.build.return_value = driver
+        self.instances_client = MagicMock()
+        self.zone_ops_client = MagicMock()
+        self.zones_client = MagicMock()
+        self.networks_client = MagicMock()
+        self.subnet_client = MagicMock()
+        self.machine_type_client = MagicMock()
+        self.images_client = MagicMock()
+        self.disks_client = MagicMock()
+        mock_compute_v1.InstancesClient.return_value = self.instances_client
+        mock_compute_v1.ZoneOperationsClient.return_value = \
+            self.zone_ops_client
+        mock_compute_v1.ZonesClient.return_value = self.zones_client
 
         service_account = MagicMock()
         mock_service_account.Credentials.\
@@ -143,18 +136,14 @@ class TestGCECloud(object):
     def test_gce_get_instance(self):
         """Test gce get instance method."""
         instance = MagicMock()
-        instances_obj = MagicMock()
-        operation = MagicMock()
-        operation.execute.return_value = instance
-        instances_obj.get.return_value = operation
-        self.cloud.compute_driver.instances.return_value = instances_obj
+        self.instances_client.get.return_value = instance
 
         val = self.cloud._get_instance()
 
         assert val == instance
 
         self.cloud.running_instance_id = 'test-instance'
-        instances_obj.get.side_effect = get_http_error(
+        self.instances_client.get.side_effect = Exception(
             'test-instance cannot be found.'
         )
 
@@ -164,20 +153,18 @@ class TestGCECloud(object):
         exc = "Unable to retrieve instance: test-instance cannot be found."
         assert str(error.value) == exc
 
-    def test_gce_get_network(self):
+    @patch('img_proof.ipa_gce.compute_v1')
+    def test_gce_get_network(self, mock_compute_v1):
         """Test GCE get network method."""
+        mock_compute_v1.NetworksClient.return_value = self.networks_client
         network = MagicMock()
-        networks_obj = MagicMock()
-        operation = MagicMock()
-        operation.execute.return_value = network
-        networks_obj.get.return_value = operation
-        self.cloud.compute_driver.networks.return_value = networks_obj
+        self.networks_client.get.return_value = network
 
         result = self.cloud._get_network('test-network')
 
         assert result == network
 
-        networks_obj.get.side_effect = get_http_error(
+        self.networks_client.get.side_effect = Exception(
             'Resource test-network not found.'
         )
 
@@ -187,21 +174,19 @@ class TestGCECloud(object):
 
         assert msg == str(error.value)
 
-    def test_gce_get_subnet(self):
+    @patch('img_proof.ipa_gce.compute_v1')
+    def test_gce_get_subnet(self, mock_compute_v1):
         """Test GCE get subnetwork method."""
+        mock_compute_v1.SubnetworksClient.return_value = self.subnet_client
         subnetwork = MagicMock()
-        subnet_obj = MagicMock()
-        operation = MagicMock()
-        operation.execute.return_value = subnetwork
-        subnet_obj.get.return_value = operation
-        self.cloud.compute_driver.subnetworks.return_value = subnet_obj
+        self.subnet_client.get.return_value = subnetwork
 
         self.cloud.region = 'us-west-1a'
         result = self.cloud._get_subnet('test-subnet')
 
         assert result == subnetwork
 
-        subnet_obj.get.side_effect = get_http_error(
+        self.subnet_client.get.side_effect = Exception(
             'Resource test-subnet not found.'
         )
 
@@ -211,19 +196,18 @@ class TestGCECloud(object):
 
         assert msg == str(error.value)
 
-    def test_gce_get_instance_type(self):
+    @patch('img_proof.ipa_gce.compute_v1')
+    def test_gce_get_instance_type(self, mock_compute_v1):
         """Test GCE get instance type method."""
+        mock_compute_v1.MachineTypesClient.return_value = \
+            self.machine_type_client
         machine_type = MagicMock()
-        machine_type_obj = MagicMock()
-        operation = MagicMock()
-        operation.execute.return_value = machine_type
-        machine_type_obj.get.return_value = operation
-        self.cloud.compute_driver.machineTypes.return_value = machine_type_obj
+        self.machine_type_client.get.return_value = machine_type
 
         result = self.cloud._get_instance_type('n1-standard-1')
         assert result == machine_type
 
-        machine_type_obj.get.side_effect = get_http_error(
+        self.machine_type_client.get.side_effect = Exception(
             'Resource n1-standard-1 not found.'
         )
 
@@ -234,19 +218,17 @@ class TestGCECloud(object):
 
         assert msg == str(error.value)
 
-    def test_gce_get_image(self):
+    @patch('img_proof.ipa_gce.compute_v1')
+    def test_gce_get_image(self, mock_compute_v1):
         """Test GCE get image method."""
+        mock_compute_v1.ImagesClient.return_value = self.images_client
         image = MagicMock()
-        image_obj = MagicMock()
-        operation = MagicMock()
-        operation.execute.return_value = image
-        image_obj.get.return_value = operation
-        self.cloud.compute_driver.images.return_value = image_obj
+        self.images_client.get.return_value = image
 
         result = self.cloud._get_image('fake-image-20200202')
         assert result == image
 
-        image_obj.get.side_effect = get_http_error(
+        self.images_client.get.side_effect = Exception(
             'Resource fake-image-20200202 not found.'
         )
 
@@ -257,19 +239,17 @@ class TestGCECloud(object):
 
         assert msg == str(error.value)
 
-    def test_gce_get_disk(self):
+    @patch('img_proof.ipa_gce.compute_v1')
+    def test_gce_get_disk(self, mock_compute_v1):
         """Test GCE get image method."""
+        mock_compute_v1.DisksClient.return_value = self.disks_client
         disk = MagicMock()
-        disk_obj = MagicMock()
-        operation = MagicMock()
-        operation.execute.return_value = disk
-        disk_obj.get.return_value = operation
-        self.cloud.compute_driver.disks.return_value = disk_obj
+        self.disks_client.get.return_value = disk
 
         result = self.cloud._get_disk('disk12')
         assert result == disk
 
-        disk_obj.get.side_effect = get_http_error(
+        self.disks_client.get.side_effect = Exception(
             'Resource disk12 not found.'
         )
 
@@ -282,28 +262,26 @@ class TestGCECloud(object):
 
     @patch.object(GCECloud, '_get_subnet')
     def test_get_network_config(self, mock_get_subnet):
-        subnet = 'projects/test/regions/us-west1/subnetworks/sub-123'
-        net = 'projects/test/global/networks/network'
+        subnet = MagicMock()
+        subnet.self_link = 'projects/test/regions/us-west1/subnetworks/sub-123'
+        subnet.network.self_link = 'projects/test/global/networks/network'
 
-        mock_get_subnet.return_value = {
-            'selfLink': subnet,
-            'network': net
-        }
+        mock_get_subnet.return_value = subnet
 
         subnet_config = self.cloud._get_network_config(
             'sub-123',
             use_gvnic=True
         )
 
-        assert subnet_config['network'] == net
-        assert subnet_config['subnetwork'] == subnet
+        assert subnet_config['network'] == subnet.network.self_link
+        assert subnet_config['subnetwork'] == subnet.self_link
 
     def test_get_shielded_instance_config(self):
         si_config = self.cloud.get_shielded_instance_config()
 
-        assert si_config['enableSecureBoot'] is False
-        assert si_config['enableVtpm']
-        assert si_config['enableIntegrityMonitoring']
+        assert si_config['enable_secure_boot'] is False
+        assert si_config['enable_vtpm']
+        assert si_config['enable_integrity_monitoring']
 
     def test_get_instance_config(self):
         config = self.cloud.get_instance_config(
@@ -315,21 +293,21 @@ class TestGCECloud(object):
             'secretkey',
             50,
             'x86_64',
-            shielded_instance_config={'shielded': 'config'},
+            shielded_instance_config={'enable_secure_boot': True},
             sev='SEV_SNP',
             use_gvnic=True
         )
 
         assert 'metadata' in config
-        assert 'serviceAccounts' in config
-        assert 'machineType' in config
+        assert 'service_accounts' in config
+        assert 'machine_type' in config
         assert 'disks' in config
-        assert 'networkInterfaces' in config
+        assert 'network_interfaces' in config
         assert 'name' in config
-        assert 'shieldedInstanceConfig' in config
+        assert 'shielded_instance_config' in config
 
     @patch.object(GCECloud, '_wait_on_instance')
-    @patch.object(GCECloud, '_wait_on_operation')
+    @patch.object(GCECloud, 'wait_for_extended_operation')
     @patch.object(GCECloud, '_get_network')
     @patch.object(GCECloud, '_get_image')
     @patch.object(GCECloud, '_get_instance_type')
@@ -345,22 +323,23 @@ class TestGCECloud(object):
     ):
         """Test GCE launch instance method."""
         mock_generate_instance_name.return_value = 'test-instance'
-        mock_get_network.return_value = {
-            'selfLink': 'projects/test/global/networks/net1'
-        }
-        mock_get_image.return_value = {
-            'selfLink': 'projects/test/global/images/img-123'
-        }
-        mock_get_instance_type.return_value = {
-            'selfLink': 'zones/us-west1-a/machineTypes/n1-standard-1'
-        }
-        mock_wait_on_operation.return_value = {}
+        network = MagicMock()
+        network.self_link = 'projects/test/global/networks/net1'
+        mock_get_network.return_value = network
 
-        instances_obj = MagicMock()
+        image = MagicMock()
+        image.self_link = 'projects/test/global/images/img-123'
+        mock_get_image.return_value = image
+
+        inst_type = MagicMock()
+        inst_type.self_link = 'zones/us-west1-a/machineTypes/n1-standard-1'
+        mock_get_instance_type.return_value = inst_type
+
+        mock_wait_on_operation.return_value = None
+
         operation = MagicMock()
-        operation.execute.return_value = {'name': 'operation123'}
-        instances_obj.insert.return_value = operation
-        self.cloud.compute_driver.instances.return_value = instances_obj
+        operation.name = 'operation123'
+        self.instances_client.insert.return_value = operation
 
         self.cloud.region = 'us-west1-a'
 
@@ -371,49 +350,29 @@ class TestGCECloud(object):
 
         # Exception on operation
 
-        mock_wait_on_operation.return_value = {
-            'error': {
-                'errors': [{
-                    'code': 'QUOTA_EXCEEDED',
-                    'message': 'Too many cpus.'
-                }]
-            }
-        }
-
-        with pytest.raises(IpaRetryableError) as error:
-            self.cloud._launch_instance()
-
-        assert 'Failed to launch instance: Too many cpus.' == str(error.value)
-
-        # Exception on API call
-
-        mock_wait_on_operation.return_value = {}
-        instances_obj.insert.side_effect = get_http_error(
-            'Invalid instance type.',
-            '412'
+        self.instances_client.insert.side_effect = Exception(
+            'Create failed!'
         )
 
-        with pytest.raises(IpaRetryableError) as error:
+        with pytest.raises(GCECloudException) as error:
             self.cloud._launch_instance()
 
-        msg = 'Failed to launch instance: Invalid instance type.'
-        assert msg == str(error.value)
+        assert 'Failed to launch instance: Create failed!' == str(error.value)
 
     @patch.object(GCECloud, '_get_disk')
     @patch.object(GCECloud, '_get_instance')
     def test_gce_set_image_id(self, mock_get_instance, mock_get_disk):
         """Test gce cloud set image id method."""
-        instance = {
-            'disks': [{
-                'deviceName': 'disk123',
-                'boot': True,
-                'source': 'https://www.googleapis.com/compute/v1/projects/'
-                          'test/zones/us-west1-a/disks/disk123'
-            }]
-        }
-        disk = {
-            'sourceImage': 'projects/suse/global/images/opensuse-leap-15.0'
-        }
+        instance = MagicMock()
+        disk = MagicMock()
+        disk.device_name = 'disk123'
+        disk.boot = True
+        disk.source = (
+            'https://www.googleapis.com/compute/v1/projects/'
+            'test/zones/us-west1-a/disks/disk123'
+        )
+        disk.source_image = 'projects/suse/global/images/opensuse-leap-15.0'
+        instance.disks = [disk]
         mock_get_instance.return_value = instance
         mock_get_disk.return_value = disk
 
@@ -426,10 +385,8 @@ class TestGCECloud(object):
     def test_gce_validate_region(self):
         """Test gce cloud set image id method."""
         zones_obj = MagicMock()
-        operation = MagicMock()
-        operation.execute.return_value = None
-        zones_obj.get.return_value = operation
-        self.cloud.compute_driver.zones.return_value = zones_obj
+        zones_obj.return_value = None
+        self.zones_client.get.return_value = zones_obj
 
         with pytest.raises(GCECloudException) as error:
             self.cloud._validate_region()
@@ -448,19 +405,25 @@ class TestGCECloud(object):
     @patch.object(GCECloud, '_get_instance')
     def test_gce_is_instance_running(self, mock_get_instance):
         """Test gce cloud is instance runnning method."""
-        mock_get_instance.return_value = {'status': 'RUNNING'}
+        instance = MagicMock()
+        instance.status = 'RUNNING'
+        mock_get_instance.return_value = instance
         assert self.cloud._is_instance_running()
         assert mock_get_instance.call_count == 1
 
-        mock_get_instance.return_value = {'status': 'TERMINATED'}
+        instance.status = 'TERMINATED'
+        mock_get_instance.return_value = instance
         assert not self.cloud._is_instance_running()
 
     @patch.object(GCECloud, '_get_instance')
     def test_gce_set_instance_ip(self, mock_get_instance):
         """Test gce cloud set instance ip method."""
-        mock_get_instance.return_value = {
-            'networkInterfaces': [{'some': 'data'}]
-        }
+        interface = MagicMock()
+        interface.network_i_p = None
+        interface.access_configs = []
+        instance = MagicMock()
+        instance.network_interfaces = [interface]
+        mock_get_instance.return_value = instance
 
         self.cloud.running_instance_id = 'test'
 
@@ -471,9 +434,8 @@ class TestGCECloud(object):
             'IP address for instance: test cannot be found.'
         assert mock_get_instance.call_count == 1
 
-        mock_get_instance.return_value = {
-            'networkInterfaces': [{'networkIP': '10.0.0.0'}]
-        }
+        interface.network_i_p = '10.0.0.0'
+        mock_get_instance.return_value = instance
         self.cloud._set_instance_ip()
 
         assert self.cloud.instance_ip == '10.0.0.0'
@@ -482,53 +444,37 @@ class TestGCECloud(object):
     def test_gce_start_instance(self, mock_wait_on_instance):
         """Test gce start instance method."""
         mock_wait_on_instance.return_value = None
-
-        instances_obj = MagicMock()
-        operation = MagicMock()
-        operation.execute.return_value = None
-        instances_obj.start.return_value = operation
-        self.cloud.compute_driver.instances.return_value = instances_obj
+        self.instances_client.start.return_value = None
 
         self.cloud._start_instance()
 
-        assert instances_obj.start.call_count == 1
+        assert self.instances_client.start.call_count == 1
 
     @patch.object(GCECloud, '_wait_on_instance')
     def test_gce_stop_instance(self, mock_wait_on_instance):
         """Test gce stop instance method."""
         mock_wait_on_instance.return_value = None
-
-        instances_obj = MagicMock()
-        operation = MagicMock()
-        operation.execute.return_value = None
-        instances_obj.stop.return_value = operation
-        self.cloud.compute_driver.instances.return_value = instances_obj
+        self.instances_client.stop.return_value = None
 
         self.cloud._stop_instance()
 
-        assert instances_obj.stop.call_count == 1
+        assert self.instances_client.stop.call_count == 1
 
     def test_gce_terminate_instance(self):
         """Test gce terminate instance method."""
-        instances_obj = MagicMock()
-        operation = MagicMock()
-        operation.execute.return_value = None
-        instances_obj.delete.return_value = operation
-        self.cloud.compute_driver.instances.return_value = instances_obj
+        self.instances_client.delete.return_value = None
 
         self.cloud._terminate_instance()
-        assert instances_obj.delete.call_count == 1
+        assert self.instances_client.delete.call_count == 1
 
     def test_gce_get_console_log(self):
         """Test gce get console log method."""
-        instances_obj = MagicMock()
         operation = MagicMock()
-        operation.execute.return_value = {'content': 'some output'}
-        instances_obj.getSerialPortOutput.return_value = operation
-        self.cloud.compute_driver.instances.return_value = instances_obj
+        operation.content = 'some output'
+        self.instances_client.get_serial_port_output.return_value = operation
 
         self.cloud.get_console_log()
-        assert instances_obj.getSerialPortOutput.call_count == 1
+        assert self.instances_client.get_serial_port_output.call_count == 1
 
     @patch('img_proof.ipa_gce.time')
     def test_wait_on_operation(self, mock_time):
@@ -538,12 +484,24 @@ class TestGCECloud(object):
         mock_time.sleep.return_value = None
         mock_time.time.return_value = 10
 
-        zone_ops_obj = MagicMock()
         operation = MagicMock()
-        operation.execute.return_value = {'status': 'DONE'}
-        zone_ops_obj.get.return_value = operation
-        self.cloud.compute_driver.zoneOperations.return_value = zone_ops_obj
+        operation.status = 'DONE'
+        self.zone_ops_client.get.return_value = operation
 
         result = self.cloud._wait_on_operation('operation213')
-        assert result['status'] == 'DONE'
-        assert zone_ops_obj.get.call_count == 1
+        assert result.status == 'DONE'
+        assert self.zone_ops_client.get.call_count == 1
+
+    def test_wait_for_extended_operation(self):
+        warning = MagicMock()
+        warning.code = '123'
+        warning.message = 'Something is wrong!'
+
+        operation = MagicMock()
+        operation.error_code = '412'
+        operation.error_message = 'Operation failed!'
+        operation.warnings = [warning]
+        operation.result.return_value = False
+
+        with pytest.raises(GCECloudException):
+            self.cloud.wait_for_extended_operation(operation)

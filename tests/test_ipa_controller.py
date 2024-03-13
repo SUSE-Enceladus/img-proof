@@ -80,13 +80,13 @@ def test_controller_ec2_image(mock_test_image):
 
 
 @patch.object(IpaCloud, 'test_image')
-@patch.object(GCECloud, '_get_driver')
+@patch('img_proof.ipa_gce.compute_v1')
 @patch.object(GCECloud, '_get_credentials')
 @patch.object(GCECloud, '_validate_region')
 def test_controller_gce_image(
     mock_validate_region,
     mock_get_creds,
-    mock_get_driver,
+    mock_compute_v1,
     mock_test_image
 ):
     mock_test_image.return_value = (0, {'results': 'data'})
