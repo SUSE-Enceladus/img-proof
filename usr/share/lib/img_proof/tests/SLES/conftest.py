@@ -539,6 +539,18 @@ SLE_15_SP5_X86_64_MODULES = [
     repo.replace('SP4', 'SP5') for repo in SLE_15_SP4_X86_64_MODULES
 ]
 
+BASE_15_SP6 = [
+    repo.replace('SP5', 'SP6') for repo in BASE_15_SP5
+]
+BASE_15_SP6_SAP = [
+    repo.replace('SP5', 'SP6') for repo in BASE_15_SP5_SAP
+]
+BASE_15_SP6_HPC = [
+    repo.replace('SP5', 'SP6') for repo in BASE_15_SP5_HPC
+]
+SLE_15_SP6_X86_64_MODULES = [
+    repo.replace('SP5', 'SP6') for repo in SLE_15_SP5_X86_64_MODULES
+]
 
 SLES_REPOS = {
     '12-X86_64': SLE_12_BASE + SLE_12_MODULES,
@@ -587,6 +599,10 @@ SLES_REPOS = {
     '15-SP5-X86_64': BASE_15_SP5 + SLE_15_SP5_X86_64_MODULES,
     '15-SP5-X86_64-SAP': BASE_15_SP5_SAP + SLE_15_SP5_X86_64_MODULES,
     '15-SP5-X86_64-HPC': BASE_15_SP5_HPC,
+    '15-SP6-AARCH64': BASE_15_SP6,
+    '15-SP6-X86_64': BASE_15_SP6 + SLE_15_SP6_X86_64_MODULES,
+    '15-SP6-X86_64-SAP': BASE_15_SP6_SAP + SLE_15_SP6_X86_64_MODULES,
+    '15-SP6-X86_64-HPC': BASE_15_SP6_HPC,
 }
 
 
