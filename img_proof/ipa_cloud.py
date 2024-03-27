@@ -773,6 +773,8 @@ class IpaCloud(object):
 
             raise IpaCloudException(msg)
 
+        instance_reachable = True
+
         if self.inject:
             self.process_injection_file(self._get_ssh_client())
 
@@ -799,11 +801,13 @@ class IpaCloud(object):
                             'Unable to connect to instance after '
                             'hard reboot: %s' % error
                         )
+                        instance_reachable = False
                         break
                     except Exception as error:
                         self.logger.error(
                             'Instance failed hard reboot: %s' % error
                         )
+                        instance_reachable = False
                         break
                     finally:
                         duration = time.time() - start
@@ -831,11 +835,13 @@ class IpaCloud(object):
                             'Unable to connect to instance after '
                             'soft reboot: %s' % error
                         )
+                        instance_reachable = False
                         break
                     except Exception as error:
                         self.logger.error(
                             'Instance failed soft reboot: %s' % error
                         )
+                        instance_reachable = False
                         break
                     finally:
                         duration = time.time() - start
@@ -897,7 +903,7 @@ class IpaCloud(object):
                     break
 
         # flag set to collect VM info
-        if self.collect_vm_info:
+        if self.collect_vm_info and instance_reachable:
             self._collect_vm_info()
 
         self._cleanup_instance(status)
