@@ -1,3 +1,9 @@
+v7.25.0 (2024-03-28)
+===================
+
+- Add 15 SP6 repos to SLES PAYG test
+- Skip vm info collection if instance fails reboot
+
 v7.24.0 (2024-02-22)
 ===================
 
