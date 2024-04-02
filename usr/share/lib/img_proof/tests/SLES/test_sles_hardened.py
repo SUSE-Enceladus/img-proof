@@ -81,6 +81,6 @@ def test_sles_hardened(host, get_release_value, is_sles_sap, is_sle_micro):
         print("STDOUT: {}".format(result.stdout.strip()))
         print("STDERR: {}".format(result.stderr.strip()))
 
-    assert result.rc == 0
-
     remove_swap(host)
+
+    assert result.rc == 0
