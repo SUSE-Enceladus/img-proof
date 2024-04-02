@@ -8,26 +8,21 @@ SWAP_FILE = "/swap"
 # Workaround for OOM killer triggered by the issue
 # https://github.com/OpenSCAP/openscap/issues/1796
 def setup_swap(host, swap_file=SWAP_FILE):
-    min_memory = 16e6
-    mem_total = int(host.run(
-        "cat /proc/meminfo | awk '$0 ~ /MemTotal:/ { print $2 }'"
-    ).stdout.strip())
-    if mem_total < min_memory:
-        # Follow steps in https://btrfs.readthedocs.io/en/latest/Swapfile.html
-        for command in [
-            "sudo truncate -s 0 {}".format(swap_file),
-            "sudo chattr +C {} || true".format(swap_file),
-            "sudo fallocate -l 4G {}".format(swap_file),
-            "sudo chmod 600 {}".format(swap_file),
-            "sudo mkswap {}".format(swap_file),
-            "sudo swapon {}".format(swap_file),
-        ]:
-            result = host.run(command)
-            if result.rc != 0:
-                print("{} command failed with {}".format(command, result.rc))
-                print("STDOUT: {}".format(result.stdout.strip()))
-                print("STDERR: {}".format(result.stderr.strip()))
-                return False
+    # Follow steps in https://btrfs.readthedocs.io/en/latest/Swapfile.html
+    for command in [
+        "sudo truncate -s 0 {}".format(swap_file),
+        "sudo chattr +C {} || true".format(swap_file),
+        "sudo fallocate -l 4G {}".format(swap_file),
+        "sudo chmod 600 {}".format(swap_file),
+        "sudo mkswap {}".format(swap_file),
+        "sudo swapon {}".format(swap_file),
+    ]:
+        result = host.run(command)
+        if result.rc != 0:
+            print("{} command failed with {}".format(command, result.rc))
+            print("STDOUT: {}".format(result.stdout.strip()))
+            print("STDERR: {}".format(result.stderr.strip()))
+            return False
     return True
 
 
