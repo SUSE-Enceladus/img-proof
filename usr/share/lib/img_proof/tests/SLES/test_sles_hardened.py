@@ -8,6 +8,8 @@ SWAP_FILE = "/swap"
 # Workaround for OOM killer triggered by the issue
 # https://github.com/OpenSCAP/openscap/issues/1796
 def setup_swap(host, swap_file=SWAP_FILE):
+    if os.path.exists(swap_file):
+        return True
     # Follow steps in https://btrfs.readthedocs.io/en/latest/Swapfile.html
     for command in [
         "sudo truncate -s 0 {}".format(swap_file),
