@@ -1,3 +1,9 @@
+v7.26.0 (2024-04-05)
+===================
+
+- Fix hardened test to handled multiple tries
+- Fix hardened test to clean up swap before assertion
+
 v7.25.0 (2024-03-28)
 ===================
 
