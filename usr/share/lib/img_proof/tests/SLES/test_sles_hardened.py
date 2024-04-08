@@ -41,6 +41,16 @@ def test_sles_hardened(host, get_release_value, is_sles_sap, is_sle_micro):
     if is_sle_micro():
         pytest.skip('Skipping SLE Micro')
 
+    scap_report = os.environ.get("SCAP_REPORT", "")
+    if scap_report:
+        if not scap_report.endswith(".html"):
+            print("Ignoring SCAP_REPORT: {}".format(scap_report))
+        elif host.file(scap_report).exists:
+            # Do not retry this expensive test if a report already exists
+            pytest.fail(reason="{} exists".format(scap_report), pytrace=False)
+        else:
+            scap_report = "--report {}".format(scap_report)
+
     if not setup_swap(host):
         pytest.skip("Failed to setup swap, not enough memory.")
 
@@ -59,13 +69,6 @@ def test_sles_hardened(host, get_release_value, is_sles_sap, is_sle_micro):
             dir=oscap_dir,
         )
     )
-
-    scap_report = os.environ.get("SCAP_REPORT", "")
-    if scap_report:
-        if not scap_report.endswith(".html"):
-            print("Ignoring SCAP_REPORT: {}".format(scap_report))
-        else:
-            scap_report = "--report {}".format(scap_report)
 
     result = host.run(
         "sudo oscap xccdf eval {scap_report} --local-files {dir} --profile {profile} {file}".format(
