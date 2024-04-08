@@ -8,7 +8,7 @@ SWAP_FILE = "/swap"
 # Workaround for OOM killer triggered by the issue
 # https://github.com/OpenSCAP/openscap/issues/1796
 def setup_swap(host, swap_file=SWAP_FILE):
-    if os.path.exists(swap_file):
+    if host.file(swap_file).exists:
         return True
     # Follow steps in https://btrfs.readthedocs.io/en/latest/Swapfile.html
     for command in [
@@ -62,7 +62,7 @@ def test_sles_hardened(host, get_release_value, is_sles_sap, is_sle_micro):
 
     scap_report = os.environ.get("SCAP_REPORT", "")
     if scap_report:
-        if os.path.exists(scap_report) or not scap_report.endswith(".html"):
+        if not scap_report.endswith(".html"):
             print("Ignoring SCAP_REPORT: {}".format(scap_report))
         else:
             scap_report = "--report {}".format(scap_report)
