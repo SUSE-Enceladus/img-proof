@@ -1,5 +1,5 @@
 #
-# spec file for package python3-img-proof
+# spec file for package python-img-proof
 #
 # Copyright (c) 2020 SUSE LLC
 #
@@ -15,9 +15,12 @@
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
-
+%define upstream_name img-proof
+%define python python
+%{?sle15_python_module_pythons}
 %bcond_without test
-Name:           python3-img-proof
+
+Name:           python-img-proof
 Version:        7.24.0
 Release:        0
 Summary:        Command line and API for testing custom images
@@ -26,49 +29,51 @@ Group:          Development/Languages/Python
 URL:            https://github.com/SUSE-Enceladus/img-proof
 Source:         https://files.pythonhosted.org/packages/source/i/img-proof/img-proof-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
-BuildRequires:  python3-PyYAML
-BuildRequires:  python3-aliyun-python-sdk-core
-BuildRequires:  python3-aliyun-python-sdk-ecs
-BuildRequires:  python3-msrestazure >= 0.6.0
-BuildRequires:  python3-azure-identity
-BuildRequires:  python3-azure-mgmt-compute
-BuildRequires:  python3-azure-mgmt-network
-BuildRequires:  python3-azure-mgmt-resource
-BuildRequires:  python3-boto3
-BuildRequires:  python3-click
-BuildRequires:  python3-click-man
-BuildRequires:  python3-devel
-BuildRequires:  python3-google-cloud-compute
-BuildRequires:  python3-google-auth
-BuildRequires:  python3-oci-sdk
-BuildRequires:  python3-paramiko
-BuildRequires:  python3-pytest
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-pytest-testinfra
-BuildRequires:  python3-pytest-json-report
+BuildRequires:  %{python_module PyYAML}
+BuildRequires:  %{python_module aliyun-python-sdk-core}
+BuildRequires:  %{python_module aliyun-python-sdk-ecs}
+BuildRequires:  %{python_module msrestazure >= 0.6.0}
+BuildRequires:  %{python_module azure-identity}
+BuildRequires:  %{python_module azure-mgmt-compute}
+BuildRequires:  %{python_module azure-mgmt-network}
+BuildRequires:  %{python_module azure-mgmt-resource}
+BuildRequires:  %{python_module boto3}
+BuildRequires:  %{python_module click}
+BuildRequires:  %{python_module click-man}
+BuildRequires:  %{python_module devel}
+BuildRequires:  %{python_module google-cloud-compute}
+BuildRequires:  %{python_module google-auth}
+BuildRequires:  %{python_module oci-sdk}
+BuildRequires:  %{python_module paramiko}
+BuildRequires:  %{python_module pytest}
+BuildRequires:  %{python_module setuptools}
+BuildRequires:  %{python_module pytest-testinfra}
+BuildRequires:  %{python_module pytest-json-report}
 %if %{with test}
-BuildRequires:  python3-coverage
-BuildRequires:  python3-pytest-cov
+BuildRequires:  %{python_module coverage}
+BuildRequires:  %{python_module pytest-cov}
 %endif
-Requires:       python3-PyYAML
-Requires:       python3-aliyun-python-sdk-core
-Requires:       python3-aliyun-python-sdk-ecs
-Requires:       python3-msrestazure >= 0.6.0
-Requires:       python3-azure-identity
-Requires:       python3-azure-mgmt-compute
-Requires:       python3-azure-mgmt-network
-Requires:       python3-azure-mgmt-resource
-Requires:       python3-boto3
-Requires:       python3-click
-Requires:       python3-google-cloud-compute
-Requires:       python3-google-auth
-Requires:       python3-oci-sdk
-Requires:       python3-paramiko
-Requires:       python3-pytest
-Requires:       python3-pytest-testinfra
-Requires:       python3-pytest-json-report
+Requires:       python-PyYAML
+Requires:       python-aliyun-python-sdk-core
+Requires:       python-aliyun-python-sdk-ecs
+Requires:       python-msrestazure >= 0.6.0
+Requires:       python-azure-identity
+Requires:       python-azure-mgmt-compute
+Requires:       python-azure-mgmt-network
+Requires:       python-azure-mgmt-resource
+Requires:       python-boto3
+Requires:       python-click
+Requires:       python-google-cloud-compute
+Requires:       python-google-auth
+Requires:       python-oci-sdk
+Requires:       python-paramiko
+Requires:       python-pytest
+Requires:       python-pytest-testinfra
+Requires:       python-pytest-json-report
 BuildArch:      noarch
 Obsoletes:      python3-ipa < 7.24.0
+Provides:       python3-img-proof = %{version}
+Obsoletes:      python3-img-proof < %{version}
 
 %description
 img-proof provides a command line utility to test images in
@@ -77,8 +82,8 @@ the Public Cloud (AWS, Azure, GCE, etc.).
 %package tests
 Summary:        Infrastructure tests for img-proof
 Group:          Development/Languages/Python
-Requires:       python3-susepubliccloudinfo
-PreReq:         python3-img-proof = %{version}
+Requires:       python-susepubliccloudinfo
+PreReq:         python-img-proof = %{version}
 Obsoletes:      python3-ipa-tests < 7.24.0
 
 %description tests
@@ -88,12 +93,12 @@ Directory of infrastructure tests for testing images.
 %setup -q -n img-proof-%{version}
 
 %build
-python3 setup.py build
+%pyproject_wheel
 mkdir -p man/man1
 python3 setup.py --command-packages=click_man.commands man_pages --target man/man1
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%pyproject_install
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/*.1 %{buildroot}/%{_mandir}/man1
 
@@ -113,7 +118,7 @@ python3 -m pytest --cov=img_proof --ignore=tests/data --ignore=usr
 %doc CHANGES.md CONTRIBUTING.md README.md
 %{_mandir}/man1/*
 %{_bindir}/img-proof
-%{python3_sitelib}/*
+%{python_sitelib}/*
 
 %files tests
 %defattr(-,root,root)
