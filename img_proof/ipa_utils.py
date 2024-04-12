@@ -87,7 +87,9 @@ def establish_ssh_connection(ip,
                 port=port,
                 username=ssh_user,
                 key_filename=ssh_private_key_file,
-                timeout=timeout
+                timeout=timeout,
+                allow_agent=False,
+                look_for_keys=False
             )
         except FileNotFoundError:
             raise
