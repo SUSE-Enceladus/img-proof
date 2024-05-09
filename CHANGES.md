@@ -1,3 +1,10 @@
+v7.27.0 (2024-05-09)
+===================
+
+- Add latest iteration of license content for SLES
+- Do not search for keys if SSH connection fails with provided key+user
+- Do not retry SLES hardened image test if SCAP report is already generated
+
 v7.26.0 (2024-04-05)
 ===================
 
