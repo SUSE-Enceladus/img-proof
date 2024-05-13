@@ -37,7 +37,7 @@ def test_sles_grow_root(host):
     root_size = int(root_size.replace('G', ''))
 
     # Get boot partition size
-    boot_part = host.run('findmnt -n -f -o SOURCE /boot').stdout.strip()
+    boot_part = host.run('findmnt -v -n -f -o SOURCE /boot').stdout.strip()
 
     if boot_part:
         # Some images have a separate boot partition that is >= 1G
@@ -51,11 +51,9 @@ def test_sles_grow_root(host):
         boot_size = 0
 
     # Get /var partition size
-    var_part = host.run(
-        'findmnt -n -f -o SOURCE /var --nofsroot'
-    ).stdout.strip()
+    var_part = host.run('findmnt -v -n -f -o SOURCE /var').stdout.strip()
 
-    if var_part:
+    if var_part and var_part != root_part:
         # Some images have a separate /var partition that is >= 1G
         result = host.run(
             'df -BG {part} | sed 1D'.format(part=var_part)
