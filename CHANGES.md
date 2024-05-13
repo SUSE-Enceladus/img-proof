@@ -1,3 +1,10 @@
+v7.28.0 (2024-05-13)
+===================
+
+- Do not print btrfs mount point in grow root test commands
+- Do not include var dir in grow root test calculation
+  if var is mounted to the same partition as root dir
+
 v7.27.0 (2024-05-09)
 ===================
 
