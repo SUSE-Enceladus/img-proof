@@ -52,7 +52,9 @@ BuildRequires:  %{python_module google-auth}
 BuildRequires:  %{python_module oci-sdk}
 BuildRequires:  %{python_module paramiko}
 BuildRequires:  %{python_module pytest}
+BuildRequires:  %{python_module pip}
 BuildRequires:  %{python_module setuptools}
+BuildRequires:  %{python_module wheel}
 BuildRequires:  %{python_module pytest-testinfra}
 BuildRequires:  %{python_module pytest-json-report}
 Requires:       python-PyYAML
