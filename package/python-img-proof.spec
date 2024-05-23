@@ -122,7 +122,7 @@ cp -r usr/* %{buildroot}%{_prefix}/
 %if %{with test}
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
-%pytest --ignore=tests/data --ignore=usr
+%pytest --ignore=data --ignore=usr
 %endif
 
 %pre
