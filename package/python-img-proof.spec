@@ -35,6 +35,7 @@ Group:          Development/Languages/Python
 URL:            https://github.com/SUSE-Enceladus/img-proof
 Source:         https://files.pythonhosted.org/packages/source/i/img-proof/img-proof-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
+BuildRequires:  fdupes
 BuildRequires:  %{python_module PyYAML}
 BuildRequires:  %{python_module aliyun-python-sdk-core}
 BuildRequires:  %{python_module aliyun-python-sdk-ecs}
@@ -120,6 +121,7 @@ install -d -m 755 %{buildroot}%{_prefix}
 cp -r usr/* %{buildroot}%{_prefix}/
 
 %python_clone -a %{buildroot}%{_bindir}/img-proof
+%{python_expand %fdupes %{buildroot}%{$python_sitelib}}
 
 %check
 %if %{with test}
