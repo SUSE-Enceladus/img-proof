@@ -87,6 +87,7 @@ BuildArch:      noarch
 Obsoletes:      python3-ipa < 7.24.0
 Provides:       python3-img-proof = %{version}
 Obsoletes:      python3-img-proof < %{version}
+%python_subpackages
 
 %description
 img-proof provides a command line utility to test images in
