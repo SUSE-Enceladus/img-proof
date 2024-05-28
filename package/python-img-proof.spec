@@ -139,7 +139,7 @@ export LANG=en_US.utf-8
 %postun
 %{python_uninstall_alternative img-proof}
 
-%files
+%files %{python_files}
 %defattr(-,root,root)
 %license LICENSE
 %doc CHANGES.md CONTRIBUTING.md README.md
