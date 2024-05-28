@@ -1,3 +1,8 @@
+v7.29.6 (2024-05-28)
+===================
+
+- Add missing python_files macro to tests subpackage in spec file
+
 v7.29.5 (2024-05-28)
 ===================
 
