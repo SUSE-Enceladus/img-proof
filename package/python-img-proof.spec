@@ -147,7 +147,7 @@ export LANG=en_US.utf-8
 %python_alternative %{_bindir}/img-proof
 %{python_sitelib}/*
 
-%files %{python_files} tests
+%files %{python_files}-tests
 %defattr(-,root,root)
 %dir %{_datadir}/lib
 %dir %{_datadir}/lib/img_proof
