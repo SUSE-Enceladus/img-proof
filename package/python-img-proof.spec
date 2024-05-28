@@ -27,7 +27,7 @@
 %endif
 
 Name:           python-img-proof
-Version:        7.29.6
+Version:        7.29.7
 Release:        0
 Summary:        Command line and API for testing custom images
 License:        GPL-3.0-or-later
