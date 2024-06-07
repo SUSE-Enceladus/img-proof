@@ -18,6 +18,7 @@ def test_sles_sap_license(confirm_license_content, get_release_value):
         'SUSE(R) Linux Enterprise End User License Agreement',
         'SUSE® Linux Enterprise End User License Agreement',
         'End User License Agreement for SUSE Products',
+        'End User License Agreement for SUSE Software',
         'SUSE(R) End User License Agreement'
     ]
     result = confirm_license_content(license_dirs, license_content)
