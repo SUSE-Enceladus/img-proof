@@ -1,3 +1,9 @@
+v7.29.8(2024-06-07)
+===================
+
+- Fix license test for 15-sp6 final license
+- Fixes issue with fixtures in pytest 7.4.x
+
 v7.29.7 (2024-05-28)
 ===================
 
