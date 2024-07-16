@@ -1,3 +1,9 @@
+v7.30.0(2024-07-16)
+===================
+
+- Skip haveged service test in sp6+ and micro 6 images
+- Handle micro 6 images in motd test. Motd header is in a new location
+
 v7.29.8(2024-06-07)
 ===================
 
