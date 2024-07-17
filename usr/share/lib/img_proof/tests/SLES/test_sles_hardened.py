@@ -43,6 +43,8 @@ def test_sles_hardened(host, get_release_value, is_sles_sap, is_sle_micro):
 
     scap_report = os.environ.get("SCAP_REPORT", "")
     if scap_report:
+        if scap_report == "skip":
+            pytest.skip("Skipping test...")
         if not scap_report.endswith(".html"):
             print("Ignoring SCAP_REPORT: {}".format(scap_report))
         elif host.file(scap_report).exists:
