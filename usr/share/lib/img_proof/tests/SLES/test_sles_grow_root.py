@@ -72,4 +72,4 @@ def test_sles_grow_root(host):
     total_size = root_size + boot_size + var_size
 
     # Rounding can lead to small discrepancies
-    assert (disk_size - 1) <= total_size <= (disk_size + 1)
+    assert (((disk_size - 1) <= total_size) and (total_size <= (disk_size + 1)))
