@@ -155,7 +155,7 @@ def is_suma_server(host, get_baseproduct, get_suma_version):
         suma_version = get_suma_version(suma_server_product)
 
         if suma_version and suma_version.startswith('4'):
-            # For suma 4.3 baseproduct HAS to be SUMA proxy
+            # For suma 4.3 baseproduct HAS to be SUMA server
             return all([
                 suma_server.exists,
                 suma_server.is_file,
