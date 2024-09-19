@@ -1,5 +1,6 @@
 import json
 import pytest
+import xml.etree.ElementTree as ET
 
 from susepubliccloudinfoclient import infoserverrequests
 
@@ -146,31 +147,49 @@ def is_sles_sap(host, get_baseproduct):
 
 
 @pytest.fixture()
-def is_suma_server(host, get_baseproduct):
+def is_suma_server(host, get_baseproduct, get_suma_version):
     def f():
         suma_server_product = '/etc/products.d/SUSE-Manager-Server.prod'
         suma_server = host.file(suma_server_product)
         base_product = get_baseproduct()
+        suma_version = get_suma_version(suma_server_product)
+
+        if suma_version and suma_version.startswith('4'):
+            # For suma 4.3 baseproduct HAS to be SUMA server
+            expected_product = suma_server_product
+        else:
+            # For suma >=5 baseproduct has to be Micro
+            # SUMA is included as an additional product
+            expected_product = '/etc/products.d/SLE-Micro.prod'
 
         return all([
             suma_server.exists,
             suma_server.is_file,
-            base_product == suma_server_product
+            base_product == expected_product
         ])
     return f
 
 
 @pytest.fixture()
-def is_suma_proxy(host, get_baseproduct):
+def is_suma_proxy(host, get_baseproduct, get_suma_version):
     def f():
         suma_proxy_product = '/etc/products.d/SUSE-Manager-Proxy.prod'
         suma_proxy = host.file(suma_proxy_product)
         base_product = get_baseproduct()
+        suma_version = get_suma_version(suma_proxy_product)
+
+        if suma_version and suma_version.startswith('4'):
+            # For suma 4.3 baseproduct HAS to be SUMA proxy
+            expected_product = suma_proxy_product
+        else:
+            # For suma >=5 baseproduct has to be Micro
+            # SUMA is included as an additional product
+            expected_product = '/etc/products.d/SLE-Micro.prod'
 
         return all([
             suma_proxy.exists,
             suma_proxy.is_file,
-            base_product == suma_proxy_product
+            base_product == expected_product
         ])
     return f
 
@@ -179,6 +198,20 @@ def is_suma_proxy(host, get_baseproduct):
 def is_suma(is_suma_server, is_suma_proxy):
     def f():
         return is_suma_server() or is_suma_proxy()
+    return f
+
+
+@pytest.fixture()
+def get_suma_version(host):
+    def f(product_file):
+        version = ''
+        try:
+            suma_product = host.file(product_file)
+            xmlroot = ET.fromstring(suma_product.content_string)
+            version = xmlroot.find('./version').text
+        except Exception:
+            pass
+        return version
     return f
 
 
