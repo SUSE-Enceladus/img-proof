@@ -161,10 +161,13 @@ def is_suma_server(host, get_baseproduct, get_suma_version):
                 suma_server.is_file,
                 base_product == suma_server_product
             ])
-        # For suma >=5 baseproduct is Micro and suma is an additional product
+        # For suma >=5 baseproduct has to be Micro
+        # SUMA is included as an additional product
+        sle_micro_product = '/etc/products.d/SLE-Micro.prod'
         return all([
                 suma_server.exists,
                 suma_server.is_file,
+                base_product == sle_micro_product
         ])
     return f
 
@@ -184,10 +187,13 @@ def is_suma_proxy(host, get_baseproduct, get_suma_version):
                 suma_proxy.is_file,
                 base_product == suma_proxy_product
             ])
-        # For suma >=5 baseproduct is Micro and suma is an additional product
+        # For suma >=5 baseproduct has to be Micro
+        # SUMA is included as an additional product
+        sle_micro_product = '/etc/products.d/SLE-Micro.prod'
         return all([
                 suma_proxy.exists,
                 suma_proxy.is_file,
+                base_product == sle_micro_product
         ])
     return f
 
