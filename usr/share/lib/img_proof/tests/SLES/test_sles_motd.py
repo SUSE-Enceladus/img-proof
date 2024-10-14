@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.mark.skipinbeta
-def test_sles_motd(host, get_release_value):
+def test_sles_motd(host, get_release_value, is_byos, is_suma_proxy):
     motd = host.file('/etc/motd')
 
     if not motd.exists:
@@ -30,3 +30,16 @@ def test_sles_motd(host, get_release_value):
             )
         )
     )
+
+    if is_byos() and not is_suma_proxy():
+        assert (
+            motd.contains('registercloudguest') or
+            motd.contains('SUSEConnect') or
+            motd.contains('transactional-update')
+        )
+    else:
+        assert (
+            not motd.contains('registercloudguest') and
+            not motd.contains('SUSEConnect') and
+            not motd.contains('transactional-update')
+        )
