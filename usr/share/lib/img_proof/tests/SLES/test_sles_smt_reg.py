@@ -15,7 +15,8 @@ def test_sles_smt_reg(
 
     # ensure the correct smt/rmt ip is used
     servers = get_smt_servers(provider)
-    smt_ips = [server['ip'] for server in servers]
+    smt_ips = list(filter(None, [server['ip'] for server in servers]))
+    smt_ips += list(filter(None, [server['ipv6'] for server in servers]))
 
     result = host.run(
         'cat /etc/hosts | grep %s' % get_smt_server_name(provider)
