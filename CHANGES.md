@@ -1,3 +1,10 @@
+v7.33.0(2024-10-17)
+===================
+
+- Handle ipv6 addresses in smt registration test
+- Handle suma 4.x and 5.x scenarios in is_suma check
+- Drop GCE SSDs by default when terminating instances
+
 v7.32.0(2024-07-25)
 ===================
 
