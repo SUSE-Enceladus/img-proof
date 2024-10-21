@@ -1,3 +1,5 @@
+import ipaddress
+import pytest
 import shlex
 
 
@@ -23,7 +25,11 @@ def test_sles_smt_reg(
     )
     smt_ip = shlex.split(result.stdout)[0]
 
-    assert smt_ip in smt_ips
+    for server_ip in smt_ips:
+        if ipaddress.ip_address(smt_ip) == ipaddress.ip_address(server_ip):
+            break
+    else:
+        pytest.fail(f'RMT Server not found {smt_ip}')
 
     # ensure region hint is in log
     cloud_register_log = host.file('/var/log/cloudregister')
