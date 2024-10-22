@@ -43,14 +43,16 @@ into a separate argument. An example for tests in Google:
      --instance-option SEV_SNP_CAPABLE \
      --instance-option GVNIC
 
-The Google instance options are the guest os feature flags. See
+The Google instance options includes the guest os feature flags. See
 https://cloud.google.com/compute/docs/images/create-custom#guest-os-features
-for more details. As seen above an example for Google looks like:
+for more details. Also, the ip stack state can be set via instance
+options. As seen above an example for Google looks like:
 
 .. code-block:: console
 
    img-proof test gcp ... \
      --instance-option SEV_SNP_CAPABLE
+     --instance-option STACK_STATE=IPV4_IPV6
 
 The Amazon options are the different options available when running the
 run instances command. These can be found at
