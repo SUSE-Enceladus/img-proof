@@ -122,23 +122,28 @@ class GCECloud(IpaCloud):
             'x86_64'
         ).upper()
 
-        if (
-            self.custom_args.get('use_gvnic')
-            or 'GVNIC' in self.instance_options
-        ):
-            self.use_gvnic = True
-        else:
-            self.use_gvnic = False
+        self.use_gvnic = False
+        self.sev = None
+        self.stack_type = None
 
-        if 'SEV_SNP_CAPABLE' in self.instance_options:
-            self.sev = 'SEV_SNP'
-        elif (
-            'SEV_CAPABLE' in self.instance_options
-            or self.custom_args.get('sev_capable', False)
-        ):
+        for option in self.instance_options:
+            if option == 'GVNIC':
+                self.use_gvnic = True
+            elif option == 'SEV_SNP_CAPABLE':
+                self.sev = 'SEV_SNP'
+            elif not self.sev and option == 'SEV_CAPABLE':
+                self.sev = 'SEV'
+            elif "=" in option:
+                opt, val = option.split('=')
+                if opt == 'STACK_TYPE':
+                    self.stack_type = val
+
+        if self.custom_args.get('use_gvnic'):
+            self.use_gvnic = True
+        if not self.sev and self.custom_args.get('sev_capable', False):
             self.sev = 'SEV'
-        else:
-            self.sev = None
+        if not self.stack_type:
+            self.stack_type = 'IPV4_ONLY'
 
         self.credentials = self._get_credentials()
         self.compute_driver = self._get_driver()
@@ -313,7 +318,8 @@ class GCECloud(IpaCloud):
             'accessConfigs': [{
                 'name': 'External NAT',
                 'type': 'ONE_TO_ONE_NAT'
-            }]
+            }],
+            'stackType': self.stack_type
         }
 
         if use_gvnic:

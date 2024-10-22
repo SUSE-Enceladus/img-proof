@@ -71,7 +71,8 @@ class TestGCECloud(object):
             'test_files': ['test_image'],
             'custom_args': {
                 'service_account_file': 'tests/gce/service-account.json'
-            }
+            },
+            'instance_options': 'STACK_TYPE=IPV4_ONLY'
         }
 
         driver = MagicMock()
