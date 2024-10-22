@@ -1,3 +1,9 @@
+v7.34.0(2024-10-22)
+===================
+
+- Add stack type option handling for GCE
+- Handle ipv6 addresses in SMT reg test
+
 v7.33.0(2024-10-17)
 ===================
 
