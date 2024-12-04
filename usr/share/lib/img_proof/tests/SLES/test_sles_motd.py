@@ -1,4 +1,5 @@
 import pytest
+import os
 
 
 @pytest.mark.skipinbeta
@@ -31,15 +32,29 @@ def test_sles_motd(host, get_release_value, is_byos, is_suma_proxy):
         )
     )
 
-    if is_byos() and not is_suma_proxy():
-        assert (
+    # check motd content for all segments
+    def contains_registration_tools(motd):
+        """Checks if any of the registration tools is mentioned in motd"""
+        return (
             motd.contains('registercloudguest') or
             motd.contains('SUSEConnect') or
             motd.contains('transactional-update')
         )
+
+    contain_results = []
+
+    motd = host.file('/etc/motd')
+    if motd.exists:
+        contain_results.append(contains_registration_tools(motd))
     else:
-        assert (
-            not motd.contains('registercloudguest') and
-            not motd.contains('SUSEConnect') and
-            not motd.contains('transactional-update')
-        )
+        # check for every segment under the motd.d dir
+        motd_dir = '/usr/lib/motd.d'
+        segments = os.listdir(motd_dir)
+        for segment in sorted(segments):
+            motd = host.file(os.path.join(motd_dir, segment))
+            contain_results.append(contains_registration_tools(motd))
+
+    if is_byos() and not is_suma_proxy():
+        assert any(contain_results)
+    else:
+        assert not any(contain_results)
