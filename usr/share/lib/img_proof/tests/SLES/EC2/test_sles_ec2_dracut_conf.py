@@ -16,7 +16,7 @@ def test_sles_ec2_dracut_conf(host, get_release_value, determine_architecture):
         'nvme-core'
     ]
 
-    base_dracut_config_dir = '/etc/dracut.conf.d/'
+    base_dracut_config_dir = '/usr/lib/dracut/dracut.conf.d/'
     config_dir_ls = host.run(f'ls {base_dracut_config_dir}').stdout.strip()
     config_files = shlex.split(config_dir_ls)
 
