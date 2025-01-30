@@ -1,3 +1,10 @@
+v7.35.0(2025-01-30)
+===================
+
+- Fix motd tests for split in motd
+- Move SEV tests which are no longer csp specific
+- Skip sp4 and sp5 in haveged test
+
 v7.34.0(2024-10-22)
 ===================
 
