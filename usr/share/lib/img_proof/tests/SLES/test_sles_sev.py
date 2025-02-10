@@ -1,4 +1,4 @@
-def test_sles_gce_sev(host):
+def test_sles_sev(host):
     expected = 'SEV'
 
     with host.sudo():
