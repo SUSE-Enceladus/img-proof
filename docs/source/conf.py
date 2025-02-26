@@ -26,7 +26,7 @@ author = 'SUSE'
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '7.35.0'
+release = '7.36.0'
 
 
 # -- General configuration ---------------------------------------------------
