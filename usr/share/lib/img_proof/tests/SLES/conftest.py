@@ -553,16 +553,16 @@ SLE_15_SP6_X86_64_MODULES = [
 ]
 
 BASE_15_SP7 = [
-    repo.replace('SP6', 'SP7') for repo in BASE_15_SP5
+    repo.replace('SP5', 'SP7') for repo in BASE_15_SP5
 ]
 BASE_15_SP7_SAP = [
-    repo.replace('SP6', 'SP7') for repo in BASE_15_SP5_SAP
+    repo.replace('SP5', 'SP7') for repo in BASE_15_SP5_SAP
 ]
 BASE_15_SP7_HPC = [
-    repo.replace('SP6', 'SP7') for repo in BASE_15_SP5_HPC
+    repo.replace('SP5', 'SP7') for repo in BASE_15_SP5_HPC
 ]
 SLE_15_SP7_X86_64_MODULES = [
-    repo.replace('SP6', 'SP7') for repo in SLE_15_SP5_X86_64_MODULES
+    repo.replace('SP5', 'SP7') for repo in SLE_15_SP5_X86_64_MODULES
 ]
 
 SYSTEMS_MGMT_15_MODULE = [
