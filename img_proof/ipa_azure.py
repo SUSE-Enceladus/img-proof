@@ -361,6 +361,13 @@ class AzureCloud(IpaCloud):
             'network_profile': network_profile
         }
 
+        if self.image_publisher:
+            vm_config['plan'] = {
+                'publisher': self.image_publisher,
+                'product': self.image_offer,
+                'name': self.image_sku
+            }
+
         return vm_config
 
     def _get_instance(self):
