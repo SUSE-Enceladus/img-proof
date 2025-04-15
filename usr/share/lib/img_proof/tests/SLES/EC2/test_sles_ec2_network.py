@@ -44,7 +44,7 @@ def test_sles_ec2_network(determine_region, host):
             'Skipped special region: {0}'.format(region)
         )
 
-    url = 'https://suse-download-test-{0}.s3.amazonaws.com/' \
+    url = 'https://suse-download-test-{0}.s3.{0}.amazonaws.com/' \
           'SLE-15-Installer-DVD-x86_64-GM-DVD2.iso'.format(
               region
           )
