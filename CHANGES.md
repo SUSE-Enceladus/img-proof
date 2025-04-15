@@ -1,3 +1,10 @@
+v8.0.0(2025-04-15)
+==================
+
+- Add region name to url in EC2 network test
+- Add plan information for 3p mp Azure images
+- Migrate to google-cloud-compute sdk package
+
 v7.36.1(2025-03-05)
 ===================
 
