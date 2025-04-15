@@ -48,7 +48,7 @@ BuildRequires:  %{python_module boto3}
 BuildRequires:  %{python_module click}
 BuildRequires:  %{python_module click-man}
 BuildRequires:  %{python_module devel}
-BuildRequires:  %{python_module google-api-python-client}
+BuildRequires:  %{python_module google-cloud-compute >= 1.21.0}
 BuildRequires:  %{python_module google-auth}
 BuildRequires:  %{python_module oci-sdk}
 BuildRequires:  %{python_module paramiko}
@@ -68,7 +68,7 @@ Requires:       python-azure-mgmt-network
 Requires:       python-azure-mgmt-resource
 Requires:       python-boto3
 Requires:       python-click
-Requires:       python-google-api-python-client
+Requires:       python-google-cloud-compute >= 1.21.0
 Requires:       python-google-auth
 Requires:       python-oci-sdk
 Requires:       python-paramiko
@@ -154,4 +154,3 @@ export LANG=en_US.utf-8
 %{_datadir}/lib/img_proof/*
 
 %changelog
-
