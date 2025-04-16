@@ -1,3 +1,8 @@
+v8.0.1(2025-04-16)
+==================
+
+- Fix bug in GCE stop method. Provide discard local ssd arg in request object
+
 v8.0.0(2025-04-15)
 ==================
 
