@@ -575,11 +575,13 @@ class GCECloud(IpaCloud):
 
     def _stop_instance(self):
         """Stop the instance."""
-        self.instances_client.stop(
+        request = compute_v1.StopInstanceRequest(
+            discard_local_ssd=True,
             project=self.service_account_project,
             zone=self.region,
             instance=self.running_instance_id
         )
+        self.instances_client.stop(request)
 
         # In GCE an instance that is stopped has a state of TERMINATED:
         # https://cloud.google.com/compute/docs/instances/instance-life-cycle
