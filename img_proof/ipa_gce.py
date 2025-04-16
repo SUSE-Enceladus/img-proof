@@ -578,8 +578,7 @@ class GCECloud(IpaCloud):
         self.instances_client.stop(
             project=self.service_account_project,
             zone=self.region,
-            instance=self.running_instance_id,
-            discardLocalSsd=True
+            instance=self.running_instance_id
         )
 
         # In GCE an instance that is stopped has a state of TERMINATED:
