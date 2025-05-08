@@ -124,6 +124,8 @@ class GCECloud(IpaCloud):
                 self.sev = 'SEV_SNP'
             elif not self.sev and option == 'SEV_CAPABLE':
                 self.sev = 'SEV'
+            elif not self.sev and option == 'TDX_CAPABLE':
+                self.sev = 'TDX'
             elif "=" in option:
                 opt, val = option.split('=')
                 if opt == 'STACK_TYPE':
@@ -425,8 +427,10 @@ class GCECloud(IpaCloud):
             if sev == 'SEV_SNP':
                 config['min_cpu_platform'] = 'AMD Milan'
                 guest_os_features.append({'type_': 'SEV_SNP_CAPABLE'})
-            else:
+            elif sev == 'SEV':
                 guest_os_features.append({'type_': 'SEV_CAPABLE'})
+            else:
+                guest_os_features.append({'type_': 'TDX_CAPABLE'})
 
         if use_gvnic:
             guest_os_features.append({'type_': 'GVNIC'})
