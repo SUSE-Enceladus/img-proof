@@ -400,6 +400,12 @@ def main(context, no_color):
          'Example: "img-proof test gce --exclude test_1 --exclude test_2"',
     multiple=True
 )
+@click.option(
+    '--include-plan-information',
+    is_flag=True,
+    help='Include the plan information in the Azure instance which '
+         'is required for certain images in the Azure marketplace.'
+)
 @click.argument('tests', nargs=-1)
 @click.pass_context
 def test(context,
@@ -461,6 +467,7 @@ def test(context,
          architecture,
          beta,
          exclude,
+         include_plan_information,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -554,7 +561,8 @@ def test(context,
             beta,
             exclude,
             cpu_options,
-            instance_options
+            instance_options,
+            include_plan_information,
         )
         echo_results(results, no_color)
         sys.exit(status)

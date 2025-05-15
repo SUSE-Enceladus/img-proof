@@ -94,6 +94,7 @@ class AzureCloud(IpaCloud):
             'gallery_resource_group'
         )
         self.image_version = self.custom_args.get('image_version')
+        self.include_plan_info = self.custom_args.get('include_plan_info')
 
         gallery_args = [
             self.gallery_name,
@@ -361,7 +362,7 @@ class AzureCloud(IpaCloud):
             'network_profile': network_profile
         }
 
-        if self.image_publisher:
+        if self.image_publisher and self.include_plan_info:
             vm_config['plan'] = {
                 'publisher': self.image_publisher,
                 'product': self.image_offer,

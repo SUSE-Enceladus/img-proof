@@ -97,7 +97,8 @@ def test_image(
     beta=None,
     exclude=None,
     cpu_options=None,
-    instance_options=None
+    instance_options=None,
+    include_plan_information=None,
 ):
     """Creates a cloud framework instance and initiates testing."""
     kwargs = {
@@ -143,7 +144,8 @@ def test_image(
             'vnet_resource_group': vnet_resource_group,
             'gallery_name': gallery_name,
             'gallery_resource_group': gallery_resource_group,
-            'image_version': image_version
+            'image_version': image_version,
+            'include_plan_info': include_plan_information,
         }
         cloud = AzureCloud(**kwargs)
     elif cloud_name == 'ec2':
