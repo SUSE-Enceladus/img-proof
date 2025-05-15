@@ -1,3 +1,9 @@
+v8.1.0(2025-05-15)
+==================
+
+- Make plan information optional in azure
+- Add handling for TDX instance option in GCE
+
 v8.0.1(2025-04-16)
 ==================
 
