@@ -1,0 +1,23 @@
+.TH "IMG-PROOF LIST" "1" "2025-05-19" "8.1.0" "img-proof list Manual"
+.SH NAME
+img-proof\-list \- Print a list of test files or test cases.
+.SH SYNOPSIS
+.B img-proof list
+[OPTIONS] [TEST_DIRS]...
+.SH DESCRIPTION
+.PP
+    Print a list of test files or test cases.
+.PP
+    If verbose option selected, print all tests cases in
+    each test file, otherwise print the test files only.
+.PP
+    If test_dirs supplied they will be used to search for
+    tests otherwise the default test directories are used:
+.PP
+    * /usr/share/lib/img_proof/tests
+    * ~/img_proof/tests
+    
+.SH OPTIONS
+.TP
+\fB\-v,\fP \-\-verbose
+.PP

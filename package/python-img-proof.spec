@@ -43,7 +43,6 @@ BuildRequires:  %{pythons}-azure-mgmt-network
 BuildRequires:  %{pythons}-azure-mgmt-resource
 BuildRequires:  %{pythons}-boto3
 BuildRequires:  %{pythons}-click
-BuildRequires:  %{pythons}-click-man
 BuildRequires:  %{pythons}-devel
 BuildRequires:  %{pythons}-google-cloud-compute >= 1.21.0
 BuildRequires:  %{pythons}-google-auth
@@ -97,8 +96,6 @@ Directory of infrastructure tests for testing images.
 
 %build
 %pyproject_wheel
-mkdir -p man/man1
-python3.11 setup.py --command-packages=click_man.commands man_pages --target man/man1
 
 %install
 %pyproject_install
@@ -121,7 +118,15 @@ export LANG=en_US.utf-8
 %defattr(-,root,root)
 %license LICENSE
 %doc CHANGES.md CONTRIBUTING.md README.md
-%{_mandir}/man1/*
+%{_mandir}/man1/img-proof-list.1%{?ext_man}
+%{_mandir}/man1/img-proof-results-archive.1%{?ext_man}
+%{_mandir}/man1/img-proof-results-clear.1%{?ext_man}
+%{_mandir}/man1/img-proof-results-delete.1%{?ext_man}
+%{_mandir}/man1/img-proof-results-list.1%{?ext_man}
+%{_mandir}/man1/img-proof-results-show.1%{?ext_man}
+%{_mandir}/man1/img-proof-results.1%{?ext_man}
+%{_mandir}/man1/img-proof-test.1%{?ext_man}
+%{_mandir}/man1/img-proof.1%{?ext_man}
 %{_bindir}/img-proof
 %{_sitelibdir}/img_proof/
 %{_sitelibdir}/img_proof-*.dist-info/

@@ -1,0 +1,189 @@
+.TH "IMG-PROOF TEST" "1" "2025-05-19" "8.1.0" "img-proof test Manual"
+.SH NAME
+img-proof\-test \- Test image in the given framework using...
+.SH SYNOPSIS
+.B img-proof test
+[OPTIONS] {aliyun|azure|ec2|gce|ssh|oci} [TESTS]...
+.SH DESCRIPTION
+Test image in the given framework using the supplied test files.
+.SH OPTIONS
+.TP
+\fB\-\-accelerated\-networking\fP
+Enable accelerated networking in Azure instance network interface.
+.TP
+\fB\-\-access\-key\-id\fP TEXT
+EC2 access key ID for login credentials.
+.TP
+\fB\-\-access\-key\fP TEXT
+Aliyun access key for login credentials.
+.TP
+\fB\-\-access\-secret\fP TEXT
+Aliyun access secret for login credentials.
+.TP
+\fB\-a,\fP \-\-account TEXT
+Settings account to provide connection information.
+.TP
+\fB\-\-cleanup\fP / \-\-no\-cleanup
+Terminate instance after tests. By default an instance will be deleted on success and left running if there is a test failure.
+.TP
+\fB\-C,\fP \-\-config PATH
+img_proof config file location. Default: ~/.config/img_proof/config
+.TP
+\fB\-\-cpu\-options\fP TEXT
+CPU options to be activated when launching instances for tests.Example: --cpu-option AmdSevSnp=enabledMultiple values can be specified separated by comma.
+.TP
+\fB\-\-instance\-option\fP TEXT
+Instance options to be activated when launching instances for tests. Amazon Example: "--instance-option CpuOptions=AmdSevSnp.enabled". Google Example: "--instance-option SEV_SNP_CAPABLE". Multiple values can be specified such as (Google) "--instance-option SEV_SNP_CAPABLE --instance-option GVNIC". More details can be found in the img-proof documentation https://img-proof.readthedocs.io/en/latest/usage.html#instance-options.
+.TP
+\fB\-D,\fP \-\-description TEXT
+Short description for test run.
+.TP
+\fB\-d,\fP \-\-distro [opensuse_leap|sles|sle_micro|rhel|fedora]
+The distribution of the image.
+.TP
+\fB\-\-early\-exit\fP
+Terminate test suite on first failure.
+.TP
+\fB\-h,\fP \-\-history\-log PATH
+img-proof history log file location. Default: ~/.config/img_proof/.history
+.TP
+\fB\-i,\fP \-\-image\-id TEXT
+The ID of the image used for instance.
+.TP
+\fB\-\-image\-project\fP TEXT
+The image project where the image exists. This is required if testing an image in a project different than the service account project.
+.TP
+\fB\-\-inject\fP PATH
+Path to an injection yaml config file.
+.TP
+\fB\-t,\fP \-\-instance\-type TEXT
+Instance type to use for launching machine.
+.TP
+\fB\-\-ip\-address\fP TEXT
+IP address for the test instance (only used by SSH cloud).
+.TP
+\fB\-\-debug\fP
+Display debug level logging to console.
+.TP
+\fB\-\-verbose\fP
+(Default) Display logging info to console.
+.TP
+\fB\-\-quiet\fP
+Silence logging information on test run.
+.TP
+\fB\-\-no\-default\-test\-dirs\fP
+Do not include default test directories in search for tests.
+.TP
+\fB\-\-cloud\-config\fP TEXT
+The cloud specific config file location.
+.TP
+\fB\-\-region\fP TEXT
+Cloud region to test image.
+.TP
+\fB\-\-results\-dir\fP TEXT
+Directory to store test results and output.
+.TP
+\fB\-R,\fP \-\-running\-instance\-id TEXT
+The ID or Name of running instance to test.
+.TP
+\fB\-\-secret\-access\-key\fP TEXT
+EC2 secret access key for login credentials.
+.TP
+\fB\-\-security\-group\-id\fP TEXT
+EC2 security group id to assign to instances VPC.
+.TP
+\fB\-\-service\-account\-file\fP TEXT
+GCE service account file for login credentials.
+.TP
+\fB\-\-ssh\-key\-name\fP TEXT
+Optional SSH private key-pair name for EC2.
+.TP
+\fB\-\-ssh\-private\-key\-file\fP PATH
+SSH private key file for accessing instance.
+.TP
+\fB\-u,\fP \-\-ssh\-user TEXT
+SSH user for accessing instance.
+.TP
+\fB\-\-subnet\-id\fP TEXT
+Subnet to launch the new instance into.
+.TP
+\fB\-\-test\-dirs\fP TEXT
+Directories to search for tests.
+.TP
+\fB\-\-timeout\fP INTEGER RANGE
+The time to wait when establishing an SSH connection and for instances to change state.  [x>=1]
+.TP
+\fB\-\-vnet\-name\fP TEXT
+Azure virtual network name to attach network interface.
+.TP
+\fB\-\-vnet\-resource\-group\fP TEXT
+Azure resource group name where virtual network is found.
+.TP
+\fB\-\-collect\-vm\-info\fP
+Controls whether general info about VM in cloud should be collected
+.TP
+\fB\-\-compartment\-id\fP TEXT
+The OCI compartment to use for image testing.
+.TP
+\fB\-\-availability\-domain\fP TEXT
+The domain to place the instance and networking for testing.
+.TP
+\fB\-\-signing\-key\-fingerprint\fP TEXT
+The public fingerprint of the OCI signing key.
+.TP
+\fB\-\-signing\-key\-file\fP TEXT
+The OCI key file path used for API signing.
+.TP
+\fB\-\-tenancy\fP TEXT
+The tenancy for the OCI user.
+.TP
+\fB\-\-oci\-user\-id\fP TEXT
+The ID for the OCI user.
+.TP
+\fB\-\-enable\-secure\-boot\fP
+Enable secure boot for the instance. Secure boot requires UEFI boot firmware.
+.TP
+\fB\-\-enable\-uefi\fP
+Enable boot firmware for the instance. By default secure boot is disabled.
+.TP
+\fB\-\-prefix\-name\fP TEXT
+Optional prefix to append to the test instance name or ID depending on the cloud framework. EC2 and OCI use autogenerated IDs thus the prefix is added to the display name.
+.TP
+\fB\-\-retry\-count\fP INTEGER RANGE
+The number of times a test should be re-run if it fails. The default is 3 times before the test is marked as failed. This is helpful due to the possibility for flaky SSH sessions and/or network connections.  [x>=0]
+.TP
+\fB\-\-v\-switch\-id\fP TEXT
+ID for the Aliyun VSwitch to attach to the instance.
+.TP
+\fB\-\-sev\-capable\fP
+Enable confidential computing in GCE via Secure Encrypted Virtualization (SEV) feature.
+.TP
+\fB\-\-additional\-info\fP TEXT
+Additional info to add during instance start or creation when using EC2 provider.
+.TP
+\fB\-\-use\-gvnic\fP
+Use a Google Virtual NIC (gVNIC) network interface. (GCE only)
+.TP
+\fB\-\-root\-disk\-size\fP INTEGER RANGE
+Size of the root disk in GB.  [x>=0]
+.TP
+\fB\-\-gallery\-name\fP TEXT
+Name of the image gallery where the gallery image defitinition is found.
+.TP
+\fB\-\-gallery\-resource\-group\fP TEXT
+The name of the resource group where the image gallery is found.
+.TP
+\fB\-\-image\-version\fP TEXT
+The version of the gallery image definition to use for testing in semantic versioning format: "2022.02.02".
+.TP
+\fB\-\-architecture\fP [x86_64|arm64]
+The architecture of the compute image being tested. Default: x86_64.
+.TP
+\fB\-\-beta\fP
+Running tests on a product in beta. Skip any tests that are expected to fail.
+.TP
+\fB\-\-exclude\fP TEXT
+Optional tests to exclude. Can be used multiple times. Example: "img-proof test gce --exclude test_1 --exclude test_2"
+.TP
+\fB\-\-include\-plan\-information\fP
+Include the plan information in the Azure instance which is required for certain images in the Azure marketplace.
