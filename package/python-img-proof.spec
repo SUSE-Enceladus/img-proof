@@ -1,7 +1,7 @@
 #
 # spec file for package python-img-proof
 #
-# Copyright (c) 2020 SUSE LLC
+# Copyright (c) 2025 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -16,15 +16,12 @@
 #
 
 %define upstream_name img-proof
-%define python python
-%{?sle15_python_module_pythons}
-%bcond_without test
-
-%if 0%{?suse_version} > 1500
-%bcond_without libalternatives
+%if 0%{?suse_version} >= 1600
+%define pythons %{primary_python}
 %else
-%bcond_with libalternatives
+%{?sle15_python_module_pythons}
 %endif
+%global _sitelibdir %{%{pythons}_sitelib}
 
 Name:           python-img-proof
 Version:        8.1.0
@@ -32,63 +29,53 @@ Release:        0
 Summary:        Command line and API for testing custom images
 License:        GPL-3.0-or-later
 Group:          Development/Languages/Python
-URL:            https://github.com/SUSE-Enceladus/img-proof
-Source:         https://files.pythonhosted.org/packages/source/i/img-proof/img-proof-%{version}.tar.gz
+URL:            https://github.com/SUSE-Enceladus/%{upstream_name}
+Source:         https://files.pythonhosted.org/packages/source/i/%{upstream_name}/%{upstream_name}-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
 BuildRequires:  fdupes
-BuildRequires:  %{python_module PyYAML}
-BuildRequires:  %{python_module aliyun-python-sdk-core}
-BuildRequires:  %{python_module aliyun-python-sdk-ecs}
-BuildRequires:  %{python_module msrestazure >= 0.6.0}
-BuildRequires:  %{python_module azure-identity}
-BuildRequires:  %{python_module azure-mgmt-compute}
-BuildRequires:  %{python_module azure-mgmt-network}
-BuildRequires:  %{python_module azure-mgmt-resource}
-BuildRequires:  %{python_module boto3}
-BuildRequires:  %{python_module click}
-BuildRequires:  %{python_module click-man}
-BuildRequires:  %{python_module devel}
-BuildRequires:  %{python_module google-cloud-compute >= 1.21.0}
-BuildRequires:  %{python_module google-auth}
-BuildRequires:  %{python_module oci-sdk}
-BuildRequires:  %{python_module paramiko}
-BuildRequires:  %{python_module pytest}
-BuildRequires:  %{python_module pip}
-BuildRequires:  %{python_module setuptools}
-BuildRequires:  %{python_module wheel}
-BuildRequires:  %{python_module pytest-testinfra}
-BuildRequires:  %{python_module pytest-json-report}
-Requires:       python-PyYAML
-Requires:       python-aliyun-python-sdk-core
-Requires:       python-aliyun-python-sdk-ecs
-Requires:       python-msrestazure >= 0.6.0
-Requires:       python-azure-identity
-Requires:       python-azure-mgmt-compute
-Requires:       python-azure-mgmt-network
-Requires:       python-azure-mgmt-resource
-Requires:       python-boto3
-Requires:       python-click
-Requires:       python-google-cloud-compute >= 1.21.0
-Requires:       python-google-auth
-Requires:       python-oci-sdk
-Requires:       python-paramiko
-Requires:       python-pytest
-Requires:       python-pytest-testinfra
-Requires:       python-pytest-json-report
-
-%if %{with libalternatives}
-BuildRequires:  alts
-Requires:       alts
-%else
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%endif
+BuildRequires:  %{pythons}-PyYAML
+BuildRequires:  %{pythons}-aliyun-python-sdk-core
+BuildRequires:  %{pythons}-aliyun-python-sdk-ecs
+BuildRequires:  %{pythons}-msrestazure >= 0.6.0
+BuildRequires:  %{pythons}-azure-identity
+BuildRequires:  %{pythons}-azure-mgmt-compute
+BuildRequires:  %{pythons}-azure-mgmt-network
+BuildRequires:  %{pythons}-azure-mgmt-resource
+BuildRequires:  %{pythons}-boto3
+BuildRequires:  %{pythons}-click
+BuildRequires:  %{pythons}-devel
+BuildRequires:  %{pythons}-google-cloud-compute >= 1.21.0
+BuildRequires:  %{pythons}-google-auth
+BuildRequires:  %{pythons}-oci-sdk
+BuildRequires:  %{pythons}-paramiko
+BuildRequires:  %{pythons}-pytest
+BuildRequires:  %{pythons}-pip
+BuildRequires:  %{pythons}-setuptools
+BuildRequires:  %{pythons}-wheel
+BuildRequires:  %{pythons}-pytest-testinfra
+BuildRequires:  %{pythons}-pytest-json-report
+Requires:       %{pythons}-PyYAML
+Requires:       %{pythons}-aliyun-python-sdk-core
+Requires:       %{pythons}-aliyun-python-sdk-ecs
+Requires:       %{pythons}-msrestazure >= 0.6.0
+Requires:       %{pythons}-azure-identity
+Requires:       %{pythons}-azure-mgmt-compute
+Requires:       %{pythons}-azure-mgmt-network
+Requires:       %{pythons}-azure-mgmt-resource
+Requires:       %{pythons}-boto3
+Requires:       %{pythons}-click
+Requires:       %{pythons}-google-cloud-compute >= 1.21.0
+Requires:       %{pythons}-google-auth
+Requires:       %{pythons}-oci-sdk
+Requires:       %{pythons}-paramiko
+Requires:       %{pythons}-pytest
+Requires:       %{pythons}-pytest-testinfra
+Requires:       %{pythons}-pytest-json-report
 
 BuildArch:      noarch
 Obsoletes:      python3-ipa < 7.24.0
 Provides:       python3-img-proof = %{version}
 Obsoletes:      python3-img-proof < %{version}
-%python_subpackages
 
 %description
 img-proof provides a command line utility to test images in
@@ -105,12 +92,10 @@ Obsoletes:      python3-ipa-tests < 7.24.0
 Directory of infrastructure tests for testing images.
 
 %prep
-%setup -q -n img-proof-%{version}
+%setup -q -n %{upstream_name}-%{version}
 
 %build
 %pyproject_wheel
-mkdir -p man/man1
-python3.11 setup.py --command-packages=click_man.commands man_pages --target man/man1
 
 %install
 %pyproject_install
@@ -120,8 +105,7 @@ install -m 644 man/man1/*.1 %{buildroot}/%{_mandir}/man1
 install -d -m 755 %{buildroot}%{_prefix}
 cp -r usr/* %{buildroot}%{_prefix}/
 
-%python_clone -a %{buildroot}%{_bindir}/img-proof
-%{python_expand %fdupes %{buildroot}%{$python_sitelib}}
+%fdupes %{buildroot}%{_sitelibdir}
 
 %check
 %if %{with test}
@@ -130,24 +114,24 @@ export LANG=en_US.utf-8
 %pytest --ignore=data --ignore=usr
 %endif
 
-%pre
-%python_libalternatives_reset_alternative img-proof
-
-%post
-%{python_install_alternative img-proof}
-
-%postun
-%{python_uninstall_alternative img-proof}
-
-%files %{python_files}
+%files
 %defattr(-,root,root)
 %license LICENSE
 %doc CHANGES.md CONTRIBUTING.md README.md
-%{_mandir}/man1/*
-%python_alternative %{_bindir}/img-proof
-%{python_sitelib}/*
+%{_mandir}/man1/img-proof-list.1%{?ext_man}
+%{_mandir}/man1/img-proof-results-archive.1%{?ext_man}
+%{_mandir}/man1/img-proof-results-clear.1%{?ext_man}
+%{_mandir}/man1/img-proof-results-delete.1%{?ext_man}
+%{_mandir}/man1/img-proof-results-list.1%{?ext_man}
+%{_mandir}/man1/img-proof-results-show.1%{?ext_man}
+%{_mandir}/man1/img-proof-results.1%{?ext_man}
+%{_mandir}/man1/img-proof-test.1%{?ext_man}
+%{_mandir}/man1/img-proof.1%{?ext_man}
+%{_bindir}/img-proof
+%{_sitelibdir}/img_proof/
+%{_sitelibdir}/img_proof-*.dist-info/
 
-%files %{python_files}-tests
+%files tests
 %defattr(-,root,root)
 %dir %{_datadir}/lib
 %dir %{_datadir}/lib/img_proof

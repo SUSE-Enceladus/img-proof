@@ -36,6 +36,17 @@ Contribution Checklist
     - Tests must pass and coverage remain above 90%. [Unit & Integration Tests](#unit-&-integration-tests)
 - Follow Semantic Versioning. [Versions & Releases](#versions-&-releases)
 
+Man Pages
+=========
+
+If there are changes to the API the man pages require regeneration. To re-build
+the man pages use the following command where <version> is replaced with the
+current version.
+
+```shell
+click-man img-proof --man-version <version> -t man/man1
+```
+
 Versions & Releases
 ===================
 
