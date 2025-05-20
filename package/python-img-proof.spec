@@ -24,7 +24,7 @@
 %global _sitelibdir %{%{pythons}_sitelib}
 
 Name:           python-img-proof
-Version:        8.1.0
+Version:        8.2.0
 Release:        0
 Summary:        Command line and API for testing custom images
 License:        GPL-3.0-or-later
