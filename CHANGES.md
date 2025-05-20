@@ -1,3 +1,9 @@
+v8.2.0(2025-05-20)
+==================
+
+- Build for one version of python
+- ADd man pages to the repo
+
 v8.1.0(2025-05-15)
 ==================
 
