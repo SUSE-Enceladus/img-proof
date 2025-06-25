@@ -1,4 +1,5 @@
 import pytest
+import re
 
 
 def test_sles_kernel_version(host, get_release_value, is_sle_micro):
@@ -11,12 +12,16 @@ def test_sles_kernel_version(host, get_release_value, is_sle_micro):
     if is_sle_micro():
         pytest.skip('Micro has product version instead of SLE version.')
 
-    version = version.split('-SP')
+    match = re.match(r'^(\d+)(?:[.-](?:SP)?(\d+))?$', version)
+    assert match, f"Unexpected version format: {version}"
+
+    major = match.group(1)
+    patchlevel = match.group(2)
+
     config = host.run('sudo zcat /proc/config.gz')
+    assert config.rc == 0, "Failed to read kernel config"
 
-    assert 'CONFIG_SUSE_VERSION={}\n'.format(version[0]) in config.stdout
+    assert f'CONFIG_SUSE_VERSION={major}\n' in config.stdout
 
-    if len(version) > 1:
-        assert 'CONFIG_SUSE_PATCHLEVEL={}\n'.format(
-            version[1]
-        ) in config.stdout
+    if patchlevel is not None:
+        assert f'CONFIG_SUSE_PATCHLEVEL={patchlevel}\n' in config.stdout
