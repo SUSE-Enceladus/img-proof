@@ -2,6 +2,7 @@ import pytest
 import re
 
 
+@pytest.mark.skipinbeta
 def test_sles_kernel_version(host, get_release_value, is_sle_micro):
     version = get_release_value('VERSION')
     assert version
