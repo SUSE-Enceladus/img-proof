@@ -330,3 +330,16 @@ def pytest_configure(config):
         "markers",
         "skipinbeta: mark test to be skipped during beta testing phase"
     )
+
+
+@pytest.fixture()
+def get_variant(host, get_release_value):
+    def f():
+        version = get_release_value('VERSION')
+        version = int(version.split('-')[0].split('.')[0])
+
+        if version >= 16:
+            return get_release_value('IMAGE_ID') or ''
+        else:
+            return get_release_value('VARIANT_ID') or ''
+    return f
