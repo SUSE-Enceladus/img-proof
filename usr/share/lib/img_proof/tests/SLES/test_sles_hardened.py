@@ -33,8 +33,14 @@ def remove_swap(host, swap_file=SWAP_FILE):
     host.run("sudo rm {}".format(swap_file))
 
 
-def test_sles_hardened(host, get_release_value, is_sles_sap, is_sle_micro):
-    variant = get_release_value('VARIANT_ID') or ''
+def test_sles_hardened(
+    host,
+    get_release_value,
+    is_sles_sap,
+    is_sle_micro,
+    get_variant
+):
+    variant = get_variant()
 
     if "hardened" not in variant:
         pytest.skip('Skipping non-hardened image')

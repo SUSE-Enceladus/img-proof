@@ -2,7 +2,13 @@ import pytest
 
 
 @pytest.mark.skipinbeta
-def test_sles_motd(host, get_release_value, is_byos, is_suma_proxy):
+def test_sles_motd(
+    host,
+    get_release_value,
+    is_byos,
+    is_suma_proxy,
+    get_variant
+):
     motd = host.file('/etc/motd')
 
     if not motd.exists:
@@ -17,7 +23,7 @@ def test_sles_motd(host, get_release_value, is_byos, is_suma_proxy):
     version = get_release_value('VERSION')
     assert version
 
-    variant = get_release_value('VARIANT_ID') or ''
+    variant = get_variant()
 
     if 'hardened' in variant:
         pytest.skip('Unable to validate motd in hardened images.')
