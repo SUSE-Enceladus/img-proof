@@ -18,21 +18,9 @@ commands as root for SLES 15:
    $ SUSEConnect -p sle-module-public-cloud/15.#/x86_64
    $ zypper ar https://download.opensuse.org/repositories/Cloud:Tools:CI/SLE_15_SP#/Cloud:Tools:CI.repo
    $ zypper refresh
-   $ zypper in python3-img-proof
+   $ zypper in python-img-proof
 
-Replace # with the service pack you are using. Currently support exists for SP2+.
-
-**openSUSE Leap 15**
-
-Perform the following commands as root for Leap 15:
-
-.. code-block:: console
-
-   $ zypper ar https://download.opensuse.org/repositories/Cloud:Tools:CI/openSUSE_Leap_15.#/Cloud:Tools:CI.repo
-   $ zypper refresh
-   $ zypper in python3-img-proof
-
-Currently Leap 15.3+ is supported.
+Replace # with the service pack you are using. Currently support exists for SP5+.
 
 **openSUSE Tumbleweed**
 
@@ -42,7 +30,7 @@ Perform the following commands as root for Tumbleweed:
 
    $ zypper ar https://download.opensuse.org/repositories/Cloud:Tools:CI/openSUSE_Tumbleweed/Cloud:Tools:CI.repo
    $ zypper refresh
-   $ zypper in python3-img-proof
+   $ zypper in python-img-proof
 
 .. note::  An openSUSE and SLES test suite is shipped alongside the SUSE package as python3-img-proof-tests.
 
@@ -53,7 +41,7 @@ To install the SLES test suite alongside the package use the following command:
 
 .. code-block:: console
 
-   $ zypper in python3-img-proof-tests
+   $ zypper in python-img-proof-tests
 
 PyPI
 ----
