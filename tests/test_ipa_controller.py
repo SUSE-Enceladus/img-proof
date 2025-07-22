@@ -124,47 +124,6 @@ def test_controller_ssh_image(mock_test_image):
 
 
 @patch.object(IpaCloud, 'test_image')
-@patch('img_proof.ipa_oci.oci.core')
-def test_controller_oci_image(mock_oci, mock_test_image):
-    mock_test_image.return_value = (0, {'results': 'data'})
-
-    status, results = controller_test_image(
-        cloud_name='oci',
-        config='tests/data/config',
-        cloud_config='tests/oci/config',
-        distro='sles',
-        image_id='another:fake:image:id',
-        ip_address='another:fake:image:id',
-        no_default_test_dirs=True,
-        ssh_private_key_file='tests/data/ida_test',
-        test_dirs='tests/data/tests',
-        tests=['test_image'],
-        oci_user_id=(
-            'ocid1.user.oc1..'
-            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-        ),
-        signing_key_fingerprint=(
-            '00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00'
-        ),
-        signing_key_file='tests/oci/api_key.pem',
-        tenancy=(
-            'ocid1.tenancy.oc1..'
-            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-        ),
-        availability_domain='Omic:PHX-AD-1',
-        compartment_id=(
-            'ocid1.compartment.oc1..'
-            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-        )
-    )
-
-    assert status == 0
-
-
-@patch.object(IpaCloud, 'test_image')
 def test_controller_aliyun_image(mock_test_image):
     mock_test_image.return_value = (0, {'results': 'data'})
 

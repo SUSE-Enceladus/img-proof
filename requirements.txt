@@ -9,7 +9,6 @@ paramiko
 pytest
 PyYAML
 pytest-testinfra
-oci
 google-auth
 google-cloud-compute>=1.21.0
 aliyun-python-sdk-core

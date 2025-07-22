@@ -41,10 +41,6 @@ class GCECloudException(IpaCloudException):
     """Generic GCE exception."""
 
 
-class OCICloudException(IpaCloudException):
-    """Generic OCI exception."""
-
-
 class IpaControllerException(IpaException):
     """Generic exception for img_proof controller module."""
 

@@ -46,7 +46,6 @@ BuildRequires:  %{pythons}-click
 BuildRequires:  %{pythons}-devel
 BuildRequires:  %{pythons}-google-cloud-compute >= 1.21.0
 BuildRequires:  %{pythons}-google-auth
-BuildRequires:  %{pythons}-oci-sdk
 BuildRequires:  %{pythons}-paramiko
 BuildRequires:  %{pythons}-pytest
 BuildRequires:  %{pythons}-pip
@@ -66,7 +65,6 @@ Requires:       %{pythons}-boto3
 Requires:       %{pythons}-click
 Requires:       %{pythons}-google-cloud-compute >= 1.21.0
 Requires:       %{pythons}-google-auth
-Requires:       %{pythons}-oci-sdk
 Requires:       %{pythons}-paramiko
 Requires:       %{pythons}-pytest
 Requires:       %{pythons}-pytest-testinfra
