@@ -32,7 +32,6 @@ from img_proof.ipa_ec2 import EC2Cloud
 from img_proof.ipa_exceptions import IpaControllerException
 from img_proof.ipa_gce import GCECloud
 from img_proof.ipa_ssh import SSHCloud
-from img_proof.ipa_oci import OCICloud
 from img_proof.ipa_aliyun import AliyunCloud
 from img_proof.ipa_utils import get_test_files
 
@@ -74,12 +73,6 @@ def test_image(
     vnet_name=None,
     vnet_resource_group=None,
     collect_vm_info=None,
-    compartment_id=None,
-    availability_domain=None,
-    signing_key_fingerprint=None,
-    signing_key_file=None,
-    tenancy=None,
-    oci_user_id=None,
     enable_secure_boot=None,
     enable_uefi=None,
     log_callback=None,
@@ -171,16 +164,6 @@ def test_image(
     elif cloud_name == 'ssh':
         kwargs['custom_args'] = {'ip_address': ip_address}
         cloud = SSHCloud(**kwargs)
-    elif cloud_name == 'oci':
-        kwargs['custom_args'] = {
-            'compartment_id': compartment_id,
-            'availability_domain': availability_domain,
-            'signing_key_fingerprint': signing_key_fingerprint,
-            'signing_key_file': signing_key_file,
-            'tenancy': tenancy,
-            'oci_user_id': oci_user_id
-        }
-        cloud = OCICloud(**kwargs)
     elif cloud_name == 'aliyun':
         kwargs['custom_args'] = {
             'access_key': access_key,

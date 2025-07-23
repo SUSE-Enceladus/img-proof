@@ -25,7 +25,7 @@ img-proof Documentation
 .. image:: /_images/logo.png
 
 **img-proof** (IPA) provides a command line utility to test images in the Public
-Cloud (AWS, Azure, GCE, OCI, Aliyun, etc.).
+Cloud (AWS, Azure, GCE, Aliyun, etc.).
 
 About
 -----
@@ -128,7 +128,6 @@ The current supported CSPs are:
 * Azure
 * EC2
 * GCE
-* OCI
 * SSH
 * Aliyun
 

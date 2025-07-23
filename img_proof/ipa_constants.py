@@ -26,7 +26,7 @@ import os
 HOME = os.path.expanduser('~')
 NOT_IMPLEMENTED = 'Implement method in child classes.'
 SUPPORTED_DISTROS = ('opensuse_leap', 'sles', 'sle_micro', 'rhel', 'fedora')
-SUPPORTED_CLOUDS = ('aliyun', 'azure', 'ec2', 'gce', 'ssh', 'oci')
+SUPPORTED_CLOUDS = ('aliyun', 'azure', 'ec2', 'gce', 'ssh')
 SUPPORTED_ARCHITECTURES = ('x86_64', 'arm64')
 
 AZURE_DEFAULT_TYPE = 'Standard_B1ms'
@@ -35,8 +35,6 @@ EC2_DEFAULT_TYPE = 't2.micro'
 EC2_DEFAULT_USER = 'ec2-user'
 GCE_DEFAULT_TYPE = 'n1-standard-1'
 GCE_DEFAULT_USER = 'root'
-OCI_DEFAULT_TYPE = 'VM.Standard2.1'
-OCI_DEFAULT_USER = 'opc'
 ALIYUN_DEFAULT_TYPE = 'ecs.t5-lc1m1.small'
 ALIYUN_DEFAULT_USER = 'ali-user'
 
