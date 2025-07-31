@@ -5,7 +5,8 @@ def test_sles_ec2_billing_code(
     get_ec2_billing_products,
     is_byos,
     get_release_value,
-    is_suma_server
+    is_suma_server,
+    get_variant
 ):
     try:
         products = get_ec2_billing_products()
@@ -15,7 +16,7 @@ def test_sles_ec2_billing_code(
             'ec2metadata not in image, cannot determine billing products.'
         )
 
-    variant = get_release_value('VARIANT_ID')
+    variant = get_variant()
     byos = is_byos()
 
     has_no_code = (
