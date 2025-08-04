@@ -1,3 +1,10 @@
+v9.2.0(2025-08-04)
+==================
+
+- Cleanup docs build
+- Update config options for changes in sphinx config format.
+- Drop old module that was removed (results_plugin)
+
 v9.1.0(2025-07-31)
 ==================
 
