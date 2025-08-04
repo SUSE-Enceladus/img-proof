@@ -26,7 +26,6 @@ Submodules
    img_proof.ipa_sles
    img_proof.ipa_ssh
    img_proof.ipa_utils
-   img_proof.results_plugin
 
 Module contents
 ---------------
