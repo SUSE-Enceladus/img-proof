@@ -39,7 +39,7 @@ into a separate argument. An example for tests in Google:
 
 .. code-block:: console
 
-   img-proof test gcp ... \
+   img-proof test gce ... \
      --instance-option SEV_SNP_CAPABLE \
      --instance-option GVNIC
 
@@ -50,7 +50,7 @@ options. As seen above an example for Google looks like:
 
 .. code-block:: console
 
-   img-proof test gcp ... \
+   img-proof test gce ... \
      --instance-option SEV_SNP_CAPABLE
      --instance-option STACK_STATE=IPV4_IPV6
 
