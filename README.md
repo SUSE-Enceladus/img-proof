@@ -1,5 +1,6 @@
 ![Continuous testing & Linting](https://github.com/SUSE-Enceladus/img-proof/workflows/Continuous%20testing%20&%20Linting/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/img-proof/badge/?version=latest)](https://img-proof.readthedocs.io/en/latest/?badge=latest)
+![Build Status](https://build.opensuse.org/projects/Cloud:Tools:CI/packages/python-img-proof/badge.svg)
 [![Py Versions](https://img.shields.io/pypi/pyversions/img-proof.svg)](https://pypi.org/project/img-proof/)
 [![License](https://img.shields.io/pypi/l/img-proof.svg)](https://pypi.org/project/img-proof/)
 
