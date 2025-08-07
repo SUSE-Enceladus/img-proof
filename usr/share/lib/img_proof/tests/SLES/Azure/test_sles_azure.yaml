@@ -1,3 +1,4 @@
 tests:
   - test_sles_azure_services
   - test_sles_azure_kernel_cmdline
+  - test_sles_azure_csp_cli
