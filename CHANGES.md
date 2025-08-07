@@ -1,3 +1,11 @@
+v9.3.0(2025-08-07)
+==================
+
+- Fix gce subcommand in docs
+- Add Cloud-Specific CLI smoke tests for SLE >= 16.0
+  Tests confirm the respective cloud cli package is
+  installed and running properly.
+
 v9.2.0(2025-08-04)
 ==================
 
