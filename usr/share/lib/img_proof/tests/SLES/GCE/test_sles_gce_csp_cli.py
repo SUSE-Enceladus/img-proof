@@ -1,19 +1,7 @@
 import pytest
-import re
 
-def test_sles_gcp_csp_cli(host, get_release_value, is_sle_micro):
-    version = get_release_value('VERSION')
-    assert version
-
-    if is_sle_micro():
-        pytest.skip('Micro has product version instead of SLE version.')
-
-    match = re.match(r'^(\d+)(?:[.-](?:SP)?(\d+))?$', version)
-    assert match, f"Unexpected version format: {version}"
-
-    major = int(match.group(1))
-
-    if major < 16:
+def test_sles_gcp_csp_cli(host, is_sle_16_or_higher):
+    if not is_sle_16_or_higher():
         pytest.skip('Pre-SLE 16.0 versions do not have CSP CLI.')
 
     gcp_cmd = host.run('gcloud --version')

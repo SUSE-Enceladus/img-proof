@@ -1,9 +1,33 @@
 import json
 import pytest
+import re
 import xml.etree.ElementTree as ET
 
 from susepubliccloudinfoclient import infoserverrequests
 
+
+@pytest.fixture()
+def is_sle_16_or_higher(host, get_release_value):
+    """
+    Check if the SLE version is 16 or higher.
+    """
+    def f():
+        name = get_release_value('PRETTY_NAME')
+        version = get_release_value('VERSION')
+
+        if 'micro' in name.lower():
+            pytest.skip('Micro has product version instead of SLE version.')
+
+        match = re.match(r'^(\d\d).(\d)', version)
+
+        if not match:
+            return False
+
+        major = match.group(1)
+        patchlevel = match.group(2)
+
+        return int(major) >= 16
+    return f
 
 @pytest.fixture()
 def check_cloud_register(host):
