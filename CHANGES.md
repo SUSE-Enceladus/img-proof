@@ -1,3 +1,11 @@
+v9.4.0(2025-08-18)
+==================
+
+- Handle SLES version parsing in beta stage
+- Add fixtures to check for skipinbeta flag and parse version
+- Cleanup flake8 formatting errors
+- Update SDK tests to use new fixtures
+
 v9.3.0(2025-08-07)
 ==================
 
