@@ -1,4 +1,5 @@
 import json
+import re
 import pytest
 import xml.etree.ElementTree as ET
 
@@ -342,4 +343,46 @@ def get_variant(host, get_release_value):
             return get_release_value('IMAGE_ID') or ''
         else:
             return get_release_value('VARIANT_ID') or ''
+    return f
+
+
+@pytest.fixture()
+def get_version(host, get_release_value, is_beta_test):
+    """
+    Parse version and return a float of major and patch version
+    """
+    def f():
+        version = get_release_value('VERSION')
+        assert version
+
+        if is_beta_test():
+            beta_strings = r'(?: PublicRC)'
+        else:
+            beta_strings = r''
+
+        match = re.match(
+            r'^(?P<major_version>\d+)'
+            r'(?:[.-](?:[sS][pP])?'
+            r'(?P<minor_version>\d+)'
+            fr'{beta_strings}?)?$',
+            version
+        )
+
+        if not match:
+            return None
+
+        return float(f'{match["major_version"]}.{match["minor_version"]}')
+    return f
+
+
+@pytest.fixture()
+def is_beta_test(pytestconfig):
+    """
+    Return True if skipinbeta flag is in pytest markers option
+    """
+    def f():
+        if 'not skipinbeta' in getattr(pytestconfig.option, 'markexpr'):
+            return True
+        else:
+            return False
     return f
