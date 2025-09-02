@@ -123,11 +123,12 @@ placed into the **img-proof** config file.
 EC2 Config
 ----------
 
-For testing EC2 instances **img-proof** will look for the ec2utils configuration
-file located at ~/.ec2utils.conf.
+For testing EC2 instances **img-proof** will look for configuration in multiple
+locations. Options can be placed in the **img-proof** config file or the
+ec2imgutils configuration file located at ~/.ec2utils.conf.
 
 See
-`ec2utils <https://github.com/SUSE-Enceladus/Enceladus/tree/master/ec2utils>`__
+`ec2imgutils <https://github.com/SUSE-Enceladus/ec2imgutils/>`__
 for an example configuration file.
 
 To override the EC2 config location the CLI option,
