@@ -1,14 +1,9 @@
 import pytest
 
 
-def test_sles_gcp_csp_cli(host, is_sle_micro, get_version):
-    version = get_version()
-
+def test_sles_gcp_csp_cli(host, is_sle_micro):
     if is_sle_micro():
         pytest.skip('Micro has product version instead of SLE version.')
-
-    if version < 16.0:
-        pytest.skip('Pre-SLE 16.0 versions do not have CSP CLI.')
 
     which_cmd = host.run('command -v gcloud')
     assert which_cmd.rc == 0, f"'{which_cmd.command}' failed with code {which_cmd.rc}."

@@ -233,6 +233,14 @@ def is_sle_micro(host, get_release_value):
 
 
 @pytest.fixture()
+def is_chost(host, get_variant):
+    def f():
+        variant = get_variant()
+        return 'chost' in variant.lower()
+    return f
+
+
+@pytest.fixture()
 def get_release_value(host):
     def f(key):
         release = host.file('/etc/os-release')

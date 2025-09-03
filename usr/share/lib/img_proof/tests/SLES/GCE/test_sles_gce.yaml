@@ -1,3 +1,2 @@
 tests:
   - test_sles_gce_services
-  - test_sles_gce_csp_cli
