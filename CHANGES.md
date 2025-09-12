@@ -1,3 +1,13 @@
+v9.6.0(2025-09-12)
+==================
+
+- Drop version checks for csp cli tests
+- Handle CLI check for all active and inactive images
+- Skip check for suma, chost and micro images
+- Drop GCE gcloud test from default test suite. gcloud is not in our images
+- Fix link in docs and include note on using either ec2imgutils conf file
+  or img-proof conf file.
+
 v9.5.0(2025-08-26)
 ==================
 
