@@ -152,6 +152,13 @@ def is_suma_server(host, get_baseproduct, get_suma_version):
     def f():
         suma_server_product = '/etc/products.d/SUSE-Manager-Server.prod'
         suma_server = host.file(suma_server_product)
+
+        # SUMA >=5.1 renamed to Multi-Linux Manager
+        if not suma_server.exists or not suma_server.is_file:
+            suma_server_product = \
+                '/etc/products.d/Multi-Linux-Manager-Proxy.prod'
+            suma_server = host.file(suma_server_product)
+
         base_product = get_baseproduct()
         suma_version = get_suma_version(suma_server_product)
 
@@ -176,6 +183,13 @@ def is_suma_proxy(host, get_baseproduct, get_suma_version):
     def f():
         suma_proxy_product = '/etc/products.d/SUSE-Manager-Proxy.prod'
         suma_proxy = host.file(suma_proxy_product)
+
+        # SUMA >=5.1 renamed to Multi-Linux Manager
+        if not suma_proxy.exists or not suma_proxy.is_file:
+            suma_proxy_product = \
+                '/etc/products.d/Multi-Linux-Manager-Proxy.prod'
+            suma_proxy = host.file(suma_proxy_product)
+
         base_product = get_baseproduct()
         suma_version = get_suma_version(suma_proxy_product)
 
