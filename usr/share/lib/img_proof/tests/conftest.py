@@ -156,7 +156,7 @@ def is_suma_server(host, get_baseproduct, get_suma_version):
         # SUMA >=5.1 renamed to Multi-Linux Manager
         if not suma_server.exists or not suma_server.is_file:
             suma_server_product = \
-                '/etc/products.d/Multi-Linux-Manager-Proxy.prod'
+                '/etc/products.d/Multi-Linux-Manager-Server.prod'
             suma_server = host.file(suma_server_product)
 
         base_product = get_baseproduct()
