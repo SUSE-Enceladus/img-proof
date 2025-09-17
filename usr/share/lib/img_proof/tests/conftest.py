@@ -150,14 +150,15 @@ def is_sles_sap(host, get_baseproduct):
 @pytest.fixture()
 def is_suma_server(host, get_baseproduct, get_suma_version):
     def f():
-        suma_server_product = '/etc/products.d/SUSE-Manager-Server.prod'
-        suma_server = host.file(suma_server_product)
-
-        # SUMA >=5.1 renamed to Multi-Linux Manager
-        if not suma_server.exists:
-            suma_server_product = \
-                '/etc/products.d/Multi-Linux-Manager-Server.prod'
-            suma_server = host.file(suma_server_product)
+        suma_server_product = ''
+        for prod_file in [
+            '/etc/products.d/SUSE-Manager-Server.prod',
+            '/etc/products.d/Multi-Linux-Manager-Server.prod'
+        ]:
+            suma_server = host.file(prod_file)
+            if suma_server.exists:
+                suma_server_product = prod_file
+                break
 
         base_product = get_baseproduct()
         suma_version = get_suma_version(suma_server_product)
@@ -184,14 +185,15 @@ def is_suma_server(host, get_baseproduct, get_suma_version):
 @pytest.fixture()
 def is_suma_proxy(host, get_baseproduct, get_suma_version):
     def f():
-        suma_proxy_product = '/etc/products.d/SUSE-Manager-Proxy.prod'
-        suma_proxy = host.file(suma_proxy_product)
-
-        # SUMA >=5.1 renamed to Multi-Linux Manager
-        if not suma_proxy.exists:
-            suma_proxy_product = \
-                '/etc/products.d/Multi-Linux-Manager-Proxy.prod'
-            suma_proxy = host.file(suma_proxy_product)
+        suma_proxy_product = ''
+        for prod_file in [
+            '/etc/products.d/SUSE-Manager-Proxy.prod',
+            '/etc/products.d/Multi-Linux-Manager-Proxy.prod'
+        ]:
+            suma_proxy = host.file(prod_file)
+            if suma_proxy.exists:
+                suma_proxy_product = prod_file
+                break
 
         base_product = get_baseproduct()
         suma_version = get_suma_version(suma_proxy_product)
