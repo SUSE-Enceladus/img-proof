@@ -217,10 +217,10 @@ def get_suma_version(host):
 
 
 @pytest.fixture()
-def is_sles_sapcal(host):
+def is_sles_sapcal(host, get_variant):
     def f():
-        motd = host.file('/etc/motd')
-        return motd.contains('SAPCAL')
+        variant = get_variant()
+        return 'sapcal' in variant.lower()
     return f
 
 
