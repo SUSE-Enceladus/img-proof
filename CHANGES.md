@@ -1,3 +1,14 @@
+v9.7.0(2025-09-19)
+==================
+
+- Fix default log level for test command. Click changed how default flag
+  value is handled. Set default log level to INFO if no level is chosen.
+- Add missing SLE 16 repo list
+- Fix SAP motd test
+- Use variant check for is_sapcal function
+- Add a test to verify TDX setting
+- Handle new MLM product file name
+
 v9.6.0(2025-09-12)
 ==================
 
