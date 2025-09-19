@@ -150,23 +150,34 @@ def is_sles_sap(host, get_baseproduct):
 @pytest.fixture()
 def is_suma_server(host, get_baseproduct, get_suma_version):
     def f():
-        suma_server_product = '/etc/products.d/SUSE-Manager-Server.prod'
-        suma_server = host.file(suma_server_product)
+        suma_server_product = ''
+        for prod_file in [
+            '/etc/products.d/SUSE-Manager-Server.prod',
+            '/etc/products.d/Multi-Linux-Manager-Server.prod'
+        ]:
+            suma_server = host.file(prod_file)
+            if suma_server.exists:
+                suma_server_product = prod_file
+                break
+
         base_product = get_baseproduct()
         suma_version = get_suma_version(suma_server_product)
 
         if suma_version and suma_version.startswith('4'):
             # For suma 4.3 baseproduct HAS to be SUMA server
-            expected_product = suma_server_product
+            expected_products = [suma_server_product]
         else:
             # For suma >=5 baseproduct has to be Micro
             # SUMA is included as an additional product
-            expected_product = '/etc/products.d/SLE-Micro.prod'
+            expected_products = [
+                '/etc/products.d/SLE-Micro.prod',
+                '/etc/products.d/SL-Micro.prod'
+            ]
 
         return all([
             suma_server.exists,
             suma_server.is_file,
-            base_product == expected_product
+            base_product in expected_products
         ])
     return f
 
@@ -174,23 +185,34 @@ def is_suma_server(host, get_baseproduct, get_suma_version):
 @pytest.fixture()
 def is_suma_proxy(host, get_baseproduct, get_suma_version):
     def f():
-        suma_proxy_product = '/etc/products.d/SUSE-Manager-Proxy.prod'
-        suma_proxy = host.file(suma_proxy_product)
+        suma_proxy_product = ''
+        for prod_file in [
+            '/etc/products.d/SUSE-Manager-Proxy.prod',
+            '/etc/products.d/Multi-Linux-Manager-Proxy.prod'
+        ]:
+            suma_proxy = host.file(prod_file)
+            if suma_proxy.exists:
+                suma_proxy_product = prod_file
+                break
+
         base_product = get_baseproduct()
         suma_version = get_suma_version(suma_proxy_product)
 
         if suma_version and suma_version.startswith('4'):
             # For suma 4.3 baseproduct HAS to be SUMA proxy
-            expected_product = suma_proxy_product
+            expected_products = [suma_proxy_product]
         else:
             # For suma >=5 baseproduct has to be Micro
             # SUMA is included as an additional product
-            expected_product = '/etc/products.d/SLE-Micro.prod'
+            expected_products = [
+                '/etc/products.d/SLE-Micro.prod',
+                '/etc/products.d/SL-Micro.prod',
+            ]
 
         return all([
             suma_proxy.exists,
             suma_proxy.is_file,
-            base_product == expected_product
+            base_product in expected_products
         ])
     return f
 
