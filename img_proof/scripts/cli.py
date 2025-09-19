@@ -201,7 +201,6 @@ def main(context, no_color):
     '--verbose',
     'log_level',
     flag_value=logging.INFO,
-    default=True,
     help='(Default) Display logging info to console.'
 )
 @click.option(
@@ -441,6 +440,10 @@ def test(context,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
+
+    if not log_level:
+        log_level = logging.INFO
+
     logger = ipa_utils.get_logger(log_level)
 
     if cpu_options:
