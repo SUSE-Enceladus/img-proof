@@ -221,6 +221,8 @@ def main(context, no_color):
 )
 @click.option(
     '--region',
+    '--zone',
+    'region',
     help='Cloud region to test image.'
 )
 @click.option(
