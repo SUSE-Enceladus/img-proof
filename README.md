@@ -35,9 +35,9 @@ Installation
 To install the package use the following commands as root:
 
 ```shell
-$ zypper ar http://download.opensuse.org/repositories/Cloud:/Tools/<distribution>
+$ zypper ar http://download.opensuse.org/repositories/Cloud:/Tools:/CI/<distribution>
 $ zypper refresh
-$ zypper in python3-img-proof
+$ zypper in python-img-proof
 ```
 
 Requirements
