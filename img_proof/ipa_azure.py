@@ -123,7 +123,7 @@ class AzureCloud(IpaCloud):
 
     def _create_network_interface(
         self, ip_config_name, nic_name, public_ip, region,
-        resource_group_name, subnet, accelerated_networking=False
+        resource_group_name, subnet, nsg, accelerated_networking=False
     ):
         """
         Create a network interface in the resource group.
@@ -132,20 +132,25 @@ class AzureCloud(IpaCloud):
         """
         nic_config = {
             'location': region,
-            'ip_configurations': [{
-                'name': ip_config_name,
-                'private_ip_allocation_method': 'Dynamic',
-                'subnet': {
-                    'id': subnet.id
-                },
-                'public_ip_address': {
-                    'id': public_ip.id
-                },
-            }]
+            'properties': {
+                'networkSecurityGroup': nsg,
+                'ipConfigurations': [{
+                    'name': ip_config_name,
+                    'properties': {
+                        'privateIpAllocationMethod': 'Dynamic',
+                        'subnet': {
+                            'id': subnet.id
+                        },
+                        'publicIpAddress': {
+                            'id': public_ip.id
+                        }
+                    }
+                }]
+            }
         }
 
         if accelerated_networking:
-            nic_config['enable_accelerated_networking'] = True
+            nic_config['properties']['enableAcceleratedNetworking'] = True
 
         try:
             nic_setup = self.network.network_interfaces.begin_create_or_update(
@@ -160,19 +165,57 @@ class AzureCloud(IpaCloud):
 
         return nic_setup.result()
 
+    def _create_network_security_group(self, resource_group_name, region):
+        try:
+            nsg_setup = self.network.network_security_groups.begin_create_or_update( # noqa
+                resource_group_name=resource_group_name,
+                network_security_group_name=self.nsg_name,
+                parameters={
+                    'location': region,
+                    'properties': {
+                        'securityRules': [
+                            {
+                                'name': 'allowssh',
+                                'properties': {
+                                    'access': 'Allow',
+                                    'destinationAddressPrefix': '*',
+                                    'destinationPortRange': '22',
+                                    'direction': 'Inbound',
+                                    'priority': 300,
+                                    'protocol': 'TCP',
+                                    'sourceAddressPrefix': '*',
+                                    'sourcePortRange': '*',
+                                }
+                            }
+                        ]
+                    }
+                }
+            )
+        except Exception as error:
+            raise AzureCloudException(
+                f'Unable to create network security group: {error}'
+            )
+
+        return nsg_setup.result()
+
     def _create_public_ip(self, public_ip_name, resource_group_name, region):
         """
         Create dynamic public IP address in the resource group.
         """
         public_ip_config = {
             'location': region,
-            'public_ip_allocation_method': 'Dynamic'
+            'properties': {
+                'publicIPAllocationMethod': 'Static'
+            },
+            'sku': {'name': 'Standard'}
         }
 
         try:
             public_ip_setup = \
                 self.network.public_ip_addresses.begin_create_or_update(
-                    resource_group_name, public_ip_name, public_ip_config
+                    resource_group_name,
+                    public_ip_name,
+                    public_ip_config
                 )
         except Exception as error:
             raise AzureCloudException(
@@ -496,9 +539,14 @@ class AzureCloud(IpaCloud):
             public_ip = self._create_public_ip(
                 self.public_ip_name, self.running_instance_id, self.region
             )
+            nsg = self._create_network_security_group(
+                self.running_instance_id,
+                self.region
+            )
             interface = self._create_network_interface(
                 self.ip_config_name, self.nic_name, public_ip, self.region,
-                self.running_instance_id, subnet, self.accelerated_networking
+                self.running_instance_id, subnet, nsg,
+                self.accelerated_networking
             )
 
             # Get dictionary of VM parameters and create instance.
@@ -542,6 +590,7 @@ class AzureCloud(IpaCloud):
         ])
         self.nic_name = ''.join([self.running_instance_id, '-nic'])
         self.public_ip_name = ''.join([self.running_instance_id, '-public-ip'])
+        self.nsg_name = ''.join([self.running_instance_id, '-nsg'])
 
     def _set_image_id(self):
         """
