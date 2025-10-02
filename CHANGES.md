@@ -1,3 +1,10 @@
+v9.8.0(2025-10-01)
+==================
+
+- Fix OBS installation URL in readme
+- Add zone as an alias to the region option for GCE
+- Use standard sku public ip address in Azure
+
 v9.7.0(2025-09-19)
 ==================
 
