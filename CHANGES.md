@@ -1,3 +1,9 @@
+v9.9.0(2025-10-07)
+==================
+
+- Add new test to wait 30 seconds for boot to complete
+- Assert running and enabled values in check service function
+
 v9.8.0(2025-10-01)
 ==================
 
