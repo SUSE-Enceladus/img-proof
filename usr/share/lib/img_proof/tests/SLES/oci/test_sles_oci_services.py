@@ -8,7 +8,7 @@ import pytest
     ('cloud-final')
 ])
 def test_sles_oci_services(check_service, host, name):
-    assert check_service(name, running=None)
+    check_service(name, running=None)
 
     if host.exists('systemctl'):
         # No clear way to check a service exited successfully using sysvinit

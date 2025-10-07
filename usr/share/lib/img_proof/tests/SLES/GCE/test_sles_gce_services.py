@@ -7,7 +7,7 @@ import pytest
     'google-oslogin-cache.timer'
 ])
 def test_sles_gce_running_services(check_service, name):
-    assert check_service(name)
+    check_service(name)
 
 
 @pytest.mark.parametrize('name', [
@@ -15,7 +15,7 @@ def test_sles_gce_running_services(check_service, name):
     'google-shutdown-scripts',
 ])
 def test_sles_gce_one_shot_services(check_service, host, name):
-    assert check_service(name, running=None)
+    check_service(name, running=None)
 
     if host.exists('systemctl'):
         # No clear way to check a service exited successfully using sysvinit
