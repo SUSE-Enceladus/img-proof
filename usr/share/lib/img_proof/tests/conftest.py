@@ -60,10 +60,8 @@ def check_service(host):
                     ),
                 ))
 
-        return all([
-            is_running == running,
-            is_enabled == enabled
-        ])
+        assert is_running == running
+        assert is_enabled == enabled
     return f
 
 
