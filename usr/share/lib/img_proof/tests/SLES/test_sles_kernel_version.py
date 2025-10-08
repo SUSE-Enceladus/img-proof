@@ -3,18 +3,20 @@ import re
 
 
 @pytest.mark.skipinbeta
-def test_sles_kernel_version(host, get_release_value, is_sle_micro):
-    version = get_release_value('VERSION')
+def test_sles_kernel_version(host, get_version, is_sle_micro):
+    version = get_version()
     assert version
 
-    if version in ('11.4', '12-SP1', '12-SP2', '12-SP3'):
-        pytest.skip('Whoops! Image does not have version in kernel config.')
+    if version <= 12.3 or version >= 16.0:
+        pytest.skip(
+            'Whoops! Image does not have distro version in kernel config.'
+        )
 
     if is_sle_micro():
         pytest.skip('Micro has product version instead of SLE version.')
 
-    match = re.match(r'^(\d+)(?:[.-](?:SP)?(\d+))?$', version)
-    assert match, f"Unexpected version format: {version}"
+    match = re.match(r'^(\d+)(?:[.-](?:SP)?(\d+))?$', str(version))
+    assert match, f"Unexpected version format: {str(version)}"
 
     major = match.group(1)
     patchlevel = match.group(2)
