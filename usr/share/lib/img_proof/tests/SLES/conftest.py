@@ -580,6 +580,12 @@ BASE_16_0 = [
     'SLE-Product-SLES-16.0-Source',
 ]
 
+BASE_16_0_SAP = [
+    'SLE-Product-SLES_SAP-16.0',
+    'SLE-Product-SLES_SAP-16.0-Debug',
+    'SLE-Product-SLES_SAP-16.0-Source',
+]
+
 SLES_REPOS = {
     '12-X86_64': SLE_12_BASE + SLE_12_MODULES,
     '12-X86_64-SAP': SLE_12_SAP + SLE_12_BASE + SLE_12_MODULES,
@@ -637,6 +643,7 @@ SLES_REPOS = {
     '15-SP7-X86_64-HPC': BASE_15_SP7_HPC,
     '16.0-X86_64': BASE_16_0,
     '16.0-AARCH64': BASE_16_0,
+    '16.0-X86_64-SAP': BASE_16_0_SAP,
 }
 
 
