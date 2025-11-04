@@ -19,6 +19,8 @@ def test_sles_sap_motd(host, get_release_value, get_variant, get_version):
         # SAP is hardened by default in >=16.0
         version >= 16.0
     ):
-        pytest.skip('Unable to validate motd in hardened images.')
+        pytest.skip(
+            'Unable to validate motd in hardened images or SAP images >= 16.0.'
+        )
 
     assert motd.contains('for SAP Applications')
