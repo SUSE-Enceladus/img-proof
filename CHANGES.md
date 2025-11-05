@@ -1,3 +1,9 @@
+v9.11.0(2025-11-05)
+==================
+
+- Fix SAP MOTD test for version >= 16.0
+- Add expected repos for SAP 16.0
+
 v9.10.0(2025-10-08)
 ==================
 
