@@ -11,7 +11,8 @@ def test_sles_sap_license(confirm_license_content, get_release_value):
     license_dirs = [
         '/etc/YaST2/licenses/ha/',
         '/etc/YaST2/licenses/SLES_SAP/',
-        '/usr/share/licenses/product/SLES_SAP/'
+        '/usr/share/licenses/product/SLES_SAP/',
+        '/usr/share/licenses/SLES_SAP-release/'
     ]
     license_content = [
         'SUSE End User License Agreement',
