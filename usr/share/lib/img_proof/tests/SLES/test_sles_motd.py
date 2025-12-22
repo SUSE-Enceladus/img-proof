@@ -43,6 +43,7 @@ def test_sles_motd(
         return (
             motd_file.contains('registercloudguest') or
             motd_file.contains('SUSEConnect') or
+            motd_file.contains('suseconnect') or
             motd_file.contains('transactional-update')
         )
 
