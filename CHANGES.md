@@ -1,3 +1,9 @@
+v9.12.0(2026-01-28)
+==================
+
+- Adds lowercase suseconnect option for motd test as used in 16.0
+- Skip the eusc disconnected region in EC2 net test
+
 v9.11.0(2025-11-05)
 ==================
 
