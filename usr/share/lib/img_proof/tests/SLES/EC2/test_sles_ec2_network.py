@@ -13,7 +13,8 @@ special_regions = [
     'ap-northeast-3',
     'cn-north-1',
     'cn-northwest-1',
-    'us-gov-west-1'
+    'us-gov-west-1',
+    'eusc-de-east-1'
 ]
 
 dl_time = 20
