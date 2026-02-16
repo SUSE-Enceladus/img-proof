@@ -4,7 +4,8 @@ import pytest
 def test_leap_license(confirm_license_content):
     license_dirs = [
         '/etc/YaST2/licenses/base/',
-        '/usr/share/licenses/openSUSE-release/'
+        '/usr/share/licenses/openSUSE-release/',
+        '/usr/share/licenses/Leap-release/'
     ]
     license_content = [
         'LICENSE AGREEMENT'
