@@ -62,7 +62,7 @@ def test_sles_hardened(
     if not setup_swap(host):
         pytest.skip("Failed to setup swap, not enough memory.")
 
-    xml_path = "pub/projects/security/oval/suse.linux.enterprise.15.xml"
+    xml_path = "pub/projects/security/oval/suse.linux.enterprise.15-patch.xml"
     # Downloaded file should have slashes replaced by hyphens
     xml_file = xml_path.replace("/", "-")
     oscap_dir = "/tmp/oscap"
@@ -71,7 +71,7 @@ def test_sles_hardened(
 
     host.run("mkdir {}".format(oscap_dir))
     host.run(
-        "curl -o- https://ftp.suse.com/{path}.gz | gunzip -c > {dir}/{file}".format(
+        "curl -o- https://ftp.suse.com/{path}.bz2 | bunzip2 -c > {dir}/{file}.bz2".format(
             path=xml_path,
             file=xml_file,
             dir=oscap_dir,
