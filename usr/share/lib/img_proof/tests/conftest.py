@@ -7,14 +7,29 @@ from susepubliccloudinfoclient import infoserverrequests
 
 
 @pytest.fixture()
-def check_cloud_register(host):
+def get_python_interpreter(host):
+    """
+    Return the python version
+    """
+    def f(package_name):
+        python_version = '3'
+        python_abi = host.run('rpm -q --requires {0} | grep "python(abi)"'.format(package_name))
+        if python_abi:
+            python_version = python_abi.split('=')[1].strip()
+        return 'python{0}'.format(python_version)
+    return f
+
+
+@pytest.fixture()
+def check_cloud_register(host, get_python_version):
     def f():
         # There was an API change in registerutils and we have to check
         # which version is in place on the system
         deleted_interface_import = \
             'from cloudregister.registerutils import check_registration'
+        python_interpreter = get_python_interpreter('cloud-regionsrv-client')
         result = host.run(
-            "sudo python3 -c '{0}'".format(deleted_interface_import)
+            "sudo {0} -c '{1}'".format(python_interpreter, deleted_interface_import)
         )
         # Old interface of is_registered()
         is_registered_arg = 'registerutils.get_current_smt()'
@@ -22,9 +37,9 @@ def check_cloud_register(host):
             # New interface of is_registered()
             is_registered_arg = 'registerutils.get_current_smt().get_FQDN()'
         result = host.run(
-            "sudo python3 -c 'from cloudregister import registerutils; "
+            "sudo {0} -c 'from cloudregister import registerutils; "
             "print(registerutils.is_registered("
-            "{0}))'".format(is_registered_arg)
+            "{1}))'".format(python_interpreter, is_registered_arg)
         )
         output = result.stdout.strip()
         return output in ('1', 'True')
