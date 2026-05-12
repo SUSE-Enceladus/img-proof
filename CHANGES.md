@@ -1,3 +1,11 @@
+v9.13.0(2026-05-12)
+==================
+
+- Includes new directory for Leap 16.0 license
+- Fixes check_cloud_register test taking into account the python interpreter
+used for the client.
+- test_sles_motd refactor to handle properly the scenario fo empty /etc/motd
+
 v9.12.0(2026-01-28)
 ==================
 
