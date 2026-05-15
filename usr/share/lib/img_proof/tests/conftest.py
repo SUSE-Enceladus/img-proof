@@ -21,7 +21,7 @@ def get_python_interpreter(host):
 
 
 @pytest.fixture()
-def check_cloud_register(host, get_python_version):
+def check_cloud_register(host, get_python_interpreter):
     def f():
         # There was an API change in registerutils and we have to check
         # which version is in place on the system
