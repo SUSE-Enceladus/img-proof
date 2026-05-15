@@ -14,8 +14,8 @@ def get_python_interpreter(host):
     def f(package_name):
         python_version = '3'
         python_abi = host.run('rpm -q --requires {0} | grep "python(abi)"'.format(package_name))
-        if python_abi:
-            python_version = python_abi.split('=')[1].strip()
+        if python_abi.stdout and '=' in python_abi.stdout:
+            python_version = python_abi.stdout.split('=')[1].strip()
         return 'python{0}'.format(python_version)
     return f
 
