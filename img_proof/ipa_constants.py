@@ -34,7 +34,7 @@ AZURE_DEFAULT_USER = 'azureuser'
 EC2_DEFAULT_TYPE = 't2.micro'
 EC2_DEFAULT_USER = 'ec2-user'
 GCE_DEFAULT_TYPE = 'n1-standard-1'
-GCE_DEFAULT_USER = 'root'
+GCE_DEFAULT_USER = 'gceuser'
 ALIYUN_DEFAULT_TYPE = 'ecs.t5-lc1m1.small'
 ALIYUN_DEFAULT_USER = 'ali-user'
 
