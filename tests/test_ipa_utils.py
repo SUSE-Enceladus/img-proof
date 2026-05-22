@@ -33,7 +33,7 @@ from tempfile import NamedTemporaryFile
 from img_proof import ipa_utils
 from img_proof.ipa_exceptions import IpaSSHException, IpaUtilsException
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, mock_open
 
 LOCALHOST = '127.0.0.1'
 
@@ -451,3 +451,133 @@ def test_utils_generate_instance_name():
     name = ipa_utils.generate_instance_name('azure-img-proof-test')
     assert len(name) == 26
     assert name.startswith('azure-img-proof-test-')
+
+
+def test_get_public_ssh_key():
+    """Test get public SSH key."""
+    with patch('builtins.open', mock_open(read_data=b'ssh-rsa AAA...')) as m:
+        key = ipa_utils.get_public_ssh_key('key_file')
+        assert key == b'ssh-rsa AAA...'
+        m.assert_called_once_with('key_file.pub', 'rb')
+
+
+def test_get_public_ssh_key_exception():
+    """Test get public SSH key exception."""
+    with pytest.raises(IpaUtilsException) as error:
+        ipa_utils.get_public_ssh_key('nonexistent_key')
+    assert str(error.value) == (
+        'SSH public key file: nonexistent_key.pub cannot be found.'
+    )
+
+
+def test_find_test_file():
+    """Test find test file."""
+    tests = {'test_sles': '/path/to/test_sles.py'}
+
+    path = ipa_utils.find_test_file('test_sles', tests)
+    assert path == '/path/to/test_sles.py'
+
+    path = ipa_utils.find_test_file('test_sles::test_case', tests)
+    assert path == '/path/to/test_sles.py::test_case'
+
+    with pytest.raises(IpaUtilsException) as error:
+        ipa_utils.find_test_file('test_fake', tests)
+    assert str(error.value) == (
+        'Test file with name: test_fake cannot be found.'
+    )
+
+
+def test_parse_test_name():
+    """Test parse test name."""
+    assert ipa_utils.parse_test_name('test_name') == 'test_name'
+
+    name = '/path/to/test_file.py::TestClass::()::test_case'
+    assert ipa_utils.parse_test_name(name) == 'test_file::TestClass::test_case'
+
+    name = '/path/to/test_file.py::test_case'
+    assert ipa_utils.parse_test_name(name) == 'test_file::test_case'
+
+
+@patch('yaml.safe_load')
+def test_get_yaml_config(mock_yaml):
+    """Test get yaml config."""
+    mock_yaml.return_value = {'key': 'value'}
+
+    with patch('os.path.isfile') as mock_isfile:
+        mock_isfile.return_value = False
+        with pytest.raises(IpaUtilsException) as error:
+            ipa_utils.get_yaml_config('nonexistent.yaml')
+        assert str(error.value) == 'Config file not found: nonexistent.yaml'
+
+        mock_isfile.return_value = True
+        with patch('builtins.open', mock_open(read_data="key: value")):
+            result = ipa_utils.get_yaml_config('exists.yaml')
+            assert result == {'key': 'value'}
+
+
+def test_strtobool():
+    """Test strtobool function."""
+    assert ipa_utils.strtobool('y') == 1
+    assert ipa_utils.strtobool('yes') == 1
+    assert ipa_utils.strtobool('t') == 1
+    assert ipa_utils.strtobool('true') == 1
+    assert ipa_utils.strtobool('on') == 1
+    assert ipa_utils.strtobool('1') == 1
+
+    assert ipa_utils.strtobool('n') == 0
+    assert ipa_utils.strtobool('no') == 0
+    assert ipa_utils.strtobool('f') == 0
+    assert ipa_utils.strtobool('false') == 0
+    assert ipa_utils.strtobool('off') == 0
+    assert ipa_utils.strtobool('0') == 0
+
+    with pytest.raises(ValueError):
+        ipa_utils.strtobool('invalid')
+
+
+def test_load_json():
+    """Test load json function."""
+    with patch('builtins.open', mock_open(read_data='{"key": "value"}')):
+        result = ipa_utils.load_json('exists.json')
+        assert result == {'key': 'value'}
+
+
+def test_get_tests_from_description():
+    """Test get tests from description."""
+    descriptions = {
+        'desc1': '/path/to/desc1.yaml',
+        'desc2': '/path/to/desc2.yaml'
+    }
+
+    with patch('img_proof.ipa_utils.get_yaml_config') as mock_get_yaml:
+        mock_get_yaml.side_effect = [
+            {'tests': ['test_1', 'test_2'], 'include': ['desc2']},
+            {'tests': ['test_3']}
+        ]
+        tests = ipa_utils.get_tests_from_description('desc1', descriptions)
+        assert tests == ['test_1', 'test_2', 'test_3']
+
+    with pytest.raises(IpaUtilsException) as error:
+        ipa_utils.get_tests_from_description('missing', {})
+    assert str(error.value) == (
+        'Test description file with name: missing cannot be located.'
+    )
+
+
+@patch.object(paramiko.SSHClient, 'connect')
+def test_utils_get_ssh_client_file_not_found(mock_connect):
+    """Test get ssh client file not found exception."""
+    mock_connect.side_effect = FileNotFoundError('File not found')
+    with pytest.raises(IpaSSHException) as error:
+        ipa_utils.get_ssh_client('127.0.0.1', 'key', timeout=1)
+    assert 'SSH private key file key not found.' in str(error.value)
+
+
+def test_ignored():
+    """Test ignored context manager."""
+    with ipa_utils.ignored(ValueError):
+        raise ValueError("This should be ignored")
+
+    with pytest.raises(TypeError):
+        with ipa_utils.ignored(ValueError):
+            raise TypeError("This should not be ignored")
