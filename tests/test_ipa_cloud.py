@@ -477,6 +477,7 @@ class TestIpaCloud(object):
         assert mock_hard_reboot.call_count == 1
         mock_hard_reboot.reset_mock()
 
+    @patch('time.sleep')
     @patch.object(IpaCloud, '_set_instance_ip')
     @patch.object(IpaCloud, '_set_image_id')
     @patch.object(IpaCloud, '_start_instance_if_stopped')
@@ -490,7 +491,8 @@ class TestIpaCloud(object):
         mock_get_ssh_client,
         mock_start_instance,
         mock_set_image_id,
-        mock_set_instance_ip
+        mock_set_instance_ip,
+        mock_sleep
     ):
         """Test exception when connection not established after hard reboot."""
         mock_soft_reboot.return_value = None

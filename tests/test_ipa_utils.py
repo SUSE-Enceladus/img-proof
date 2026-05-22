@@ -60,9 +60,14 @@ def test_utils_clear_cache(mock_exec_cmd):
         ipa_utils.CLIENT_CACHE[LOCALHOST]
 
 
+@patch.object(paramiko.SSHClient, 'get_transport')
 @patch.object(paramiko.SSHClient, 'exec_command')
 @patch.object(paramiko.SSHClient, 'connect')
-def test_utils_get_ssh_connection(mock_connect, mock_exec_cmd):
+def test_utils_get_ssh_connection(
+    mock_connect,
+    mock_exec_cmd,
+    mock_get_transport
+):
     """Test successful ssh connection."""
     stdin = stdout = stderr = MagicMock()
     stderr.read.return_value = b''
@@ -98,6 +103,7 @@ def test_utils_ssh_connect_exception(mock_connect, mock_sleep, mock_time):
     assert mock_connect.call_count > 0
 
 
+@patch.object(paramiko.SSHClient, 'get_transport')
 @patch.object(time, 'time')
 @patch.object(time, 'sleep')
 @patch.object(paramiko.SSHClient, 'connect')
@@ -106,7 +112,8 @@ def test_utils_ssh_connect_authexception_once(
     mock_exec_cmd,
     mock_connect,
     mock_sleep,
-    mock_time
+    mock_time,
+    mock_get_transport
 ):
     """Test auth exception raised happening once connecting to ssh."""
     mock_connect.side_effect = [
