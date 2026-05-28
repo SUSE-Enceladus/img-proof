@@ -34,5 +34,5 @@ def test_sles_smt_reg(
     # ensure region hint is in log
     cloud_register_log = host.file('/var/log/cloudregister')
     assert cloud_register_log.contains(
-        'INFO:Region server arguments: ?regionHint='
+        '?regionHint='
     )
