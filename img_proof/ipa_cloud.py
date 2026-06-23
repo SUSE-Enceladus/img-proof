@@ -823,6 +823,7 @@ class IpaCloud(object):
 
                     try:
                         self.distro.reboot(self._get_ssh_client())
+                        time.sleep(3)
                         client = self._get_ssh_client()
 
                         if self.host_key_fingerprint != \

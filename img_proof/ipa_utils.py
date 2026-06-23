@@ -91,6 +91,8 @@ def establish_ssh_connection(ip,
                 allow_agent=False,
                 look_for_keys=False
             )
+            client.get_transport().set_keepalive(30)
+            return client
         except FileNotFoundError:
             raise
         except AuthenticationException:
@@ -110,6 +112,7 @@ def establish_ssh_connection(ip,
             attempts -= 1
             time.sleep(SECONDS_BETWEEN_REATTEMPTS)
         else:
+            client.get_transport().set_keepalive(30)
             return client
 
     raise IpaSSHException(
@@ -117,7 +120,7 @@ def establish_ssh_connection(ip,
     )
 
 
-def execute_ssh_command(client, cmd):
+def execute_ssh_command(client, cmd, timeout=None):
     """
     Execute given command using paramiko.
 
@@ -127,7 +130,7 @@ def execute_ssh_command(client, cmd):
         IpaSSHException: If stderr returns a non-empty string.
     """
     try:
-        stdin, stdout, stderr = client.exec_command(cmd)
+        stdin, stdout, stderr = client.exec_command(cmd, timeout=timeout)
         err = stderr.read()
         out = stdout.read()
         if err:
@@ -289,7 +292,7 @@ def get_ssh_client(ip,
     """Attempt to establish and test ssh connection."""
     if CLIENT_CACHE.get(ip):
         try:
-            execute_ssh_command(CLIENT_CACHE[ip], 'ls')
+            execute_ssh_command(CLIENT_CACHE[ip], 'ls', timeout=timeout)
         except Exception:
             clear_cache(ip)
         else:
@@ -308,7 +311,7 @@ def get_ssh_client(ip,
                 port,
                 timeout=wait_period
             )
-            execute_ssh_command(client, 'ls')
+            execute_ssh_command(client, 'ls', timeout=timeout)
         except FileNotFoundError:
             raise IpaSSHException(
                 'SSH private key file {key_file} not found.'.format(
