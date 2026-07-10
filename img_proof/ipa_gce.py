@@ -336,7 +336,7 @@ class GCECloud(IpaCloud):
         if subnet_id:
             subnet = self._get_subnet(subnet_id)
             interface['subnetwork'] = subnet.self_link
-            interface['network'] = subnet.network.self_link
+            interface['network'] = subnet.network
         else:
             interface['network'] = self._get_network('default').self_link
 

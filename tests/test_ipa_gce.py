@@ -264,7 +264,7 @@ class TestGCECloud(object):
     def test_get_network_config(self, mock_get_subnet):
         subnet = MagicMock()
         subnet.self_link = 'projects/test/regions/us-west1/subnetworks/sub-123'
-        subnet.network.self_link = 'projects/test/global/networks/network'
+        subnet.network = 'projects/test/global/networks/network'
 
         mock_get_subnet.return_value = subnet
 
@@ -273,7 +273,7 @@ class TestGCECloud(object):
             use_gvnic=True
         )
 
-        assert subnet_config['network'] == subnet.network.self_link
+        assert subnet_config['network'] == subnet.network
         assert subnet_config['subnetwork'] == subnet.self_link
 
     def test_get_shielded_instance_config(self):
