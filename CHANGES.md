@@ -1,3 +1,10 @@
+v9.16.0(2026-07-14)
+==================
+
+- Fix Azure import location due ot breaking change
+- Read proudct version from VERSION_ID instead of VERSION in SUSE tests
+- Prevents Paramiko from waiting indefinitely for soft-reboot test
+
 v9.15.0(2026-05-28)
 ==================
 
