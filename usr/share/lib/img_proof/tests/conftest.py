@@ -390,31 +390,20 @@ def get_variant(host, get_release_value):
 
 
 @pytest.fixture()
-def get_version(host, get_release_value, is_beta_test):
+def get_version(host, get_release_value):
     """
     Parse version and return a float of major and patch version
+    VERSION_ID in sle is always in format MAJOR.MINOR version
     """
     def f():
-        version = get_release_value('VERSION')
-        assert version
+        version_id = get_release_value('VERSION_ID')
+        assert version_id
 
-        if is_beta_test():
-            beta_strings = r'(?: PublicRC)'
-        else:
-            beta_strings = r''
-
-        match = re.match(
-            r'^(?P<major_version>\d+)'
-            r'(?:[.-](?:[sS][pP])?'
-            r'(?P<minor_version>\d+)'
-            fr'{beta_strings}?)?$',
-            version
-        )
-
-        if not match:
+        try:
+            version = float(version_id)
+            return version
+        except:
             return None
-
-        return float(f'{match["major_version"]}.{match["minor_version"]}')
     return f
 
 
