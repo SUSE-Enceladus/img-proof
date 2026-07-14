@@ -23,7 +23,12 @@
 import os
 
 from azure.identity import ClientSecretCredential
-from azure.mgmt.resource import ResourceManagementClient
+
+try:
+    from azure.mgmt.resource.resources import ResourceManagementClient
+except ImportError:
+    from azure.mgmt.resource import ResourceManagementClient
+
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.compute import ComputeManagementClient
 
