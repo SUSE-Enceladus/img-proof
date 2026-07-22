@@ -1,3 +1,9 @@
+v9.17.0(2026-07-22)
+==================
+
+- Fix network attachment in gce class
+- Add SLES 16.1 repos to repo test
+
 v9.16.0(2026-07-14)
 ==================
 
