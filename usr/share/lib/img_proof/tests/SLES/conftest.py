@@ -586,6 +586,14 @@ BASE_16_0_SAP = [
     'SLE-Product-SLES_SAP-16.0-Source',
 ]
 
+BASE_16_1 = [
+    repo.replace('16.0', '16.1') for repo in BASE_16_0
+]
+
+BASE_16_1_SAP = [
+    repo.replace('16.0', '16.1') for repo in BASE_16_0_SAP
+]
+
 SLES_REPOS = {
     '12-X86_64': SLE_12_BASE + SLE_12_MODULES,
     '12-X86_64-SAP': SLE_12_SAP + SLE_12_BASE + SLE_12_MODULES,
@@ -644,6 +652,9 @@ SLES_REPOS = {
     '16.0-X86_64': BASE_16_0,
     '16.0-AARCH64': BASE_16_0,
     '16.0-X86_64-SAP': BASE_16_0_SAP,
+    '16.1-X86_64': BASE_16_1,
+    '16.1-AARCH64': BASE_16_1,
+    '16.1-X86_64-SAP': BASE_16_1_SAP,
 }
 
 
