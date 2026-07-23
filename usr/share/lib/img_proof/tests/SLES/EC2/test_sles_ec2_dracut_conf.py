@@ -2,7 +2,12 @@ import pytest
 import shlex
 
 
-def test_sles_ec2_dracut_conf(host, get_release_value, determine_architecture):
+def test_sles_ec2_dracut_conf(
+    host,
+    get_release_value,
+    determine_architecture,
+    get_version
+):
     if determine_architecture() != 'X86_64':
         pytest.skip('Only x86_64 architecture is tested.')
 
@@ -31,7 +36,7 @@ def test_sles_ec2_dracut_conf(host, get_release_value, determine_architecture):
         for config_file in config_files_in_dir:
             config_files.append(config_dir + config_file)
 
-    version = get_release_value('VERSION')
+    version = get_version()
     assert version
 
     name = get_release_value('PRETTY_NAME').lower()
@@ -41,8 +46,8 @@ def test_sles_ec2_dracut_conf(host, get_release_value, determine_architecture):
         if (
             driver.startswith('virtio') and
             (
-                version.startswith('15') or
-                version == '12-SP5' or
+                (version >= 15.0 and version < 16.0) or
+                version == 12.5 or
                 'micro' in name
             )
         ):

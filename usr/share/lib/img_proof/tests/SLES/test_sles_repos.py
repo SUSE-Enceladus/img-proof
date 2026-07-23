@@ -3,13 +3,13 @@ import pytest
 
 def test_sles_repos(
     get_instance_repos,
-    get_release_value,
+    get_version,
     get_sles_repos,
     get_baseproduct,
     determine_architecture,
     is_sles_sapcal
 ):
-    version = [get_release_value('VERSION'), determine_architecture()]
+    version = [str(get_version()), determine_architecture()]
 
     product = get_baseproduct()
     if 'sap' in product.lower():
@@ -24,9 +24,6 @@ def test_sles_repos(
 
     if is_sles_sapcal():
         repos = [repo for repo in repos if 'Python2' not in repo]
-
-        if get_release_value('VERSION') == '12-SP3':
-            repos = [repo for repo in repos if 'HPC' not in repo]
 
     if not repos:
         pytest.fail(

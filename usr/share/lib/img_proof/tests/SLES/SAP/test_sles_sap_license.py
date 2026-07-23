@@ -1,10 +1,10 @@
 import pytest
 
 
-def test_sles_sap_license(confirm_license_content, get_release_value):
-    version = get_release_value('VERSION')
+def test_sles_sap_license(confirm_license_content, get_version):
+    version = get_version()
 
-    if version in ('12-SP4', '12-SP5'):
+    if version == 12.5:
         # Skip SAP specific license, license is combined
         pytest.skip('Has combined SAP license.')
 
