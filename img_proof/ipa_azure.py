@@ -252,15 +252,15 @@ class AzureCloud(IpaCloud):
         """
         if self.image_publisher:
             storage_profile = {
-                'image_reference': {
+                'imageReference': {
                     'publisher': self.image_publisher,
                     'offer': self.image_offer,
                     'sku': self.image_sku,
                     'version': self.image_version
                 },
-                'os_disk': {
-                    'disk_size_gb': self.root_disk_size,
-                    'create_option': 'FromImage'
+                'osDisk': {
+                    'diskSizeGb': self.root_disk_size,
+                    'createOption': 'FromImage'
                 }
             }
         elif self.gallery_name:
@@ -311,7 +311,7 @@ class AzureCloud(IpaCloud):
         """
         Create a subnet in the provided vnet and resource group.
         """
-        subnet_config = {'address_prefix': '10.0.0.0/29'}
+        subnet_config = {'properties': {'addressPrefix': '10.0.0.0/29'}}
 
         try:
             subnet_setup = self.network.subnets.begin_create_or_update(
@@ -330,8 +330,10 @@ class AzureCloud(IpaCloud):
         """
         vnet_config = {
             'location': region,
-            'address_space': {
-                'address_prefixes': ['10.0.0.0/27']
+            'properties': {
+                'addressSpace': {
+                    'addressPrefixes': ['10.0.0.0/27']
+                }
             }
         }
 
@@ -374,11 +376,11 @@ class AzureCloud(IpaCloud):
         self._process_image_id()
 
         hardware_profile = {
-            'vm_size': self.instance_type or AZURE_DEFAULT_TYPE
+            'vmSize': self.instance_type or AZURE_DEFAULT_TYPE
         }
 
         network_profile = {
-            'network_interfaces': [{
+            'networkInterfaces': [{
                 'id': interface.id,
                 'primary': True
             }]
@@ -387,16 +389,16 @@ class AzureCloud(IpaCloud):
         storage_profile = self._create_storage_profile()
 
         os_profile = {
-            'computer_name': self.running_instance_id,
-            'admin_username': self.ssh_user,
-            'linux_configuration': {
-                'disable_password_authentication': True,
+            'computerName': self.running_instance_id,
+            'adminUsername': self.ssh_user,
+            'linuxConfiguration': {
+                'disablePasswordAuthentication': True,
                 'ssh': {
-                    'public_keys': [{
+                    'publicKeys': [{
                         'path': '/home/{0}/.ssh/authorized_keys'.format(
                             self.ssh_user
                         ),
-                        'key_data': self.ssh_public_key
+                        'keyData': self.ssh_public_key
                     }]
                 }
             }
@@ -404,10 +406,12 @@ class AzureCloud(IpaCloud):
 
         vm_config = {
             'location': self.region,
-            'os_profile': os_profile,
-            'hardware_profile': hardware_profile,
-            'storage_profile': storage_profile,
-            'network_profile': network_profile
+            'properties': {
+                'osProfile': os_profile,
+                'hardwareProfile': hardware_profile,
+                'storageProfile': storage_profile,
+                'networkProfile': network_profile
+            }
         }
 
         if self.image_publisher and self.include_plan_info:
