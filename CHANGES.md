@@ -1,3 +1,9 @@
+v9.18.0(2026-07-24)
+==================
+
+- Update azure class for breaking SDK changes
+- Use get_version fixture to get float version in SLES tests
+
 v9.17.0(2026-07-22)
 ==================
 
