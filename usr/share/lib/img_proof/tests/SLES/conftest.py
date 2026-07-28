@@ -631,6 +631,11 @@ SLES_REPOS = {
     '16.1-X86_64': BASE_16_1,
     '16.1-AARCH64': BASE_16_1,
     '16.1-X86_64-SAP': BASE_16_1_SAP,
+}
+
+# SLE Micro is a separate product from SLES, so it gets its own
+# lookup table instead of being folded into SLES_REPOS.
+MICRO_REPOS = {
     '5.4-X86_64': SLE_MICRO_5_4_BASE,
     '5.4-AARCH64': SLE_MICRO_5_4_BASE,
     '5.5-X86_64': SLE_MICRO_5_5_BASE,
@@ -642,6 +647,13 @@ SLES_REPOS = {
 def get_sles_repos():
     def f(version):
         return SLES_REPOS.get(version)
+    return f
+
+
+@pytest.fixture()
+def get_micro_repos():
+    def f(version):
+        return MICRO_REPOS.get(version)
     return f
 
 
