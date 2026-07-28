@@ -594,6 +594,20 @@ BASE_16_1_SAP = [
     repo.replace('16.0', '16.1') for repo in BASE_16_0_SAP
 ]
 
+# SLE Micro is a single, non-modular product (unlike SLES), so it only
+# ever registers its own Pool/Updates/Debuginfo/Source repos.
+SLE_MICRO_5_5_BASE = [
+    'SLE-Micro-5.5-Debuginfo-Pool',
+    'SLE-Micro-5.5-Debuginfo-Updates',
+    'SLE-Micro-5.5-Pool',
+    'SLE-Micro-5.5-Source-Pool',
+    'SLE-Micro-5.5-Updates'
+]
+
+SLE_MICRO_5_4_BASE = [
+    repo.replace('5.5', '5.4') for repo in SLE_MICRO_5_5_BASE
+]
+
 SLES_REPOS = {
     '12.5-X86_64': SLE_12_SP5_BASE + SLE_12_SP5_MODULES,
     '12.5-X86_64-SAP':
@@ -617,6 +631,10 @@ SLES_REPOS = {
     '16.1-X86_64': BASE_16_1,
     '16.1-AARCH64': BASE_16_1,
     '16.1-X86_64-SAP': BASE_16_1_SAP,
+    '5.4-X86_64': SLE_MICRO_5_4_BASE,
+    '5.4-AARCH64': SLE_MICRO_5_4_BASE,
+    '5.5-X86_64': SLE_MICRO_5_5_BASE,
+    '5.5-AARCH64': SLE_MICRO_5_5_BASE,
 }
 
 
