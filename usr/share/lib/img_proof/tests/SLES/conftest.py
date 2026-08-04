@@ -608,6 +608,15 @@ SLE_MICRO_5_4_BASE = [
     repo.replace('5.5', '5.4') for repo in SLE_MICRO_5_5_BASE
 ]
 
+SLE_MICRO_6_0_BASE = [
+    repo.replace('SLE-Micro', 'SL-Micro').replace('5.5', '6.0')
+    for repo in SLE_MICRO_5_5_BASE
+]
+
+SLE_MICRO_6_1_BASE = [
+    repo.replace('6.0', '6.1') for repo in SLE_MICRO_6_0_BASE
+]
+
 SLES_REPOS = {
     '12.5-X86_64': SLE_12_SP5_BASE + SLE_12_SP5_MODULES,
     '12.5-X86_64-SAP':
@@ -640,6 +649,10 @@ MICRO_REPOS = {
     '5.4-AARCH64': SLE_MICRO_5_4_BASE,
     '5.5-X86_64': SLE_MICRO_5_5_BASE,
     '5.5-AARCH64': SLE_MICRO_5_5_BASE,
+    '6.0-X86_64': SLE_MICRO_6_0_BASE,
+    '6.0-AARCH64': SLE_MICRO_6_0_BASE,
+    '6.1-X86_64': SLE_MICRO_6_1_BASE,
+    '6.1-AARCH64': SLE_MICRO_6_1_BASE,
 }
 
 

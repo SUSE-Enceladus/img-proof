@@ -12,19 +12,22 @@ def test_sles_repos(
     is_sle_micro
 ):
     version = [str(get_version()), determine_architecture()]
+    is_micro = is_sle_micro()
 
-    if is_sle_micro():
-        repos = get_micro_repos('-'.join(version))
-    else:
+    if not is_micro:
         product = get_baseproduct()
         if 'sap' in product.lower():
             version.append('SAP')
         if 'hpc' in product.lower():
             version.append('HPC')
-        repos = get_sles_repos('-'.join(version))
 
     version = '-'.join(version)
     missing_repos = []
+
+    if is_micro:
+        repos = get_micro_repos(version)
+    else:
+        repos = get_sles_repos(version)
 
     if is_sles_sapcal():
         repos = [repo for repo in repos if 'Python2' not in repo]
