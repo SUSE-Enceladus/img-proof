@@ -91,12 +91,7 @@ SLE_12_SP2_BASE = [
     'SLE-SDK12-SP2-Updates'
 ]
 
-SLE_12_SP2_MODULES = SLE_12_SP1_MODULES + [
-    'SLE-Module-HPC12-Debuginfo-Pool',
-    'SLE-Module-HPC12-Debuginfo-Updates',
-    'SLE-Module-HPC12-Pool',
-    'SLE-Module-HPC12-Updates'
-]
+SLE_12_SP2_MODULES = SLE_12_SP1_MODULES
 
 SLE_12_SP2_SAP = [
     'SLE12-SP2-SAP-Debuginfo-Pool',
@@ -109,6 +104,13 @@ SLE_12_SP2_SAP = [
     'SLE-HA12-SP2-Pool',
     'SLE-HA12-SP2-Source-Pool',
     'SLE-HA12-SP2-Updates'
+]
+
+SLE_12_SP2_HPC = [
+    'SLE-Module-HPC12-Debuginfo-Pool',
+    'SLE-Module-HPC12-Debuginfo-Updates',
+    'SLE-Module-HPC12-Pool',
+    'SLE-Module-HPC12-Updates'
 ]
 
 SLE_12_SP3_BASE = [
@@ -136,6 +138,8 @@ SLE_12_SP3_SAP = [
     'SLE-HA12-SP3-Source-Pool',
     'SLE-HA12-SP3-Updates'
 ]
+
+SLE_12_SP3_HPC = SLE_12_SP2_HPC
 
 SLE_12_SP4_BASE = [
     'SLES12-SP4-Debuginfo-Pool',
@@ -167,6 +171,8 @@ SLE_12_SP4_SAP = [
     'SLE-HA12-SP4-Updates'
 ]
 
+SLE_12_SP4_HPC = SLE_12_SP3_HPC
+
 SLE_12_SP5_BASE = [
     'SLES12-SP5-Debuginfo-Pool',
     'SLES12-SP5-Debuginfo-Updates',
@@ -196,6 +202,8 @@ SLE_12_SP5_SAP = [
     'SLE-HA12-SP5-Source-Pool',
     'SLE-HA12-SP5-Updates'
 ]
+
+SLE_12_SP5_HPC = SLE_12_SP4_HPC
 
 SLE_15_BASE = [
     'SLE-Module-Basesystem15-Debuginfo-Pool',
@@ -621,7 +629,8 @@ SLES_REPOS = {
     '12.5-X86_64': SLE_12_SP5_BASE + SLE_12_SP5_MODULES,
     '12.5-X86_64-SAP':
         SLE_12_SP5_SAP + SLE_12_SP5_BASE + SLE_12_SP5_MODULES,
-    '12.5-X86_64-HPC': SLE_12_SP5_BASE + SLE_12_SP5_MODULES,
+    '12.5-X86_64-HPC':
+        SLE_12_SP5_BASE + SLE_12_SP5_MODULES + SLE_12_SP5_HPC,
     '15.5-AARCH64': BASE_15_SP5,
     '15.5-X86_64': BASE_15_SP5 + SLE_15_SP5_X86_64_MODULES,
     '15.5-X86_64-SAP': BASE_15_SP5_SAP + SLE_15_SP5_X86_64_MODULES,
