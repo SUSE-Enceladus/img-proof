@@ -594,6 +594,29 @@ BASE_16_1_SAP = [
     repo.replace('16.0', '16.1') for repo in BASE_16_0_SAP
 ]
 
+# SLE Micro is a single, non-modular product (unlike SLES), so it only
+# ever registers its own Pool/Updates/Debuginfo/Source repos.
+SLE_MICRO_5_5_BASE = [
+    'SLE-Micro-5.5-Debuginfo-Pool',
+    'SLE-Micro-5.5-Debuginfo-Updates',
+    'SLE-Micro-5.5-Pool',
+    'SLE-Micro-5.5-Source-Pool',
+    'SLE-Micro-5.5-Updates'
+]
+
+SLE_MICRO_5_4_BASE = [
+    repo.replace('5.5', '5.4') for repo in SLE_MICRO_5_5_BASE
+]
+
+SLE_MICRO_6_0_BASE = [
+    repo.replace('SLE-Micro', 'SL-Micro').replace('5.5', '6.0')
+    for repo in SLE_MICRO_5_5_BASE
+]
+
+SLE_MICRO_6_1_BASE = [
+    repo.replace('6.0', '6.1') for repo in SLE_MICRO_6_0_BASE
+]
+
 SLES_REPOS = {
     '12.5-X86_64': SLE_12_SP5_BASE + SLE_12_SP5_MODULES,
     '12.5-X86_64-SAP':
@@ -619,11 +642,31 @@ SLES_REPOS = {
     '16.1-X86_64-SAP': BASE_16_1_SAP,
 }
 
+# SLE Micro is a separate product from SLES, so it gets its own
+# lookup table instead of being folded into SLES_REPOS.
+MICRO_REPOS = {
+    '5.4-X86_64': SLE_MICRO_5_4_BASE,
+    '5.4-AARCH64': SLE_MICRO_5_4_BASE,
+    '5.5-X86_64': SLE_MICRO_5_5_BASE,
+    '5.5-AARCH64': SLE_MICRO_5_5_BASE,
+    '6.0-X86_64': SLE_MICRO_6_0_BASE,
+    '6.0-AARCH64': SLE_MICRO_6_0_BASE,
+    '6.1-X86_64': SLE_MICRO_6_1_BASE,
+    '6.1-AARCH64': SLE_MICRO_6_1_BASE,
+}
+
 
 @pytest.fixture()
 def get_sles_repos():
     def f(version):
         return SLES_REPOS.get(version)
+    return f
+
+
+@pytest.fixture()
+def get_micro_repos():
+    def f(version):
+        return MICRO_REPOS.get(version)
     return f
 
 
