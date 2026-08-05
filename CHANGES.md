@@ -1,3 +1,10 @@
+v9.19.0(2026-08-05)
+==================
+
+- Add SLE Micro 5.3/5.4/5.5 repos to repo test
+- Fix HPC12 module repos leaking into SLE 12 SAP/base repo table
+- Add SLES 15-SP4 repos to repo test
+
 v9.18.0(2026-07-24)
 ==================
 
