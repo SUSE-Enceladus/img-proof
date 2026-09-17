@@ -2,10 +2,10 @@ import pytest
 
 
 @pytest.mark.parametrize('name', [
-    ('cloud-init-local'),
-    ('cloud-init'),
-    ('cloud-config'),
-    ('cloud-final')
+    ('cloud-init-local.service'),
+    ('cloud-init.service'),
+    ('cloud-config.service'),
+    ('cloud-final.service')
 ])
 def test_sles_ec2_services(check_service, host, name):
     check_service(name, running=None)
