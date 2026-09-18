@@ -20,11 +20,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import threading
 import time
 
 from img_proof import ipa_utils
 from img_proof.ipa_constants import NOT_IMPLEMENTED
 from img_proof.ipa_exceptions import IpaDistroException
+
+# Channel.exec_command() has no timeout of its own (Channel.settimeout()
+# doesn't apply to it), so a connection killed uncleanly by the reboot
+# itself can hang it forever. Bound it via a thread join instead.
+REBOOT_EXEC_TIMEOUT = 30
 
 
 class Distro(object):
@@ -153,15 +159,42 @@ class Distro(object):
 
         try:
             transport = client.get_transport()
-            channel = transport.open_session()
-            channel.exec_command(reboot_cmd)
-            time.sleep(2)  # Required for delay in reboot
-            transport.close()
+            channel = transport.open_session(timeout=REBOOT_EXEC_TIMEOUT)
+
+            exec_state = {}
+
+            def _exec_reboot_command():
+                try:
+                    channel.exec_command(reboot_cmd)
+                except Exception as error:
+                    exec_state['error'] = error
+                finally:
+                    exec_state['done'] = True
+
+            exec_thread = threading.Thread(target=_exec_reboot_command)
+            exec_thread.daemon = True
+            exec_thread.start()
+            exec_thread.join(REBOOT_EXEC_TIMEOUT)
+
+            if 'done' not in exec_state:
+                # Force-close the socket to unblock paramiko's read loop,
+                # which is the only other thing that can release the
+                # exec_command() wait. The thread is a daemon, so we can
+                # abandon it either way.
+                with ipa_utils.ignored(Exception):
+                    transport.close()
+            else:
+                if 'error' in exec_state:
+                    raise exec_state['error']
+
+                time.sleep(2)  # Required for delay in reboot
+                transport.close()
         except Exception as error:
             raise IpaDistroException(
                 'An error occurred rebooting instance: %s' % error
             )
-        ipa_utils.clear_cache()
+        finally:
+            ipa_utils.clear_cache()
 
     def update(self, client):
         """Execute update command on instance."""

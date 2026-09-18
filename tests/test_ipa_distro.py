@@ -78,14 +78,92 @@ def test_distro_get_commands():
     assert distro.get_sudo_exec_wrapper() == 'sudo sh -c'
 
 
+@patch('img_proof.ipa_distro.ipa_utils.clear_cache')
+@patch('img_proof.ipa_distro.time.sleep')
+def test_distro_reboot(mock_sleep, mock_clear_cache):
+    """Test distro reboot happy path execs the reboot command."""
+    client = MagicMock()
+    transport = client.get_transport.return_value
+    channel = transport.open_session.return_value
+    distro = Distro()
+    distro.init_system = 'systemd'
+    distro.get_stop_ssh_service_cmd = MagicMock(
+        return_value='systemctl stop sshd'
+    )
+
+    distro.reboot(client)
+
+    from img_proof.ipa_distro import REBOOT_EXEC_TIMEOUT
+    transport.open_session.assert_called_once_with(timeout=REBOOT_EXEC_TIMEOUT)
+
+    expected_cmd = (
+        "sudo sh -c '(sleep 1 && systemctl stop sshd &&"
+        " shutdown -r now &)' && exit"
+    )
+    channel.exec_command.assert_called_once_with(expected_cmd)
+
+    mock_sleep.assert_called_once_with(2)
+    transport.close.assert_called_once()
+    mock_clear_cache.assert_called_once()
+
+
+@patch('img_proof.ipa_distro.ipa_utils.clear_cache')
+@patch('img_proof.ipa_distro.time.sleep')
+def test_distro_reboot_exec_timeout(mock_sleep, mock_clear_cache):
+    """Test distro reboot closes transport instead of hanging when exec_command
+    never returns."""
+    client = MagicMock()
+    transport = client.get_transport.return_value
+    channel = transport.open_session.return_value
+    import threading
+    channel.exec_command.side_effect = lambda cmd: threading.Event().wait(0.1)
+    distro = Distro()
+    distro.init_system = 'systemd'
+    distro.get_stop_ssh_service_cmd = MagicMock(
+        return_value='systemctl stop sshd'
+    )
+
+    with patch('img_proof.ipa_distro.REBOOT_EXEC_TIMEOUT', 0.05):
+        distro.reboot(client)
+
+    transport.open_session.assert_called_once_with(timeout=0.05)
+    mock_sleep.assert_not_called()
+    transport.close.assert_called_once()
+    mock_clear_cache.assert_called_once()
+
+
+@patch('img_proof.ipa_distro.ipa_utils.clear_cache')
+def test_distro_reboot_exec_error(mock_clear_cache):
+    """Test distro reboot wraps exec_command errors."""
+    client = MagicMock()
+    transport = client.get_transport.return_value
+    channel = transport.open_session.return_value
+    channel.exec_command.side_effect = Exception('Broken pipe')
+    distro = Distro()
+    distro.init_system = 'systemd'
+    distro.get_stop_ssh_service_cmd = MagicMock(
+        return_value='systemctl stop sshd'
+    )
+
+    with pytest.raises(IpaDistroException) as excinfo:
+        distro.reboot(client)
+
+    assert 'An error occurred rebooting instance: Broken pipe' \
+        in str(excinfo.value)
+    mock_clear_cache.assert_called_once()
+    transport.close.assert_not_called()
+
+
 def test_distro_get_vm_info():
     """Test distro get vm info method."""
     client = MagicMock()
     distro = Distro()
     distro.init_system = 'systemd'
 
-    with patch('img_proof.ipa_utils.execute_ssh_command',
-               MagicMock(return_value='')) as mocked:
+    with patch(
+        'img_proof.ipa_utils.execute_ssh_command',
+        MagicMock(return_value='')
+    ) as mocked:
         distro.get_vm_info(client)
 
     mocked.assert_has_calls([
