@@ -1,10 +1,14 @@
 import pytest
 
-
 @pytest.mark.parametrize('name', [
     ('waagent.service'),
 ])
-def test_sles_azure_running_services(check_service, name):
+def test_sles_azure_running_services(check_service, name, is_sle_micro, get_version):
+    if is_sle_micro():
+        version = get_version()
+        if version is not None and version <= 5.4:
+            pytest.skip('Skipping test for SLE Micro < 5.5')
+
     check_service(name)
 
 
@@ -14,7 +18,12 @@ def test_sles_azure_running_services(check_service, name):
     ('cloud-config.service'),
     ('cloud-final.service')
 ])
-def test_sles_azure_one_shot_services(check_service, host, name):
+def test_sles_azure_one_shot_services(check_service, host, name, is_sle_micro, get_version):
+    if is_sle_micro():
+        version = get_version()
+        if version is not None and version <= 5.4:
+            pytest.skip('Skipping test for SLE Micro < 5.5')
+
     check_service(name, running=None)
 
     if host.exists('systemctl'):
