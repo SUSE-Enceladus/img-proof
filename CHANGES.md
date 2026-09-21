@@ -1,3 +1,11 @@
+v9.20.0(2026-09-21)
+==================
+
+- Use explicit service extension in SLES test suite
+  + This prevents a confusing error when testinfra falls back to sysvinit
+- Fix reboot hang-up in SLES test suite
+- Skip service tests in SLE Micro < 5.5
+
 v9.19.0(2026-08-05)
 ==================
 
