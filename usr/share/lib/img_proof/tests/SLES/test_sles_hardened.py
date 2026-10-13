@@ -36,6 +36,7 @@ def remove_swap(host, swap_file=SWAP_FILE):
 def test_sles_hardened(
     host,
     get_release_value,
+    is_chost,
     is_sles_sap,
     is_sle_micro,
     get_variant,
@@ -43,11 +44,12 @@ def test_sles_hardened(
 ):
     variant = get_variant()
     is_sap = is_sles_sap()
+    is_chost = is_chost()
     version = get_version()
     major_version = int(version)
 
-    if is_sap and version >= 16.0:
-        # SAP 16+ is hardened by default
+    if is_sap and version >= 16.0 or is_chost:
+        # SAP 16+ and CHOST are hardened by default
         pass
     elif "hardened" not in variant:
         pytest.skip('Skipping non-hardened image')
@@ -74,7 +76,13 @@ def test_sles_hardened(
     xml_file = xml_path.replace("/", "-")
     oscap_dir = "/tmp/oscap"
     oscap_file = f"/usr/share/xml/scap/ssg/content/ssg-sle{str(major_version)}-ds.xml"
-    oscap_profile = "pcs-hardening-sap" if is_sap else "pcs-hardening"
+
+    if is_sap:
+        oscap_profile = "pcs-hardening-sap"
+    elif is_chost:
+        oscap_profile = "pcs-hardening-chost"
+    else:
+        oscap_profile = "pcs-hardening"
 
     host.run("mkdir {}".format(oscap_dir))
     host.run(
