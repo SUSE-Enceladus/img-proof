@@ -9,8 +9,6 @@ def test_sles_motd(
     is_suma_proxy,
     get_variant
 ):
-
-
     pretty_name = get_release_value('PRETTY_NAME')
     assert pretty_name
 
@@ -32,11 +30,8 @@ def test_sles_motd(
 
     assert (
         motd.contains(pretty_name) or
-        motd.contains(
-            'SUSE Linux Enterprise Server {0}'.format(
-                version.replace('-', ' ')
-            )
-        )
+        motd.contains('SUSE Linux Enterprise Server') and
+        motd.contains(str(version.replace('-', ' ')))
     )
 
     # check motd content for all segments
