@@ -48,8 +48,8 @@ def test_sles_hardened(
     version = get_version()
     major_version = int(version)
 
-    if is_sap and version >= 16.0 or is_chost:
-        # SAP 16+ and CHOST are hardened by default
+    if (is_sap or is_chost) and version >= 16.0:
+        # SLES SAP CHOST 16+ are hardened by default
         pass
     elif "hardened" not in variant:
         pytest.skip('Skipping non-hardened image')
