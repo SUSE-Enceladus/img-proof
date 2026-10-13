@@ -5,7 +5,7 @@ import pytest
 def test_sles_sap_motd(host, get_release_value, get_variant, get_version):
     motd = host.file('/etc/motd')
 
-    if not motd.exists:
+    if not motd.exists or motd.size == 0:
         motd = host.file('/usr/lib/motd.d/10_header')
 
     assert motd.exists
