@@ -38,13 +38,20 @@ def test_sles_hardened(
     get_release_value,
     is_sles_sap,
     is_sle_micro,
-    get_variant
+    get_variant,
+    get_version
 ):
     variant = get_variant()
+    is_sap = is_sles_sap()
+    version = get_version()
+    major_version = int(version)
 
-    if "hardened" not in variant:
+    if is_sap and version >= 16.0:
+        # SAP 16+ is hardened by default
+        pass
+    elif "hardened" not in variant:
         pytest.skip('Skipping non-hardened image')
-    if is_sle_micro():
+    elif is_sle_micro():
         pytest.skip('Skipping SLE Micro')
 
     scap_report = os.environ.get("SCAP_REPORT", "")
@@ -62,12 +69,12 @@ def test_sles_hardened(
     if not setup_swap(host):
         pytest.skip("Failed to setup swap, not enough memory.")
 
-    xml_path = "pub/projects/security/oval/suse.linux.enterprise.15.xml"
+    xml_path = f"pub/projects/security/oval/suse.linux.enterprise.{str(major_version)}.xml"
     # Downloaded file should have slashes replaced by hyphens
     xml_file = xml_path.replace("/", "-")
     oscap_dir = "/tmp/oscap"
-    oscap_file = "/usr/share/xml/scap/ssg/content/ssg-sle15-ds.xml"
-    oscap_profile = "pcs-hardening-sap" if is_sles_sap() else "pcs-hardening"
+    oscap_file = f"/usr/share/xml/scap/ssg/content/ssg-sle{str(major_version)}-ds.xml"
+    oscap_profile = "pcs-hardening-sap" if is_sap else "pcs-hardening"
 
     host.run("mkdir {}".format(oscap_dir))
     host.run(
