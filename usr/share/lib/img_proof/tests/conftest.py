@@ -166,7 +166,8 @@ def is_suma_server(host, get_baseproduct, get_suma_version):
         suma_server_product = ''
         for prod_file in [
             '/etc/products.d/SUSE-Manager-Server.prod',
-            '/etc/products.d/Multi-Linux-Manager-Server.prod'
+            '/etc/products.d/Multi-Linux-Manager-Server.prod',
+            '/etc/products.d/Multi-Linux-Manager-Server-SLE.prod'
         ]:
             suma_server = host.file(prod_file)
             if suma_server.exists:
@@ -179,12 +180,17 @@ def is_suma_server(host, get_baseproduct, get_suma_version):
         if suma_version and suma_version.startswith('4'):
             # For suma 4.3 baseproduct HAS to be SUMA server
             expected_products = [suma_server_product]
-        else:
-            # For suma >=5 baseproduct has to be Micro
+        elif suma_version and suma_version == '5.1':
+            # For suma 5.1 baseproduct has to be Micro
             # SUMA is included as an additional product
             expected_products = [
                 '/etc/products.d/SLE-Micro.prod',
                 '/etc/products.d/SL-Micro.prod'
+            ]
+        else:
+            # For suma 5.2 and newer base product is SLES
+            expected_products = [
+                '/etc/products.d/SLES.prod'
             ]
 
         return all([
@@ -201,7 +207,8 @@ def is_suma_proxy(host, get_baseproduct, get_suma_version):
         suma_proxy_product = ''
         for prod_file in [
             '/etc/products.d/SUSE-Manager-Proxy.prod',
-            '/etc/products.d/Multi-Linux-Manager-Proxy.prod'
+            '/etc/products.d/Multi-Linux-Manager-Proxy.prod',
+            '/etc/products.d/Multi-Linux-Manager-Proxy-SLE.prod',
         ]:
             suma_proxy = host.file(prod_file)
             if suma_proxy.exists:
@@ -214,12 +221,17 @@ def is_suma_proxy(host, get_baseproduct, get_suma_version):
         if suma_version and suma_version.startswith('4'):
             # For suma 4.3 baseproduct HAS to be SUMA proxy
             expected_products = [suma_proxy_product]
-        else:
-            # For suma >=5 baseproduct has to be Micro
+        elif suma_version and suma_version == '5.1':
+            # For suma 5.1 baseproduct has to be Micro
             # SUMA is included as an additional product
             expected_products = [
                 '/etc/products.d/SLE-Micro.prod',
                 '/etc/products.d/SL-Micro.prod',
+            ]
+        else:
+            # For suma 5.2 and newer base product is SLES
+            expected_products = [
+                '/etc/products.d/SLES.prod'
             ]
 
         return all([
