@@ -188,7 +188,7 @@ def is_suma_server(host, get_baseproduct, get_suma_version):
                 '/etc/products.d/SL-Micro.prod'
             ]
         else:
-            # For suma > 5.1 base product is SLES
+            # For suma 5.2 and newer base product is SLES
             expected_products = [
                 '/etc/products.d/SLES.prod'
             ]
@@ -222,14 +222,14 @@ def is_suma_proxy(host, get_baseproduct, get_suma_version):
             # For suma 4.3 baseproduct HAS to be SUMA proxy
             expected_products = [suma_proxy_product]
         elif suma_version and suma_version == '5.1':
-            # For suma 5-1 baseproduct has to be Micro
+            # For suma 5.1 baseproduct has to be Micro
             # SUMA is included as an additional product
             expected_products = [
                 '/etc/products.d/SLE-Micro.prod',
                 '/etc/products.d/SL-Micro.prod',
             ]
         else:
-            # For suma > 5.1 base product is SLES
+            # For suma 5.2 and newer base product is SLES
             expected_products = [
                 '/etc/products.d/SLES.prod'
             ]
