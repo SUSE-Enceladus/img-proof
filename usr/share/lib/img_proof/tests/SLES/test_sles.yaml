@@ -11,3 +11,4 @@ tests:
   - test_sles_kernel_version
   - test_sles_multipath_off
   - test_sles_hardened
+  - test_sles_fips
