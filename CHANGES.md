@@ -1,3 +1,12 @@
+v9.22.0(2026-10-26)
+==================
+
+- Add FIPS test for 15 SP7+ CHOST images
+- Include 15 SP7+ CHOST images in hardened test
+- Get hardened file paths based on image version
+- Cover SAP 16+ in hardened test
+- Add test to check for kernel-azure
+
 v9.21.0(2026-10-15)
 ==================
 
