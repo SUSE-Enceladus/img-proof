@@ -7,7 +7,9 @@ def test_sles_motd(
     get_release_value,
     is_byos,
     is_suma_proxy,
-    get_variant
+    get_variant,
+    is_suma,
+    get_suma_version
 ):
     pretty_name = get_release_value('PRETTY_NAME')
     assert pretty_name
@@ -16,14 +18,25 @@ def test_sles_motd(
     assert version
 
     variant = get_variant()
+    suma_version = get_suma_version()
 
     if 'hardened' in variant:
         pytest.skip('Unable to validate motd in hardened images.')
 
-    motd = host.file('/etc/motd')
-
-    if not motd.exists or motd.size == 0:
-        motd = host.file('/usr/lib/motd.d/10_header')
+    motd_candidates = [
+        '/etc/motd',
+        '/etc/motd.d/10_header',
+        '/usr/lib/motd.d/10_header',
+        '/usr/lib/motd.d/05_ext_header',
+    ]
+    motd = None
+    for candidate_path in motd_candidates:
+        candidate = host.file(candidate_path)
+        if candidate.exists and candidate.size > 0:
+            motd = candidate
+            break
+    if motd is None:
+        motd = host.file(motd_candidates[0])
 
     assert motd.exists
     assert motd.is_file
@@ -51,7 +64,14 @@ def test_sles_motd(
         return any(contain_results)
 
     contain_results = []
-    registration_tools_expected = is_byos() and not is_suma_proxy()
+    if is_suma() and suma_version and float(suma_version) >= 5.2:
+        # No registration tools expected in motd for SUMA 5.2 proxy or server
+        registration_tools_expected = False
+    else:
+        # Rest of versions.
+        # reg tools mentioned in in motd expected for any BYOS
+        # except SUMA Proxy <= 5.1
+        registration_tools_expected = is_byos() and not is_suma_proxy()
 
     motd = host.file('/etc/motd')
     if motd.exists:
