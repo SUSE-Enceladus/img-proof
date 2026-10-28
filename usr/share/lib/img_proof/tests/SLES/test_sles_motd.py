@@ -9,6 +9,8 @@ def test_sles_motd(
     is_suma_proxy,
     get_variant,
     is_suma,
+    get_suma_server_product,
+    get_suma_proxy_product,
     get_suma_version
 ):
     pretty_name = get_release_value('PRETTY_NAME')
@@ -18,7 +20,12 @@ def test_sles_motd(
     assert version
 
     variant = get_variant()
-    suma_version = get_suma_version()
+
+    # Get SUMA version if possible
+    suma_product = get_suma_proxy_product()
+    if not suma_product:
+        suma_product = get_suma_server_product()
+    suma_version = get_suma_version(suma_product)
 
     if 'hardened' in variant:
         pytest.skip('Unable to validate motd in hardened images.')
