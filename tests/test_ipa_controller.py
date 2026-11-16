@@ -79,6 +79,23 @@ def test_controller_ec2_image(mock_test_image):
     assert status == 0
 
 
+@patch('img_proof.ipa_controller.EC2Cloud')
+def test_controller_ec2_profile(mock_ec2_cloud):
+    mock_ec2_cloud.return_value.test_image.return_value = (0, {})
+
+    status, results = controller_test_image(
+        cloud_name='ec2',
+        distro='sles',
+        image_id='another:fake:image:id',
+        account='awstest',
+        profile='myprofile'
+    )
+
+    assert status == 0
+    custom_args = mock_ec2_cloud.call_args[1]['custom_args']
+    assert custom_args['profile'] == 'myprofile'
+
+
 @patch.object(IpaCloud, 'test_image')
 @patch('img_proof.ipa_gce.compute_v1')
 @patch.object(GCECloud, '_get_credentials')

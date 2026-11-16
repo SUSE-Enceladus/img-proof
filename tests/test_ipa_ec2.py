@@ -24,6 +24,8 @@
 import boto3
 import pytest
 
+from botocore.exceptions import ProfileNotFound
+
 from img_proof.ipa_ec2 import EC2Cloud
 from img_proof.ipa_exceptions import EC2CloudException
 
@@ -86,6 +88,84 @@ class TestEC2Provider(object):
 
         assert str(error.value) == msg
         assert mock_boto3.call_count > 0
+
+    @patch.object(boto3, 'resource')
+    def test_ec2_connect_keys(self, mock_resource):
+        """Test keys are used to connect if no profile is provided."""
+        self.kwargs['custom_args']['access_key_id'] = 'fakekeyid'
+        self.kwargs['custom_args']['secret_access_key'] = 'fakesecret'
+
+        provider = EC2Cloud(**self.kwargs)
+        assert provider.profile is None
+        resource = provider._connect()
+
+        mock_resource.assert_called_once_with(
+            'ec2',
+            aws_access_key_id='fakekeyid',
+            aws_secret_access_key='fakesecret',
+            region_name='us-west-1'
+        )
+        assert resource == mock_resource.return_value
+
+    @patch.object(boto3, 'resource')
+    @patch.object(boto3, 'Session')
+    def test_ec2_connect_profile(self, mock_session, mock_resource):
+        """Test a boto3 session is used to connect if profile provided."""
+        self.kwargs['custom_args']['profile'] = 'myprofile'
+
+        provider = EC2Cloud(**self.kwargs)
+        resource = provider._connect()
+
+        mock_session.assert_called_once_with(
+            profile_name='myprofile',
+            region_name='us-west-1'
+        )
+        mock_session.return_value.resource.assert_called_once_with('ec2')
+        assert resource == mock_session.return_value.resource.return_value
+        assert mock_resource.call_count == 0
+
+    @patch.object(boto3, 'resource')
+    @patch.object(boto3, 'Session')
+    def test_ec2_connect_profile_precedence(
+        self, mock_session, mock_resource
+    ):
+        """Test profile takes precedence over keys."""
+        self.kwargs['custom_args']['profile'] = 'myprofile'
+        self.kwargs['custom_args']['access_key_id'] = 'fakekeyid'
+        self.kwargs['custom_args']['secret_access_key'] = 'fakesecret'
+
+        provider = EC2Cloud(**self.kwargs)
+        provider._connect()
+
+        assert mock_session.call_count == 1
+        assert mock_resource.call_count == 0
+
+    @patch.object(boto3, 'Session')
+    def test_ec2_connect_profile_not_found(self, mock_session):
+        """Test a specific exception is raised if profile not found."""
+        mock_session.side_effect = ProfileNotFound(profile='myprofile')
+        self.kwargs['custom_args']['profile'] = 'myprofile'
+
+        provider = EC2Cloud(**self.kwargs)
+
+        with pytest.raises(EC2CloudException) as error:
+            provider._connect()
+
+        assert str(error.value) == 'AWS profile not found: myprofile'
+
+    @patch.object(boto3, 'Session')
+    def test_ec2_connect_profile_error(self, mock_session):
+        """Test generic connection error when using a profile."""
+        mock_session.return_value.resource.return_value.meta.client.\
+            describe_account_attributes.side_effect = Exception('ERROR!')
+        self.kwargs['custom_args']['profile'] = 'myprofile'
+
+        provider = EC2Cloud(**self.kwargs)
+
+        with pytest.raises(EC2CloudException) as error:
+            provider._connect()
+
+        assert str(error.value) == 'Could not connect to region: us-west-1'
 
     @patch.object(EC2Cloud, '_connect')
     def test_ec2_get_instance(self, mock_connect):
