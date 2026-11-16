@@ -167,7 +167,7 @@ def test_distro_get_vm_info():
         distro.get_vm_info(client)
 
     mocked.assert_has_calls([
-        call(client, 'systemd-analyze'),
-        call(client, 'systemd-analyze blame'),
-        call(client, 'sudo journalctl -b')
+        call(client, 'systemd-analyze --no-pager'),
+        call(client, 'systemd-analyze blame --no-pager'),
+        call(client, 'sudo journalctl -b --no-pager')
     ])

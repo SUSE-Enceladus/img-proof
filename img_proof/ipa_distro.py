@@ -103,19 +103,19 @@ class Distro(object):
                 out += 'systemd-analyze:\n\n'
                 out += ipa_utils.execute_ssh_command(
                     client,
-                    'systemd-analyze'
+                    'systemd-analyze --no-pager'
                 )
 
                 out += 'systemd-analyze blame:\n\n'
                 out += ipa_utils.execute_ssh_command(
                     client,
-                    'systemd-analyze blame'
+                    'systemd-analyze blame --no-pager'
                 )
 
                 out += 'journalctl -b:\n\n'
                 out += ipa_utils.execute_ssh_command(
                     client,
-                    'sudo journalctl -b'
+                    'sudo journalctl -b --no-pager'
                 )
             except Exception as error:
                 out = 'Failed to collect VM info: {0}.'.format(error)

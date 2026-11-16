@@ -131,13 +131,16 @@ def execute_ssh_command(client, cmd, timeout=None):
     """
     try:
         stdin, stdout, stderr = client.exec_command(cmd, timeout=timeout)
-        err = stderr.read()
         out = stdout.read()
+        err = stderr.read()
+
         if err:
-            raise IpaSSHException(out.decode() + err.decode())
+            raise IpaSSHException(
+                out.decode(errors='replace') + err.decode(errors='replace')
+            )
     except:  # noqa: E722
         raise
-    return out.decode()
+    return out.decode(errors='replace')
 
 
 def expand_test_files(test_dirs, names, exclude):
