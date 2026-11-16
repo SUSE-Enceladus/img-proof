@@ -24,6 +24,7 @@ import boto3
 import os
 import time
 
+from botocore.exceptions import ProfileNotFound
 from collections import ChainMap, defaultdict
 
 from img_proof import ipa_utils
@@ -92,6 +93,15 @@ class EC2Cloud(IpaCloud):
         self.additional_info = self.ec2_config['additional_info']
         self.subnet_id = self.ec2_config['subnet_id']
 
+        # Profile is only supported from the command line
+        self.profile = self.custom_args.get('profile')
+
+        if self.profile and (self.access_key_id or self.secret_access_key):
+            self.logger.warning(
+                'AWS profile "%s" takes precedence over access key ID '
+                'and secret access key.' % self.profile
+            )
+
         self.ssh_user = (
             cmd_line_values.get('ssh_user') or
             ec2_config.get('user') or
@@ -118,14 +128,25 @@ class EC2Cloud(IpaCloud):
         """Connect to ec2 resource."""
         resource = None
         try:
-            resource = boto3.resource(
-                'ec2',
-                aws_access_key_id=self.access_key_id,
-                aws_secret_access_key=self.secret_access_key,
-                region_name=self.region
-            )
+            if self.profile:
+                session = boto3.Session(
+                    profile_name=self.profile,
+                    region_name=self.region
+                )
+                resource = session.resource('ec2')
+            else:
+                resource = boto3.resource(
+                    'ec2',
+                    aws_access_key_id=self.access_key_id,
+                    aws_secret_access_key=self.secret_access_key,
+                    region_name=self.region
+                )
             # boto3 resource is lazy so attempt method to test connection
             resource.meta.client.describe_account_attributes()
+        except ProfileNotFound:
+            raise EC2CloudException(
+                'AWS profile not found: %s' % self.profile
+            )
         except Exception:
             raise EC2CloudException(
                 'Could not connect to region: %s' % self.region

@@ -94,6 +94,12 @@ def main(context, no_color):
     help='EC2 access key ID for login credentials.'
 )
 @click.option(
+    '--profile',
+    help='AWS profile name from the AWS credentials file (EC2 only). '
+         'If set, it takes precedence over --access-key-id and '
+         '--secret-access-key.'
+)
+@click.option(
     '--access-key',
     help='Aliyun access key for login credentials.'
 )
@@ -439,6 +445,7 @@ def test(context,
          beta,
          exclude,
          include_plan_information,
+         profile,
          tests):
     """Test image in the given framework using the supplied test files."""
     no_color = context.obj['no_color']
@@ -532,6 +539,7 @@ def test(context,
             cpu_options,
             instance_options,
             include_plan_information,
+            profile=profile,
         )
         echo_results(results, no_color)
         sys.exit(status)

@@ -23,6 +23,8 @@
 
 import os
 
+from unittest.mock import patch
+
 from img_proof.scripts.cli import main
 
 from click.testing import CliRunner
@@ -91,6 +93,20 @@ def test_cli_test_image_exception():
     )
     assert result.exit_code != 0
     assert 'Image ID or running instance is required.' in result.output
+
+
+def test_cli_test_profile():
+    """Confirm --profile is accepted and passed to the controller."""
+    runner = CliRunner()
+    with patch('img_proof.scripts.cli.test_image') as mock_test_image:
+        mock_test_image.return_value = (0, {'summary': {'total': 1}})
+        result = runner.invoke(
+            main,
+            ['test', 'ec2', '-d', 'SLES', '--profile', 'myprofile']
+        )
+
+    assert result.exit_code == 0
+    assert mock_test_image.call_args[1]['profile'] == 'myprofile'
 
 
 def test_cli_list():

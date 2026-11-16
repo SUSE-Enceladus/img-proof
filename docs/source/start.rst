@@ -192,6 +192,13 @@ control role based access.
 Once you have generated secret key values these can be configured with the
 ``--secret-access-key`` and ``--access-key-id`` options.
 
+Alternatively, a named profile from the AWS credentials file
+(``~/.aws/credentials``) can be used with the ``--profile`` option. When a
+profile is provided it is used to create a boto3 session and takes precedence
+over ``--secret-access-key`` and ``--access-key-id``. The profile is only
+configurable from the command line. The region is still taken from
+``--region`` (or the config files).
+
 See `EC2 docs`_ for more information on setting up IAM accounts.
 
 .. _EC2 docs: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html
