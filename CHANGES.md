@@ -1,3 +1,9 @@
+v9.23.0(2026-11-16)
+==================
+
+- Fix MOTD test to handle changes in MLM 5.2
+- Fix system analysis output
+
 v9.22.0(2026-10-26)
 ==================
 
